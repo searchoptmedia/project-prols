@@ -1,0 +1,154 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Propelrr Log-in System| Home</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="css/style.css" media="all"/>
+<link rel="stylesheet" href="sass/_main.scss" media="all"/>
+<link rel="stylesheet" href="css/fullcalendar/fullcalendar.css" media="all"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+<section id="main-container">
+	<header>
+	</header>
+
+	<section id="main-wrapper">
+	<div class="container-fluid">
+	<div class="row">
+
+		<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
+		<div class="timein-success"><h5>Time-in Successful!</h5></div>
+		</div>
+
+		<div class="col-md-3 nav-right z-depth-1">
+			<div class="company-logo"><a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a></div>
+			<div class="collection emp-nav">
+				<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+				<a href="#!" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+				<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
+				<a href="#!" class="collection-item"><i class="material-icons nav-icon">input</i> Log out</a>
+			</div>
+			<div class="collection admin-nav">
+				<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
+				<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+		  	</div>
+		</div>
+
+	  	<div class="col-md-9 light-blue darken-1 heading z-depth-1">
+			<h3 class="center-align">Request List</h3>
+				<div class="x-nav">
+					<a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>All</a>
+				</div>
+		</div>
+
+		
+
+		<div class="col-md-9 content">
+		<table class="bordered highlight emp-list">
+					<thead>
+				          <tr>
+				              <th data-field="id">Name</th>
+				              <th data-field="name">Status</th>
+				              <th data-field="price">Category</th>
+				              <th data-field="price">Start Date</th>
+				              <th data-field="price">End Date</th>
+				          </tr>
+				    </thead>
+
+						    <tbody>
+						          <tr class="modal-trigger modal-reason" href="#modal1">
+						            <td>Dexter Loor</td>
+						            <td><label class="lbl-pending grey darken-4">Pending</label></td>
+						            <td>Vacation Leave</td>
+						            <td>6/27/2016</td>
+						            <td>6/27/2016</td>
+						            
+						          </tr>
+						          <tr class="modal-trigger modal-reason" href="#modal2">
+						            <td>Jarniel Cataluna</td>
+						            <td><label class="lbl-accepted green darken-1">Accepted</label></td>
+						            <td>Sick Leave</td>
+						            <td>6/27/2016</td>
+						            <td>6/27/2016</td>
+						          </tr>
+						          <tr class="modal-trigger modal-reason" href="#modal2">
+						            <td>Elwin Dela Cruz</td>
+						            <td><label class="lbl-declined red darken-4">Declined</label></td>
+						            <td>Different IP Address</td>
+						            <td>6/27/2016</td>
+						            <td>6/27/2016</td>
+						          </tr>
+						          
+						      </tbody>
+			</table>
+				
+		</div>
+
+		<!-- Modal structure -->
+
+		<div id="modal1" class="modal modal-fixed-footer">
+   	 		<div class="modal-content ">
+		      <h4>Reason</h4>
+		      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+		      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+		      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+   		 	</div>
+   			 <div class="modal-footer">
+      			<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Accept</a>
+      			<a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat ">Decline</a>
+    		</div>
+  		</div>
+
+		<div id="modal2" class="modal modal-fixed-footer">
+		   	 <div class="modal-content">
+			 <h4>Reason</h4>
+			 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+			      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+			      quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+			      consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+			      cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+			      proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			</div>
+		</div>
+
+		<!-- Dropdown Structure -->
+		  <ul id='dropdown2' class='dropdown-content dd1'>
+		  	<li><a href="#!">Vacation Leave</a></li>
+		  	<li class="divider"></li>
+		    <li><a href="#!">Sick Leave</a></li>
+		    <li class="divider"></li>
+		    <li><a href="#!">IP Address</a></li>
+		    
+		  </ul>
+			<!-- End of DS -->
+
+		<!-- <div class="time-in-container"></div> -->
+
+		<!-- <div class="time-in center-align">
+			<div class="intro"><h1>Good Morning!</h1></div>
+			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+		</div> -->
+	</div>
+	</div>
+
+	</section>
+</section>
+<footer></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/html5.js"></script>
+<script src="js/modernizr-2.8.3.min.js"></script>
+<script type="text/javascript" src="js/materialize.js"></script>
+
+
+<script type="text/javascript" src="js/customscript.js"></script>
+</body>
+</html>

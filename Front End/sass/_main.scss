@@ -1,0 +1,220 @@
+/*** Custom CSS HERE ***/
+
+/*#main-container{
+	width: 100%;
+	height: 100%;
+}*/
+
+
+
+.row {
+
+	&:after, &:before {
+		content:'';
+		display: block;
+		float: none;
+		clear: both;
+	}
+}
+
+.nav-right{
+	background-color: white;
+	float: left;
+	height: 100%;
+	color: black;
+
+
+	/*border: 1px solid black;*/
+}
+.emp-nav, .admin-nav{
+	border: none;
+	margin-top: 250px;
+	margin-left: 0px;
+	background-color: transparent;
+
+}
+
+.collection a.collection-item{
+	color: black;
+	padding: 20px;
+}
+
+
+.nav-icon{
+	font-size: 2rem;
+	margin-right: 30px;
+}
+
+.heading{
+	height: auto;
+	padding-bottom: 15px;
+
+		h3{
+	    font-weight: 100;
+	    margin-top: 70px;
+	    color: white;
+	    font-size: 60px;
+		}
+}
+
+
+.company-logo{
+	background: url("../img/propelrrlogo.png") no-repeat;
+	width: 100%;
+	height: 180px;
+	float: left;
+	margin-top: 50px;
+	margin-left: 15px;
+	
+}
+
+
+.time-in-container{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	opacity: 0.8;
+
+
+}
+
+.time-in{
+	position: absolute;
+	width: 100%;
+}
+
+.btn-timein{
+	position: relative;
+	font-size: 20px;
+	font-weight: 300;
+	color: white;
+
+}
+
+.btn-timeout{
+	position: static;
+	float: right;
+	margin-right: 10px;
+	color: white;
+	height: 40px;
+	line-height: 40px;
+	margin-top: 110px;
+
+}
+
+
+
+.intro h1{
+	color: white;
+	font-weight: 100;
+	margin-top: 15%;
+
+}
+
+.x-nav{
+	float: right;
+	
+}
+
+.dd1 li > a{
+	padding: 10px;
+}
+
+.timein-notif-container{
+	position: absolute;
+	width: 100%;
+	height: auto;
+	z-index: 9999;
+	margin-top: -55px;
+
+	/*-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+ 	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+ 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);*/
+	
+	h5{
+		color: white;
+		font-weight: 100;
+	}
+}
+
+label{
+	font-size: 14px;
+	text-transform: uppercase;
+	font-weight: 500;
+	color: white;
+	padding: 7px;
+	border-radius: 5%;
+
+}
+
+.notif-list{
+	border:none;
+
+	.collection-item.avatar{
+		min-height: 70px;
+	}
+	
+	p{
+		padding: 10px;
+
+	}
+}
+
+
+
+/*.profile-image{
+	width: 25%;
+	margin: 0 auto;
+	padding-bottom: 10px;
+}
+
+.profile-name{
+	width: 97%;
+	margin-left: 14px;
+}
+
+.name-config{
+	font-weight: 100px;
+	color: black;
+	font-size: 60px;
+}
+
+.nav-bar{
+	margin-top: 250px;
+}
+.material-icons{
+	display: block;
+
+}
+.info-align{
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 20px;
+	width: 80%;
+	text-align: left;
+}
+.search-bar-prof{
+	width: 50%;
+	float: right;
+	display: inline-block;
+	position: relative;
+}
+.year-button{
+	display: inline-block;
+	width: 25%;
+	float: left;
+	position: relative;
+	top: 58px;
+}
+.pull-right{
+	float: right;
+	margin-top: 10px;
+}
+.pull-left{
+	margin-left: 20px;
+}
+.profile-info{
+	font-weight: bold;
+}*/
