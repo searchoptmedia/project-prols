@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login to Propelrr</title>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="{{asset('prols2/css/materialize.min.css')}}"  media="screen,projection"/>
+    <link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body class="login-2">
+
+    <!-- <img class="main-logo" src="{{asset('prols2/img/propelrrlogo.png')}}" alt="">
+    <div class="bg-top"></div>
+    <div class="bg-bottom">
+        <div class="login-page">
+            <div class="form">
+                <form form action="{{ path('_security_check') }}" class="login-form" method="post">
+                    <input type="text" name="_username" class="form-control" placeholder="Username"/>
+                    <input type="password" name="_password" class="form-control" placeholder="Password"/>
+                    <button type="submit" style="color:white">Log In</button>
+                    <p class="message"><a href="index.html">Forgot your password?</a></p>
+                </form>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="img-container center-align" style=""><img class="main-logo" src="{{asset('prols2/img/propelrrlogo.png')}}" alt=""></div>
+    <div class="login-form">
+    <div class="form">
+                <form action="{{ path('_security_check') }}" class="z-depth-2 login-form-2" method="post">
+                {% if error %}
+                    <div class="error" style="color: red;">Invalid Username/Password</div>
+                    {% endif %}
+                    <input type="text" name="_username" placeholder="username" required />
+                    <input type="password" name="_password" placeholder="password" required />
+                    <button type="submit"style="color:white">login</button>
+                    
+                    <!-- <p class="message"><a href="#!">Forgot your password?</a></p> -->
+                </form>
+            </div>
+        
+    </div>
+    
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{{asset('js/materialize.min.js')}}"></script>
+</body>
+</html>

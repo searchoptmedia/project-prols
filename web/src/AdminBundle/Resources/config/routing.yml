@@ -1,0 +1,63 @@
+admin_homepage:
+    path:     /
+    defaults: { _controller: AdminBundle:Default:index }
+
+admin_time_in:
+    path:     /admin/time_in/{id}
+    defaults: { _controller: AdminBundle:Default:timeIn }
+
+admin_time_in_no_params:
+    path:     /admin/time_in/
+    defaults: { _controller: AdminBundle:Default:timeIn }
+
+request_email:
+    path:     /send/request/email/{value}
+    defaults: { _controller: AdminBundle:Default:sendRequest }
+
+request_email_no_params:
+    path:     /send/request/email/
+    defaults: { _controller: AdminBundle:Default:sendRequest }    
+
+admin_time_out:
+    path:     /admin/time_out/{id}
+    defaults: { _controller: AdminBundle:Default:timeOut }
+
+admin_time_out_no_params:
+    path:     /admin/time_out/
+    defaults: { _controller: AdminBundle:Default:timeOut }
+
+request_meeting_w_params:
+    path:     /request/meeting/{id}
+    defaults: { _controller: AdminBundle:Default:requestMeeting }
+
+request_meeting:
+    path:     /request/meeting/
+    defaults: { _controller: AdminBundle:Default:requestMeeting }
+
+request_leave:
+    path:     /request/leave/
+    defaults: { _controller: AdminBundle:Default:requestLeave }
+
+request_leave_w_params:
+    path:     /request/leave/{id}/{id2}/{id3}
+    defaults: { _controller: AdminBundle:Default:requestLeave }
+
+status_accept_with_params:
+    path:    /status/accept/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:statusAccept }
+    
+status_accept:
+    path:    /status/accept/
+    defaults: { _controller: AdminBundle:Default:statusAccept }
+
+status_declined:
+    path:    /declined/
+    defaults: { _controller: AdminBundle:Default:declinedRequest }
+
+status_declined_w_params:
+    path:    /declined/{id}/{id2}/{id3}
+    defaults: { _controller: AdminBundle:Default:declinedRequest }
+
+check_time:
+    path: /checktime
+    defaults: { _controller: AdminBundle:Default:checkTime }

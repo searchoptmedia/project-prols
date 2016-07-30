@@ -1,0 +1,222 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Propelrr Log-in System| Home</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<link rel="stylesheet" href="css/fullcalendar/fullcalendar.css" media="all"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="css/style-marcus.css" media="all"/>
+<link rel="stylesheet" href="css/style.css" media="all"/>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+
+</head>
+<body>
+<section id="main-container">
+	<header>
+	</header>
+
+	<section id="main-wrapper">
+		<div class="container-fluid">
+		<div class="row">
+
+			<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
+				<div class="timein-success"><h5>Time-in Successful!</h5></div>
+			</div> 
+
+			<div class="col-md-12 green center-align timeout-notif-container light-green darken-1">
+				<div class="timeout-success"><h5>Time-out Successful!</h5></div>
+			</div>                                                                                           
+
+			<div class="nav-right z-depth-1">
+				<div class="company-logo"><img src="img/propelrrlogo.png"></div>
+				<div class="rightpanel">	
+					<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+						<div class="widget-subtitle plugin-date">Loading...</div>
+					</div>
+					<a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a>
+						
+				</div>
+				
+				<div class="clr"></div>
+
+			
+				<div class="collection emp-nav">
+					<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+					<a href="#!" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+					<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
+					<a href="#!" class="collection-item"><i class="material-icons nav-icon">input</i> Log out</a>
+				</div>
+
+				<div class="collection admin-nav">
+					<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
+					<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+			  	</div>
+			</div>
+
+		<div class="page-content">
+		  	<div class="col-md-12 light-blue darken-1 heading z-depth-1">
+		  		<div class="profile-image">
+		  			<div class="center-align">
+		  				<img src="img/dexterloor.jpeg" alt="" class="circle responsive-img z-depth-2">	
+		  			</div>
+		  		</div>	
+		  		<div class="profile-name">
+		  			
+		  				<h3 class="center-align">Dexter Loor</h3>
+		  			
+		  		</div>
+			</div>
+
+			<div class="col-md-12 content">
+				<div class="card col-md-4 pull-left">
+            	 	<form class="col s4">
+	                    <div class="row">
+	                      <div class="collection user-info">
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Employee Number: 001</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Department: SEO</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Company Email:</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Employment Status:</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">phone</i><div class="info-align profile-info">
+							Telephone #:</div></a>  
+							<a href="#!" class="collection-item"><i class="material-icons prefix">phone</i><div class="info-align profile-info">
+							Cellphone #:</div></a>  
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Birthday: December 14</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							Address:</div></a>  
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							SSS: 3424324</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							BIR: 42342342</div></a>
+							<a href="#!" class="collection-item"><i class="material-icons prefix">account_circle</i><div class="info-align profile-info">
+							PhilHealth: 4234234</div></a>
+						  </div>
+
+		       	 	</form>
+		        </div>
+
+		        
+	         <div class="col-md-6 pull-right">
+				<canvas id="graph" width="675" height="300">
+				</canvas>   
+				 
+				      <table class="bordered responsive-table highlight centered">
+					    <form class="">
+						    <div class="row">
+						    	<div class="col-md-8">
+									<a class='dropdown-button btn year-button' href='#' data-activates='year'>Year</a>
+									<ul id='year' class='dropdown-content'>
+									<li><a href="#!">2014</a></li>
+									<li><a href="#!">2015</a></li>
+									<li><a href="#!">2016</a></li>
+									</ul>
+								</div>
+								<div class="col-md-12">
+							        <div class="input-field search-bar-prof">
+							          <input id="search" type="search" required>
+							          <label for="search"><i class="material-icons">search</i></label>
+							          <i class="material-icons">close</i>
+							        </div>
+					      		</div>
+					     	</div>
+						</form>
+
+				        <thead>
+				          <tr>
+				              <th data-field="Date">Month</th>
+				              <th data-field="Absences">Absences</th>
+				              <th data-field="Lates">Lates</th>
+				              <th data-field="Overtimes">Overtimes</th>
+				              <th data-field="Out of IP">Out of IP</th>
+				          </tr>
+				        </thead>
+
+				        <tbody>
+				          <tr>
+				            <td>Jan</td>
+				            <td>1</td>
+				            <td>2</td>
+				            <td>3</td>
+				            <td>4</td>
+				          </tr>
+				          <tr>
+				            <td>Feb</td>
+				            <td>5</td>
+				            <td>6</td>
+				            <td>6</td>
+				            <td>7</td>
+				          </tr>
+				          <tr>
+				            <td>Mar</td>
+				            <td>8</td>
+				            <td>8</td>
+				            <td>9</td>
+				            <td>9</td>
+				          </tr>
+				        </tbody>
+				      </table>
+			       <ul class="pagination center-align">
+				    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+				    <li class="active"><a href="#!">1</a></li>
+				    <li class="waves-effect"><a href="#!">2</a></li>
+				    <li class="waves-effect"><a href="#!">3</a></li>
+				    <li class="waves-effect"><a href="#!">4</a></li>
+				    <li class="waves-effect"><a href="#!">5</a></li>
+				    <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+				  </ul>
+        	</div>         		
+			</div>
+		</div>
+
+		<!-- <div class="time-in-container"></div>
+
+		<div class="time-in center-align">
+			<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+	        <div class="widget-subtitle plugin-date">Loading...</div>
+	        </div>
+			<p class="confirm-timein">Good Morning!</p>
+			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+		</div> -->
+
+			<div class="timeout center-align">
+				<div class="valign-wrapper">
+
+					<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+						<p class="confirm-timeout">Are you sure you want to time-out?</p>
+						<div class="btn-block">
+							<a class="waves-effect waves-light green btn-flat btn-large btn-yes">Yes</a>
+							<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+
+	</div>
+	</div>
+
+	</section>
+</section>
+<footer></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/html5.js"></script>
+<script src="js/modernizr-2.8.3.min.js"></script>
+<script src="js/materialize.js"></script>
+
+<script type="text/javascript" src="js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="js/plugins/bootstrap/bootstrap.min.js"></script>  
+
+<script type="text/javascript" src="js/plugins.js"></script> 
+<script type="text/javascript" src="js/customscript.js"></script>
+</body>
+</html>

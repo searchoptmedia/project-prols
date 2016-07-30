@@ -1,0 +1,480 @@
+{% extends 'AdminBundle:Default:index.html.twig' %}
+{% block head %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+<script>
+        var graph;
+        var xPadding = 30;
+        var yPadding = 30;
+        
+        var data = { values:[   
+            { X: "1", Y: 12 },
+            { X: "2", Y: 28 },
+            { X: "3", Y: 18 },
+            { X: "4", Y: 34 },
+            { X: "5", Y: 40 },
+        ]};
+
+
+        // Returns the max Y value in our data list
+        function getMaxY() {
+            var max = 0;
+            
+            for(var i = 0; i < data.values.length; i ++) {
+                if(data.values[i].Y > max) {
+                    max = data.values[i].Y;
+                }
+            }
+            
+            max += 10 - max % 10;
+            return max;
+        }
+        
+        // Return the x pixel for a graph point
+        function getXPixel(val) {
+            return ((graph.width() - xPadding) / data.values.length) * val + (xPadding * 1.5);
+        }
+        
+        // Return the y pixel for a graph point
+        function getYPixel(val) {
+            return graph.height() - (((graph.height() - yPadding) / getMaxY()) * val) - yPadding;
+        }
+
+        $(document).ready(function() {
+            graph = $('#graph');
+            var c = graph[0].getContext('2d');            
+            
+            c.lineWidth = 2;
+            c.strokeStyle = '#333';
+            c.font = 'italic 8pt sans-serif';
+            c.textAlign = "center";
+            
+            // Draw the axises
+            c.beginPath();
+            c.moveTo(xPadding, 0);
+            c.lineTo(xPadding, graph.height() - yPadding);
+            c.lineTo(graph.width(), graph.height() - yPadding);
+            c.stroke();
+            
+            // Draw the X value texts
+            for(var i = 0; i < data.values.length; i ++) {
+                c.fillText(data.values[i].X, getXPixel(i), graph.height() - yPadding + 20);
+            }
+            
+            // Draw the Y value texts
+            c.textAlign = "right"
+            c.textBaseline = "middle";
+            
+            for(var i = 0; i < getMaxY(); i += 10) {
+                c.fillText(i, xPadding - 10, getYPixel(i));
+            }
+            
+            c.strokeStyle = '#f00';
+            
+            // Draw the line graph
+            c.beginPath();
+            c.moveTo(getXPixel(0), getYPixel(data.values[0].Y));
+            for(var i = 1; i < data.values.length; i ++) {
+                c.lineTo(getXPixel(i), getYPixel(data.values[i].Y));
+            }
+            c.stroke();
+            
+            // Draw the dots
+            c.fillStyle = '#333';
+            
+            for(var i = 0; i < data.values.length; i ++) {  
+                c.beginPath();
+                c.arc(getXPixel(i), getYPixel(data.values[i].Y), 4, 0, Math.PI * 2, true);
+                c.fill();
+            }
+        });
+    </script>  
+     
+{{ parent() }}
+{% endblock %}
+       
+                                                                                         
+
+            
+        {% block body %}
+        <div class="page-content">
+            <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                    <div class="emp-photo">
+                    <div class="profile-image center-align">
+                        <span>{{firstchar}}</span>
+                        <!-- <img src="img/dexterloor.jpg" alt="" class="circle responsive-img z-depth-1"> -->
+                    </div>  
+                    </div>
+                <div class="profile-title"><h3>{{ fname }} {{ lname }}</h3>
+                    <div class="editprofile-btns">
+                    <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
+                    <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
+                    <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a>
+                </div>
+                </div>
+                
+                <!-- <h3 class="center-align">Dexter Loor</h3>
+                <h6 class="center-align">001</h6>
+                <h6 class="center-align">Web Engineer</h6> -->
+
+            <!-- <div class="profile-info-left"> -->
+            <!--    <p class="label">Name<span class="data">Dexter Loor</span></p> -->
+                <!-- <p class="label">Employee Number</p>
+                <p class="label">Position</p>
+                <p class="label">Department</p>
+                <p class="label">Company Email</p>
+            </div>
+            <div class="profile-info-left">
+                <p class="data">001</p>
+                <p class="data">Web Software Engineer</p>
+                <p class="data">Tech</p>
+                <p class="data">dexter.loor@searchoptmedia.com</p>
+            </div>
+
+            
+
+            <div class="profile-info-center">
+                <p class="label">Birthday</p>
+                <p class="label">Telephone</p>
+                <p class="label">Cellphone</p>
+                <p class="label">Address</p>
+            </div>
+            <div class="profile-info-center">
+                <p class="data">Jan 20 1990</p>
+                <p class="data"><i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i>
+                        <input disabled value="8444159" type="text" id="tel-p" class="editable"></li></p>
+                <p class="data"><i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i><i class="material-icons done">done</i>
+                        <input disabled value="9153481674" type="text" id="cel-p"  class="editable"></li></p>
+                <p class="data"><i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i><i class="material-icons done">done</i>
+                        <input disabled value="Taguig City" type="text" id="addr" class="editable"></li></p>
+            </div>
+
+            <div class="profile-info-right">
+                <p class="label">SSS</p>
+                <p class="label">BIR</p>
+                <p class="label">Philhealth</p>
+                <p class="label">Address</p>
+            </div>
+
+            <div class="profile-info-right">
+                <p class="data">1234523423</p>
+                <p class="data">324252352352</p>
+                <p class="data">213124345436</p>
+                <p class="data">352452424333</p>
+            </div>
+
+            
+                <div class="editprofile-btns center-align" style="padding-bottom: 10px;">
+                    <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
+                    <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
+                    <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a>
+                </div>
+
+ -->
+        <div class="profile-container2">
+        
+        
+                <div class="empinfo-left">
+                    <input value="{{ profileId }}" type="text" name="profileId" hidden>
+                    <p><span class="p-lbl">Employee Number</span>:<span class="p-dta">{{empnumber}}</span></p>
+                    <p><span class="p-lbl">Position</span>:<span class="p-dta">{{ posStatus }}</span> </p>
+                    <p><span class="p-lbl">Department</span>:<span class="p-dta">{{deptnames}}</span></p>
+                    <p><span class="p-lbl">Company Email</span>:<span class="p-dta">{{conEmail}}</span></p>
+                </div>
+                
+
+                <div class="empinfo-middle">
+                    <p><span class="p-lbl">Address</span>:<span class="p-dta"><input disabled value="{{address}}" type="text" id="addr" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                    <p><span class="p-lbl">Birthday</span>:<span class="p-dta">{{bday | date('M d Y')}}</span></p>
+                    <p><span class="p-lbl">Telephone</span>:<span class="p-dta"><input disabled value="{{conTele}}" type="text" id="tel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                    <p><span class="p-lbl">Cellphone</span>:<span class="p-dta"><input disabled value="{{conMobile}}" type="text" id="cel-p"  class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                    
+                </div>
+                
+                <div class="empinfo-right">
+                    <p><span class="p-lbl">SSS</span>:<span class="p-dta"></span></p>
+                    <p><span class="p-lbl">BIR</span>:<span class="p-dta"></span> </p>
+                    <p><span class="p-lbl">Philhealth</span>:<span class="p-dta"></span></p>
+                </div>
+
+                
+        </div>
+
+            </div>
+
+            <!-- <div class="col-md-12 content">
+                <div class="col-md-4 profile">
+                    <ul class="collection profile-info">
+                        <li class="collection-item">Department<p class="p-dta">Developer</p></li> 
+                        <li class="collection-item">Company Email <p class="p-dta">dexter.loor@searchoptmedia.com</p></li>
+                        <li class="collection-item">Birthday <p class="p-dta">01/01/01</p></li>
+                    </ul>
+
+                </div>
+
+                <div class="col-md-4 profile">
+                    <ul class="collection profile-info">
+                        <li class="collection-item">Telephone <div class="chip required-field">required field!</div> 
+                        <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i>
+                        <input disabled value="8444159" type="text" id="tel-p" class="editable"></li>
+
+                        <li class="collection-item">Cellphone <div class="chip required-field">required field!</div> 
+                        <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i><i class="material-icons done">done</i>
+                        <input disabled value="9153481674" type="text" id="cel-p"  class="editable"></li>
+
+                        <li class="collection-item">Address <div class="chip required-field">required field!</div> 
+                        <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a></i><i class="material-icons done">done</i>
+                        <input disabled value="Taguig City" type="text" id="addr" class="editable"></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 profile">
+                    <ul class="collection profile-info">
+                        <li class="collection-item">SSS <p class="p-dta">12311231</p></li>
+                        <li class="collection-item">BIR <p class="p-dta">213231</p></li>
+                        <li class="collection-item">PhilHealth<p class="p-dta">1232131312</p></li>
+                    </ul>
+                </div>
+            </div> -->
+
+                <!-- <div class="editprofile-btns center-align" style="padding-bottom: 10px;">
+                    <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
+                    <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
+                    <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a>
+                </div> -->
+                    
+
+            <!-- <div class="col-md-12 profile">
+                <div id="perf-chart" class="demo-placeholder"  style="width:100%;height:400px"></div>
+                    <table class="bordered responsive-table highlight centered">
+                        <thead>
+                            <tr>
+                                <th data-field="Date">Month</th>
+                                <th data-field="Absences">Absences</th>
+                                <th data-field="Lates">Lates</th>
+                                <th data-field="Overtimes">Overtimes</th>
+                                <th data-field="Out of IP">Out of IP</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Jan</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Feb</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td>Mar</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Apr</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>May</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Jun</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Jul</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Aug</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Sep</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>   
+                            <tr>
+                                <td>Oct</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Nov</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Dec</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                                    
+                        </tbody>
+                    </table>
+                </div>
+            </div> -->
+        </div>
+    </div>
+        
+        {% endblock %}
+        {% block scripts %}
+        <script type="text/javascript" src="{{asset('prols2/js/plugins/sparkline/jquery.sparkline.min.js')}}"></script> 
+        {{ parent() }}
+        {% endblock %}
+
+{% block customjs %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        var profileId = '';
+        var contactid = '';
+        var deptId = '';
+        $('#emailedit').click(function(){
+            profileId = $(this).data('eid');
+            contactid=$('#email-p').val();
+
+            $.get("{{ path('profile_email') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+        $('#teledit').click(function(){
+            profileId = $(this).data('tid');
+            contactid=$('#tel-p').val();
+
+            $.get("{{ path('profile_tele') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+
+        $('#celledit').click(function(){
+            profileId = $(this).data('cid');
+            contactid=$('#cel-p').val();
+
+            $.get("{{ path('profile_mobile') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+
+        $('#addressedit').click(function(){
+            profileId = $(this).data('aid');
+            contactid=$('#addr').val();
+
+            $.get("{{ path('profile_address') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+
+        $('#bdayedit').click(function(){
+            profileId = $(this).data('bid');
+            contactid=$('#bday-p').val();
+
+            $.get("{{ path('profile_bday') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+
+        $('#deptedit').click(function(){
+            profileId = $(this).data('did');
+            contactid = deptId;
+            $.get("{{ path('profile_dept') }}" + profileId + "/" + contactid,  function(data){
+                console.log(data);
+            }, "json");
+        
+        });
+
+        $('#dept').click(function(){
+            console.log('test'); 
+            //asdsa = $(this).attr('data-id');
+            //console.log(asdsa);
+        });
+
+
+        // $('.update-btn').hide();
+        // $('.cancel-btn').hide();
+        // $('.delete-btn').hide();
+        // $('.test-btn').click(function(){
+        //     {% if role == 'ADMIN' %}
+        //     $('.update-btn').show();
+        //     $('.cancel-btn').show();
+        //     $('.delete-btn').show();
+        //     $('.test-btn').hide();
+
+        //     $('#dept').attr("enabled", true);
+        //     $('.collection-item').find('input').attr("disabled", false);
+        //     $('.collection-item').find('.done').css({'display' : 'block'});
+        //     $('.collection-item').find('.edit').css({'display' : 'none'});
+        //     {% else %}
+        //     $('.update-btn').show();
+        //     $('.cancel-btn').show();
+        //     $('.delete-btn').show();
+        //     $('.test-btn').hide();
+        //     $('#tel-p').attr("disabled", false);
+        //     $('#cel-p').attr("disabled", false);
+        //     $('#addr').attr("disabled", false);
+        //     $('.collection-item').find('.done').css({'display' : 'block'});
+        //     $('.collection-item').find('.edit').css({'display' : 'none'});
+        //     {% endif %}
+        // });
+        // $('.cancel-btn').click(function(){
+        //     $('.update-btn').hide();
+        //     $('.cancel-btn').hide();
+        //     $('.delete-btn').hide();
+        //     $('.test-btn').show();
+        //     $('.collection-item').find('input').attr("disabled", true);
+        //     $('.collection-item').find('.done').css({'display' : 'none'});
+        //     $('.collection-item').find('.edit').css({'display' : 'block'});
+        // });
+
+
+        $('.initialized').material_select();
+
+    });
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config>
+  <propel>
+    <datasources default="prols">
+      <datasource id="prols">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=127.0.0.1;dbname=prols;charset=UTF8</dsn>
+          <user>root</user>
+          <password></password>
+        </connection>
+      </datasource>
+      <datasource id="default">
+        <adapter>mysql</adapter>
+        <connection>
+          <dsn>mysql:host=127.0.0.1;dbname=prols;charset=UTF8</dsn>
+          <user>root</user>
+          <password></password>
+        </connection>
+      </datasource>
+    </datasources>
+  </propel>
+</config>

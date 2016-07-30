@@ -1,0 +1,192 @@
+{% extends 'AdminBundle:Default:index.html.twig' %}
+{% block body %}
+        <div class="col-md-12 green center-align accept-notif-container light-green darken-1 close-alert">
+        <div class="request-success"><h5>Request Accepted!</h5></div>
+            </div>                 
+
+            <div class="col-md-12 green center-align sendtoemail-notif-container light-green darken-1 close-alert">
+                <div class="sendtoemail-success"><h5>Email Sent!</h5></div>
+            </div>
+        <div class="container-fluid">
+        <div class="row">
+                                                                            
+        <div class="page-content">
+        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+        <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+            <h3 class="center-align">Request List</h3>
+            <div class="top-nav"><a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>All</a></div>
+            
+        </div>
+
+        <div class="col-md-12 content">
+        
+                <table class="bordered highlight emp-list">
+                    <thead>
+                          <tr>
+                              <th data-field="id">Name</th>
+                              <th data-field="name">Status</th>
+                              <th data-field="price">Category</th>
+                              <th data-field="price">Start Date</th>
+                              <th data-field="price">End Date</th>
+                          </tr>
+                    </thead>
+
+                    <tbody>
+                    
+                    {% for request in allrequest %}
+                          <tr class="modal-reason" href="#modal1" data-reason="{{ request.request }}" data-id="{{ request.id }}" data-status="{{ request.status }}">
+                            <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
+                            <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
+                            {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
+                            {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
+                            {% endif %}</td>
+                            <td class="req-category">{{request.listLeaveType.leaveType}}</td>
+                            <td>{{ request.dateStarted|date('n/d/Y')}}</td>
+                            <td>{{ request.dateEnded|date('n/d/Y')}}</td>
+
+                          </tr>
+
+        
+        <div id="modal1" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>Reason</h4>
+                <p id='leave-reason-texts'></p>
+
+                    <div class="reject">
+                    <br>
+                        <input class="reject-reason" placeholder="type your reason here...">
+                        <a href="#!" class="modal-action waves-effect waves-green btn-flat btn-sendtoemail" data-uid="{{ userid }}">Send</a>
+                        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>
+                        <div class="chip required-field">
+                            required field!
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-accept" data-uid="{{ userid }}">Accept</a>
+                    <a class="waves-effect waves-red btn-flat btn-decline">Decline</a>
+                    
+                </div>
+        </div>  
+
+                    {% endfor %}
+
+                      </tbody>
+                </table>
+                            
+        </div>
+        </div>
+
+        <!-- Modal structure -->
+        
+        
+
+        <div id="modal2" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>Reason</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                </div>
+        </div>
+
+
+        <!-- <div id="modal3" class="modal modal-fixed-footer">
+             <div class="modal-content">
+             <h4>Reject Reason</h4>
+             <textarea class="form-control" rows="5" id="comment"></textarea>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-sendtoemail ">Send to Email</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+            </div> -->
+
+        <!-- Dropdown Structure -->
+        <ul id='dropdown2' class='dropdown-content dd1'>
+            <li><a href="#!">Vacation Leave</a></li>
+            <li class="divider"></li>
+            <li><a href="#!">Sick Leave</a></li>
+            <li class="divider"></li>
+            <li><a href="#!">IP Address</a></li>
+        </ul>
+            <!-- End of DS -->
+
+        <!-- <div class="time-in-container"></div>
+
+        <div class="time-in center-align">
+            <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+            <div class="widget-subtitle plugin-date">Loading...</div>
+            </div>
+            <p class="confirm-timein">Good Morning!</p>
+            <a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+        </div> -->
+        
+        
+
+    </div>
+    </div>
+
+{% endblock %}
+
+{% block customjs %}
+<script type="text/javascript">
+    $(document).ready(function(){
+    
+        var adminId = '';
+        var leaveId = '';
+        var status = '';
+        $('.modal-reason').click(function(){
+            status = $(this).data('status');
+            leaveId = $(this).data('id');
+            
+            var reason = $(this).data('reason');
+            $('#leave-reason-texts').html(reason);
+            $('#modal1').openModal();
+            $('.reject').hide(); 
+            if(status != 'Pending'){
+                $('.modal-footer').hide();
+            }else{
+                $('.modal-footer').show();   
+            }
+           
+        });
+        $('.btn-accept').click(function(){
+              adminId = $(this).data('uid');
+            $.get("{{ path('status_accept') }}" + leaveId + "/" + adminId,  function(data){
+                console.log(data);
+                
+                setTimeout(function(){
+                    window.location.reload();
+                 }, 1500);
+                $('.accept-notif-container').css({'margin-top':'0px'})
+                 setTimeout(function(){
+                     $('.accept-notif-container').css({'margin-top' : '-55px'});
+                 }, 1000);
+                    }, "json");
+        });
+
+        var content = '';
+
+        $('.btn-sendtoemail').click(function(){
+        adminId = $(this).data('uid');
+        content = $('.reject-reason').val();
+         alert(content);
+            $.get("{{ path('status_declined') }}" + leaveId + "/" + adminId + "/" + content,  function(data){
+                console.log(data);
+                setTimeout(function(){
+                    window.location.reload();
+                }, 1500);
+                setTimeout(function(){
+                    $('.sendtoemail-notif-container').css({'margin-top' : '-55px'});
+                }, 1000);
+            }, "json");
+            
+        });
+
+        
+    });
+</script>
+{% endblock %}

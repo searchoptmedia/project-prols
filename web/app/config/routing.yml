@@ -1,0 +1,128 @@
+login_page:
+    resource: "@CoreBundle/Resources/config/routing.yml"
+    prefix: /
+
+sms:
+    resource: "@SmsBundle/Resources/config/routing.yml"
+    prefix:   /sms
+
+admin:
+    resource: "@AdminBundle/Resources/config/routing.yml"
+    prefix:   /main
+
+_security_check:
+    pattern: /login_check
+
+logout:
+   pattern: /logout
+
+error403:
+    pattern: /403
+    
+profile_page:
+    path: /profile
+    defaults: { _controller: AdminBundle:Default:profile }
+
+emp_page_w_params:
+    path: /emp/{id}
+    defaults: { _controller: AdminBundle:Default:employeeProfile }
+
+emp_page:
+    path: /emp/
+    defaults: { _controller: AdminBundle:Default:employeeProfile }
+
+profile_tele:
+    path: /teleupdate/
+    defaults: { _controller: AdminBundle:Default:profileTelUpdate }
+
+profile_tele_with_params:
+    path: /teleupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileCellUpdate }
+
+profile_mobile:
+    path: /cellupdate/
+    defaults: { _controller: AdminBundle:Default:profileCellUpdate }
+
+profile_mobile_with_params:
+    path: /cellupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileTelUpdate }
+
+profile_address:
+    path: /addupdate/
+    defaults: { _controller: AdminBundle:Default:profileAddressUpdate }
+
+profile_address_with_params:
+    path: /addupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileAddressUpdate }
+
+profile_email:
+    path: /emailupdate/
+    defaults: { _controller: AdminBundle:Default:profileEmailUpdate }
+
+profile_email_with_params:
+    path: /emailupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileEmailUpdate }
+
+profile_bday:
+    path: /bdayupdate/
+    defaults: { _controller: AdminBundle:Default:profileBdayUpdate }
+
+profile_bday_with_params:
+    path: /bdayupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileBdayUpdate }
+
+profile_dept:
+    path: /deptupdate/
+    defaults: { _controller: AdminBundle:Default:profileDeptpdate }
+
+profile_dept_with_params:
+    path: /deptupdate/{id}/{id2}
+    defaults: { _controller: AdminBundle:Default:profileDeptUpdate }
+
+view_request:
+    path: /requests
+    defaults: { _controller: AdminBundle:Default:request }
+
+manage_employee:
+    path: /manage
+    defaults: { _controller: AdminBundle:Default:manage }
+
+add_employee:
+    path: /addemp
+    defaults: { _controller: AdminBundle:Default:addEmployee }
+
+add_position:
+    path: /addpos/
+    defaults: { _controller: AdminBundle:Default:addPosition }
+
+add_position_w_params:
+    path: /addpos/{id}
+    defaults: { _controller: AdminBundle:Default:addPosition }
+
+add_department:
+    path: /adddept/
+    defaults: { _controller: AdminBundle:Default:addDepartment }
+
+add_department_w_params:
+    path: /adddept/{id}
+    defaults: { _controller: AdminBundle:Default:addDepartment }
+
+notif_page:
+    path: /notif
+    defaults: { _controller: AdminBundle:Default:notif }
+
+emp_delete:
+    path: /delete/
+    defaults: { _controller: AdminBundle:Default:empDelete }
+
+emp_delete_w_params:
+    path: /delete/{id}
+    defaults: { _controller: AdminBundle:Default:empDelete }   
+
+update_profile:
+    path: /update
+    defaults: { _controller: AdminBundle:Default:profileUpdate } 
+
+request_access_accepted:
+    path: /requestaccepted
+    defaults: { _controller: AdminBundle:Default:acceptRequest }

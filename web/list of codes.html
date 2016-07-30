@@ -1,0 +1,51 @@
+<!--ADMIN HOME PAGE -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+		<h1>{{page}}</h1>
+		<a href="">Home</a>
+		<a href="#" onClick="loadTimeIn({{ user.getId }})">Time In/Out</a>
+		<a href="">View Profile</a>
+		<a href="">Request VL</a>
+		<a href="">Manage Employees</a>
+		<a href="{{ path('logout') }}">Logout</a>
+		<p>Hello {{name}}!</p>
+		
+		{% image '@MainBundle/Resources/public/images/*' %}
+			{% if '1_' ~ img in asset_url == true %}
+				<!--<p>{{asset_url}}</p>-->
+				<img src="{{ asset_url }}" alt="profile picture" height="100" width="100"/>
+			{% endif %}
+		{% endimage %}		
+
+		<p>First Name: {{fname }}</p>
+		<p>Middle Name: {{mname }}</p>
+		<p>Last Name: {{lname }}</p>
+		<p>Birthday: {{bday }}</p>
+		<p>Address: {{address }}</p>
+		<p>Contact: {{contact}}</p>	
+		<p>Contact Type:{{contype}}</p>
+		<p>Contact: {{contact2}}</p>	
+		<p>Contact Type:{{contype2}}</p>
+		<p>Date Joined: {{datejoined }}</p>		
+		<p>Department: {{deptnames }}</p>		
+		<p>Position: {{posnames}}</p>		
+	</body>
+	<script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+	<script>
+		function loadTimeIn(id){
+			console.log('working');	 
+			$.get("{{ path('admin_time_in_no_params') }}" + id, function(data){
+				if(data == 1){
+					alert('success');
+				}else{
+					alert('fail');
+				}
+			});
+			return false;
+		}
+	</script>
+</html>

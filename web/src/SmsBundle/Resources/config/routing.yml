@@ -1,0 +1,3 @@
+sms_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: SmsBundle:Default:index }

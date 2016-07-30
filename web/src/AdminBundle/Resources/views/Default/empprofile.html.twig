@@ -1,0 +1,369 @@
+{% extends 'AdminBundle:Default:index.html.twig' %}
+{% block head %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+<script>
+        var graph;
+        var xPadding = 30;
+        var yPadding = 30;
+        
+        var data = { values:[   
+            { X: "1", Y: 12 },
+            { X: "2", Y: 28 },
+            { X: "3", Y: 18 },
+            { X: "4", Y: 34 },
+            { X: "5", Y: 40 },
+        ]};
+
+
+        // Returns the max Y value in our data list
+        function getMaxY() {
+            var max = 0;
+            
+            for(var i = 0; i < data.values.length; i ++) {
+                if(data.values[i].Y > max) {
+                    max = data.values[i].Y;
+                }
+            }
+            
+            max += 10 - max % 10;
+            return max;
+        }
+        
+        // Return the x pixel for a graph point
+        function getXPixel(val) {
+            return ((graph.width() - xPadding) / data.values.length) * val + (xPadding * 1.5);
+        }
+        
+        // Return the y pixel for a graph point
+        function getYPixel(val) {
+            return graph.height() - (((graph.height() - yPadding) / getMaxY()) * val) - yPadding;
+        }
+
+        $(document).ready(function() {
+            graph = $('#graph');
+            var c = graph[0].getContext('2d');            
+            
+            c.lineWidth = 2;
+            c.strokeStyle = '#333';
+            c.font = 'italic 8pt sans-serif';
+            c.textAlign = "center";
+            
+            // Draw the axises
+            c.beginPath();
+            c.moveTo(xPadding, 0);
+            c.lineTo(xPadding, graph.height() - yPadding);
+            c.lineTo(graph.width(), graph.height() - yPadding);
+            c.stroke();
+            
+            // Draw the X value texts
+            for(var i = 0; i < data.values.length; i ++) {
+                c.fillText(data.values[i].X, getXPixel(i), graph.height() - yPadding + 20);
+            }
+            
+            // Draw the Y value texts
+            c.textAlign = "right"
+            c.textBaseline = "middle";
+            
+            for(var i = 0; i < getMaxY(); i += 10) {
+                c.fillText(i, xPadding - 10, getYPixel(i));
+            }
+            
+            c.strokeStyle = '#f00';
+            
+            // Draw the line graph
+            c.beginPath();
+            c.moveTo(getXPixel(0), getYPixel(data.values[0].Y));
+            for(var i = 1; i < data.values.length; i ++) {
+                c.lineTo(getXPixel(i), getYPixel(data.values[i].Y));
+            }
+            c.stroke();
+            
+            // Draw the dots
+            c.fillStyle = '#333';
+            
+            for(var i = 0; i < data.values.length; i ++) {  
+                c.beginPath();
+                c.arc(getXPixel(i), getYPixel(data.values[i].Y), 4, 0, Math.PI * 2, true);
+                c.fill();
+            }
+        });
+    </script>  
+     
+{{ parent() }}
+{% endblock %}
+       
+                                                                                         
+
+            
+        {% block body %}
+        <div class="page-content">
+            <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                <div class="profile-image center-align">
+
+                        <img src="{{ img }}" alt="" class="circle responsive-img z-depth-1">       
+                    
+                </div>  
+                <h3 class="center-align">{{ fname }} {{ lname }}</h3>
+                <h6 class="center-align">{{ posStatus }}</h6>
+            </div>
+
+            <div class="col-md-12 content">
+                    <div class="col-md-4 profile">
+                    <ul class="collection profile-info">
+                    <form form action="{{ path('update_profile') }}" method="post" form onsubmit="return confirm('Do you really want to submit the form?');">
+                        <input value="{{ profileId }}" type="text" name="profileId" hidden>
+                        <li class="collection-item">Employee # {% if role == 'ADMIN' %}<i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="empnum">done</i></i> {% endif %}
+                        <input disabled value="{{ empnumber }}" type="text" name="empnumber"></li>
+
+                        <li class="collection-item">Department {% if role == 'ADMIN' %}<i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="deptedit" 
+                        data-did="{{ profileId }}">done</i></i> {% endif %}
+                        
+                        <select name="dept" id="dept" class="initialized emp-dept">
+                            <option value="{{deptid}}" selected>{{deptnames}}</option>
+                            {% for dept in getDept %}
+                                {% if dept.Id != deptid %}
+                            <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    
+                        </li>
+                        
+
+                        <li class="collection-item">Company Email {% if role == 'ADMIN' %}<i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="emailedit" 
+                        data-eid="{{ conEmailId }}">done</i></i> {% endif %}
+                        <input value="{{ conEmailId }}" type="text" name="emailId" hidden>
+                        <input disabled value="{{ conEmail }}" type="text" id="email-p" name="email"></li>
+                        
+                        <li class="collection-item">Telephone # <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="teledit" 
+                        data-tid="{{ conTeleId }}">done</i></i>
+                        <input value="{{ conTeleId }}" type="text" name="teleId" hidden>
+                        <input disabled value="{{ conTele }}" type="text" id="tel-p" name="telephone"></li>
+
+
+                        <li class="collection-item">Cellphone # <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="celledit" 
+                        data-cid="{{ conMobileId }}">done</i></i>
+                        <input value="{{ conMobileId }}" type="text" name="mobileId" hidden>
+                        <input disabled value="{{ conMobile }}" type="text" id="cel-p" name="cellphone"></li>
+
+
+                        <li class="collection-item">Birthday {% if role == 'ADMIN' %}<i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="bdayedit" 
+                        data-bid="{{ profileId }}">done</i></i> {% endif %} 
+                        <input disabled value ="{{bday}}" class="textbox-n" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="bday-p" name="bday"></li>
+
+
+                        <li class="collection-item">Address <i class="material-icons btn-edit">
+                        <a href="#!" class="edit">mode_edit</a><i class="material-icons done" id="addressedit" 
+                        data-aid="{{ profileId }}">done</i></i>
+                        <input disabled value="{{address}}" type="text" id="addr" name="address"></li>
+
+
+                        <!-- <li class="collection-item">SSS <input disabled value="" type="text"></li>
+                        <li class="collection-item">BIR <input disabled value="" type="text"></li>
+                        <li class="collection-item">PhilHealth <input disabled value="" type="text"></li> -->
+                        <input type="submit" class="waves-effect waves-green btn-flat update-btn" value="Update">
+                        <a href="#!" class="waves-effect waves-green btn-flat test-btn">Edit Profile</a>
+                        <a href="#!" class="waves-effect waves-green btn-flat delete-btn" data-id="{{empid}}">Delete</a>
+                        <a href="#!" class="waves-effect waves-green btn-flat cancel-btn">Cancel</a>
+                    </form>
+                    </ul>
+                    
+                    </div>
+                    <div class="col-md-8 profile">
+                    <canvas id="graph" width="675" height="300">
+                    </canvas>   
+                    <table class="bordered responsive-table highlight centered">
+                        <form class="">
+                            <div class="row">
+                                <div class="btn-year">
+                                    <a class='dropdown-button orange btn year-button' href='#' data-activates='dropdown1'>Year</a>
+                                    <ul id='dropdown1' class='dropdown-content'>
+                                    <li><a href="#!">2014</a></li>
+                                    <li><a href="#!">2015</a></li>
+                                    <li><a href="#!">2016</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-field search-bar-prof">
+                                      <input id="search" type="search" required>
+                                      <label for="search"><i class="material-icons">search</i></label>
+                                      <i class="material-icons">close</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <thead>
+                            <tr>
+                                <th data-field="Date">Month</th>
+                                <th data-field="Absences">Absences</th>
+                                <th data-field="Lates">Lates</th>
+                                <th data-field="Overtimes">Overtimes</th>
+                                <th data-field="Out of IP">Out of IP</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Jan</td>
+                                <td>1</td>
+                                <td>{{late}}</td>
+                                <td>{{overtime}}</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Feb</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td>Mar</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                      <ul class="pagination center-align">
+                        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                        <li class="active"><a href="#!">1</a></li>
+                        <li class="waves-effect"><a href="#!">2</a></li>
+                        <li class="waves-effect"><a href="#!">3</a></li>
+                        <li class="waves-effect"><a href="#!">4</a></li>
+                        <li class="waves-effect"><a href="#!">5</a></li>
+                        <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                      </ul>
+                    </div>
+                                
+            </div>
+        </div>
+
+        {% endblock %}
+
+        {% block timein %}
+        {% endblock %}
+        
+        {% block scripts %}
+        <script type="text/javascript" src="{{asset('prols2/js/plugins/sparkline/jquery.sparkline.min.js')}}"></script> 
+        {{ parent() }}
+        {% endblock %}
+
+{% block customjs %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        var profileId = '';
+        var contactid = '';
+        var deptId = '';
+        var empId = '';
+        // $('#emailedit').click(function(){
+        //     profileId = $(this).data('eid');
+        //     contactid=$('#email-p').val();
+
+        //     $.get("{{ path('profile_email') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+        // $('#teledit').click(function(){
+        //     profileId = $(this).data('tid');
+        //     contactid=$('#tel-p').val();
+
+        //     $.get("{{ path('profile_tele') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+
+        // $('#celledit').click(function(){
+        //     profileId = $(this).data('cid');
+        //     contactid=$('#cel-p').val();
+
+        //     $.get("{{ path('profile_mobile') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+
+        // $('#addressedit').click(function(){
+        //     profileId = $(this).data('aid');
+        //     contactid=$('#addr').val();
+
+        //     $.get("{{ path('profile_address') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+
+        // $('#bdayedit').click(function(){
+        //     profileId = $(this).data('bid');
+        //     contactid=$('#bday-p').val();
+
+        //     $.get("{{ path('profile_bday') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+
+        // $('#deptedit').click(function(){
+        //     profileId = $(this).data('did');
+        //     contactid = deptId;
+        //     $.get("{{ path('profile_dept') }}" + profileId + "/" + contactid,  function(data){
+        //         console.log(data);
+        //     }, "json");
+        
+        // });
+
+        $('.delete-btn').click(function(){
+            var r = confirm("Are you sure you want to delete?");
+
+            if (r == true ){
+                empId = $(this).data('id');
+                $.get("{{ path('emp_delete') }}" + empId,  function(data){
+                    console.log(data);
+                    alert('Profile Deleted')
+                }, "json");  
+            }
+            
+        });
+        $('.collection-item').find('input').attr("disabled", false);
+        $('.update-btn').hide();
+        $('.cancel-btn').hide();
+        $('.delete-btn').hide();
+        $('.test-btn').click(function(){
+            $('.update-btn').show();
+            $('.cancel-btn').show();
+            $('.delete-btn').show();
+            $('.test-btn').hide();
+            $('.collection-item').find('input').attr("disabled", false);
+            $('.collection-item').find('.done').css({'display' : 'block'});
+            $('.collection-item').find('.edit').css({'display' : 'none'});
+
+        });
+        $('.cancel-btn').click(function(){
+            $('.update-btn').hide();
+            $('.cancel-btn').hide();
+            $('.delete-btn').hide();
+            $('.test-btn').show();
+            $('.collection-item').find('input').attr("disabled", true);
+            $('.collection-item').find('.done').css({'display' : 'none'});
+            $('.collection-item').find('.edit').css({'display' : 'block'});
+        });
+
+        $('.initialized').material_select();
+    });
+</script>
+{% endblock %}
+
+

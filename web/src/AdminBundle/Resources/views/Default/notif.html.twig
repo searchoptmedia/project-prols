@@ -1,0 +1,63 @@
+{% extends 'AdminBundle:Default:index.html.twig' %}
+
+{% block body %}
+<section id="main-container">
+	<section id="main-wrapper">
+		<div class="container-fluid">
+		<div class="row">
+		
+		<div class="page-content">
+		  	<div class="col-md-12 light-blue darken-1 heading z-depth-1">
+		  		<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+				<h3 class="center-align">Notifications</h3>
+			</div>
+
+			<div class="col-md-12 content">
+				<!-- <div class="row" style="margin-left:5px;"> -->
+				{% for requests in getRequests %}
+
+					{% if requests.status == 'Accepted' and requests.empAccId == id %}
+						{% if requests.listLeaveTypeId <= 3 %}
+						
+						<ul class="collection notif-list">
+						<li class="collection-item avatar">
+						<i class="material-icons circle">perm_identity</i>
+						<p>{{requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].lname}} accepted your requested leave </p>
+						</li>
+						</ul>
+
+						{% endif %}{% endif %}
+					{% if requests.status == 'Accepted' %}
+						{% if requests.listLeaveTypeId == 4 %}
+						
+						<ul class="collection notif-list">
+						<li class="collection-item avatar">
+						<i class="material-icons circle">perm_identity</i>
+						<p>{{requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}} added a meeting: {{requests.request}}</p>
+						</li>
+						</ul>
+						{% endif %}{% endif %}
+					
+			
+				{% endfor %}	
+					
+	
+				<!-- </div>  -->          		
+			</div>
+		</div>
+
+		<!-- <div class="time-in-container"></div>
+
+		<div class="time-in center-align">
+			<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+	        <div class="widget-subtitle plugin-date">Loading...</div>
+	        </div>
+			<p class="confirm-timein">Good Morning!</p>
+			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+		</div> -->
+
+	</div>
+
+	</section>
+</section>
+{% endblock %}
