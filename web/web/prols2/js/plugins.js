@@ -531,9 +531,9 @@ $(function() {
                     windowResize: true, 
                     select: function(start, end, allDay) {
 
-                        
 
-                    $('#daily_agenda').openModal();
+
+                    // $('#daily_agenda').openModal();
 
                    $('.btn-submitmeeting').off('click').click(function(e){
                         e.preventDefault();
@@ -567,6 +567,10 @@ $(function() {
                        $('#meeting').val('');
                    });
 
+                    },
+
+                    windowResize: function(view) {
+                        $('#calendar').css({'max-height' : '100%'});
                     },
 
                     drop: function(date, allDay) {
