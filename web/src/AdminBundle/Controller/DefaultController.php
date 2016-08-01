@@ -141,7 +141,7 @@ class DefaultController extends Controller{
     		$matchedip = '';
     	}
 
-		echo '<br>' + $matchedip;
+		echo '<br>' . $matchedip;
 		exit;
 
    //  		$mailer = new Mailer();
