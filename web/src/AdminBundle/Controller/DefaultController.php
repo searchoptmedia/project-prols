@@ -41,6 +41,8 @@ use Swift_SmtpTransport;
 use Swift_Message; 
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
+
+
     public function timeInOut($id){
 		//time in/out information
 		$datatime = EmpTimePeer::getTime($id);
@@ -220,7 +222,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	// $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
 
     	// if(!is_null($ip_add)){
-    		$matchedip = $this->container->get('request')->getClientIp();
+    		$matchedip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
     		date_default_timezone_set('Asia/Manila');
     		$current_date = date('Y-m-d H:i:s');
     		$datetoday = date('Y-m-d');
@@ -520,8 +522,8 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 			}
     	}
     	
-    	$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
-		$userip = $this->container->get('request')->getClientIp();
+    	$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
+		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
 		if(!is_null($ip_add)){
 		$matchedip = $ip_add->getAllowedIp();
 		}
@@ -1259,7 +1261,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     }
 
     public function acceptRequestAction(){
-    	$empip = $this->container->get('request')->getClientIp();
+    	$empip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
     	$acceptrequest = new ListIp();
     	$acceptrequest->setAllowedIp($empip);
     	$acceptrequest->setStatus('Active');
