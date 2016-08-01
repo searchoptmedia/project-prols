@@ -127,6 +127,9 @@ class DefaultController extends Controller{
 
 		$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+
+		echo $userip;
+		exit;
 //		var_dump($this->getRequest()->server->all());
 //		exit;
 		if(!is_null($ip_add)){
