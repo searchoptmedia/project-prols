@@ -126,7 +126,9 @@ class DefaultController extends Controller{
 		->find()->count();
 
 		$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
-		$userip = $this->container->get('request')->getClientIp();
+		$userip = $this->getRequest()->server->get('REMOTE_ADDR');
+		var_dump($this->getRequest()->server->all());
+		exit;
 		if(!is_null($ip_add)){
 			$matchedip = $ip_add->getAllowedIp();
 		}
