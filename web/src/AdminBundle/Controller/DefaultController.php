@@ -130,7 +130,7 @@ class DefaultController extends Controller{
 
 		$ip_add = ListIpPeer::getValidIP($userip);
 
-		echo $userip;
+
 
 //		var_dump($this->getRequest()->server->all());
 //		exit;
@@ -141,8 +141,7 @@ class DefaultController extends Controller{
     		$matchedip = '';
     	}
 
-		echo '<br>' . $matchedip;
-		exit;
+
 
    //  		$mailer = new Mailer();
 			// $send = $mailer->sendOutOfOfficeEmailToAdmin();
