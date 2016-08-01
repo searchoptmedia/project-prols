@@ -129,7 +129,7 @@ class DefaultController extends Controller{
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
 
 		echo $userip;
-		exit;
+
 //		var_dump($this->getRequest()->server->all());
 //		exit;
 		if(!is_null($ip_add)){
@@ -138,6 +138,9 @@ class DefaultController extends Controller{
     	else{
     		$matchedip = '';
     	}
+
+		echo '<br>' + $matchedip;
+		exit;
 
    //  		$mailer = new Mailer();
 			// $send = $mailer->sendOutOfOfficeEmailToAdmin();
