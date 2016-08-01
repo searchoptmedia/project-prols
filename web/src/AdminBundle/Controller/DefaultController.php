@@ -1269,5 +1269,35 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	echo 1;
     	exit;
     }
+	public function changePasswordAction(Request $request){
+		$response = '';
+		$error = '';
+		$user = $this->getUser();
+		$userid = $user->getId();
+		$getinfo = EmpAccPeer::retrieveByPk($userid);
+		if(!is_null($getinfo)){
+			$oldpass = $getinfo->getPassword();
+			$inputpass = $request->request->get('oldpass');
+			$newpass = $request->request->get('newpass');
+			$confirmpass = $request->request->get('conpass');
+			if($oldpass == $inputpass){
+				$getinfo->setPassword($newpass);
+				$getinfo->save();
+				$response = 'Password changed';
+				$error = false;
+			}else{
+				$response = 'Wrong Password';
+				$error = true;
+			}
+
+		}
+
+		$resp = array('response' => $response, 'error' => $error);
+		echo json_encode($resp);
+		exit;
+		//   	echo json_encode($response);
+		//   	$referer = $request->headers->get('referer');
+		// return new RedirectResponse($referer);
+	}
 //end
 }

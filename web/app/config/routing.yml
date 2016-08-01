@@ -126,3 +126,7 @@ update_profile:
 request_access_accepted:
     path: /requestaccepted
     defaults: { _controller: AdminBundle:Default:acceptRequest }
+
+change_pass:
+    path: /changepass
+    defaults: {_controller: AdminBundle:Default:changePassword }

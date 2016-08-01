@@ -345,8 +345,8 @@
 
  		$('.initialized').material_select();
 
- 		$('#calendar').fullCalendar('option', 'height', 650);
-
+ 		// $('#calendar').fullCalendar('option', 'height', 650);
+	 	$('.modal-trigger').leanModal();
  		
 
 });  
