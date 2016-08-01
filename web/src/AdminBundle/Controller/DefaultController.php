@@ -125,8 +125,10 @@ class DefaultController extends Controller{
 		->filterByStatus('Pending')
 		->find()->count();
 
-		$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
+
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+
+		$ip_add = ListIpPeer::getValidIP($userip);
 
 		echo $userip;
 
