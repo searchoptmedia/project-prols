@@ -130,3 +130,7 @@ request_access_accepted:
 change_pass:
     path: /changepass
     defaults: {_controller: AdminBundle:Default:changePassword }
+
+check_timein:
+    path: /check_timein
+    defaults: {_controller: AdminBundle:Default:checkTimeIn }
