@@ -127,7 +127,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -138,7 +138,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [request] column value.
-     *
+     * 
      * @return string
      */
     public function getRequest()
@@ -149,7 +149,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     *
+     * 
      * @return string
      */
     public function getStatus()
@@ -160,7 +160,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date_started] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -195,12 +195,12 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Get the [optionally formatted] temporal [date_ended] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -235,12 +235,12 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Get the [emp_acc_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEmpAccId()
@@ -251,7 +251,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [list_leave_type_id] column value.
-     *
+     * 
      * @return int
      */
     public function getListLeaveTypeId()
@@ -262,7 +262,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Get the [admin_id] column value.
-     *
+     * 
      * @return int
      */
     public function getAdminId()
@@ -273,7 +273,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -294,7 +294,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [request] column.
-     *
+     * 
      * @param  string $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -315,7 +315,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     *
+     * 
      * @param  string $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -336,7 +336,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date_started] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpLeave The current object (for fluent API support)
@@ -359,7 +359,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date_ended] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpLeave The current object (for fluent API support)
@@ -382,7 +382,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_acc_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -407,7 +407,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [list_leave_type_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -432,7 +432,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
 
     /**
      * Set the value of [admin_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpLeave The current object (for fluent API support)
      */
@@ -789,28 +789,28 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`request`':
+                    case '`request`':						
                         $stmt->bindValue($identifier, $this->request, PDO::PARAM_STR);
                         break;
-                    case '`status`':
+                    case '`status`':						
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
-                    case '`date_started`':
+                    case '`date_started`':						
                         $stmt->bindValue($identifier, $this->date_started, PDO::PARAM_STR);
                         break;
-                    case '`date_ended`':
+                    case '`date_ended`':						
                         $stmt->bindValue($identifier, $this->date_ended, PDO::PARAM_STR);
                         break;
-                    case '`emp_acc_id`':
+                    case '`emp_acc_id`':						
                         $stmt->bindValue($identifier, $this->emp_acc_id, PDO::PARAM_INT);
                         break;
-                    case '`list_leave_type_id`':
+                    case '`list_leave_type_id`':						
                         $stmt->bindValue($identifier, $this->list_leave_type_id, PDO::PARAM_INT);
                         break;
-                    case '`admin_id`':
+                    case '`admin_id`':						
                         $stmt->bindValue($identifier, $this->admin_id, PDO::PARAM_INT);
                         break;
                 }
@@ -1037,7 +1037,7 @@ abstract class BaseEmpLeave extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAccRelatedByEmpAccId) {
                 $result['EmpAccRelatedByEmpAccId'] = $this->aEmpAccRelatedByEmpAccId->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

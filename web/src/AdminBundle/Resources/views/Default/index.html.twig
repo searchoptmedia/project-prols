@@ -20,9 +20,11 @@
     <header>
     </header>
     {% if checkipdata == 1 %}
+        {% if timename == false %}
         <div class="col-md-12 red center-align light-red darken-1 close-alert" style="position: absolute; bottom: 0; width: 100%; z-index: 5;">
                 <div class="checkip"><h5 style="color: white;">You are now working outside the office</h5></div>
         </div>
+            {% endif %}
         {% endif %}
     <section id="main-wrapper">
         <div class="container-fluid">
@@ -42,15 +44,13 @@
                     <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
                         <div class="widget-subtitle plugin-date">Loading...</div>
                     </div>
-                    <a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a>
+                    <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
 
                     {% if timename == false %}
-
                     <br>
                     <div class="chip timechip">
                         Timed-in at {{currenttimein}}
                     </div>
-                
                     {% endif %}
                     <!-- <div class="chip timed-in">
                         Timed-in
@@ -167,7 +167,7 @@
     {% if role == 'employee' and matchedip == userip %}
         {% if timename == true %}
             {% if timeflag == 0 %}
-        <div class="time-in-container">
+        <div class="time-in-container" style="display:none;">
             <div class="time-in center-align">
                 <div class="valign-wrapper">
                     
@@ -197,12 +197,18 @@
                     <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                     <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
                         <div class="widget-subtitle plugin-date">Loading...</div></div>
-                        <p class="confirm-timeout">Are you sure you want to time-out?</p>
-                        <div class="btn-block">
-                            <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-in-button" data-id="{{ user.id }}">Yes</a>
-                            <a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
-    
-                        </div>
+                        <p class="confirm-timeout">Are you sure you want to time-out?
+                            <div id="errormessage" style="color: #f44336; display:none;"><strong>Wrong Password</strong></div>
+                            <input id="confirmpw-timeout" type="password" placeholder="Enter password...">
+
+                            <div class="btn-block">
+                                <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-in-button" data-id="{{ user.id }}">Yes</a>
+                                <a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+
+                            </div>
+
+
+
                     </div>
                 </div>
             </div>
@@ -272,11 +278,30 @@ $('.btn-timeout').hide();
 {% else %}
 $('.btn-timeout').show();
 {% endif %}
+
+$.post( "{{ path('check_timein') }}", {}, function(data) {
+
+}).always(function(data) {
+    console.log(data)
+    var res = parseInt(data);
+    if(res == 1) {
+        console.log('ok')
+        $('.time-in-container').hide();
+        $('.btn-timeout').show();
+    }else{
+        $('.time-in-container').show();
+        $('.btn-timeout').hide();
+    }
+});
+var pass = ''
 $('.time-btn').click(function(e){
             e.preventDefault();
             var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');
-
-                $.get("{{ path('admin_time_in_no_params') }}" + id,  function(data){
+            pass = $('#confirmpw-timeout').val();
+            if(pass == ''){
+                pass = 'null';
+            }
+                $.get("{{ path('admin_time_in_no_params') }}" + id + '/' + pass ,  function(data){
                     console.log(data);
                         if(data == 1){
                            $('.time-in-container').css({'display' : 'none'});
@@ -299,6 +324,12 @@ $('.time-btn').click(function(e){
                             setTimeout(function(){
                                 $('.timeout-notif-container').css({'top' : '-55px'});
                             }, 2000);
+                        } else if(data.error == true && pass == 'null'){
+                            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+                            $('#errormessage').hide();
+                        } else if(data.error == true){
+                            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+                            $('#errormessage').show();
                         }
                         // else if(data== 0){
                         //     $('.time-in-container').css({'display' : 'none'});
@@ -308,6 +339,7 @@ $('.time-btn').click(function(e){
                         //     $('#mb-wrongip').modal('show');
                         // }
                 }, "json");
+
 
 
        });

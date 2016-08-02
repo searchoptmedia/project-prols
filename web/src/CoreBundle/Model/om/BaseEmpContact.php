@@ -96,7 +96,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -107,7 +107,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Get the [contact] column value.
-     *
+     * 
      * @return string
      */
     public function getContact()
@@ -118,7 +118,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Get the [emp_profile_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEmpProfileId()
@@ -129,7 +129,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Get the [list_cont_types_id] column value.
-     *
+     * 
      * @return int
      */
     public function getListContTypesId()
@@ -140,7 +140,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpContact The current object (for fluent API support)
      */
@@ -161,7 +161,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Set the value of [contact] column.
-     *
+     * 
      * @param  string $v new value
      * @return EmpContact The current object (for fluent API support)
      */
@@ -182,7 +182,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_profile_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpContact The current object (for fluent API support)
      */
@@ -207,7 +207,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
 
     /**
      * Set the value of [list_cont_types_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpContact The current object (for fluent API support)
      */
@@ -537,16 +537,16 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`contact`':
+                    case '`contact`':						
                         $stmt->bindValue($identifier, $this->contact, PDO::PARAM_STR);
                         break;
-                    case '`emp_profile_id`':
+                    case '`emp_profile_id`':						
                         $stmt->bindValue($identifier, $this->emp_profile_id, PDO::PARAM_INT);
                         break;
-                    case '`list_cont_types_id`':
+                    case '`list_cont_types_id`':						
                         $stmt->bindValue($identifier, $this->list_cont_types_id, PDO::PARAM_INT);
                         break;
                 }
@@ -751,7 +751,7 @@ abstract class BaseEmpContact extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aEmpProfile) {
                 $result['EmpProfile'] = $this->aEmpProfile->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

@@ -1,16 +1,16 @@
  $(document).ready(function(){  
 
- 	$('.btn-timein').click(function(e){
- 		e.preventDefault();
- 		$('.time-in-container').css({'display' : 'none'});
- 		$('.time-in').css({'display' : 'none'});
- 		// $('.timein-notif-container').css({'top':'0px'})
- 		$('.timed-in').css({'display' : 'block'});
-
- 		setTimeout(function(){
- 			$('.timein-notif-container').css({'top' : '-55px'});
- 		}, 5000);  
- 	});
+ 	// $('.btn-timein').click(function(e){
+ 	// 	e.preventDefault();
+ 	// 	$('.time-in-container').css({'display' : 'none'});
+ 	// 	$('.time-in').css({'display' : 'none'});
+ 	// 	// $('.timein-notif-container').css({'top':'0px'})
+ 	// 	$('.timed-in').css({'display' : 'block'});
+     //
+ 	// 	setTimeout(function(){
+ 	// 		$('.timein-notif-container').css({'top' : '-55px'});
+ 	// 	}, 5000);
+ 	// });
 
  	$('.btn-timeout').click(function(e){
  		e.preventDefault();
@@ -19,18 +19,18 @@
  		$('.timeout').css({'display' : 'block'});
  	});
 
- 	$('.btn-yes').click(function(e){
- 		e.preventDefault();
- 		$('.timeout-container').css({'display' : 'none'});
- 		$('.btn-timeout').css({'display' : 'none'});
- 		// $('.timeout-notif-container').css({'top':'0px'})
- 		$('.timed-in').css({'display' : 'none'});
- 		$('.timed-out').css({'display' : 'block'});
-
- 		setTimeout(function(){
- 			$('.timeout-notif-container').css({'top' : '-55px'});
- 		}, 5000);
- 	});
+ 	// $('.btn-yes').click(function(e){
+ 	// 	e.preventDefault();
+ 	// 	$('.timeout-container').css({'display' : 'none'});
+ 	// 	$('.btn-timeout').css({'display' : 'none'});
+ 	// 	// $('.timeout-notif-container').css({'top':'0px'})
+ 	// 	$('.timed-in').css({'display' : 'none'});
+ 	// 	$('.timed-out').css({'display' : 'block'});
+     //
+ 	// 	setTimeout(function(){
+ 	// 		$('.timeout-notif-container').css({'top' : '-55px'});
+ 	// 	}, 5000);
+ 	// });
 
  	$('.btn-cancel').click(function(e){
  		e.preventDefault();
@@ -346,7 +346,7 @@
  		$('.initialized').material_select();
 
  		// $('#calendar').fullCalendar('option', 'height', 650);
-	 	$('.modal-trigger').leanModal();
+	 	$('.modal-change').leanModal();
  		
 
 });  

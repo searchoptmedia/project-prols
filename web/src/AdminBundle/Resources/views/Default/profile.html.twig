@@ -29,14 +29,14 @@
                             <!-- <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
                             <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
                             <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a> -->
-                            <a class="waves-effect waves-light btn modal-trigger orange" href="#modal-changepw">Change Password</a>
+                            <a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a>
                         </div>
                     </div>
 
                     <div id="modal-changepw" class="modal">
                         <div class="modal-content">
                             <h4>Change Password</h4>
-                            <div class="alert alert-success" id="formchangedalert" style="display:none;">
+                            <div class="chip" id="formchangedalert" style="display:none;">
                                 <strong>Password Changed!</strong>
                             </div>
                             <form action="{{ path('change_pass') }}" id = "changepass" method="post">

@@ -40,5 +40,17 @@ class EmpTimePeer extends BaseEmpTimePeer{
 
 		return $_self ? $_self : null;
 
-	}	
+	}
+	public static function getEmpLastTimein($id, Criteria $c = null){
+		if (is_null($c)) {
+			$c = new Criteria();
+		}
+
+		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)->addDescendingOrderByColumn(self::TIME_IN);
+
+		$_self = self::doSelectOne($c);
+
+		return $_self ? $_self : null;
+
+	}
 }

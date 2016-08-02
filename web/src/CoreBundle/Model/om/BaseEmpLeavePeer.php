@@ -375,7 +375,7 @@ abstract class BaseEmpLeavePeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -390,7 +390,7 @@ abstract class BaseEmpLeavePeer
       }
         EmpLeavePeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to emp_leave
      * by a foreign key with ON DELETE CASCADE
@@ -433,7 +433,7 @@ abstract class BaseEmpLeavePeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -444,7 +444,7 @@ abstract class BaseEmpLeavePeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = EmpLeavePeer::getOMClass();
         // populate the object(s)
@@ -1053,7 +1053,7 @@ abstract class BaseEmpLeavePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpLeavePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpLeavePeer::LIST_LEAVE_TYPE_ID, ListLeaveTypePeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -1104,7 +1104,7 @@ abstract class BaseEmpLeavePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpLeavePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpLeavePeer::EMP_ACC_ID, EmpAccPeer::ID, $join_behavior);
 
         $criteria->addJoin(EmpLeavePeer::ADMIN_ID, EmpAccPeer::ID, $join_behavior);
@@ -1157,7 +1157,7 @@ abstract class BaseEmpLeavePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpLeavePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpLeavePeer::LIST_LEAVE_TYPE_ID, ListLeaveTypePeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -1226,7 +1226,7 @@ abstract class BaseEmpLeavePeer
                 if ($key2 !== null) {
                     $obj2 = ListLeaveTypePeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = ListLeaveTypePeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1305,7 +1305,7 @@ abstract class BaseEmpLeavePeer
                 if ($key2 !== null) {
                     $obj2 = EmpAccPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = EmpAccPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1324,7 +1324,7 @@ abstract class BaseEmpLeavePeer
                 if ($key3 !== null) {
                     $obj3 = EmpAccPeer::getInstanceFromPool($key3);
                     if (!$obj3) {
-
+    
                         $cls = EmpAccPeer::getOMClass();
 
                     $obj3 = new $cls();
@@ -1398,7 +1398,7 @@ abstract class BaseEmpLeavePeer
                 if ($key2 !== null) {
                     $obj2 = ListLeaveTypePeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = ListLeaveTypePeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1613,7 +1613,7 @@ abstract class BaseEmpLeavePeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EmpLeavePeer::clearRelatedInstancePool();
             $con->commit();

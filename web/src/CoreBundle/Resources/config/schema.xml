@@ -10,6 +10,7 @@
     <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
     <column name="email" phpName="Email" type="VARCHAR" size="45" required="true"/>
     <column name="role" phpName="Role" type="VARCHAR" size="45" required="true"/>
+    <column name="key" phpName="Key" type="VARCHAR" size="255" />
     <vendor type="mysql">
       <parameter name="Engine" value="InnoDB"/>
     </vendor>

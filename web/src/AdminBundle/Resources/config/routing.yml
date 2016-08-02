@@ -3,7 +3,7 @@ admin_homepage:
     defaults: { _controller: AdminBundle:Default:index }
 
 admin_time_in:
-    path:     /admin/time_in/{id}
+    path:     /admin/time_in/{id}/{passw}
     defaults: { _controller: AdminBundle:Default:timeIn }
 
 admin_time_in_no_params:

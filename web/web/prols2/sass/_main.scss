@@ -1,4 +1,4 @@
-/*** Custom CSS HERE ***/
+t/*** Custom CSS HERE ***/
 
 .row {
 
@@ -480,7 +480,7 @@ color:white;
 /*===END OF MENU/NAVIGATION===*/
 
 /*NOTIF|FEEDBACKS|ALERTS*/
-.timein-notif-container, .timeout-notif-container, .accept-notif-container, .sendtoemail-notif-container, .add-success-container{
+.timein-notif-container, .timeout-notif-container, .accept-notif-container, .sendtoemail-notif-container, .add-success-container, .changepw-notif-container{
 	position: absolute;
 	width: 100%;
 	height: auto;
@@ -634,6 +634,12 @@ color:white;
 
 .btn-ip-ok, .btn-ip-send{
 	display:none;
+}
+
+.timeout-container input{
+	width:500px; 
+	text-align:center; 
+	color:white;
 }
 /*==END OF TIME-IN & TIME-OUT===*/
 

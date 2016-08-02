@@ -3,6 +3,7 @@
 namespace AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -38,7 +39,9 @@ use CoreBundle\Utilities\Mailer;
 
 use Swift_Mailer;
 use Swift_SmtpTransport;
-use Swift_Message; 
+use Swift_Message;
+use Symfony\Component\HttpFoundation\Session\Session;
+
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
 
@@ -133,7 +136,6 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 
 
-
 //		var_dump($this->getRequest()->server->all());
 //		exit;
 		if(!is_null($ip_add)){
@@ -217,7 +219,24 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 */
 
 
- public function timeInAction($id){
+	public function checkTimeInAction()
+	{
+		$user = $this->getUser();
+		$id = $user->getId();
+		$timedata = EmpTimePeer::getEmpLastTimein($id);
+		$timeout = $timedata->getTimeOut();
+		$timeindate = $timedata->getDate()->format('Y-m-d');
+		$datetoday = date('Y-m-d');
+		if($timeindate == $datetoday && empty($timeout)){
+			echo 1;
+		}else{
+			echo 0;
+		}
+		exit;
+	}
+
+
+ public function timeInAction($id, $passw){
 		//valid ip address
     	// $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
 
@@ -289,14 +308,25 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 				    	$empTimeSave->save();
 				    	echo $retval;
 					}else if(!is_null($timein_data) && is_null($timeout_data)){
-						$time_out = EmpTimePeer::retrieveByPk($id_data);
-						$stat = 'WORKING 2';
-						$retval = 2;
-				    	$time_out->setTimeOut($current_date);
-				    	$time_out->setIpAdd($matchedip);
-				    	$time_out->setEmpAccAccId($this->getUser()->getId());
-				    	$time_out->save();
-				    	echo $retval;
+						$user = $this->getUser();
+						$pass = $user->getPassword();
+						$inputpass = $passw;
+						if($pass == $inputpass){
+							$time_out = EmpTimePeer::retrieveByPk($id_data);
+							$stat = 'WORKING 2';
+							$retval = 2;
+							$time_out->setTimeOut($current_date);
+							$time_out->setIpAdd($matchedip);
+							$time_out->setEmpAccAccId($this->getUser()->getId());
+							$time_out->save();
+							echo $retval;
+						}else{
+							$message = 'Wrong Password';
+							$error = true;
+							$response = array('message' => $message, 'error' => $error);
+							echo json_encode($response);
+						}
+
 					}
 				}else{
 					$ip_add = ListIpPeer::getAllIp();
@@ -365,11 +395,11 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		$lname = $data->getLname();
 		$mname = $data->getMname();
 		$bday = $data->getBday();
-		$bday = date_format($bday, 'd/m/y');
+//		$bday = date_format($bday, 'd/m/y');
 		$address = $data->getAddress();
 		$img = $data->getImgPath();
 		$datejoined = $data->getDateJoined();
-		$datejoined = date_format($datejoined, 'd/m/y');
+//		$datejoined = date_format($datejoined, 'd/m/y');
 		$profileid = $data->getId();
 		$deptid = $data->getListDeptDeptId();
 		
@@ -450,8 +480,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     		}	
     	}
 
-    	$overhour = 9;
-		$overtime = 0;
+
 		$timedata = EmpTimePeer::getTime($id);
 		$timeflag = 0;
 		$currenttimein = 0;
@@ -470,7 +499,6 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	$timeoutdata = '';
     	$checkipdata = null;
     	if(!empty($timedata)){
-    	$overtime = date('H:i:s', $currenttimein + strtotime('+9 hours'));
     	$datetoday = date('Y-m-d');
     	$emp_time = EmpTimePeer::getTime($id);
     	$currenttime = sizeof($emp_time) - 1;
@@ -491,8 +519,8 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     		}
     	}
     	$firstchar = $fname[0];
-    	if(!empty($timeoutdata)){
-    		$timedata = EmpTimePeer::getTime($id);
+
+    	if(!empty($timedata) && !empty($timeout_data)){
 	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
 				$timeindata = $timedata[$ctr]->getTimeIn();
 				$timeoutdata = $timedata[$ctr]->getTimeOut();
@@ -516,12 +544,14 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 					$over = 0;
 				}
 
-		
+//				echo "Manhours: " . $answer ."Overtime: " . $over ."<br>";
+
+
+
 				// echo'<pre>';var_dump($manhours);
-				
 			}
     	}
-    	
+
     	$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
 		if(!is_null($ip_add)){
@@ -530,8 +560,8 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	else{
     		$matchedip = '';
     	}
-				
-				
+
+
         return $this->render('AdminBundle:Default:profile.html.twig', array(
         	'page' => $page,
         	'name' => $name,
@@ -561,7 +591,6 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
          	'empnumber' => $empnumber,
          	'deptid' => $deptid,
          	'late' =>$late,
-         	'overtime' => $overtime,
          	'timeflag' => $timeflag,
          	'currenttimein' => $currenttimein,
          	'currenttimeout' => $currenttimeout,
