@@ -22,7 +22,7 @@ framework:
     session:
         # handler_id set to null will use default session handler from php.ini
         handler_id:  ~
-        gc_maxlifetime: 3600    #addded
+        gc_maxlifetime: 36000    #addded
         cookie_lifetime: 18000  #added
         gc_probability: 0       #added
         gc_divisor: 1           #added

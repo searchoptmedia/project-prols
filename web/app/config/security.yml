@@ -38,6 +38,21 @@ security:
             pattern:  ^/login$
             security: false
 
+        sendemail:
+            pattern: ^/sendemail$
+            anonymous: ~
+            security: false
+
+        export:
+            pattern: ^/export$
+            anonymous: ~
+            security: false
+
+#        requestaccess:
+#            pattern: ^/requestaccess$
+#            anonymous: ~
+#            security: false
+
         secured_area:
             provider: chain_provider
             pattern: ^/
@@ -58,5 +73,8 @@ security:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/error404, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/error403, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/sendemail, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/export, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#        - { path: ^/requestaccess, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: ROLE_ANALYST }
 

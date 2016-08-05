@@ -53,4 +53,18 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		return $_self ? $_self : null;
 
 	}
+	public static function getEmployeeTime(Criteria $c = null){
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+		
+
+		$c->add(EmpAccPeer::ROLE, 'ADMIN', Criteria::NOT_EQUAL);
+		$c->addJoin(EmpAccPeer::ID, EmpProfilePeer::EMP_ACC_ACC_ID);
+		$c->addJoin(EmpProfilePeer::EMP_ACC_ACC_ID, EmpTimePeer::EMP_ACC_ACC_ID);
+		$record = self::doSelect($c);
+
+		
+		return $record ? $record : array();
+	}
 }

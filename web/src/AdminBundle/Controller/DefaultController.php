@@ -3,6 +3,7 @@
 namespace AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,6 +42,7 @@ use Swift_Mailer;
 use Swift_SmtpTransport;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
@@ -70,8 +72,8 @@ class DefaultController extends Controller{
     }
 
     public function indexAction(){
-
     	$user = $this->getUser();
+
     	$name = $user->getUsername();
 		$page = 'Home';
     	$role = $user->getRole();
@@ -130,9 +132,8 @@ class DefaultController extends Controller{
 		->filterByStatus('Pending')
 		->find()->count();
 
-
+//		$userip = $this->container->get('request')->getClientIp();
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
-
 		$ip_add = ListIpPeer::getValidIP($userip);
 
 
@@ -145,14 +146,24 @@ class DefaultController extends Controller{
     		$matchedip = '';
     	}
 
+		if($userip == $matchedip){
+			$ip_checker = 1;
+		}else{
+			$ip_checker = 0;
+		}
 
-
-   //  		$mailer = new Mailer();
-			// $send = $mailer->sendOutOfOfficeEmailToAdmin();
-			// var_dump($send);    				
-
+		$allusers = EmpProfilePeer::getAllProfile();
+		$userbdaynames = array();
+		foreach($allusers as $u){
+			$bday = $u->getBday()->format('m-d');
+//			echo $datetoday . "|" .$bday . '<br>';
+			if($bday == date('m-d')){
+				$userbdaynames[] = $u->getFname();
+			}
+		}
 
         return $this->render('AdminBundle:Default:index.html.twig', array(
+			'userbdaynames' => $userbdaynames,
         	'name' => $name,
         	'page' => $page,
          	'role' => $role,
@@ -169,55 +180,10 @@ class DefaultController extends Controller{
           	'userip' => $userip,
           	'matchedip' => $matchedip,
           	'checkipdata' => $checkipdata,
+			'checkip' => $ip_checker,
 
         ));
     }
-
-/*
-public function timeInAction($id){
-$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
-
-    	if(!is_null($ip_add)){
-    		$matchedip = $ip_add->getAllowedIp();
-    		date_default_timezone_set('Asia/Manila');
-    		$current_date = date('Y-m-d H:i:s');
-
-	    	//set employee time
-
-	    	$empTimeSave = new EmpTime();
-	    	$empTimeSave->setTimeIn($current_date);
-			    	$empTimeSave->setIpAdd($matchedip);
-			    	$empTimeSave->setDate($current_date);
-			    	$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			    	$empTimeSave->save();
-		
-	}
-
-}
-
-public function timeOutAction($id){
-$ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
-
-    	if(!is_null($ip_add)){
-    		$matchedip = $ip_add->getAllowedIp();
-    		date_default_timezone_set('Asia/Manila');
-    		$current_date = date('Y-m-d H:i:s');
-
-    				$time_out = EmpTimePeer::retrieveByPk($id);
-			    	$time_out->setTimeOut($current_date);
-			    	$time_out->setIpAdd($matchedip);
-			    	$time_out->setDate($current_date);
-			    	$time_out->setEmpAccAccId($this->getUser()->getId());
-			    	$time_out->save();
-
-
-			    }
-
-
-}
-
-*/
-
 
 	public function checkTimeInAction()
 	{
@@ -235,10 +201,15 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		exit;
 	}
 
-
- public function timeInAction($id, $passw){
+ 	public function timeInAction(Request $request, $id, $passw){
 		//valid ip address
     	// $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
+			$user = $this->getUser();
+	 		if(empty($user)){
+				// if session expire
+				echo 4;
+				exit;
+			}
 
     	// if(!is_null($ip_add)){
     		$matchedip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
@@ -295,18 +266,26 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 				    	for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
 			    			$allowedip = $ip_add[$ctr]->getAllowedIp();
 			    			if($allowedip == $matchedip){
-			    				$empTimeSave->setCheckIp(0);
-			    				$empTimeSave->save();
-			    			}else{
 			    				$empTimeSave->setCheckIp(1);
-			    				$empTimeSave->save();
+			    			}else{
+			    				$empTimeSave->setCheckIp(0);
 			    				// $mailer = new Mailer();
 			    				// $send = $mailer->sendOutOfOfficeEmailToAdmin();
 
 			    			}
 			    		}
-				    	$empTimeSave->save();
+				    	if($empTimeSave->save()){
+							$is_message = $request->request->get('is_message');
+							if(!is_null($is_message)){
+								$sendemail = $this->sendEmailMessage($request);
+								if(! $sendemail){
+									//if error sending email
+									$retval = 5;
+								}
+							}
+						}
 				    	echo $retval;
+						exit;
 					}else if(!is_null($timein_data) && is_null($timeout_data)){
 						$user = $this->getUser();
 						$pass = $user->getPassword();
@@ -387,9 +366,11 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	$role = $user->getRole();
     	$pw = $user->getPassword();
     	$id = $user->getId();
+		$user2 = EmpAccPeer::retrieveByPK($id);
 
 		//employee profile information
 		$data = EmpProfilePeer::getInformation($id);
+		$data2 = EmpProfilePeer::getInformation($id);
 
 		$fname = $data->getFname();
 		$lname = $data->getLname();
@@ -404,6 +385,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		$deptid = $data->getListDeptDeptId();
 		
 		//employee contact information
+		
 		$datacontact = EmpContactPeer::getContact($profileid);		
 		$contact = '';
 		$conEmail = '';
@@ -519,6 +501,8 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     		}
     	}
     	$firstchar = $fname[0];
+		$systime = date('H:i A');
+		$afternoon = date('H:i A', strtotime('12 pm'));
 
     	if(!empty($timedata) && !empty($timeout_data)){
 	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
@@ -551,7 +535,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 				// echo'<pre>';var_dump($manhours);
 			}
     	}
-
+//		$userip = $this->container->get('request')->getClientIp();
     	$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
 		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
 		if(!is_null($ip_add)){
@@ -560,8 +544,12 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	else{
     		$matchedip = '';
     	}
-
-
+		$ip_checker = 1;
+		if($userip == $matchedip){
+			$ip_checker = 1;
+		}else{
+			$ip_checker = 0;
+		}
         return $this->render('AdminBundle:Default:profile.html.twig', array(
         	'page' => $page,
         	'name' => $name,
@@ -581,6 +569,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
          	'conTele' => $conTele,
          	'timename' => $timename,
          	'role' => $role,
+			'user2' => $user2,
          	'profileId' => $profileid,
          	'data' => $data,
          	'contacttype' => $contacttype,
@@ -598,7 +587,10 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
          	'matchedip' => $matchedip,
          	'userip' => $userip,
      		'checkipdata' => $checkipdata,
-
+			'propelrr' => $data2,
+			'checkip' => $ip_checker,
+			'systime' => $systime,
+			'afternoon' => $afternoon,
         	));
     
     }
@@ -643,8 +635,6 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		}	
     }
 
-
-
     public function statusAcceptAction($id, $id2){
 		$accept = EmpLeavePeer::retrieveByPk($id);
 		if(isset($accept) && !empty($accept)) {
@@ -668,7 +658,6 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		echo json_encode($response);
 		exit;
     }
-
 
     public function profileTelUpdateAction($id, $id2)
     {
@@ -819,6 +808,70 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		$data = EmpLeaveQuery::create()
 		->filterByStatus('Pending')
 		->find()->count();
+
+			$timedata = EmpTimePeer::getTime($id);
+			$currenttimein = 0;
+			$currenttimeout = 0;
+			$timeflag = 0;
+
+			//get last timed in
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$checktimein = $timedata[$ctr]->getTimeIn();
+				$checktimeout = $timedata[$ctr]->getTimeOut();
+				if(!is_null($checktimein) && is_null($checktimeout)){
+					$currenttimein = $checktimein->format('h:i A');
+
+
+				}else{
+					$currenttimein = 0;
+					$currenttimeout = $checktimeout->format('h:i A');
+				}
+			}
+			$checkipdata = null;
+			//check if already timed in today
+			if(!empty($timedata)){
+
+				$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+				$datetoday = date('Y-m-d');
+				$emp_time = EmpTimePeer::getTime($id);
+				$currenttime = sizeof($emp_time) - 1;
+				$timein_data = $emp_time[$currenttime]->getTimeIn();
+				$timeout_data = $emp_time[$currenttime]->getTimeOut();
+				$checkipdata = $emp_time[$currenttime]->getCheckIp();
+				// echo $checkipdata;
+
+				for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+					$checkdate = $timedata[$ctr]->getDate();
+					if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
+						$timeflag = 1;
+					}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
+						$timeflag = 0;
+					}elseif($checkdate->format('Y-m-d') != $datetoday){
+						$timeflag = 0;
+					}
+
+				}
+			}
+
+			$systime = date('H:i A');
+			$afternoon = date('H:i A', strtotime('12 pm'));
+
+//			$userip = $this->container->get('request')->getClientIp();
+		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+			$ip_add = ListIpPeer::getValidIP($userip);
+
+			if(!is_null($ip_add)){
+				$matchedip = $ip_add->getAllowedIp();
+			}
+			else{
+				$matchedip = '';
+			}
+
+			if($userip == $matchedip){
+				$ip_checker = 1;
+			}else{
+				$ip_checker = 0;
+			}
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
         	'page' => $page,
@@ -829,6 +882,10 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
           	'getEmployee' => $getEmployee,
           	'getPos' => $getPos,
           	'getDept' => $getDept,
+			'userip' => $userip,
+			'matchedip' => $matchedip,
+			'checkipdata' => $checkipdata,
+			'checkip' => $ip_checker,
         	));       
 		} 	
     }
@@ -1072,38 +1129,38 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
         ));
 	}
 
-	public function employeeProfileAction($id){	
+	public function employeeProfileAction($id){
 		$user = $this->getUser();
     	$name = $user->getUsername();
     	$role = $user->getRole();
     	$adminid = $user->getId();
-		$timename = self::timeInOut($adminid); 
-
-   
-    	if((strcasecmp($role, 'employee') == 0)){
+		$timename = self::timeInOut($adminid);
+		if((strcasecmp($role, 'employee') == 0)){
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}else{
-			//employee profile information
+			exit;
+		}
+
+		$user2 = EmpAccPeer::retrieveByPK($id);
+
+		//employee profile information
 		$data = EmpProfilePeer::getInformation($id);
-		$empstatus = $data->getProfileStatus();
+		$data2 = EmpProfilePeer::getInformation($id);
 
-		if($empstatus == 0){
-
-		$empid = $data->getId();
 		$fname = $data->getFname();
 		$lname = $data->getLname();
 		$mname = $data->getMname();
 		$bday = $data->getBday();
-		$bday = date_format($bday, 'd/m/y');
+//		$bday = date_format($bday, 'd/m/y');
 		$address = $data->getAddress();
 		$img = $data->getImgPath();
 		$datejoined = $data->getDateJoined();
-		$datejoined = date_format($datejoined, 'd/m/y');
+//		$datejoined = date_format($datejoined, 'd/m/y');
 		$profileid = $data->getId();
 		$deptid = $data->getListDeptDeptId();
-		
+
 		//employee contact information
-		$datacontact = EmpContactPeer::getContact($profileid);		
+
+		$datacontact = EmpContactPeer::getContact($profileid);
 		$contact = '';
 		$conEmail = '';
 		$conMobile = '';
@@ -1111,10 +1168,11 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		$conEmailId = '';
 		$conMobileId = '';
 		$conTeleId = '';
+		$contacttype = '';
 
 		if(!is_null($datacontact)){
 			for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
-    			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
+				// $contactArr[$ct] = $datacontact[$ct]->getContact();
 				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 				$contactvalue =  $datacontact[$ct]->getContact();
 				$contactid = $datacontact[$ct]->getId();
@@ -1129,8 +1187,8 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 					$conTeleId .= $contactid;
 				}
 
-    			$contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
-   			} 			
+				$contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
+			}
 		}else{
 			$contact = null;
 			$contype = null;
@@ -1160,59 +1218,153 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 			$posStatus = null;
 		}
 
-		$timename = self::timeInOut($id);    	
-
+		$timename = self::timeInOut($id);
 		$getDept = ListDeptPeer::getAllDept();
 
+		//check pending count
 		$data = EmpLeaveQuery::create()
-		->filterByStatus('Pending')
-		->find()->count();
+			->filterByStatus('Pending')
+			->find()->count();
 
 		//Check late
 		$late = 0;
-    	$getEmpTime = EmpTimePeer::getTime($id);
-    	for ($ct = 0; $ct < sizeof($getEmpTime); $ct++) {
-    		$checklate = $getEmpTime[$ct]->getTimeIn();
-    		if($checklate->format('H:i:s') > 12){
-    		$late++;
-    		}	
-    	}
-        return $this->render('AdminBundle:Default:empprofile.html.twig', array(
-        	'fname' => $fname,
-        	'lname' => $lname,
-        	'mname' => $mname,        	
-        	'bday' => $bday,
-        	'address' => $address,
-        	'img' => $img,
-         	'datejoined' => $datejoined,
-         	'deptnames' => $deptnames,
-         	'posStatus' => $posStatus,
-         	'user' => $user,
-         	'contactArr' => $contact,
-         	'conEmail' => $conEmail,
-         	'conMobile' => $conMobile,
-         	'conTele' => $conTele,
-         	'timename' => $timename,
-         	'role' => $role,
-         	'profileId' => $profileid,
-         	'data' => $data,
-         	'contacttype' => $contacttype,
-         	'conEmailId' => $conEmailId,
-         	'conMobileId' => $conMobileId,
-         	'conTeleId' => $conTeleId,
-         	'getDept' => $getDept,
-         	'empnumber' => $empnumber,
-         	'deptid' => $deptid,
-         	'empid' => $empid,
-         	'late' => $late,
-        	));
-			}else{
-			$response = array('Invalid Profile');
-			echo json_encode($response);
-			exit;
+		$getEmpTime = EmpTimePeer::getTime($id);
+		for ($ct = 0; $ct < sizeof($getEmpTime); $ct++) {
+			$checklate = $getEmpTime[$ct]->getTimeIn();
+			if($checklate->format('H:i:s') > 12){
+				$late++;
 			}
 		}
-			
+
+
+		$timedata = EmpTimePeer::getTime($id);
+		$timeflag = 0;
+		$currenttimein = 0;
+		$currenttimeout = 0;
+		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			$checktimein = $timedata[$ctr]->getTimeIn();
+			$checktimeout = $timedata[$ctr]->getTimeOut();
+			if(!is_null($checktimein) && is_null($checktimeout)){
+				$currenttimein = $checktimein->format('h:i A');
+
+			}else{
+				$currenttimein = 0;
+				$currenttimeout = $checktimeout->format('h:i A');
+			}
+		}
+		$timeoutdata = '';
+		$checkipdata = null;
+		if(!empty($timedata)){
+			$datetoday = date('Y-m-d');
+			$emp_time = EmpTimePeer::getTime($id);
+			$currenttime = sizeof($emp_time) - 1;
+			$timein_data = $emp_time[$currenttime]->getTimeIn();
+			$timeout_data = $emp_time[$currenttime]->getTimeOut();
+			$checkipdata = $emp_time[$currenttime]->getCheckIp();
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$checkdate = $timedata[$ctr]->getDate();
+
+				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
+					$timeflag = 1;
+				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
+					$timeflag = 0;
+				}elseif($checkdate->format('Y-m-d') != $datetoday){
+					$timeflag = 0;
+				}
+
+			}
+		}
+		$firstchar = $fname[0];
+		$systime = date('H:i A');
+		$afternoon = date('H:i A', strtotime('12 pm'));
+
+		if(!empty($timedata) && !empty($timeout_data)){
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$timeindata = $timedata[$ctr]->getTimeIn();
+				$timeoutdata = $timedata[$ctr]->getTimeOut();
+				$in = new \DateTime($timeindata->format('Y-m-d H:i:s'));
+				$out = new \DateTime($timeoutdata->format('Y-m-d H:i:s'));
+				$manhours = date_diff($out, $in);
+
+				$ins = $in->format('H:i:s');
+				$outs = $out->format('H:i:s');
+				$answer = $manhours->format('%h') . 'hours ' . $manhours->format('%i') . 'minutes ' . $manhours->format('%s') .' secs<br>';
+
+				$h = $manhours->format('%h');
+				$i = $manhours->format('%i');
+				$s = $manhours->format('%s');
+
+				$H = intval($h);
+				$ot = $H - 9;
+				if($ot >= 0){
+					$over = $ot . 'hours ' . $i . ' minutes ' . $s . ' secs';
+				}else{
+					$over = 0;
+				}
+
+//				echo "Manhours: " . $answer ."Overtime: " . $over ."<br>";
+
+
+
+				// echo'<pre>';var_dump($manhours);
+			}
+		}
+//		$userip = $this->container->get('request')->getClientIp();
+		$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
+		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+		if(!is_null($ip_add)){
+			$matchedip = $ip_add->getAllowedIp();
+		}
+		else{
+			$matchedip = '';
+		}
+		$ip_checker = 1;
+		if($userip == $matchedip){
+			$ip_checker = 1;
+		}else{
+			$ip_checker = 0;
+		}
+		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
+			'name' => $name,
+			'fname' => $fname,
+			'lname' => $lname,
+			'mname' => $mname,
+			'bday' => $bday,
+			'address' => $address,
+			'img' => $img,
+			'datejoined' => $datejoined,
+			'deptnames' => $deptnames,
+			'posStatus' => $posStatus,
+			'user' => $user,
+			'contactArr' => $contact,
+			'conEmail' => $conEmail,
+			'conMobile' => $conMobile,
+			'conTele' => $conTele,
+			'timename' => $timename,
+			'role' => $role,
+			'user2' => $user2,
+			'profileId' => $profileid,
+			'data' => $data,
+			'contacttype' => $contacttype,
+			'conEmailId' => $conEmailId,
+			'conMobileId' => $conMobileId,
+			'conTeleId' => $conTeleId,
+			'getDept' => $getDept,
+			'empnumber' => $empnumber,
+			'deptid' => $deptid,
+			'late' =>$late,
+			'timeflag' => $timeflag,
+			'currenttimein' => $currenttimein,
+			'currenttimeout' => $currenttimeout,
+			'firstchar' => $firstchar,
+			'matchedip' => $matchedip,
+			'userip' => $userip,
+			'checkipdata' => $checkipdata,
+			'propelrr' => $data2,
+			'checkip' => $ip_checker,
+			'systime' => $systime,
+			'afternoon' => $afternoon,
+		));
     }
 
     public function empDeleteAction($id){
@@ -1298,6 +1450,7 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
     	echo 1;
     	exit;
     }
+
 	public function changePasswordAction(Request $request){
 		$response = '';
 		$error = '';
@@ -1327,6 +1480,177 @@ $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp()
 		//   	echo json_encode($response);
 		//   	$referer = $request->headers->get('referer');
 		// return new RedirectResponse($referer);
+	}
+
+	public function sendEmailAction(Request $request)
+	{
+		$val = $request->request->get('email');
+
+//		$c = new \Criteria();
+//		$c->add(EmpAccPeer::EMAIL, $val, \Criteria::EQUAL);
+//		$valid = EmpAccPeer::doCount($c);
+//
+//
+//		$valid = EmpAccQuery::create()
+//			->filterByEmail($val)
+//			->count();
+
+		$valid = EmpAccPeer::getUserByEmail($val);
+		if($valid == 1){
+			$accesskey = sha1(rand());
+			$user = EmpAccPeer::getUserInfo($val);
+			$user->setKey($accesskey);
+
+
+			$subject = 'Forgot Password';
+			$from = array('prols.mailer@propelrr.com' => 'Prols Mailer');
+			$to = array(
+				'christian.fallaria@searchoptmedia.com'  => 'Recipient1 Name',
+			);
+
+			$text = 'Forgot Password';
+
+			$transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl');
+			$transport->setUsername('christian.fallaria@searchoptmedia.com');
+			$transport->setPassword("baddonk123");
+			$swift = Swift_Mailer::newInstance($transport);
+
+			$message = new Swift_Message($subject);
+			$message->setFrom($from);
+			$message->setBody($text, 'text/plain');
+			$message->setTo($to);
+			$message->addPart($text, 'text/plain');
+
+			if ($recipients = $swift->send($message))
+			{
+				echo "Email Sent";
+			} else {
+				echo "There was an error";
+			}
+			exit;
+
+		}else{
+			echo 'Invalid Email';
+			exit;
+		}
+
+
+
+	}
+
+	public function exportAction(){
+//		$results = EmpTimePeer::getEmployeeTime();
+//		var_dump($results);
+//		exit;
+//		$t = EmpTimePeer::getAllTime();
+
+//		foreach($t as $ttt){
+//
+//			$tt = $ttt->getEmpAcc()->getEmpProfiles()->get(0)->getFname();
+//
+//			var_dump($tt);
+//		}
+//
+//		exit;
+		$response = new StreamedResponse();
+		$response->setCallback(function() {
+			$handle = fopen('php://output', 'w+');
+
+			// Add the header of the CSV file
+			fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours', 'Overtime'));
+			// Query data from database
+//			$results = $this->connection->query("Replace this with your query");
+//			$results = EmpTimePeer::getEmployeeTime();
+			// Add the data queried from database
+			$results = EmpTimePeer::getAllTime();
+
+			for($ctr = 0; $ctr < sizeof($results); $ctr++){
+				$timeindata = $results[$ctr]->getTimeIn()->format('h:i A');
+				$timeoutdata = $results[$ctr]->getTimeOut()->format('h:i A');
+				$empaccid = $results[$ctr]->getEmpAccAccId();
+				$timein = $results[$ctr]->getTimeIn();
+				$timeout = $results[$ctr]->getTimeOut();
+				$date = $results[$ctr]->getDate()->format('M d, Y');
+				$checkip = $results[$ctr]->getCheckIp()?'No':'Yes';
+				$profile = EmpProfilePeer::getInformation($empaccid);
+				$fname = $profile->getFname();
+				$lname = $profile->getLname();
+				$empnum = $profile->getEmployeeNumber();
+				$in = new \DateTime($timein->format('Y-m-d H:i:s'));
+				$out = new \DateTime($timeout->format('Y-m-d H:i:s'));
+				$manhours = date_diff($out, $in);
+				$answer = $manhours->format('%h') . 'hours ' . $manhours->format('%i') . 'minutes ';
+				$h = $manhours->format('%h:%i');
+				$i = $manhours->format('%i');
+
+				$H = intval($h);
+				$ot = $H - 9;
+					if($ot >= 0){
+						$over = $ot . 'hours ' . $i . ' minutes ';
+					}else{
+						$over = 0;
+					}
+
+
+				fputcsv($handle, // The file pointer
+					array($empnum, $fname . " " . $lname, $timeindata, $timeoutdata, $date, $checkip, $answer, $over)
+				);
+			}
+//exit;
+//
+			fclose($handle);
+		});
+////
+		$response->setStatusCode(200);
+		$response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+		$response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
+		return $response;
+	}
+	public function sendEmailMessage(Request $request){
+//		$email = $request->request->get('email');
+		$user = $this->getUser();
+		$empaccid = $user->getId();
+		
+		$empprofile = EmpProfilePeer::getInformation($empaccid);
+		$inputmessage = "Hi admin! <br><br>" .$empprofile->getFname(). " " . $empprofile->getLname() . " has timed in outside the office.<br><br>"
+		. "<strong>Reason: </strong><br>" . $request->request->get('message');
+//		$user = EmpAccPeer::getUserByEmail($email);
+
+			$subject = 'Employee timed in outside the office ';
+			$from = array($user->getEmail() => 'no-reply');
+			$to = array(
+				'christian.fallaria@searchoptmedia.com'  => 'Recipient1 Name',
+			);
+		
+			$admins = EmpAccPeer::getAdminInfo();
+			$adminemails = array();
+			foreach ($admins as $admin){
+				$adminemails[] = $admin->getEmail();
+			}
+
+			if(count($adminemails)){
+				$transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl');
+				$transport->setUsername('christian.fallaria@searchoptmedia.com');
+				$transport->setPassword("baddonk123");
+				$swift = Swift_Mailer::newInstance($transport);
+
+				$message = new Swift_Message($subject);
+				$message->setFrom('prosadlfsad@gmail.com');
+				$message->setBody($inputmessage, 'text/html');
+				$message->setTo($adminemails);
+				$message->addPart($inputmessage, 'text/html');
+
+				if ($recipients = $swift->send($message))
+				{
+					//Email sent
+					return true;
+				} else {
+					return false;
+				}
+				exit;
+			}
+
+
 	}
 //end
 }

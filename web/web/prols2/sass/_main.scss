@@ -1,4 +1,4 @@
-t/*** Custom CSS HERE ***/
+/*** Custom CSS HERE ***/
 
 .row {
 
@@ -504,7 +504,7 @@ color:white;
 /*===END OF NOTIF|FEEDBACKS|ALERTS===*/
 
 /*TIME-IN & TIME-OUT*/
-.time-in, .diff-ip{
+.time-in, .diff-ip, .forgotpw{
 	position: absolute;
 	height: 100vh;
 	width: 100%;
@@ -523,7 +523,7 @@ color:white;
 	display:none;
 
 }
-.time-in-container, .diff-ip-container{
+.time-in-container, .diff-ip-container, .forgotpw-container{
 	position: fixed;
 	width: 100%;
 	height: 100%;
@@ -580,7 +580,7 @@ color:white;
 	
 }
 
-.diff-ip-notice{
+.diff-ip-notice, .forgotpw-notice{
 	position: relative;
 	color: white;
 	font-size: 48px;
@@ -600,7 +600,7 @@ color:white;
 
 }
 
-.diff-ip-sent{
+.diff-ip-sent, .forgotpw-sent{
 	position: relative;
 	color: white;
 	font-size: 48px;
@@ -632,7 +632,7 @@ color:white;
 	display:none;
 }
 
-.btn-ip-ok, .btn-ip-send{
+.btn-ip-ok, .btn-ip-send, .btn-forgotpw-ok{
 	display:none;
 }
 
@@ -646,8 +646,23 @@ color:white;
 
 
 
+.selectDept{
+	display:none;
+}
 
+#exportchoice{
+	.modal-content{
+		.lbl-info{
+			padding:0px;
+			color:black;
+		}
 
+		[type="checkbox"]+label, [type="radio"]+label{
+			padding-left:30px;
+			padding-right:20px;
+		}
+	}
+}
 
 /*================================
 ================================
@@ -1072,6 +1087,10 @@ span.badge.new{
 }
 
 @media only screen and (max-width: 767px){
+
+	.login-form-2{
+		width:100%;
+	}
 
 
 	.emp-photo{

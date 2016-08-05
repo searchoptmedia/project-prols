@@ -134,3 +134,15 @@ change_pass:
 check_timein:
     path: /check_timein
     defaults: {_controller: AdminBundle:Default:checkTimeIn }
+
+send_email:
+    path: /sendemail/
+    defaults: {_controller: AdminBundle:Default:sendEmail }
+
+export:
+    path: /export
+    defaults: {_controller: AdminBundle:Default:export }
+
+request_access:
+    path: /requestaccess
+    defaults: {_controller: AdminBundle:Default:requestAccess }

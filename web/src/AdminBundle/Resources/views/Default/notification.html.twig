@@ -1,0 +1,33 @@
+{% macro notif_loader() %}
+
+<div class="col-md-12 gray center-align loader-notif light-gray darken-1 close-alert notification-modal">
+    <div class="timein-success">
+        <center>
+            <h5 style="display: inline-block;"> <div class="loading_dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div><b style="color: dimgray">Please wait...</b></h5>
+
+
+
+        </center>
+        </div>
+    {#<div class="progress">#}
+        {#<div class="indeterminate"></div>#}
+    {#</div>#}
+</div>
+{% endmacro %}
+
+{% macro login_top_loader() %}
+    <div class="col-md-12 gray center-align top-login-loader light-gray darken-1 close-alert notification-modal">
+        <div class="timein-success"><h5>Loading...</h5></div>
+    </div>
+{% endmacro %}
+
+{% macro email_sent_notif() %}
+    <div class="col-md-12 green center-align email-sent-notif top-login-notification light-green darken-1 close-alert notification-modal">
+
+        <div class="timein-success"><h5>Email Sent</h5></div>
+    </div>
+{% endmacro %}

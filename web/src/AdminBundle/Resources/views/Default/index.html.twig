@@ -1,3 +1,6 @@
+{% import 'AdminBundle:Default:notification.html.twig' as notif %}
+{% set userbdaynames = userbdaynames|default([]) %}
+
 <!doctype html>
 <html class="no-js" lang="">
 {% block head %}
@@ -10,31 +13,35 @@
 
 <link rel="stylesheet" href="{{asset('prols2/css/fullcalendar/fullcalendar.css')}}" media="all"/>
 <link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
+    <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
 
 
 
 </head>
 {% endblock %}
+
 <body>
+{{ notif.notif_loader() }}
 <section id="main-container">
+
     <header>
     </header>
-    {% if checkipdata == 1 %}
-        {% if timename == false %}
-        <div class="col-md-12 red center-align light-red darken-1 close-alert" style="position: absolute; bottom: 0; width: 100%; z-index: 5;">
-                <div class="checkip"><h5 style="color: white;">You are now working outside the office</h5></div>
-        </div>
-            {% endif %}
-        {% endif %}
+    {#{% if checkipdata == 1 %}#}
+        {#{% if timename == false %}#}
+        {#<div class="col-md-12 red center-align light-red darken-1 close-alert" style="position: absolute; bottom: 0; width: 100%; z-index: 5;">#}
+                {#<div class="checkip"><h5 style="color: white;">You are now working outside the office</h5></div>#}
+        {#</div>#}
+            {#{% endif %}#}
+        {#{% endif %}#}
     <section id="main-wrapper">
         <div class="container-fluid">
         <div class="row">
 
-            <div class="col-md-12 green center-align timein-notif-container light-green darken-1 close-alert">
+            <div class="col-md-12 green center-align timein-notif-container light-green darken-1 close-alert notification-modal" >
                 <div class="timein-success"><h5>Time-in Successful!</h5></div>
             </div> 
 
-            <div class="col-md-12 green center-align timeout-notif-container light-green darken-1 close-alert">
+            <div class="col-md-12 green center-align timeout-notif-container light-green darken-1 close-alert notification-modal">
                 <div class="timeout-success"><h5>Time-out Successful!</h5></div>
             </div>                                                                                           
 
@@ -44,9 +51,10 @@
                     <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
                         <div class="widget-subtitle plugin-date">Loading...</div>
                     </div>
+
                     <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
 
-                    {% if timename == false %}
+                    {% if timename == false and role != 'ADMIN' %}
                     <br>
                     <div class="chip timechip">
                         Timed-in at {{currenttimein}}
@@ -70,10 +78,12 @@
                     
                 </div>
 
-               <!--  <div class="collection admin-nav">
-                    <a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
-                    <a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-                </div> -->
+               <div class="collection admin-nav">
+                    {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
+                    {% if role == 'ADMIN' %}
+                    <a href="{{ path('manage_employee') }}" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+                    {% endif %}
+                </div>
 
                 <div class="collection logout-nav">
                     <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
@@ -164,13 +174,14 @@
  {% endblock %}
     </section>
 </section>
-    {% if role == 'employee' and matchedip == userip %}
+{{  include ('AdminBundle:Default:modal.html.twig') }}
+    {% if matchedip == userip %}
         {% if timename == true %}
             {% if timeflag == 0 %}
         <div class="time-in-container" style="display:none;">
             <div class="time-in center-align">
                 <div class="valign-wrapper">
-                    
+
                     <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                         <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
                         <div class="widget-subtitle plugin-date">Loading...</div></div>
@@ -180,8 +191,8 @@
                         <p class="confirm-timein">Good Morning!</p>
                         {% endif %}
                         <div class="btn-block">
-                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="time-in-button" data-id="{{ user.id }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                        
+                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="time-in-button" data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+
                         </div>
                     </div>
                 </div>
@@ -197,12 +208,12 @@
                     <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                     <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
                         <div class="widget-subtitle plugin-date">Loading...</div></div>
-                        <p class="confirm-timeout">Are you sure you want to time-out?
+                        <p class="confirm-timeout">Are you sure you want to time-out?</p>
                             <div id="errormessage" style="color: #f44336; display:none;"><strong>Wrong Password</strong></div>
                             <input id="confirmpw-timeout" type="password" placeholder="Enter password...">
 
                             <div class="btn-block">
-                                <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-in-button" data-id="{{ user.id }}">Yes</a>
+                                <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-in-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a>
                                 <a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
 
                             </div>
@@ -228,24 +239,24 @@
             </div>
         </div>
         </div>
-    {% if role =='employee' and matchedip != userip %}
+    {% if matchedip != userip %}
         {% if timename == true %}
             {% if timeflag == 0 %}
         <div class="diff-ip-container">
             <div class="diff-ip center-align">
                 <div class="valign-wrapper">
-                    
+
                     <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                        
+                        <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+                        <div class="widget-subtitle plugin-date">Loading...</div></div>
                         <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
-                        <p class="diff-ip-notice">Are you sure you want to time in?</p>
+                        <textarea id="diffip-input-reason" class="materialize-textarea" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
                         <!-- <p class="diff-ip-notice">Request Access?</p>
                         <p class="diff-ip-sent">Request Sent!</p>
                         <p class="diff-ip-reason">Enter reason:</p> -->
 
                         <div class="btn-block">
-                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="time-in-button" data-id="{{ user.id }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                            <a class="waves-effect waves-light red btn-flat btn-large btn-ip-cancel" style="color: white;">Cancel</a>
+                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="diff-ip-time-in-btn" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
                             <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
                             <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
                         </div>
@@ -294,43 +305,70 @@ $.post( "{{ path('check_timein') }}", {}, function(data) {
     }
 });
 var pass = ''
+
 $('.time-btn').click(function(e){
             e.preventDefault();
-            var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');
-            pass = $('#confirmpw-timeout').val();
-            if(pass == ''){
-                pass = 'null';
+            var message = $('#diffip-input-reason').val(), error = false,
+                    user_ip =  $('#time-in-button').data('ip'),
+                    is_message = undefined, action = $(this).data('action'), pass;
+            if(user_ip == 0){
+                if(message == ''){
+                    $('#diffip-input-reason').css({'border-color': '#f44336'});
+                    error = true;
+                }
+                is_message = true;
+                if(error){
+                    return false;
+                }
             }
-                $.get("{{ path('admin_time_in_no_params') }}" + id + '/' + pass ,  function(data){
+            var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');
+
+            if(action == 'timeout'){
+                pass = $('#confirmpw-timeout').val();
+                if(pass == ''){
+                    pass = 'null';
+                    $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+                    $('#errormessage').hide();
+                    return false;
+                }
+            } else if(action == 'timein' && user_ip == 0) {
+                message = message.replace(/(?:\r\n|\r|\n)/g, '<br>');
+            }
+            $('.loader-notif').show();
+            $('.loader-notif').css({'top' : '0px'});
+                $.post("{{ path('admin_time_in_no_params') }}" + id + '/' + pass, {is_message: is_message, message:message} ,  function(data){
+                    console.log(data)
                     console.log(data);
-                        if(data == 1){
+                        if(data == 1 || data == 6){
                            $('.time-in-container').css({'display' : 'none'});
                             $('.time-in').css({'display' : 'none'});
                             $('.timein-notif-container').css({'top':'0px'});
                             $('.timed-in').css({'display' : 'block'});
                             $('.btn-timeout').show();
                             $('.diff-ip-container').hide();
+                            showBirthday();
                             setTimeout(function(){
                                 $('.timein-notif-container').css({'top' : '-55px'});
-                            }, 2000);
+
+                            }, 5000);
                         } else if(data == 2){
                             $('.timeout-container').css({'display' : 'none'});
                             $('.timeout').css({'display' : 'none'});
                             $('.timeout-notif-container').css({'top':'0px'});
-                            $('.timed-in').css({'display' : 'none'});
+//                            $('.timed-in').css({'display' : 'none'});
                             $('.timed-out').css({'display' : 'block'});
                             $('.btn-timeout').css({'display' : 'none'});
                             $('.timechip').hide();
                             setTimeout(function(){
                                 $('.timeout-notif-container').css({'top' : '-55px'});
-                            }, 2000);
-                        } else if(data.error == true && pass == 'null'){
-                            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-                            $('#errormessage').hide();
-                        } else if(data.error == true){
-                            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-                            $('#errormessage').show();
+                            }, 5000);
+                        } else if(data == 5){
+
+                        }else if(data.error == true && action == 'timeout'){
+                        $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+                        $('#errormessage').show();
                         }
+
                         // else if(data== 0){
                         //     $('.time-in-container').css({'display' : 'none'});
                         //     $('.diff-ip-container').show();
@@ -338,7 +376,17 @@ $('.time-btn').click(function(e){
                         //     // $('#mb-timein').modal().hide();
                         //     $('#mb-wrongip').modal('show');
                         // }
-                }, "json");
+                }, "json").fail(function(data)
+                {
+                  if(data.status == 401){
+                      $('.time-in-container').hide();
+                      $('.timeout-container').hide();
+                      $('.modal-logout-notify-container').show();
+                  }
+                }).always(function(data){
+                    $('.loader-notif').hide();
+                    $('.loader-notif').css({'top' : '-55px'});
+                });
 
 
 
@@ -351,6 +399,23 @@ $('.btn-ip-yes').click(function(e){
     e.preventDefault();
     $('.diff-ip-reason').show();
 });
+
+
+function showBirthday() {
+
+    var bdaynames = [];
+    {% for names in userbdaynames %}
+    bdaynames.push("{{ names }}");
+    {% endfor %}
+    console.log(bdaynames);
+    if(bdaynames.length) {
+        $('.modal-birthday-notify-container').show();
+    }
+
+    $('.btn-bdayclose').click( function() {
+        $('.modal-birthday-notify-container').hide();
+    });
+}
 
 // $('.btn-send-mail').click(function(e){
 //             e.preventDefault();

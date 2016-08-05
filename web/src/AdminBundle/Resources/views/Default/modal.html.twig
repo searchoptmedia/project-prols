@@ -1,0 +1,32 @@
+<div class="modal-container modal-logout-notify-container" style="display:none;">
+    <div class="time-in center-align">
+        <div class="valign-wrapper">
+
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <p class="confirm-timein"><b>Oops!</b></p>
+                <p class="confirm-timein">Your session has expired.</p>
+                <div class="btn-block">
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-timein" href="/">LOGIN</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-container modal-birthday-notify-container" style="display: none;">
+    <div class="center-align" style="position: relative; top: 250px;">
+        <div class="valign-wrapper">
+
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <p class="confirm-timein"><b>Happy Birthday!!!</b>
+                    {% for userbdayname in userbdaynames %}<br>{{ userbdayname }}{% endfor %}</p>
+                <p class="confirm-timein" style="font-size: 30px; position:relative; top: 20px;">Greetings from your <b>Propelrr</b> Family!<br>Burger! Burger!</p>
+                <div class="btn-block" style="position:relative;top: 100px;">
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-bdayclose" href="#">CLOSE</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

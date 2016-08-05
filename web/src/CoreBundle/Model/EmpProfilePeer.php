@@ -29,5 +29,16 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 	$_self = self::doSelect($c);
 
 	return $_self ? $_self : array();
-	}	
+	}
+
+	public static function getEmployeeTime(Criteria $c = null){
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+		
+		$c->add(EmpAccPeer::ROLE, 'ADMIN', Criteria::NOT_EQUAL);
+		$record = self::doSelectJoinAll($c);
+		
+		return $record ? $record : array();
+	}
 }
