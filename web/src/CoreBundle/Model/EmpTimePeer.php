@@ -25,9 +25,25 @@ class EmpTimePeer extends BaseEmpTimePeer{
 			$c = new Criteria();
 		}
 		
-	$_self = self::doSelect($c);
+		$_self = self::doSelect($c);
 
-	return $_self ? $_self : array();
+		return $_self ? $_self : array();
+	}
+
+	public static function getEmployeeTimes(Criteria $c = null)
+	{
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+
+		$c->addJoin(self::EMP_ACC_ACC_ID, EmpAccPeer::ID, Criteria::INNER_JOIN);
+		$c->add(self::DATE, date('Y-m-d 00:00:00'), Criteria::LESS_THAN);
+		//$c->addDescendingOrderByColumn(EmpAccPeer::USERNAME);
+
+		$rec = self::doSelect($c);
+
+		return $rec;
+
 	}
 	public static function getEmpTime($id, Criteria $c = null){
 		if (is_null($c)) {

@@ -61,3 +61,7 @@ status_declined_w_params:
 check_time:
     path: /checktime
     defaults: { _controller: AdminBundle:Default:checkTime }
+
+admin_employee_report:
+    path: /employee/report
+    defaults: { _controller: AdminBundle:EmployeeReport:generateReport }

@@ -7,5 +7,5 @@ use CoreBundle\Model\om\BaseEmpTimeQuery;
 use \Criteria;
 
 class EmpTimeQuery extends BaseEmpTimeQuery{
-	
+
 }
