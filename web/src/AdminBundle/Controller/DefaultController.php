@@ -188,6 +188,11 @@ class DefaultController extends Controller{
 		$user = $this->getUser();
 		$id = $user->getId();
 		$timedata = EmpTimePeer::getEmpLastTimein($id);
+		//exit if found no record
+		if(is_null($timedata)) {
+			echo 0;
+			exit;
+		}
 		$timeout = $timedata->getTimeOut();
 		$timeindate = $timedata->getDate()->format('Y-m-d');
 		$datetoday = date('Y-m-d');

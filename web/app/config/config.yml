@@ -70,4 +70,3 @@ swiftmailer:
             transport:  "gmail"
             host:       "smtp.gmail.com"
             port:       "465"
-            sender_address:  "no-reply@gmail.com"
