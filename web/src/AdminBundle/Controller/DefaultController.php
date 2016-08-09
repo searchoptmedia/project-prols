@@ -72,6 +72,7 @@ class DefaultController extends Controller{
     }
 
     public function indexAction(){
+
     	$user = $this->getUser();
 
     	$name = $user->getUsername();
@@ -229,14 +230,13 @@ class DefaultController extends Controller{
 			$timein_data = $emptime[$currenttime]->getTimeIn();
 			$timeout_data = $emptime[$currenttime]->getTimeOut();
 			$id_data = $emptime[$currenttime]->getId();
-			
 
 			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
 				$checkdate = $timedata[$ctr]->getDate();
 
 				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
 					$timeflag = 1;
-				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
+				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)) {
 					$timeflag = 0;
 				}elseif($checkdate->format('Y-m-d') != $datetoday){
 					$timeflag = 0;
@@ -305,7 +305,17 @@ class DefaultController extends Controller{
 							$time_out->setTimeOut($datetimetoday);
 							$time_out->setIpAdd($matchedip);
 							$time_out->setEmpAccAccId($this->getUser()->getId());
+//							$time_out->save();
+
+							$in = new \DateTime($time_out->getTimeIn()->format('Y-m-d H:i:s'));
+							$out = new \DateTime($time_out->getTimeOut()->format('Y-m-d H:i:s'));
+							$manhours = date_diff($out, $in);
+							$totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
+							$time_out->setManhours($totalHours);
+
+							
 							$time_out->save();
+
 							echo $retval;
 						}else{
 							$message = 'Wrong Password';
@@ -327,9 +337,9 @@ class DefaultController extends Controller{
 					for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
 						$allowedip = $ip_add[$ctr]->getAllowedIp();
 						if($allowedip == $matchedip){
-							$empTimeSave->setCheckIp(0);
-						}else{
 							$empTimeSave->setCheckIp(1);
+						}else{
+							$empTimeSave->setCheckIp(0);
 						}
 					}
 

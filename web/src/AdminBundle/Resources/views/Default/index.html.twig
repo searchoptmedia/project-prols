@@ -54,7 +54,7 @@
 
                     <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
 
-                    {% if timename == false and role != 'ADMIN' %}
+                    {% if timename == false %}
                     <br>
                     <div class="chip timechip">
                         Timed-in at {{currenttimein}}
@@ -377,6 +377,7 @@ $('.time-btn').click(function(e){
                       $('.time-in-container').hide();
                       $('.timeout-container').hide();
                       $('.modal-logout-notify-container').show();
+//                      $('.modal-session-content').show();
                   }
                 }).always(function(data){
                     $('.loader-notif').hide();

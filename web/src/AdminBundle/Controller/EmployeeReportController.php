@@ -39,7 +39,7 @@ class EmployeeReportController extends Controller {
                 $timeindata     = $emp->getTimeIn()->format('h:i A');
                 $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
                 $date           = $emp->getDate()->format('d/m/Y');
-                $isOffice       = $emp->getCheckIp() ? 'No':'Yes';
+                $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
 
                 //record
                 $profile = EmpProfilePeer::getInformation($empid);
