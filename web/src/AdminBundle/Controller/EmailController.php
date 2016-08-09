@@ -30,44 +30,30 @@ class EmailController extends Controller {
         $name = $data->getFname(). " " .$data->getLname();
 
         $subject = 'Request for Access';
-        $from    = array('denmark.mago@gmail.com' => 'Denmark');
-        $to      = array(
-            'christian.fallaria@searchoptmedia.com'  => 'Recipient1 Name',
-        );
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array('christian.fallaria@searchoptmedia.com');
 
         $inputMessage = "Hi admin! <br><br>" .
             $data->getFname(). " " .
             $data->getLname() . " has timed in outside the office.<br><br>".
                 "<strong>Reason: </strong><br>" . $req->request->get('message');
 
-        $email = self::sendEmail($subject, $from, $to, $inputMessage);
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
         return $email ? 1: 0;
     }
 
 
-    static public function sendEmail($subject, $from, $to, $content)
+    static public function sendEmail($class, $subject, $from, $to, $content)
     {
-        $env      = InitController::getAppEnv();
         $response = false;
 
-        if($env == 'local'):
-            $transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl');
-            $transport->setUsername('christian.fallaria@searchoptmedia.com');
-            $transport->setPassword("baddonk123");
-            $swift = Swift_Mailer::newInstance($transport);
+        $message = new Swift_Message($subject);
+        $message->setFrom($from[0]);
+        $message->setBody($content, 'text/html');
+        $message->setTo($to);
 
-            $message = new Swift_Message($subject);
-            $message->setFrom($from);
-            //$message->setBody($html, 'text/html');
-            //$message->addPart($text, 'text/plain');
-            $message->setBody($content, 'text/html');
-            $message->setTo($to);
-
-            $response = $swift->send($message, $failures);
-        else:
-
-        endif;
+        $response = $class->get('mailer')->send($message, $failures);
 
         return $response;
 

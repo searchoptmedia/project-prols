@@ -62,11 +62,12 @@ propel:
 
 # Swiftmailer Configuration
 swiftmailer:
-    default_mailer: dev_mailer                      #added
-    mailers:                                        #added
-        dev_mailer:                                 #added
-            username:   "%mailer_user%"             #added
-            password:   "%mailer_password%"         #added
-            transport:  "%mailer_transport%"        #added
-            host:       "%mailer_host%"             #added
-            port:       "%mailer_port%"             #added
+    default_mailer: dev_mailer
+    mailers:
+        dev_mailer:
+            username:   "noreply.propelrr@gmail.com"
+            password:   "Propelrrpass@123"
+            transport:  "gmail"
+            host:       "smtp.gmail.com"
+            port:       "465"
+            sender_address:  "no-reply@gmail.com"
