@@ -132,10 +132,8 @@ class DefaultController extends Controller{
 		->filterByStatus('Pending')
 		->find()->count();
 
-//		$userip = $this->container->get('request')->getClientIp();
-		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
-
 
 //		var_dump($this->getRequest()->server->all());
 //		exit;
@@ -202,45 +200,45 @@ class DefaultController extends Controller{
 	}
 
  	public function timeInAction(Request $request, $id, $passw){
-		//valid ip address
-    	// $ip_add = ListIpPeer::getValidIP($this->container->get('request')->getClientIp());
-			$user = $this->getUser();
-	 		if(empty($user)){
-				// if session expire
-				echo 4;
-				exit;
-			}
 
-    	// if(!is_null($ip_add)){
-    		$matchedip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
-    		date_default_timezone_set('Asia/Manila');
-    		$current_date = date('Y-m-d H:i:s');
-    		$datetoday = date('Y-m-d');
-    		$timeflag = 0;
-			$emp = $this->getUser()->getId();
-    		$timedata = EmpTimePeer::getTime($emp);
-    		$emptime = EmpTimePeer::getTime($id);
-    		
-    		if(!empty($emptime)){
-    		$currenttime = sizeof($emptime) - 1;
+		date_default_timezone_set('Asia/Manila');
+
+		//check session active
+		$user = $this->getUser();
+		if(empty($user)){
+			// if session expire
+			echo 4;
+			exit;
+		}
+
+		$matchedip 		= InitController::getUserIP($this);
+		$datetimetoday 	= date('Y-m-d H:i:s');
+		$datetoday 		= date('Y-m-d');
+		$timeflag 		= 0;
+		$emp 			= $this->getUser()->getId();
+		$timedata 		= EmpTimePeer::getTime($emp);
+		$emptime 		= EmpTimePeer::getTime($id);
+
+		if(!empty($emptime)) {
+			$currenttime = sizeof($emptime) - 1;
 			$timein_data = $emptime[$currenttime]->getTimeIn();
 			$timeout_data = $emptime[$currenttime]->getTimeOut();
 			$id_data = $emptime[$currenttime]->getId();
 			
 
-	    		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-	    			$checkdate = $timedata[$ctr]->getDate();
-	    			
-	    			if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-	    				$timeflag = 1;
-					}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-						$timeflag = 0;
-					}elseif($checkdate->format('Y-m-d') != $datetoday){
-						$timeflag = 0;
-					}
-	    				
-	    		}
-    		}
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$checkdate = $timedata[$ctr]->getDate();
+
+				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
+					$timeflag = 1;
+				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
+					$timeflag = 0;
+				}elseif($checkdate->format('Y-m-d') != $datetoday){
+					$timeflag = 0;
+				}
+
+			}
+		}
     		
 
     		if($timeflag == 0){
@@ -259,7 +257,7 @@ class DefaultController extends Controller{
 						$ip_add = ListIpPeer::getAllIp();
 						$stat = 'WORKING 1';
 						$retval = 1;
-				    	$empTimeSave->setTimeIn($current_date);
+				    	$empTimeSave->setTimeIn($datetimetoday);
 				    	$empTimeSave->setIpAdd($matchedip);
 				    	$empTimeSave->setDate($datetoday);
 				    	$empTimeSave->setEmpAccAccId($this->getUser()->getId());
@@ -277,10 +275,15 @@ class DefaultController extends Controller{
 				    	if($empTimeSave->save()){
 							$is_message = $request->request->get('is_message');
 							if(!is_null($is_message)){
-								$sendemail = $this->sendEmailMessage($request);
+								$email = new EmailController();
+								$sendemail = $email->sendTimeInRequest($request, $this);
+
 								if(! $sendemail){
 									//if error sending email
 									$retval = 5;
+								} else {
+									echo 1;
+									exit;
 								}
 							}
 						}
@@ -294,7 +297,7 @@ class DefaultController extends Controller{
 							$time_out = EmpTimePeer::retrieveByPk($id_data);
 							$stat = 'WORKING 2';
 							$retval = 2;
-							$time_out->setTimeOut($current_date);
+							$time_out->setTimeOut($datetimetoday);
 							$time_out->setIpAdd($matchedip);
 							$time_out->setEmpAccAccId($this->getUser()->getId());
 							$time_out->save();
@@ -311,27 +314,35 @@ class DefaultController extends Controller{
 					$ip_add = ListIpPeer::getAllIp();
 					$stat = 'WORKING 3';
 					$retval = 1;
-			    	$empTimeSave->setTimeIn($current_date);
+			    	$empTimeSave->setTimeIn($datetimetoday);
 			    	$empTimeSave->setIpAdd($matchedip);
 			    	$empTimeSave->setDate($datetoday);
 			    	$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			    	for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
-			    			$allowedip = $ip_add[$ctr]->getAllowedIp();
-			    			if($allowedip == $matchedip){
-			    				$empTimeSave->setCheckIp(0);
-			    				$empTimeSave->save();
 
-			    			}else{
-			    				$empTimeSave->setCheckIp(1);
-			    				$empTimeSave->save();
-			    				// $mailer = new Mailer();
-			    				// $send = $mailer->sendOutOfOfficeEmailToAdmin();
+					for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
+						$allowedip = $ip_add[$ctr]->getAllowedIp();
+						if($allowedip == $matchedip){
+							$empTimeSave->setCheckIp(0);
+						}else{
+							$empTimeSave->setCheckIp(1);
+						}
+					}
 
+					if($empTimeSave->save()){
+						$is_message = $request->request->get('is_message');
+						if(!is_null($is_message)){
+							$email = new EmailController();
+							$sendemail = $email->sendTimeInRequest($request, $this);
 
-
-			    			}
-			    		}
-			    	$empTimeSave->save();
+							if(! $sendemail){
+								//if error sending email
+								$retval = 5;
+							} else {
+								echo 1;
+								exit;
+							}
+						}
+					}
 			    	echo $retval;
 				}
 
@@ -535,21 +546,11 @@ class DefaultController extends Controller{
 				// echo'<pre>';var_dump($manhours);
 			}
     	}
-//		$userip = $this->container->get('request')->getClientIp();
-    	$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
-		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
-		if(!is_null($ip_add)){
-		$matchedip = $ip_add->getAllowedIp();
-		}
-    	else{
-    		$matchedip = '';
-    	}
-		$ip_checker = 1;
-		if($userip == $matchedip){
-			$ip_checker = 1;
-		}else{
-			$ip_checker = 0;
-		}
+
+		$userip = InitController::getUserIP($this);
+		$ip_add = ListIpPeer::getValidIP($userip);
+		$is_ip  = InitController::checkIP($userip);
+
         return $this->render('AdminBundle:Default:profile.html.twig', array(
         	'page' => $page,
         	'name' => $name,
@@ -584,11 +585,11 @@ class DefaultController extends Controller{
          	'currenttimein' => $currenttimein,
          	'currenttimeout' => $currenttimeout,
          	'firstchar' => $firstchar,
-         	'matchedip' => $matchedip,
+         	'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
          	'userip' => $userip,
      		'checkipdata' => $checkipdata,
 			'propelrr' => $data2,
-			'checkip' => $ip_checker,
+			'checkip' => $is_ip,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
         	));
@@ -911,7 +912,7 @@ class DefaultController extends Controller{
 	    	$empStatus = $request->request->get('status');
 
 		    date_default_timezone_set('Asia/Manila');
-		    $current_date = date('Y-m-d H:i:s');
+		    $datetimetoday = date('Y-m-d H:i:s');
 	  		
 	  		//check if input is empty
 	    	if(!empty($empNum) && !empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
@@ -977,58 +978,7 @@ class DefaultController extends Controller{
 
     public function sendRequestAction($value){
 
-    	$user = $this->getUser();
-    	$id = $user->getId();
 
-		//employee profile information
-		$data = EmpProfilePeer::getInformation($id);
-		$name = $data->getFname(). " " .$data->getLname();
-		$profileid = $data->getId();
-		
-		//employee contact information
-		$datacontact = EmpContactPeer::getContact($profileid);		
-		$conEmail = '';
-
-		if(!is_null($datacontact)){
-			for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
-    			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
-				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
-				$contactvalue =  $datacontact[$ct]->getContact();
-				if(strcasecmp($contacttype, 'email') == 0){
-					$conEmail = $contactvalue;
-				}
-   			}
-		}else{
-			$conEmail = null;
-		}
-
-		$subject = 'Request for Access';
-		$from = array($conEmail => $name);
-		$to = array(
-			 'christian.fallaria@searchoptmedia.com'  => 'Recipient1 Name',
-		);
-
-		$text = $value;
-		// $html = "<em>You are about to <strong>end </strong>your shift in </em>seconds";
-
-		$transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl');
-		$transport->setUsername('christian.fallaria@searchoptmedia.com');
-		$transport->setPassword("baddonk123");
-		$swift = Swift_Mailer::newInstance($transport);
-
-		$message = new Swift_Message($subject);
-		$message->setFrom($from);
-		// $message->setBody($html, 'text/html');
-		$message->setBody($text, 'text/plain');
-		$message->setTo($to);
-		$message->addPart($text, 'text/plain');
-
-		if ($recipients = $swift->send($message, $failures))
-		{
-		 echo 1;
-		} else {
-		 echo 0;
-		}    
 		exit;
 	}
 
@@ -1605,52 +1555,6 @@ class DefaultController extends Controller{
 		$response->headers->set('Content-Type', 'text/csv; charset=utf-8');
 		$response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
 		return $response;
-	}
-	public function sendEmailMessage(Request $request){
-//		$email = $request->request->get('email');
-		$user = $this->getUser();
-		$empaccid = $user->getId();
-		
-		$empprofile = EmpProfilePeer::getInformation($empaccid);
-		$inputmessage = "Hi admin! <br><br>" .$empprofile->getFname(). " " . $empprofile->getLname() . " has timed in outside the office.<br><br>"
-		. "<strong>Reason: </strong><br>" . $request->request->get('message');
-//		$user = EmpAccPeer::getUserByEmail($email);
-
-			$subject = 'Employee timed in outside the office ';
-			$from = array($user->getEmail() => 'no-reply');
-			$to = array(
-				'christian.fallaria@searchoptmedia.com'  => 'Recipient1 Name',
-			);
-		
-			$admins = EmpAccPeer::getAdminInfo();
-			$adminemails = array();
-			foreach ($admins as $admin){
-				$adminemails[] = $admin->getEmail();
-			}
-
-			if(count($adminemails)){
-				$transport = Swift_SmtpTransport::newInstance('smtp.gmail.com', 465, 'ssl');
-				$transport->setUsername('christian.fallaria@searchoptmedia.com');
-				$transport->setPassword("baddonk123");
-				$swift = Swift_Mailer::newInstance($transport);
-
-				$message = new Swift_Message($subject);
-				$message->setFrom('prosadlfsad@gmail.com');
-				$message->setBody($inputmessage, 'text/html');
-				$message->setTo($adminemails);
-				$message->addPart($inputmessage, 'text/html');
-
-				if ($recipients = $swift->send($message))
-				{
-					//Email sent
-					return true;
-				} else {
-					return false;
-				}
-				exit;
-			}
-
-
 	}
 //end
 }
