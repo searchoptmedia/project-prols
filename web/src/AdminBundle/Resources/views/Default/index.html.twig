@@ -284,11 +284,6 @@
 {% block customjs %}
 {% endblock %}
 <script>
-{% if timename == true %}
-$('.btn-timeout').hide();
-{% else %}
-$('.btn-timeout').show();
-{% endif %}
 
 $.post( "{{ path('check_timein') }}", {}, function(data) {
 
