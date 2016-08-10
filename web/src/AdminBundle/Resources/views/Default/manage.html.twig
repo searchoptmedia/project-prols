@@ -13,11 +13,10 @@
             <div class="col-md-12 light-blue darken-1 heading z-depth-1">
             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
                 <h3 class="center-align">Employees</h3>
-            {#<div class="top-nav">#}
-                {#<a class="waves-effect waves-light btn orange btn-export">Export</a>#}
-            {#</div>#}
+            <div class="top-nav">
+                <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
+            </div>
         </div>
-
 
         <div class="col-md-12 content">
             <div class="row" style="margin-left:5px;">
@@ -145,42 +144,93 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
             </div>
         </div>
-   
-        <!-- EMPLOYEE MODAL ONCLICK -->
-        <!-- <div id="empmodal" class="modal modal-fixed-footer">
-            <div class="modal-content">
-            <h4>Employee</h4>
-            <p><b>Employee #</b></p>
-            <p id = "empnumber"></p><hr>
-            <p><b>First Name</b></p>
-            <p id = "fname-p"></p><hr>
-            <p><b>Last Name</b></p>
-            <p id = "lname-p"></p><hr>
-            <p><b>Department</b></p>
-            <p id = "depart-p"></p><hr>
-            <p><b>Position</b></p>
-            <p id = "post-p"></p><hr>
-            <p><b>Employment Status</b></p>
-            <p id = "stat-p"></p><hr>
-            <p><b>Company Email</b></p>
-            <p id = "email-p"></p><hr>
-            <p><b>Telephone #</b></p>
-            <p id = "tel-p"></p><hr>
-            <p><b>Cellphone #</b></p>
-            <p id = "cel-p"></p><hr>
-            <p><b>Address</b></p>
-            <p id = "add-p"></p><hr>
-            <p><b>Birthday</b></p>
-            <p id = "bday-p"></p><hr>
-        
+            <div id="exportchoice" class="modal">
+                <div class="modal-content">
+                    <h4>Export</h4>
 
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Update</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Delete</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a>
-            </div>
-        </div> -->
+                    <p>Choose entity: </p>
+                    <form action="#">
+                        <input name="group1" type="radio" id="all-emp" class="export-radio-input" checked/>
+                        <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
+
+                        <input name="group1" type="radio" id="select-dept" class="export-radio-input"/>
+                        <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+
+                        <div class= "selectDept">
+                            <select id = "listdept" style="display:block; margin-top: 10px;">
+                                <option value="" disabled selected>Choose your department</option>
+                                <option value="1">Executive</option>
+                                <option value="2">Graphics</option>
+                                <option value="3">Development</option>
+                                <option value="4">SEO</option>
+                                <option value="5">Content</option>
+                                <option value="6">Social Media</option>
+                                <option value="7">Admin</option>
+                                <option value="8">Maintenance</option>
+                            </select>
+                        </div>
+                        <div class="row" style="margin-top: 10px;">
+                            <div class="col-md-6">
+                                <label class="label">From:</label>
+                                <input name="start-date" type="date" placeholder="Start Date">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="label">To:</label>
+                                <input name="end-date" type="date" placeholder="End Date">
+                            </div>
+                        </div>
+                        <button type="submit" class="modal-action waves-effect waves-green btn-flat export-submit-btn" style="background-color: #00aaaa; margin-top: 10px;">Export</>
+                    </form>
+
+                    {#<p>Choose file/s to export:</p>#}
+                    {#<form action="#" class="cbox-file">#}
+                        {#<input type="checkbox" id="profile" />#}
+                        {#<label for="profile" class="lbl-info">Profile</label>#}
+                        {#<input type="checkbox" id="contact" />#}
+                        {#<label for="contact" class="lbl-info">Telephone/Cellphone</label>#}
+                        {#<input type="checkbox" id="govt" />#}
+                        {#<label for="govt" class="lbl-info">SSS/BIR/PhilHealth</label>#}
+                        {#<input type="checkbox" id="logs" />#}
+                        {#<label for="logs" class="lbl-info">Time-In/Time-Out Logs</label>#}
+                        {#<br><br>#}
+
+
+                    {#</form>#}
+        <!-- EMPLOYEE MODAL ONCLICK -->
+        {#<div id="testmodal" class="modal modal-fixed-footer">#}
+            {#<div class="modal-content">#}
+            {#<h4>Employee</h4>#}
+            {#<p><b>Employee #</b></p>#}
+            {#<p id = "empnumber"></p><hr>#}
+            {#<p><b>First Name</b></p>#}
+            {#<p id = "fname-p"></p><hr>#}
+            {#<p><b>Last Name</b></p>#}
+            {#<p id = "lname-p"></p><hr>#}
+            {#<p><b>Department</b></p>#}
+            {#<p id = "depart-p"></p><hr>#}
+            {#<p><b>Position</b></p>#}
+            {#<p id = "post-p"></p><hr>#}
+            {#<p><b>Employment Status</b></p>#}
+            {#<p id = "stat-p"></p><hr>#}
+            {#<p><b>Company Email</b></p>#}
+            {#<p id = "email-p"></p><hr>#}
+            {#<p><b>Telephone #</b></p>#}
+            {#<p id = "tel-p"></p><hr>#}
+            {#<p><b>Cellphone #</b></p>#}
+            {#<p id = "cel-p"></p><hr>#}
+            {#<p><b>Address</b></p>#}
+            {#<p id = "add-p"></p><hr>#}
+            {#<p><b>Birthday</b></p>#}
+            {#<p id = "bday-p"></p><hr>#}
+
+
+            {#</div>#}
+            {#<div class="modal-footer">#}
+                {#<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Update</a>#}
+                {#<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Delete</a>#}
+                {#<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Close</a>#}
+            {#</div>#}
+        {#</div>#}
     </section>
 </section>
 
@@ -205,7 +255,6 @@ $(document).ready(function(){
             var fileExtension = ['jpeg', 'jpg', 'png'];
     });
 
-    $('.initialized').material_select();
 
     $('.birth-date').pickadate({
         selectMonths: true,
@@ -232,37 +281,25 @@ $(document).ready(function(){
         window.location.href = '{{ path('emp_page')}}' + empId;
     });
 
-    // var empnumber, fName, lName, depart, post, stat, email, tel, cel, bday, add = '';
-    // $('.modal-employee').click(function(){
-    //     empnumber = $(this).data('empnum');
-    //     fName = $(this).data('fname');
-    //     lName = $(this).data('lname');
-    //     depart = $(this).data('dept');
-    //     post = $(this).data('pos');
-    //     stat = $(this).data('stat');
-    //     email = $(this).data('email');
-    //     tel = $(this).data('tel');
-    //     cel = $(this).data('cel');
-    //     bday = $(this).data('bday');
-    //     add = $(this).data('address');
-
-    //     $('#empnumber').html(empnumber);
-    //     $('#fname-p').html(fName);
-    //     $('#lname-p').html(lName);
-    //     $('#depart-p').html(depart);
-    //     $('#post-p').html(post);
-    //     $('#stat-p').html(stat);
-    //     $('#email-p').html(email);
-    //     $('#tel-p').html(tel);
-    //     $('#cel-p').html(cel);
-    //     $('#bday-p').html(bday);
-    //     $('#add-p').html(add);
-    //     $('#empmodal').openModal();
+    $('.export-submit-btn').click(function(){
+        var deptid = $('#listdept').val();
+        var start = $('[name=start-date]').val();
+        var end = $('[name=end-date]').val();
+            if ($('#select-dept:checked').length){
+                if(deptid == null){
+                    $('#listdept').css({'color' : 'red'});
+                    setTimeout(function(){
+                        $('#listdept').css({'color' : 'black'});
+                    }, 500);
+                    return;
+                }
+            }
+        window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start=' + start + '&end=' + end, '_blank');
 
 
-       
-    // });
 
-     });
+    });
+
+});
 </script>
 {% endblock %}

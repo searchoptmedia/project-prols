@@ -347,6 +347,15 @@
 
  		// $('#calendar').fullCalendar('option', 'height', 650);
 	 	$('.modal-change').leanModal();
+	 	$('.modal-export').leanModal();
+
+	 $(".modal-content").closest("#exportchoice").find("#select-dept").change(function(){
+		 $(".selectDept").css({'display':'block'})
+	 });
+	 $(".modal-content").closest("#exportchoice").find("#all-emp").change(function(){
+		 $(".selectDept").css({'display':'none'})
+		 $('#listdept').val('');
+	 });
  		
 
 });  

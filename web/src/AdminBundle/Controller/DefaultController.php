@@ -160,7 +160,6 @@ class DefaultController extends Controller{
 				$userbdaynames[] = $u->getFname();
 			}
 		}
-
         return $this->render('AdminBundle:Default:index.html.twig', array(
 			'userbdaynames' => $userbdaynames,
         	'name' => $name,
@@ -311,9 +310,24 @@ class DefaultController extends Controller{
 							$out = new \DateTime($time_out->getTimeOut()->format('Y-m-d H:i:s'));
 							$manhours = date_diff($out, $in);
 							$totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
-							$time_out->setManhours($totalHours);
 
-							
+							$h = $manhours->format('%h');
+							$i = intval($manhours->format('%i'));
+							$i = $i > 0 ? ($i/60) : 0;
+							$totalHoursDec = number_format($h + $i, 2);
+
+							if(date('D') == 'Sat' || date('D')=='Sun'){
+								$time_out->setOvertime($totalHoursDec);
+
+							}else{
+								$time_out->setManhours($totalHoursDec);
+								$overtime = 0;
+								if($totalHoursDec > 9) {
+									$overtime = $totalHoursDec - 9;
+								}
+								$time_out->setOvertime($overtime);
+							}
+
 							$time_out->save();
 
 							echo $retval;
@@ -571,7 +585,7 @@ class DefaultController extends Controller{
         	'name' => $name,
         	'fname' => $fname,
         	'lname' => $lname,
-        	'mname' => $mname,        	
+        	'mname' => $mname,
         	'bday' => $bday,
         	'address' => $address,
         	'img' => $img,
@@ -902,6 +916,10 @@ class DefaultController extends Controller{
 			'matchedip' => $matchedip,
 			'checkipdata' => $checkipdata,
 			'checkip' => $ip_checker,
+			'currenttimein' => $currenttimein,
+			'timeflag' => $timeflag,
+			'systime' => $systime,
+			'afternoon' => $afternoon,
         	));       
 		} 	
     }
@@ -1183,7 +1201,6 @@ class DefaultController extends Controller{
 			$posStatus = null;
 		}
 
-		$timename = self::timeInOut($id);
 		$getDept = ListDeptPeer::getAllDept();
 
 		//check pending count
@@ -1202,7 +1219,7 @@ class DefaultController extends Controller{
 		}
 
 
-		$timedata = EmpTimePeer::getTime($id);
+		$timedata = EmpTimePeer::getTime($adminid);
 		$timeflag = 0;
 		$currenttimein = 0;
 		$currenttimeout = 0;
@@ -1221,7 +1238,7 @@ class DefaultController extends Controller{
 		$checkipdata = null;
 		if(!empty($timedata)){
 			$datetoday = date('Y-m-d');
-			$emp_time = EmpTimePeer::getTime($id);
+			$emp_time = EmpTimePeer::getTime($adminid);
 			$currenttime = sizeof($emp_time) - 1;
 			$timein_data = $emp_time[$currenttime]->getTimeIn();
 			$timeout_data = $emp_time[$currenttime]->getTimeOut();
@@ -1274,9 +1291,9 @@ class DefaultController extends Controller{
 				// echo'<pre>';var_dump($manhours);
 			}
 		}
-//		$userip = $this->container->get('request')->getClientIp();
-		$ip_add = ListIpPeer::getValidIP($this->getRequest()->server->get('HTTP_X_FORWARDED_FOR'));
-		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+		$userip = InitController::getUserIP($this);
+		$ip_add = ListIpPeer::getValidIP($userip);
+		$is_ip  = InitController::checkIP($userip);
 		if(!is_null($ip_add)){
 			$matchedip = $ip_add->getAllowedIp();
 		}
@@ -1289,6 +1306,8 @@ class DefaultController extends Controller{
 		}else{
 			$ip_checker = 0;
 		}
+
+
 		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
 			'name' => $name,
 			'fname' => $fname,
@@ -1322,11 +1341,11 @@ class DefaultController extends Controller{
 			'currenttimein' => $currenttimein,
 			'currenttimeout' => $currenttimeout,
 			'firstchar' => $firstchar,
-			'matchedip' => $matchedip,
+			'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
 			'userip' => $userip,
 			'checkipdata' => $checkipdata,
 			'propelrr' => $data2,
-			'checkip' => $ip_checker,
+			'checkip' => $is_ip,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
 		));

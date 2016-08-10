@@ -35,9 +35,12 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
+		
+		$c->addJoin(self::EMP_ACC_ACC_ID, EmpProfilePeer::EMP_ACC_ACC_ID, Criteria::INNER_JOIN);
 
-		$c->addJoin(self::EMP_ACC_ACC_ID, EmpAccPeer::ID, Criteria::INNER_JOIN);
-		$c->add(self::DATE, date('Y-m-d 00:00:00'), Criteria::LESS_THAN);
+//		$c->addSelectColumn(EmpProfilePeer::LIST_DEPT_ID);
+
+//		$c->add(self::DATE, date('Y-m-d 00:00:00'), Criteria::LESS_THAN);
 		//$c->addDescendingOrderByColumn(EmpAccPeer::USERNAME);
 
 		$rec = self::doSelect($c);
