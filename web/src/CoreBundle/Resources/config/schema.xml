@@ -123,8 +123,8 @@
     <column name="ip_add" phpName="IpAdd" type="VARCHAR" size="45" required="true"/>
     <column name="date" phpName="Date" type="TIMESTAMP" required="true"/>
     <column name="emp_acc_acc_id" phpName="EmpAccAccId" type="INTEGER" required="true"/>
-    <column name="manhours" phpName="Manhours" type="TIMESTAMP" required="true"/>
-    <column name="overtime" phpName="Overtime" type="TIMESTAMP" required="true"/>
+    <column name="manhours" phpName="Manhours" type="FLOAT" required="true"/>
+    <column name="overtime" phpName="Overtime" type="FLOAT" required="true"/>
     <column name="check_ip" phpName="CheckIp" type="INTEGER" required="true"/>
     <foreign-key foreignTable="emp_acc" name="fk_emp_time_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
       <reference local="emp_acc_acc_id" foreign="id"/>

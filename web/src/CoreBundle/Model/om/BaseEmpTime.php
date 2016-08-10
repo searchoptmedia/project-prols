@@ -82,13 +82,13 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * The value for the manhours field.
-     * @var        string
+     * @var        double
      */
     protected $manhours;
 
     /**
      * The value for the overtime field.
-     * @var        string
+     * @var        double
      */
     protected $overtime;
 
@@ -289,83 +289,25 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     }
 
     /**
-     * Get the [optionally formatted] temporal [manhours] column value.
+     * Get the [manhours] column value.
      * 
-     *
-     * @param string $format The date/time format string (either date()-style or strftime()-style).
-     *				 If format is null, then the raw DateTime object will be returned.
-     * @return mixed Formatted date/time value as string or DateTime object (if format is null), null if column is null, and 0 if column value is 0000-00-00 00:00:00
-     * @throws PropelException - if unable to parse/validate the date/time value.
+     * @return double
      */
-    public function getManhours($format = null)
+    public function getManhours()
     {
-        if ($this->manhours === null) {
-            return null;
-        }
 
-        if ($this->manhours === '0000-00-00 00:00:00') {
-            // while technically this is not a default value of null,
-            // this seems to be closest in meaning.
-            return null;
-        }
-
-        try {
-            $dt = new DateTime($this->manhours);
-        } catch (Exception $x) {
-            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->manhours, true), $x);
-        }
-
-        if ($format === null) {
-            // Because propel.useDateTimeClass is true, we return a DateTime object.
-            return $dt;
-        }
-
-        if (strpos($format, '%') !== false) {
-            return strftime($format, $dt->format('U'));
-        }
-
-        return $dt->format($format);
-        
+        return $this->manhours;
     }
 
     /**
-     * Get the [optionally formatted] temporal [overtime] column value.
+     * Get the [overtime] column value.
      * 
-     *
-     * @param string $format The date/time format string (either date()-style or strftime()-style).
-     *				 If format is null, then the raw DateTime object will be returned.
-     * @return mixed Formatted date/time value as string or DateTime object (if format is null), null if column is null, and 0 if column value is 0000-00-00 00:00:00
-     * @throws PropelException - if unable to parse/validate the date/time value.
+     * @return double
      */
-    public function getOvertime($format = null)
+    public function getOvertime()
     {
-        if ($this->overtime === null) {
-            return null;
-        }
 
-        if ($this->overtime === '0000-00-00 00:00:00') {
-            // while technically this is not a default value of null,
-            // this seems to be closest in meaning.
-            return null;
-        }
-
-        try {
-            $dt = new DateTime($this->overtime);
-        } catch (Exception $x) {
-            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->overtime, true), $x);
-        }
-
-        if ($format === null) {
-            // Because propel.useDateTimeClass is true, we return a DateTime object.
-            return $dt;
-        }
-
-        if (strpos($format, '%') !== false) {
-            return strftime($format, $dt->format('U'));
-        }
-
-        return $dt->format($format);
-        
+        return $this->overtime;
     }
 
     /**
@@ -516,46 +458,42 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     } // setEmpAccAccId()
 
     /**
-     * Sets the value of [manhours] column to a normalized version of the date/time value specified.
+     * Set the value of [manhours] column.
      * 
-     * @param mixed $v string, integer (timestamp), or DateTime value.
-     *               Empty strings are treated as null.
+     * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
     public function setManhours($v)
     {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->manhours !== null || $dt !== null) {
-            $currentDateAsString = ($this->manhours !== null && $tmpDt = new DateTime($this->manhours)) ? $tmpDt->format('Y-m-d H:i:s') : null;
-            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
-            if ($currentDateAsString !== $newDateAsString) {
-                $this->manhours = $newDateAsString;
-                $this->modifiedColumns[] = EmpTimePeer::MANHOURS;
-            }
-        } // if either are not null
+        if ($v !== null && is_numeric($v)) {
+            $v = (double) $v;
+        }
+
+        if ($this->manhours !== $v) {
+            $this->manhours = $v;
+            $this->modifiedColumns[] = EmpTimePeer::MANHOURS;
+        }
 
 
         return $this;
     } // setManhours()
 
     /**
-     * Sets the value of [overtime] column to a normalized version of the date/time value specified.
+     * Set the value of [overtime] column.
      * 
-     * @param mixed $v string, integer (timestamp), or DateTime value.
-     *               Empty strings are treated as null.
+     * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
     public function setOvertime($v)
     {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->overtime !== null || $dt !== null) {
-            $currentDateAsString = ($this->overtime !== null && $tmpDt = new DateTime($this->overtime)) ? $tmpDt->format('Y-m-d H:i:s') : null;
-            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
-            if ($currentDateAsString !== $newDateAsString) {
-                $this->overtime = $newDateAsString;
-                $this->modifiedColumns[] = EmpTimePeer::OVERTIME;
-            }
-        } // if either are not null
+        if ($v !== null && is_numeric($v)) {
+            $v = (double) $v;
+        }
+
+        if ($this->overtime !== $v) {
+            $this->overtime = $v;
+            $this->modifiedColumns[] = EmpTimePeer::OVERTIME;
+        }
 
 
         return $this;
@@ -620,8 +558,8 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $this->ip_add = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
             $this->date = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
             $this->emp_acc_acc_id = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
-            $this->manhours = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-            $this->overtime = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+            $this->manhours = ($row[$startcol + 6] !== null) ? (double) $row[$startcol + 6] : null;
+            $this->overtime = ($row[$startcol + 7] !== null) ? (double) $row[$startcol + 7] : null;
             $this->check_ip = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
             $this->resetModified();
 

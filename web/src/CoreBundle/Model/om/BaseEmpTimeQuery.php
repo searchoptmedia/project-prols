@@ -59,8 +59,8 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTime findOneByIpAdd(string $ip_add) Return the first EmpTime filtered by the ip_add column
  * @method EmpTime findOneByDate(string $date) Return the first EmpTime filtered by the date column
  * @method EmpTime findOneByEmpAccAccId(int $emp_acc_acc_id) Return the first EmpTime filtered by the emp_acc_acc_id column
- * @method EmpTime findOneByManhours(string $manhours) Return the first EmpTime filtered by the manhours column
- * @method EmpTime findOneByOvertime(string $overtime) Return the first EmpTime filtered by the overtime column
+ * @method EmpTime findOneByManhours(double $manhours) Return the first EmpTime filtered by the manhours column
+ * @method EmpTime findOneByOvertime(double $overtime) Return the first EmpTime filtered by the overtime column
  * @method EmpTime findOneByCheckIp(int $check_ip) Return the first EmpTime filtered by the check_ip column
  *
  * @method array findById(int $id) Return EmpTime objects filtered by the id column
@@ -69,8 +69,8 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method array findByIpAdd(string $ip_add) Return EmpTime objects filtered by the ip_add column
  * @method array findByDate(string $date) Return EmpTime objects filtered by the date column
  * @method array findByEmpAccAccId(int $emp_acc_acc_id) Return EmpTime objects filtered by the emp_acc_acc_id column
- * @method array findByManhours(string $manhours) Return EmpTime objects filtered by the manhours column
- * @method array findByOvertime(string $overtime) Return EmpTime objects filtered by the overtime column
+ * @method array findByManhours(double $manhours) Return EmpTime objects filtered by the manhours column
+ * @method array findByOvertime(double $overtime) Return EmpTime objects filtered by the overtime column
  * @method array findByCheckIp(int $check_ip) Return EmpTime objects filtered by the check_ip column
  */
 abstract class BaseEmpTimeQuery extends ModelCriteria
@@ -515,14 +515,13 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByManhours('2011-03-14'); // WHERE manhours = '2011-03-14'
-     * $query->filterByManhours('now'); // WHERE manhours = '2011-03-14'
-     * $query->filterByManhours(array('max' => 'yesterday')); // WHERE manhours < '2011-03-13'
+     * $query->filterByManhours(1234); // WHERE manhours = 1234
+     * $query->filterByManhours(array(12, 34)); // WHERE manhours IN (12, 34)
+     * $query->filterByManhours(array('min' => 12)); // WHERE manhours >= 12
+     * $query->filterByManhours(array('max' => 12)); // WHERE manhours <= 12
      * </code>
      *
      * @param     mixed $manhours The value to use as filter.
-     *              Values can be integers (unix timestamps), DateTime objects, or strings.
-     *              Empty strings are treated as NULL.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -558,14 +557,13 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByOvertime('2011-03-14'); // WHERE overtime = '2011-03-14'
-     * $query->filterByOvertime('now'); // WHERE overtime = '2011-03-14'
-     * $query->filterByOvertime(array('max' => 'yesterday')); // WHERE overtime < '2011-03-13'
+     * $query->filterByOvertime(1234); // WHERE overtime = 1234
+     * $query->filterByOvertime(array(12, 34)); // WHERE overtime IN (12, 34)
+     * $query->filterByOvertime(array('min' => 12)); // WHERE overtime >= 12
+     * $query->filterByOvertime(array('max' => 12)); // WHERE overtime <= 12
      * </code>
      *
      * @param     mixed $overtime The value to use as filter.
-     *              Values can be integers (unix timestamps), DateTime objects, or strings.
-     *              Empty strings are treated as NULL.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.

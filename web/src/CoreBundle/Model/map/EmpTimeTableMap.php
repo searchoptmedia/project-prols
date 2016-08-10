@@ -48,8 +48,8 @@ class EmpTimeTableMap extends TableMap
         $this->addColumn('ip_add', 'IpAdd', 'VARCHAR', true, 45, null);
         $this->addColumn('date', 'Date', 'TIMESTAMP', true, null, null);
         $this->addForeignKey('emp_acc_acc_id', 'EmpAccAccId', 'INTEGER', 'emp_acc', 'id', true, null, null);
-        $this->addColumn('manhours', 'Manhours', 'TIMESTAMP', true, null, null);
-        $this->addColumn('overtime', 'Overtime', 'TIMESTAMP', true, null, null);
+        $this->addColumn('manhours', 'Manhours', 'FLOAT', true, null, null);
+        $this->addColumn('overtime', 'Overtime', 'FLOAT', true, null, null);
         $this->addColumn('check_ip', 'CheckIp', 'INTEGER', true, null, null);
         // validators
     } // initialize()
