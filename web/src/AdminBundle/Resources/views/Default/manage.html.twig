@@ -283,18 +283,23 @@ $(document).ready(function(){
 
     $('.export-submit-btn').click(function(){
         var deptid = $('#listdept').val();
-        var start = $('[name=start-date]').val();
-        var end = $('[name=end-date]').val();
-            if ($('#select-dept:checked').length){
-                if(deptid == null){
-                    $('#listdept').css({'color' : 'red'});
-                    setTimeout(function(){
-                        $('#listdept').css({'color' : 'black'});
-                    }, 500);
-                    return;
-                }
+        var start  = new Date($('[name=start-date]').val());
+        var end    = new Date($('[name=end-date]').val());
+        var isDate = start == 'Invalid Date' ? 0 : 1;
+
+        if ($('#select-dept:checked').length){
+            if(deptid == null){
+                $('#listdept').css({'color' : 'red'});
+                setTimeout(function(){
+                    $('#listdept').css({'color' : 'black'});
+                }, 500);
+                return;
             }
-        window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start=' + start + '&end=' + end, '_blank');
+        }
+
+        window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start='
+            + start + '&end=' + end
+            + '&isDate=' + isDate, '_blank');
 
 
 
