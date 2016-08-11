@@ -28,11 +28,18 @@ class EmployeeReportController extends Controller {
         $startdate = date('Y-m-d', strtotime($startdateinput));
         $enddate = date('Y-m-d', strtotime($enddateinput));
 
-        $c->addAscendingOrderByColumn($startdate, $enddate, \Criteria::GREATER_THAN);
+//        $c->addAscendingOrderByColumn($startdate, $enddate, \Criteria::GREATER_THAN);
         if($deptid == 'null'){
-            $results = EmpTimePeer::getEmployeeTimes();
+//          $results = EmpTimePeer::getEmployeeTimes();
+            $c->add(EmpTimePeer::DATE, $startdate, \Criteria::GREATER_EQUAL);
+            $c->addAnd(EmpTimePeer::DATE, $enddate, \Criteria::LESS_EQUAL);
+            $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
+            $results = EmpTimePeer::getEmployeeTimes($c);
         }else{
             $c->add(EmpProfilePeer::LIST_DEPT_ID, $deptid, \Criteria::EQUAL);
+            $c->add(EmpTimePeer::DATE, $startdate, \Criteria::GREATER_EQUAL);
+            $c->addAnd(EmpTimePeer::DATE, $enddate, \Criteria::LESS_EQUAL);
+            $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
             $results = EmpTimePeer::getEmployeeTimes($c);
         }
         return $results;

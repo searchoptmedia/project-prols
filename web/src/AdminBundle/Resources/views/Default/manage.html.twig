@@ -1,5 +1,25 @@
 {% extends 'AdminBundle:Default:index.html.twig' %}
 
+{% block nav %}
+    <div class="collection emp-nav">
+        <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+        <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+        <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
+
+    </div>
+
+    <div class="collection admin-nav">
+        {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
+        {% if role == 'ADMIN' %}
+            <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+        {% endif %}
+    </div>
+
+    <div class="collection logout-nav">
+        <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+    </div>
+{% endblock %}
+
 {% block body %}
 <section id="main-container">
  
@@ -172,14 +192,24 @@
                         <div class="row" style="margin-top: 10px;">
                             <div class="col-md-6">
                                 <label class="label">From:</label>
-                                <input name="start-date" type="date" placeholder="Start Date">
+                                <input name="start-date" placeholder="Start Date" class="start-date"
+                                       type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
                             </div>
                             <div class="col-md-6">
                                 <label class="label">To:</label>
-                                <input name="end-date" type="date" placeholder="End Date">
+                                <input name="end-date" placeholder="End Date" class="end-date"
+                                       type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
                             </div>
                         </div>
-                        <button type="submit" class="modal-action waves-effect waves-green btn-flat export-submit-btn" style="background-color: #00aaaa; margin-top: 10px;">Export</>
+                        <div class="modal-footer">
+                        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                        <a class="modal-action waves-effect waves-green btn-flat export-submit-btn">Export</a>
+                        </div>
+                        {#<div class="modal-footer">#}
+                            {##}
+                            {#<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat btn-exportfiles export-submit-btnC">Export</a>#}
+
+                        {#</div>#}
                     </form>
 
                     {#<p>Choose file/s to export:</p>#}
@@ -286,23 +316,43 @@ $(document).ready(function(){
         var start  = new Date($('[name=start-date]').val());
         var end    = new Date($('[name=end-date]').val());
         var isDate = start == 'Invalid Date' ? 0 : 1;
+        var s = start.getDate();
+        var e = end.getDate();
 
+        start   = start.toDateString();
+        end     = end.toLocaleString();
+
+        if(start == 'Invalid Date' || end == 'Invalid Date'){
+            if(start == 'Invalid Date'){
+                $('.start-date').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('.start-date').css({'border-color' : 'gray'});
+                }, 500);
+            }
+            if(end == 'Invalid Date'){
+                $('.end-date').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('.end-date').css({'border-color' : 'gray'});
+                }, 500);
+            }
+            return;
+        }
+        if(s > e){
+            alert('End date must be higher');
+            return;
+        }
         if ($('#select-dept:checked').length){
             if(deptid == null){
                 $('#listdept').css({'color' : 'red'});
                 setTimeout(function(){
                     $('#listdept').css({'color' : 'black'});
                 }, 500);
-                return;
+               return;
             }
         }
-
         window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start='
             + start + '&end=' + end
             + '&isDate=' + isDate, '_blank');
-
-
-
     });
 
 });
