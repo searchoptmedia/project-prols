@@ -471,92 +471,92 @@ $('#time-out-button').click(function(){
     });
 
 });
-$('.time-btn').click(function(e){
-            e.preventDefault();
-            var message = $('#diffip-input-reason').val(), error = false,
-                    user_ip =  $('#time-in-button').data('ip'),
-                    is_message = undefined, action = $(this).data('action'), pass;
-            if(user_ip == 0){
-                if(message == ''){
-                    $('#diffip-input-reason').css({'border-color': '#f44336'});
-                    error = true;
-                }
-                is_message = true;
-                if(error){
-                    return false;
-                }
-            }
-            var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');
 
-            if(action == 'timeout'){
-                pass = $('#confirmpw-timeout').val();
-                if(pass == ''){
-                    pass = 'null';
-                    $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-                    $('#errormessage').hide();
-                    return false;
-                }
-            } else if(action == 'timein' && user_ip == 0) {
-                message = message.replace(/(?:\r\n|\r|\n)/g, '<br>');
-            }
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
-                $.post("{{ path('admin_time_in_no_params') }}" + id + '/' + pass, {is_message: is_message, message:message} ,  function(data){
-                    console.log(data)
-                    console.log(data);
-                        if(data == 1 || data == 6){
-                           $('.time-in-container').css({'display' : 'none'});
-                            $('.timein-notif-container').css({'top':'0px'});
-                            $('.timed-in').css({'display' : 'block'});
-                            $('.btn-timeout').show();
-                            $('.diff-ip-container').hide();
-                            showBirthday();
-                            setTimeout(function(){
-                                $('.timein-notif-container').css({'top' : '-55px'});
+{#$('.time-btn').click(function(e){#}
+            {#e.preventDefault();#}
+            {#var message = $('#diffip-input-reason').val(), error = false,#}
+                    {#user_ip =  $('#time-in-button').data('ip'),#}
+                    {#is_message = undefined, action = $(this).data('action'), pass;#}
+            {#if(user_ip == 0){#}
+                {#if(message == ''){#}
+                    {#$('#diffip-input-reason').css({'border-color': '#f44336'});#}
+                    {#error = true;#}
+                {#}#}
+                {#is_message = true;#}
+                {#if(error){#}
+                    {#return false;#}
+                {#}#}
+            {#}#}
+            {#var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');#}
 
-                            }, 5000);
-                        } else if(data == 2){
-                            $('.timeout-container').css({'display' : 'none'});
-                            $('.timeout').css({'display' : 'none'});
-                            $('.timeout-notif-container').css({'top':'0px'});
-//                            $('.timed-in').css({'display' : 'none'});
-                            $('.timed-out').css({'display' : 'block'});
-                            $('.btn-timeout').css({'display' : 'none'});
-                            $('.timechip').hide();
-                            setTimeout(function(){
-                                $('.timeout-notif-container').css({'top' : '-55px'});
-                            }, 5000);
-                        } else if(data == 5){
+            {#if(action == 'timeout'){#}
+                {#pass = $('#confirmpw-timeout').val();#}
+                {#if(pass == ''){#}
+                    {#pass = 'null';#}
+                    {#$('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});#}
+                    {#$('#errormessage').hide();#}
+                    {#return false;#}
+                {#}#}
+            {#} else if(action == 'timein' && user_ip == 0) {#}
+                {#message = message.replace(/(?:\r\n|\r|\n)/g, '<br>');#}
+            {#}#}
+            {#$('.loader-notif').show();#}
+            {#$('.loader-notif').css({'top' : '0px'});#}
+                {#$.post("{{ path('admin_time_in_no_params') }}" + id + '/' + pass, {is_message: is_message, message:message} ,  function(data){#}
+                    {#console.log(data)#}
+                    {#console.log(data);#}
+                        {#if(data == 1 || data == 6){#}
+                           {#$('.time-in-container').css({'display' : 'none'});#}
+                            {#$('.timein-notif-container').css({'top':'0px'});#}
+                            {#$('.timed-in').css({'display' : 'block'});#}
+                            {#$('.btn-timeout').show();#}
+                            {#$('.diff-ip-container').hide();#}
+                            {#showBirthday();#}
+                            {#setTimeout(function(){#}
+                                {#$('.timein-notif-container').css({'top' : '-55px'});#}
 
-                        }else if(data.error == true && action == 'timeout'){
-                        $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-                        $('#errormessage').show();
-                        }
+                            {#}, 5000);#}
+                        {#} else if(data == 2){#}
+                            {#$('.timeout-container').css({'display' : 'none'});#}
+                            {#$('.timeout').css({'display' : 'none'});#}
+                            {#$('.timeout-notif-container').css({'top':'0px'});#}
+{#//                            $('.timed-in').css({'display' : 'none'});#}
+                            {#$('.timed-out').css({'display' : 'block'});#}
+                            {#$('.btn-timeout').css({'display' : 'none'});#}
+                            {#$('.timechip').hide();#}
+                            {#setTimeout(function(){#}
+                                {#$('.timeout-notif-container').css({'top' : '-55px'});#}
+                            {#}, 5000);#}
+                        {#} else if(data == 5){#}
 
-                        // else if(data== 0){
-                        //     $('.time-in-container').css({'display' : 'none'});
-                        //     $('.diff-ip-container').show();
-                        //    // $('#mb-wrongip').addClass('open');
-                        //     // $('#mb-timein').modal().hide();
-                        //     $('#mb-wrongip').modal('show');
-                        // }
-                }, "json").fail(function(data)
-                {
-                  if(data.status == 401){
-                      $('.time-in-container').hide();
-                      $('.timeout-container').hide();
-                      $('.modal-logout-notify-container').show();
-//                      $('.modal-session-content').show();
-                  }
-                }).always(function(data){
-                    $('.loader-notif').hide();
-                    $('.loader-notif').css({'top' : '-55px'});
-                });
+                        {#}else if(data.error == true && action == 'timeout'){#}
+                        {#$('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});#}
+                        {#$('#errormessage').show();#}
+                        {#}#}
+
+                        {#// else if(data== 0){#}
+                        {#//     $('.time-in-container').css({'display' : 'none'});#}
+                        {#//     $('.diff-ip-container').show();#}
+                        {#//    // $('#mb-wrongip').addClass('open');#}
+                        {#//     // $('#mb-timein').modal().hide();#}
+                        {#//     $('#mb-wrongip').modal('show');#}
+                        {#// }#}
+                {#}, "json").fail(function(data)#}
+                {#{#}
+                  {#if(data.status == 401){#}
+                      {#$('.time-in-container').hide();#}
+                      {#$('.timeout-container').hide();#}
+                      {#$('.modal-logout-notify-container').show();#}
+{#//                      $('.modal-session-content').show();#}
+                  {#}#}
+                {#}).always(function(data){#}
+                    {#$('.loader-notif').hide();#}
+                    {#$('.loader-notif').css({'top' : '-55px'});#}
+                {#});#}
 
 
 
-       });
->>>>>>> origin/develop
+       {#});#}
 $('.btn-ip-cancel').click(function(e){
 e.preventDefault();
 $('.diff-ip-container').hide();
