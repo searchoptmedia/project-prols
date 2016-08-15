@@ -15,12 +15,14 @@ parameters:
     database_name: prols_staging
     database_user: prolsstageadmin
     database_password: pr0L$St@g1ng
-
+#    database_host: localhost
+#    database_port: null
+#    database_name: prols
 #    database_host: localhost
 #    database_port: null
 #    database_name: prols_local
 #    database_user: root
-#    database_password: root
+#    database_password: null
 
     mailer_transport: smtp
     mailer_host: 127.0.0.1

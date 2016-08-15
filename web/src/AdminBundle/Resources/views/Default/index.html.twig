@@ -56,7 +56,7 @@
 
                     {% if timename == false %}
                     <br>
-                    <div class="chip timechip">
+                    <div class="chip timechip" style="display: none">
                         Timed-in at {{currenttimein}}
                     </div>
                     {% endif %}
@@ -177,8 +177,8 @@
 </section>
 {{  include ('AdminBundle:Default:modal.html.twig') }}
     {% if checkip %}
-        {% if timename == true %}
-            {% if timeflag == 0 %}
+        {% if timeflag == 0 %}
+
         <div class="time-in-container" style="display:none;">
             <div class="time-in center-align">
                 <div class="valign-wrapper">
@@ -199,7 +199,6 @@
                 </div>
             </div>
         </div>
-            {% endif %}
         {% endif %}
     {% endif %}
         <div class="timeout-container">
@@ -214,8 +213,8 @@
                             <input id="confirmpw-timeout" type="password" placeholder="Enter password...">
 
                             <div class="btn-block">
-                                <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-in-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a>
-                                <a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+                                <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn" id="time-out-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a>
+                                <a class="waves-effect waves-light red btn-flat btn-large btn-cancel timeout-cancel">Cancel</a>
 
                             </div>
 
@@ -241,8 +240,7 @@
         </div>
         </div>
     {% if matchedip != userip %}
-        {% if timename == true %}
-            {% if timeflag == 0 %}
+        {% if timeflag == 0 %}
         <div class="diff-ip-container">
             <div class="diff-ip center-align">
                 <div class="valign-wrapper">
@@ -257,7 +255,7 @@
                         <p class="diff-ip-reason">Enter reason:</p> -->
 
                         <div class="btn-block">
-                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="diff-ip-time-in-btn" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+                            <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn" id="time-in-button" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
                             <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
                             <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
                         </div>
@@ -265,7 +263,6 @@
                 </div>
             </div>
         </div>
-            {% endif %}
         {% endif %}
     {% endif %}
 <footer></footer>
@@ -295,6 +292,7 @@ $.post( "{{ path('check_timein') }}", {}, function(data) {
         console.log('ok')
         $('.time-in-container').hide();
         $('.btn-timeout').show();
+        $('.timechip').show();
     }else{
         $('.time-in-container').show();
         $('.btn-timeout').hide();
@@ -302,6 +300,177 @@ $.post( "{{ path('check_timein') }}", {}, function(data) {
 });
 var pass = ''
 
+{#$('.time-btn').click(function(e){#}
+            {#e.preventDefault();#}
+            {#var message = $('#diffip-input-reason').val(), error = false,#}
+                    {#user_ip =  $('#time-in-button').data('ip'),#}
+                    {#is_message = undefined, action = $(this).data('action'), pass;#}
+            {#if(user_ip == 0){#}
+                {#if(message == ''){#}
+                    {#$('#diffip-input-reason').css({'border-color': '#f44336'});#}
+                    {#error = true;#}
+                {#}#}
+                {#is_message = true;#}
+                {#if(error){#}
+                    {#return false;#}
+                {#}#}
+            {#}#}
+            {#var id = $('#time-in-button').data('id'), timename = $('#time-in-button').data('time');#}
+
+            {#if(action == 'timeout'){#}
+                {#pass = $('#confirmpw-timeout').val();#}
+                {#if(pass == ''){#}
+                    {#pass = 'null';#}
+                    {#$('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});#}
+                    {#$('#errormessage').hide();#}
+                    {#return false;#}
+                {#}#}
+            {#} else if(action == 'timein' && user_ip == 0) {#}
+                {#message = message.replace(/(?:\r\n|\r|\n)/g, '<br>');#}
+            {#}#}
+            {#$('.loader-notif').show();#}
+            {#$('.loader-notif').css({'top' : '0px'});#}
+                {#$.post("{{ path('admin_time_in_no_params') }}" + id + '/' + pass, {is_message: is_message, message:message} ,  function(data){#}
+                    {#console.log(data)#}
+                    {#console.log(data);#}
+                        {#if(data == 1 || data == 6){#}
+                           {#$('.time-in-container').css({'display' : 'none'});#}
+                            {#$('.timein-notif-container').css({'top':'0px'});#}
+                            {#$('.timed-in').css({'display' : 'block'});#}
+                            {#$('.btn-timeout').show();#}
+                            {#$('.diff-ip-container').hide();#}
+                            {#showBirthday();#}
+                            {#setTimeout(function(){#}
+                                {#$('.timein-notif-container').css({'top' : '-55px'});#}
+
+                            {#}, 5000);#}
+                        {#} else if(data == 2){#}
+                            {#$('.timeout-container').css({'display' : 'none'});#}
+                            {#$('.timeout').css({'display' : 'none'});#}
+                            {#$('.timeout-notif-container').css({'top':'0px'});#}
+{#//                            $('.timed-in').css({'display' : 'none'});#}
+                            {#$('.timed-out').css({'display' : 'block'});#}
+                            {#$('.btn-timeout').css({'display' : 'none'});#}
+                            {#$('.timechip').hide();#}
+                            {#setTimeout(function(){#}
+                                {#$('.timeout-notif-container').css({'top' : '-55px'});#}
+                            {#}, 5000);#}
+                        {#} else if(data == 5){#}
+
+                        {#}else if(data.error == true && action == 'timeout'){#}
+                        {#$('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});#}
+                        {#$('#errormessage').show();#}
+                        {#}#}
+
+                        {#// else if(data== 0){#}
+                        {#//     $('.time-in-container').css({'display' : 'none'});#}
+                        {#//     $('.diff-ip-container').show();#}
+                        {#//    // $('#mb-wrongip').addClass('open');#}
+                        {#//     // $('#mb-timein').modal().hide();#}
+                        {#//     $('#mb-wrongip').modal('show');#}
+                        {#// }#}
+                {#}, "json").fail(function(data)#}
+                {#{#}
+
+                    {#console.log(data);#}
+                      {#$('.time-in-container').hide();#}
+                      {#$('.timeout-container').hide();#}
+                      {#$('.modal-logout-notify-container').show();#}
+{#//                      $('.modal-session-content').show();#}
+
+                {#}).always(function(data){#}
+                    {#$('.loader-notif').hide();#}
+                    {#$('.loader-notif').css({'top' : '-55px'});#}
+                {#});#}
+
+
+
+       {#});#}
+
+$('#time-in-button').click(function(){
+    var message = $('#diffip-input-reason').val(), error = false,
+    user_ip =  $('#time-in-button').data('ip'),
+    is_message = undefined, action = $(this).data('action'), pass;
+    if(user_ip == 0){
+        message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        if(message == ''){
+            $('#diffip-input-reason').css({'border-color': '#f44336'});
+            error = true;
+        }
+        is_message = true;
+        if(error){
+            return false;
+        }
+    }
+    $('#time-in-button').hide();
+    $('.loader-notif').show();
+    $('.loader-notif').css({'top' : '0px'});
+    $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
+        console.log(data);
+        $('.time-in-container').css({'display' : 'none'});
+        $('.timein-notif-container').css({'top':'0px'});
+        $('.timed-in').css({'display' : 'block'});
+        $('.btn-timeout').show();
+        $('.diff-ip-container').hide();
+        showBirthday();
+        setTimeout(function(){
+            $('.timein-notif-container').css({'top' : '-55px'});
+
+        }, 5000);
+    }).always(function(data){
+        console.log(data);
+        $('.loader-notif').hide();
+        $('.loader-notif').css({'top' : '-55px'});
+    });
+});
+
+$('#time-out-button').click(function(){
+    var pass = $('#confirmpw-timeout').val();
+
+    //check if password is empty
+    if(pass == ''){
+        $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+        return;
+    }
+
+    $('.loader-notif').show();
+    $('.loader-notif').css({'top' : '0px'});
+    $('#time-out-button').hide();
+    $('.timeout-cancel').hide();
+    $.post("{{ path('time_out') }}" + pass, function(data){
+
+            //validate password
+        if(data == true) {
+            $('#time-out-button').show();
+            $('.timeout-cancel').show();
+            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
+            $('#errormessage').show();
+            return;
+        }
+            //time out success
+        $('.timeout-container').css({'display' : 'none'});
+        $('.timeout').css({'display' : 'none'});
+        $('.timeout-notif-container').css({'top':'0px'});
+        //                            $('.timed-in').css({'display' : 'none'});
+        $('.timed-out').css({'display' : 'block'});
+        $('.btn-timeout').css({'display' : 'none'});
+        $('.timechip').hide();
+        setTimeout(function(){
+            $('.timeout-notif-container').css({'top' : '-55px'});
+        }, 5000);
+    }).always(function(data){
+        console.log(data);
+        $('.loader-notif').hide();
+        $('.loader-notif').css({'top' : '-55px'});
+    }).fail(function(data){
+        console.log(data);
+        $('.time-in-container').hide();
+        $('.timeout-container').hide();
+        $('.modal-logout-notify-container').show();
+        //                      $('.modal-session-content').show();
+    });
+
+});
 $('.time-btn').click(function(e){
             e.preventDefault();
             var message = $('#diffip-input-reason').val(), error = false,
@@ -387,30 +556,31 @@ $('.time-btn').click(function(e){
 
 
        });
+>>>>>>> origin/develop
 $('.btn-ip-cancel').click(function(e){
-    e.preventDefault();
-    $('.diff-ip-container').hide();
+e.preventDefault();
+$('.diff-ip-container').hide();
 });
 $('.btn-ip-yes').click(function(e){
-    e.preventDefault();
-    $('.diff-ip-reason').show();
+e.preventDefault();
+$('.diff-ip-reason').show();
 });
 
 
 function showBirthday() {
 
-    var bdaynames = [];
-    {% for names in userbdaynames %}
-    bdaynames.push("{{ names }}");
-    {% endfor %}
-    console.log(bdaynames);
-    if(bdaynames.length) {
-        $('.modal-birthday-notify-container').show();
-    }
+var bdaynames = [];
+{% for names in userbdaynames %}
+bdaynames.push("{{ names }}");
+{% endfor %}
+console.log(bdaynames);
+if(bdaynames.length) {
+$('.modal-birthday-notify-container').show();
+}
 
-    $('.btn-bdayclose').click( function() {
-        $('.modal-birthday-notify-container').hide();
-    });
+$('.btn-bdayclose').click( function() {
+$('.modal-birthday-notify-container').hide();
+});
 }
 
 // $('.btn-send-mail').click(function(e){
@@ -430,7 +600,7 @@ function showBirthday() {
 //                             $('.alert-message-timein').show();
 //                             $('.alert-message-timein').css({'top' : '0px'});
 //                             $('.alert-message-timein').html('<center>Message Successfully Sent</center>');
-            
+
 //                     }
 //                     console.log(data);
 //                 });

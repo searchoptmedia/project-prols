@@ -113,18 +113,23 @@ class DefaultController extends Controller{
 		$checkipdata = $emp_time[$currenttime]->getCheckIp();
     	// echo $checkipdata;
 
-    		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-    			$checkdate = $timedata[$ctr]->getDate();    			
-    			if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-    				$timeflag = 1;
-				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-					$timeflag = 0;
-				}elseif($checkdate->format('Y-m-d') != $datetoday){
-					$timeflag = 0;
-				}
-    				
-    		}	
+//    		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+//    			$checkdate = $timedata[$ctr]->getDate();
+//    			if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
+//    				$timeflag = 1;
+//				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
+//					$timeflag = 0;
+//				}elseif($checkdate->format('Y-m-d') != $datetoday){
+//					$timeflag = 0;
+//				}
+//
+//    		}
     	}
+		$et = EmpTimePeer::getEmpLastTimein($id);
+		$emptimedate = $et->getDate();
+		if($emptimedate->format('Y-m-d') == $datetoday){
+			$timeflag = 1;
+		}
 
 		$systime = date('H:i A');
 		$afternoon = date('H:i A', strtotime('12 pm')); 	
@@ -527,54 +532,25 @@ class DefaultController extends Controller{
     	$timein_data = $emp_time[$currenttime]->getTimeIn();
 		$timeout_data = $emp_time[$currenttime]->getTimeOut();
 		$checkipdata = $emp_time[$currenttime]->getCheckIp();
-    		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-    			$checkdate = $timedata[$ctr]->getDate();
-    			
-    			if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-    				$timeflag = 1;
-				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-					$timeflag = 0;
-				}elseif($checkdate->format('Y-m-d') != $datetoday){
-					$timeflag = 0;
-				}
-    				
-    		}
     	}
     	$firstchar = $fname[0];
 		$systime = date('H:i A');
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
-    	if(!empty($timedata) && !empty($timeout_data)){
-	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-				$timeindata = $timedata[$ctr]->getTimeIn();
-				$timeoutdata = $timedata[$ctr]->getTimeOut();
-				$in = new \DateTime($timeindata->format('Y-m-d H:i:s'));
-				$out = new \DateTime($timeoutdata->format('Y-m-d H:i:s'));
-				$manhours = date_diff($out, $in);
-	
-				$ins = $in->format('H:i:s');
-				$outs = $out->format('H:i:s');
-				$answer = $manhours->format('%h') . 'hours ' . $manhours->format('%i') . 'minutes ' . $manhours->format('%s') .' secs<br>';
-				
-				$h = $manhours->format('%h');
-				$i = $manhours->format('%i');
-				$s = $manhours->format('%s');
-
-				$H = intval($h);
-				$ot = $H - 9;
-				if($ot >= 0){
-					$over = $ot . 'hours ' . $i . ' minutes ' . $s . ' secs';
-				}else{
-					$over = 0;
-				}
-
-//				echo "Manhours: " . $answer ."Overtime: " . $over ."<br>";
+		$et = EmpTimePeer::getEmpLastTimein($id);
+		$emptimedate = $et->getDate();
+		if($emptimedate->format('Y-m-d') == $datetoday){
+			$timeflag = 1;
+		}
 
 
+		$userip = InitController::getUserIP($this);
+		$ip_add = ListIpPeer::getValidIP($userip);
+		$is_ip  = InitController::checkIP($userip);
 
 				// echo'<pre>';var_dump($manhours);
-			}
-    	}
+			
+    	
 
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
@@ -622,7 +598,7 @@ class DefaultController extends Controller{
 			'systime' => $systime,
 			'afternoon' => $afternoon,
         	));
-    
+
     }
 
     public function requestAction(){
@@ -870,17 +846,6 @@ class DefaultController extends Controller{
 				$checkipdata = $emp_time[$currenttime]->getCheckIp();
 				// echo $checkipdata;
 
-				for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-					$checkdate = $timedata[$ctr]->getDate();
-					if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-						$timeflag = 1;
-					}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-						$timeflag = 0;
-					}elseif($checkdate->format('Y-m-d') != $datetoday){
-						$timeflag = 0;
-					}
-
-				}
 			}
 
 			$systime = date('H:i A');
@@ -902,6 +867,13 @@ class DefaultController extends Controller{
 			}else{
 				$ip_checker = 0;
 			}
+			$getTime = EmpTimePeer::getAllTime();
+
+			$et = EmpTimePeer::getEmpLastTimein($id);
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
         	'page' => $page,
@@ -920,10 +892,12 @@ class DefaultController extends Controller{
 			'timeflag' => $timeflag,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
+			'getTime' => $getTime,
+
         	));       
 		} 	
     }
-
+	
     public function addEmployeeAction(Request $request){
     	$user = $this->getUser();
     	$role = $user->getRole();
@@ -973,7 +947,7 @@ class DefaultController extends Controller{
 			    	$addemp->setLname($request->request->get('lname'));
 			    	$addemp->setAddress($request->request->get('address'));
 			    	$addemp->setBday($request->request->get('bday'));
-			    	$addemp->setDateJoined($current_date);
+//			    	$addemp->setDateJoined($current_date);
 			    	$addemp->setListDeptDeptId($request->request->get('dept'));
 			    	$addemp->setListPosPosId($request->request->get('pos'));
 			    	$addemp->setStatus($request->request->get('status'));

@@ -27,7 +27,70 @@
         <div class="container-fluid">
         <div class="row">
 
-            
+            <div class="page-content">
+                <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                    <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                    <h3 class="center-align">Manage Employees</h3>
+                    {#<div class="center-align nav-menu" style="margin-top: 20px;">#}
+                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger view-emp-btn" style="color: white;">View Employees</a>#}
+                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger view-time-btn" style="color: white;">View Time logs</a>#}
+                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Requests</a>#}
+                    {#</div>#}
+                    <div class="top-nav" style="margin-top: 20px;">
+                        <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
+                    </div>
+                </div>
+
+
+    {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
+    {{ include ('AdminBundle:Default:managetime.html.twig') }}
+            </div>
+        {#<div class="page-content">#}
+            {#<div class="col-md-12 light-blue darken-1 heading z-depth-1">#}
+            {#<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>#}
+                {#<h3 class="center-align">Employees</h3>#}
+                {#<div class="center-align nav-menu" style="margin-top: 20px;">#}
+                {#<a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn btn-export modal-trigger" style="color: white;">View Employees</a>#}
+                {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Time logs</a>#}
+                {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Requests</a>#}
+                {#</div>#}
+            {#<div class="top-nav" style="margin-top: 20px;">#}
+                {#<a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>#}
+            {#</div>#}
+        {#</div>#}
+
+        {#<div class="col-md-12 content">#}
+            {#<div class="row" style="margin-left:5px;">#}
+                {#<table class="bordered highlight emp-list">#}
+                    {#<thead>#}
+                          {#<tr>#}
+                              {#<th data-field="id">Employee Number</th>#}
+                              {#<th data-field="name">Name</th>#}
+                              {#<th data-field="price">Department</th>#}
+                              {#<th data-field="price">Position</th>#}
+                              {#<th data-field="price">Status</th>#}
+                          {#</tr>#}
+                    {#</thead>#}
+
+                     {#<tbody>#}
+                        {#{% for emp in getEmployee %}#}
+                            {#{% if emp.getProfileStatus == 0 %}#}
+                                {#{% if emp.EmpAcc.getRole == 'employee' %}#}
+                          {#<tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">#}
+                            {#<td>{{emp.getEmployeeNumber}}</td>#}
+                            {#<td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>#}
+                            {#<td>{{emp.getListDept().DeptNames}}</td>#}
+                            {#<td>{{emp.getListPos().PosNames}}</td>#}
+                            {#<td>{{emp.getStatus}}</td>#}
+                          {#</tr>#}
+                                {#{% endif %}#}
+                            {#{% endif %}#}
+                          {#{% endfor %}#}
+                      {#</tbody>#}
+                {#</table>#}
+            {#</div>                  #}
+        {#</div>#}
+        {#</div>#}
 
         <div class="page-content">
             <div class="col-md-12 light-blue darken-1 heading z-depth-1">
@@ -70,7 +133,6 @@
             </div>                  
         </div>
         </div>
-
         {#<div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">#}
             {#<a class="btn-floating btn-large red">#}
             {#<i class="material-icons">add</i>#}
@@ -192,6 +254,16 @@
                         <div class="row" style="margin-top: 10px;">
                             <div class="col-md-6">
                                 <label class="label">From:</label>
+
+                             <input type="text" name="start-date" placeholder="Start Date" class="start-date"
+                                       type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="label">To:</label>
+                                <input name="end-date" placeholder="End Date" class="end-date"
+                                       type="text">
+
                                 <input name="start-date" placeholder="Start Date" class="start-date"
                                        type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
                             </div>
@@ -199,6 +271,7 @@
                                 <label class="label">To:</label>
                                 <input name="end-date" placeholder="End Date" class="end-date"
                                        type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -211,6 +284,11 @@
 
                         {#</div>#}
                     </form>
+
+                        </div>
+                    </div>
+
+
 
                     {#<p>Choose file/s to export:</p>#}
                     {#<form action="#" class="cbox-file">#}
@@ -226,6 +304,8 @@
 
 
                     {#</form>#}
+
+
         <!-- EMPLOYEE MODAL ONCLICK -->
         {#<div id="testmodal" class="modal modal-fixed-footer">#}
             {#<div class="modal-content">#}
@@ -263,9 +343,11 @@
         {#</div>#}
     </section>
 </section>
-
 {% endblock %}
 
+{% block scripts %}
+   {{  parent() }}
+{% endblock %}
 {% block customjs %}
 <script type="text/javascript">
 $(document).ready(function(){
@@ -322,6 +404,21 @@ $(document).ready(function(){
         start   = start.toDateString();
         end     = end.toLocaleString();
 
+//        if(start == 'Invalid Date' || end == 'Invalid Date'){
+//            if(start == 'Invalid Date'){
+//                $('.start-date').css({'border-color' : 'red'});
+//                setTimeout(function(){
+//                    $('.start-date').css({'border-color' : 'gray'});
+//                }, 500);
+//            }
+//            if(end == 'Invalid Date'){
+//                $('.end-date').css({'border-color' : 'red'});
+//                setTimeout(function(){
+//                    $('.end-date').css({'border-color' : 'gray'});
+//                }, 500);
+//            }
+//            return;
+//        }
         if(start == 'Invalid Date' || end == 'Invalid Date'){
             if(start == 'Invalid Date'){
                 $('.start-date').css({'border-color' : 'red'});
@@ -341,6 +438,8 @@ $(document).ready(function(){
             alert('End date must be higher');
             return;
         }
+        $('[name=start-date]').val('');
+        $('[name=end-date]').val('');
         if ($('#select-dept:checked').length){
             if(deptid == null){
                 $('#listdept').css({'color' : 'red'});
@@ -350,11 +449,23 @@ $(document).ready(function(){
                return;
             }
         }
+        $('#exportchoice').closeModal();
         window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start='
             + start + '&end=' + end
             + '&isDate=' + isDate, '_blank');
     });
 
+    $('.view-emp-btn').click(function(){
+        $('.managetime-content').hide();
+        $('.manageemployees-content').show();
+    });
+
+    $('.view-time-btn').click(function(){
+        $('.managetime-content').show();
+        $('.manageemployees-content').hide();
+    });
+
 });
+
 </script>
 {% endblock %}

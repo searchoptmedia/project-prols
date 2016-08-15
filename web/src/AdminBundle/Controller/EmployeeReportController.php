@@ -28,6 +28,12 @@ class EmployeeReportController extends Controller {
         $startdate = date('Y-m-d', strtotime($startdateinput));
         $enddate = date('Y-m-d', strtotime($enddateinput));
 
+        if($startdateinput == 'Invalid Date' || $enddateinput == 'Invalid Date'){
+            $c->addDescendingOrderByColumn(EmpTimePeer::DATE);
+            $results = EmpTimePeer::getEmployeeTimes($c);
+            return $results;
+        }
+
 //        $c->addAscendingOrderByColumn($startdate, $enddate, \Criteria::GREATER_THAN);
         if($deptid == 'null'){
 //          $results = EmpTimePeer::getEmployeeTimes();
@@ -55,13 +61,21 @@ class EmployeeReportController extends Controller {
         $response->setCallback(function() {
             $handle = fopen('php://output', 'w+');
             // Add the header of the CSV file
+
+            fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (decimal)', 'Overtime'));
+
             fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (time)', 'Total hours (decimal)', 'Overtime'));
+
             $records = $this->getRecord();
             foreach($records as $emp) {
                 $empid          = $emp->getEmpAccAccId();
                 $timeindata     = $emp->getTimeIn()->format('h:i A');
                 $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
+
+                $date           = $emp->getDate()->format('m/d/Y');
+
                 $date           = $emp->getDate()->format('d/m/Y');
+
                 $dateday        = $emp->getDate()->format('D');
                 $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
 
@@ -92,8 +106,10 @@ class EmployeeReportController extends Controller {
                     }
                     if($dateday == 'Sat' || $dateday == 'Sun'){
                         $overtime = $totalHoursDec;
+
                         $totalHours = 0;
                         $totalHoursDec = 0;
+
                     }
                     if($overtime < 1){
                         $overtime = 0;
@@ -103,17 +119,17 @@ class EmployeeReportController extends Controller {
                 }
 
                 fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHours, $totalHoursDec, $overtime)
+                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime)
                 );
             }
             exit;
 
             fclose($handle);
         });
-
+        $filedate           = date('m/d/Y');
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="employee_export.csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="employee_export"'.$filedate.'".csv"');
         return $response;
     }
 
