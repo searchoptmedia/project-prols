@@ -64,8 +64,6 @@ class EmployeeReportController extends Controller {
 
             fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (decimal)', 'Overtime'));
 
-            fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (time)', 'Total hours (decimal)', 'Overtime'));
-
             $records = $this->getRecord();
             foreach($records as $emp) {
                 $empid          = $emp->getEmpAccAccId();
