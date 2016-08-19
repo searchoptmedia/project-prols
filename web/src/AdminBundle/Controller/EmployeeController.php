@@ -69,7 +69,7 @@ class EmployeeController extends Controller{
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$ip_add 		= ListIpPeer::getAllIp();
 
-		//Compare last time in date with date today
+		//Compare last time in date with date today 	
 		if(!empty($timedata)){
 			$emptimedate = $timedata->getDate();
 			if($emptimedate == $datetoday){
