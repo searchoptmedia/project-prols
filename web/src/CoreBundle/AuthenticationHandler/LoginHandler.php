@@ -35,15 +35,15 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
         $id = $user->getId();
         $data = EmpProfilePeer::getInformation($id);
         $empStatus = $data->getProfileStatus();
-        $timedata = EmpTimePeer::getEmpLastTimein($id);
-        $timeout = $timedata->getTimeOut();
-        $timeoutdate = $timedata->getDate('M d Y');
-        $datetoday = date('M d Y');
+//        $timedata = EmpTimePeer::getEmpLastTimein($id);
+//        $timeout = $timedata->getTimeOut();
+//        $timeoutdate = $timedata->getDate('M d Y');
+//        $datetoday = date('M d Y');
         
         $isTimeout = false;
-        if(empty($timeout) && $timeoutdate != $datetoday){
-          $isTimeout = true;  
-        }
+//        if(empty($timeout) && $timeoutdate != $datetoday){
+//          $isTimeout = true;
+//        }
 
         if ($token->getUser() instanceof EmpAcc){
             if($empStatus == 0){
