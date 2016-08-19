@@ -7,6 +7,9 @@
 .req-icon{
     margin-top: 10px;
 }
+span.badge.new.pending:after{
+    content: " Pending";
+}
 .modal-container {
     position: fixed;
     width: 100%;

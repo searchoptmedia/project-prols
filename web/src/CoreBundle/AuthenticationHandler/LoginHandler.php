@@ -2,6 +2,7 @@
 
 namespace CoreBundle\AuthenticationHandler;
 
+use CoreBundle\Model\EmpTimePeer;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\SecurityContext;
@@ -34,11 +35,20 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
         $id = $user->getId();
         $data = EmpProfilePeer::getInformation($id);
         $empStatus = $data->getProfileStatus();
+        $timedata = EmpTimePeer::getEmpLastTimein($id);
+        $timeout = $timedata->getTimeOut();
+        $timeoutdate = $timedata->getDate('M d Y');
+        $datetoday = date('M d Y');
+        
+        $isTimeout = false;
+        if(empty($timeout) && $timeoutdate != $datetoday){
+          $isTimeout = true;  
+        }
 
         if ($token->getUser() instanceof EmpAcc){
             if($empStatus == 0){
-                $refererUrl = $this->router->generate('admin_homepage');
-                $response = new RedirectResponse($refererUrl);   
+                $refererUrl = $this->router->generate('admin_homepage', array('isTimeout' => $isTimeout));
+                $response = new RedirectResponse($refererUrl);
             }else{
                 $response = array("Invalid Account"); 
                 echo json_encode($response);

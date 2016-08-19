@@ -536,7 +536,7 @@ $(function() {
 
 
 
-                    $('#daily_agenda').openModal();
+                    // $('#daily_agenda').openModal();
 
                    // $('.btn-submitmeeting').off('click').click(function(e){
                    //      e.preventDefault();

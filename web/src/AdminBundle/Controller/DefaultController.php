@@ -76,7 +76,7 @@ class DefaultController extends Controller{
 		return $timename;    	
     }
 
-    public function indexAction(){
+    public function indexAction(Request $request){
 
     	$user = $this->getUser();
 
@@ -174,6 +174,10 @@ class DefaultController extends Controller{
 				$userbdaynames[] = $u->getFname();
 			}
 		}
+		
+		$isTimeout = $request->query->get('isTimeout');
+		
+		
         return $this->render('AdminBundle:Default:index.html.twig', array(
 			'userbdaynames' => $userbdaynames,
         	'name' => $name,
@@ -193,6 +197,7 @@ class DefaultController extends Controller{
           	'checkipdata' => $checkipdata,
 			'checkip' => $ip_checker,
 			'requestcount' => $requestcount,
+			'isTimeout' => $isTimeout,
 
         ));
     }

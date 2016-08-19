@@ -75,7 +75,7 @@
 
             {% block nav %}
                 <div class="collection emp-nav">
-                    <a href="{{ path('admin_homepage') }}" class="collection-item active"><i class="material-icons nav-icon">reorder</i> Home</a>
+                    <a href="{{ path('admin_homepage') }}" class="collection-item active"><i class="material-icons nav-icon">reorder</i> Home{{ isTimeout }}</a>
                     <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
                     <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
                     
@@ -84,7 +84,7 @@
                <div class="collection admin-nav">
                     {% if role == 'ADMIN' %}
                     <a href="{{ path('manage_employee') }}" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-                    <a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>
+                    {#<a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>#}
                     {% endif %}
                 </div>
 
@@ -217,9 +217,7 @@
     </section>
 </section>
 {{  include ('AdminBundle:Default:modal.html.twig') }}
-    {% if checkip %}
-        {% if timeflag == 0 %}
-
+    {% if checkip and timeflag == 0 and isTimeout == false %}
         <div class="time-in-container" style="display:none;">
             <div class="time-in center-align">
                 <div class="valign-wrapper">
@@ -242,8 +240,25 @@
                 </div>
             </div>
         </div>
-        {% endif %}
     {% endif %}
+{#{% if isTimeout == 1 %}#}
+    {#<div class="time-in-container" style="display:none;">#}
+        {#<div class="time-in center-align">#}
+            {#<div class="valign-wrapper">#}
+
+                {#<div class="prompt" style="display:block; width:100%; float:none; clear:both;">#}
+                        {#<p class="confirm-timein">You forgot to Time out yesterday</p>#}
+                    {#<div class="btn-block">#}
+                        {#<a class="waves-effect waves-light green btn-flat btn-large"#}
+                          {#data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">#}
+                            {#<i class="material-icons left icon-timein">query_builder</i>Time Out</a>#}
+
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+{#{% endif %}#}
         <div class="timeout-container">
             <div class="timeout center-align">
                 <div class="valign-wrapper">
@@ -279,8 +294,7 @@
             </div>
         </div>
         </div>
-    {% if matchedip != userip %}
-        {% if timeflag == 0 %}
+    {% if matchedip != userip and timeflag == 0%}
         <div class="diff-ip-container">
             <div class="diff-ip center-align">
                 <div class="valign-wrapper">
@@ -305,7 +319,6 @@
                 </div>
             </div>
         </div>
-        {% endif %}
     {% endif %}
 <footer></footer>
 {% block scripts %}
@@ -707,7 +720,7 @@ e.preventDefault();
 $('.diff-ip-reason').show();
 });
 
-$('.modal-trigger').leanModal();
+//$('.modal-trigger').leanModal();
 
 function showBirthday() {
 

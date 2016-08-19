@@ -15,7 +15,7 @@ class DefaultController extends Controller
         if(!is_null($this->getUser())){
 	        $user = $this->getUser();
 	        if(strcasecmp($user->getRole(), 'admin') == 0 || strcasecmp($user->getRole(), 'employee') == 0) {
-	            return $this->redirect($this->generateUrl('admin_homepage'));         
+	            return $this->redirect($this->generateUrl('admin_homepage'));
 	        }
         }
 
