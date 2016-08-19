@@ -1,6 +1,12 @@
 .label{
     color: #333333;
 }
+.leave-icon{
+    margin-top: 20px;
+}
+.req-icon{
+    margin-top: 10px;
+}
 .modal-container {
     position: fixed;
     width: 100%;

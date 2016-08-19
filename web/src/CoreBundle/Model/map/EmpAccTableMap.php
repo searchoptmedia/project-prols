@@ -59,10 +59,11 @@ class EmpAccTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('EmpLeaveRelatedByEmpAccId', 'CoreBundle\\Model\\EmpLeave', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_id', ), null, null, 'EmpLeavesRelatedByEmpAccId');
-        $this->addRelation('EmpLeaveRelatedByAdminId', 'CoreBundle\\Model\\EmpLeave', RelationMap::ONE_TO_MANY, array('id' => 'admin_id', ), null, null, 'EmpLeavesRelatedByAdminId');
+        $this->addRelation('EmpRequestRelatedByEmpAccId', 'CoreBundle\\Model\\EmpRequest', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_id', ), null, null, 'EmpRequestsRelatedByEmpAccId');
+        $this->addRelation('EmpRequestRelatedByAdminId', 'CoreBundle\\Model\\EmpRequest', RelationMap::ONE_TO_MANY, array('id' => 'admin_id', ), null, null, 'EmpRequestsRelatedByAdminId');
         $this->addRelation('EmpProfile', 'CoreBundle\\Model\\EmpProfile', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpProfiles');
         $this->addRelation('EmpTime', 'CoreBundle\\Model\\EmpTime', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpTimes');
+        $this->addRelation('EmpTimeReject', 'CoreBundle\\Model\\EmpTimeReject', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpTimeRejects');
     } // buildRelations()
 
 } // EmpAccTableMap

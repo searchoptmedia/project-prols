@@ -517,6 +517,7 @@ $(function() {
                 prepare_external_list();
 
                 var calendar = $('#calendar').fullCalendar({
+
                     header: {
                         left: 'prev,next today',
                         center: 'title',
@@ -528,44 +529,46 @@ $(function() {
                     selectable: true,
                     selectHelper: true,
                     aspectRatio: 2,
-                    windowResize: true, 
+                    windowResize: true,
+
+
                     select: function(start, end, allDay) {
 
 
 
-                    // $('#daily_agenda').openModal();
+                    $('#daily_agenda').openModal();
 
-                   $('.btn-submitmeeting').off('click').click(function(e){
-                        e.preventDefault();
-                       var title = $('#meeting').val();
-
-                        if($("#meeting").val() == ''){
-                            $("#meeting").closest('.form-reqmeeting').find('.required-field').css({'display' : 'block'})
-                            $("#meeting").closest('.form-reqmeeting').find('.sent').css({'display' : 'none'})
-                         
-                         } else {
-                            $("#meeting").closest('.form-reqmeeting').find('.required-field').css({'display' : 'none'})
-                            $("#meeting").closest('.form-reqmeeting').find('.sent').css({'display' : 'block'})
-                            $("#meeting").val('');
-                            }
-
-                       console.log(title);
-
-                       if (title) {
-                           calendar.fullCalendar('renderEvent',
-                           {
-                               title: title,
-                               start: start,
-                               end: end,
-                               allDay: allDay
-                           },
-                           true
-                           );
-                       }
-                       calendar.fullCalendar('unselect');
-
-                       $('#meeting').val('');
-                   });
+                   // $('.btn-submitmeeting').off('click').click(function(e){
+                   //      e.preventDefault();
+                   //     var title = $('#meeting').val();
+                   //
+                   //      if($("#meeting").val() == ''){
+                   //          $("#meeting").closest('.form-reqmeeting').find('.required-field').css({'display' : 'block'})
+                   //          $("#meeting").closest('.form-reqmeeting').find('.sent').css({'display' : 'none'})
+                   //
+                   //       } else {
+                   //          $("#meeting").closest('.form-reqmeeting').find('.required-field').css({'display' : 'none'})
+                   //          $("#meeting").closest('.form-reqmeeting').find('.sent').css({'display' : 'block'})
+                   //          $("#meeting").val('');
+                   //          }
+                   //
+                   //     console.log(title);
+                   //
+                   //     if (title) {
+                   //         calendar.fullCalendar('renderEvent',
+                   //         {
+                   //             title: title,
+                   //             start: start,
+                   //             end: end,
+                   //             allDay: allDay
+                   //         },
+                   //         true
+                   //         );
+                   //     }
+                   //     calendar.fullCalendar('unselect');
+                   //
+                   //     $('#meeting').val('');
+                   //      });
 
                     },
 
@@ -590,6 +593,7 @@ $(function() {
                         // }
 
                     }
+
                 });
                 
                 $("#new-event").on("click",function(){

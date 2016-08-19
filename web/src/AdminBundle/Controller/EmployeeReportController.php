@@ -21,21 +21,42 @@ class EmployeeReportController extends Controller {
     {
         $c = new \Criteria();
         $deptid = $_REQUEST['deptid'];
-
+        $empname = $_REQUEST['empname'];
         $startdateinput = $_REQUEST['start'];
         $enddateinput = $_REQUEST['end'];
 
         $startdate = date('Y-m-d', strtotime($startdateinput));
         $enddate = date('Y-m-d', strtotime($enddateinput));
 
+
         if($startdateinput == 'Invalid Date' || $enddateinput == 'Invalid Date'){
-            $c->addDescendingOrderByColumn(EmpTimePeer::DATE);
+            $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
+            $results = EmpTimePeer::getEmployeeTimes($c);
+            if($deptid != 'null'){
+                $c->add(EmpProfilePeer::LIST_DEPT_ID, $deptid, \Criteria::EQUAL);
+                $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
+                $results = EmpTimePeer::getEmployeeTimes($c);
+            }
+            if($empname != 'null'){
+                $c->add(EmpTimePeer::EMP_ACC_ACC_ID, $empname, \Criteria::EQUAL);
+                $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
+                $results = EmpTimePeer::getEmployeeTimes($c);
+            }
+            return $results;
+        }
+
+        if($empname != 'null'){
+            $c->add(EmpTimePeer::EMP_ACC_ACC_ID, $empname, \Criteria::EQUAL);
+            $c->add(EmpTimePeer::DATE, $startdate, \Criteria::GREATER_EQUAL);
+            $c->addAnd(EmpTimePeer::DATE, $enddate, \Criteria::LESS_EQUAL);
+            $c->addAscendingOrderByColumn(EmpTimePeer::DATE);
             $results = EmpTimePeer::getEmployeeTimes($c);
             return $results;
         }
 
 //        $c->addAscendingOrderByColumn($startdate, $enddate, \Criteria::GREATER_THAN);
         if($deptid == 'null'){
+
 //          $results = EmpTimePeer::getEmployeeTimes();
             $c->add(EmpTimePeer::DATE, $startdate, \Criteria::GREATER_EQUAL);
             $c->addAnd(EmpTimePeer::DATE, $enddate, \Criteria::LESS_EQUAL);
@@ -71,8 +92,6 @@ class EmployeeReportController extends Controller {
                 $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
 
                 $date           = $emp->getDate()->format('m/d/Y');
-
-                $date           = $emp->getDate()->format('d/m/Y');
 
                 $dateday        = $emp->getDate()->format('D');
                 $isOffice       = $emp->getCheckIp() ? 'Yes':'No';

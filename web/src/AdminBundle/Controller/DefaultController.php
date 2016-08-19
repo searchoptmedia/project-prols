@@ -2,6 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\EmpRequest;
+use CoreBundle\Model\EmpRequestPeer;
+use CoreBundle\Model\EmpRequestQuery;
+use CoreBundle\Model\EmpTimeReject;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,6 +47,7 @@ use Swift_SmtpTransport;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Validator\Constraints\Email;
 
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
@@ -134,7 +139,8 @@ class DefaultController extends Controller{
 		$systime = date('H:i A');
 		$afternoon = date('H:i A', strtotime('12 pm')); 	
 		//counts number of pending requests
-		$data = EmpLeaveQuery::create()
+
+		$requestcount = EmpRequestQuery::create()
 		->filterByStatus('Pending')
 		->find()->count();
 
@@ -173,7 +179,6 @@ class DefaultController extends Controller{
         	'user' => $user,
           	'timename' => $timename,
           	'id' => $id,
-          	'data' => $data,
           	'currenttimein' => $currenttimein,
           	'currenttimeout' => $currenttimeout,
           	'overtime' => $overtime,
@@ -184,6 +189,7 @@ class DefaultController extends Controller{
           	'matchedip' => $matchedip,
           	'checkipdata' => $checkipdata,
 			'checkip' => $ip_checker,
+			'requestcount' => $requestcount,
 
         ));
     }
@@ -493,7 +499,7 @@ class DefaultController extends Controller{
 		$getDept = ListDeptPeer::getAllDept();
 
 		//check pending count
-		$data = EmpLeaveQuery::create()
+		$requestcount = EmpRequestQuery::create()
 		->filterByStatus('Pending')
 		->find()->count();
 
@@ -549,7 +555,7 @@ class DefaultController extends Controller{
 		$is_ip  = InitController::checkIP($userip);
 
 				// echo'<pre>';var_dump($manhours);
-			
+
     	
 
 		$userip = InitController::getUserIP($this);
@@ -577,7 +583,6 @@ class DefaultController extends Controller{
          	'role' => $role,
 			'user2' => $user2,
          	'profileId' => $profileid,
-         	'data' => $data,
          	'contacttype' => $contacttype,
          	'conEmailId' => $conEmailId,
          	'conMobileId' => $conMobileId,
@@ -597,6 +602,7 @@ class DefaultController extends Controller{
 			'checkip' => $is_ip,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
+			'requestcount' => $requestcount,
         	));
 
     }
@@ -615,34 +621,76 @@ class DefaultController extends Controller{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}	
 		else {
-
-
-		$data = EmpLeaveQuery::create()
-		->filterByStatus('Pending')
-		->find()->count();
-
-		$requestData = array();
-		$requestGet = EmpLeavePeer::getAllLeave();
 		
+		$requestGet = EmpRequestPeer::getAllRequest();
 
+			$timedata = EmpTimePeer::getTime($id);
+			$timeflag = 0;
+			$currenttimein = 0;
+			$currenttimeout = 0;
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$checktimein = $timedata[$ctr]->getTimeIn();
+				$checktimeout = $timedata[$ctr]->getTimeOut();
+				if(!is_null($checktimein) && is_null($checktimeout)){
+					$currenttimein = $checktimein->format('h:i A');
+
+				}else{
+					$currenttimein = 0;
+					$currenttimeout = $checktimeout->format('h:i A');
+				}
+			}
+			$timeoutdata = '';
+			$checkipdata = null;
+			if(!empty($timedata)){
+				$datetoday = date('Y-m-d');
+				$emp_time = EmpTimePeer::getTime($id);
+				$currenttime = sizeof($emp_time) - 1;
+				$timein_data = $emp_time[$currenttime]->getTimeIn();
+				$timeout_data = $emp_time[$currenttime]->getTimeOut();
+				$checkipdata = $emp_time[$currenttime]->getCheckIp();
+			}
+			$systime = date('H:i A');
+			$afternoon = date('H:i A', strtotime('12 pm'));
+
+			$et = EmpTimePeer::getEmpLastTimein($id);
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
 		//echo '<pre>';var_dump($requestGet);exit;		
-		
-		
-       return $this->render('AdminBundle:Default:request.html.twig', array(
+			$userip = InitController::getUserIP($this);
+			$ip_add = ListIpPeer::getValidIP($userip);
+			$is_ip  = InitController::checkIP($userip);
+
+			$requestcount = EmpRequestQuery::create()
+				->filterByStatus('Pending')
+				->find()->count();
+
+
+			return $this->render('AdminBundle:Default:request.html.twig', array(
         	'name' => $name,
         	'page' => $page,
          	'role' => $role,
         	'user' => $user,
           	'timename' => $timename,
-          	'data' => $data,
           	'allrequest' => $requestGet,
           	'userid' =>$id,
+		   'timeflag' => $timeflag,
+		   'currenttimein' => $currenttimein,
+		   'currenttimeout' => $currenttimeout,
+		   'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
+		   'userip' => $userip,
+		   'checkipdata' => $checkipdata,
+		   'checkip' => $is_ip,
+		   'systime' => $systime,
+		   'afternoon' => $afternoon,
+			'requestcount' => $requestcount,
         	));
 		}	
     }
 
     public function statusAcceptAction($id, $id2){
-		$accept = EmpLeavePeer::retrieveByPk($id);
+		$accept = EmpRequestPeer::retrieveByPk($id);
 		if(isset($accept) && !empty($accept)) {
 			$accept->setAdminId($id2);
 			$accept->setStatus('Accepted');
@@ -657,10 +705,6 @@ class DefaultController extends Controller{
 			$response = array('response' => 'not found');
 		}
 		
-		$leavetype = $accept->getListLeaveTypeId();
-		if($leavetype <= 3){
-
-		}
 		echo json_encode($response);
 		exit;
     }
@@ -808,12 +852,7 @@ class DefaultController extends Controller{
 		$getEmployee = EmpProfilePeer::getAllProfile();
 		$getPos = ListPosPeer::getAllPos();
 		$getDept = ListDeptPeer::getAllDept();
-
-		//echo '<pre>';var_dump($getEmployee);exit;
-
-		$data = EmpLeaveQuery::create()
-		->filterByStatus('Pending')
-		->find()->count();
+			
 
 			$timedata = EmpTimePeer::getTime($id);
 			$currenttimein = 0;
@@ -851,52 +890,140 @@ class DefaultController extends Controller{
 			$systime = date('H:i A');
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
-//			$userip = $this->container->get('request')->getClientIp();
-		$userip = $this->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+			$userip = InitController::getUserIP($this);
 			$ip_add = ListIpPeer::getValidIP($userip);
+			$is_ip  = InitController::checkIP($userip);
 
-			if(!is_null($ip_add)){
-				$matchedip = $ip_add->getAllowedIp();
-			}
-			else{
-				$matchedip = '';
-			}
-
-			if($userip == $matchedip){
-				$ip_checker = 1;
-			}else{
-				$ip_checker = 0;
-			}
 			$getTime = EmpTimePeer::getAllTime();
-
+			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
 			$emptimedate = $et->getDate();
 			if($emptimedate->format('Y-m-d') == $datetoday){
 				$timeflag = 1;
 			}
+
+			$requestcount = EmpRequestQuery::create()
+				->filterByStatus('Pending')
+				->find()->count();
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
         	'page' => $page,
          	'role' => $role,
         	'user' => $user,
           	'timename' => $timename,
-          	'data' => $data,
           	'getEmployee' => $getEmployee,
           	'getPos' => $getPos,
           	'getDept' => $getDept,
 			'userip' => $userip,
-			'matchedip' => $matchedip,
+			'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
 			'checkipdata' => $checkipdata,
-			'checkip' => $ip_checker,
+			'checkip' => $is_ip,
 			'currenttimein' => $currenttimein,
 			'timeflag' => $timeflag,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
 			'getTime' => $getTime,
+			'getAllProfile' => $getAllProfile,
+			'requestcount' => $requestcount,
 
         	));       
 		} 	
     }
+
+	public function timeLogsAction(){
+		$user = $this->getUser();
+		$name = $user->getUsername();
+		$page = 'View Request';
+		$role = $user->getRole();
+		$id = $user->getId();
+		$timename = self::timeInOut($id);
+
+		if((strcasecmp($role, 'employee') == 0)){
+			return $this->redirect($this->generateUrl('admin_homepage'));
+		}
+		else{
+
+			$getEmployee = EmpProfilePeer::getAllProfile();
+			$getPos = ListPosPeer::getAllPos();
+			$getDept = ListDeptPeer::getAllDept();
+
+
+			$timedata = EmpTimePeer::getTime($id);
+			$currenttimein = 0;
+			$currenttimeout = 0;
+			$timeflag = 0;
+
+			//get last timed in
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+				$checktimein = $timedata[$ctr]->getTimeIn();
+				$checktimeout = $timedata[$ctr]->getTimeOut();
+				if(!is_null($checktimein) && is_null($checktimeout)){
+					$currenttimein = $checktimein->format('h:i A');
+
+
+				}else{
+					$currenttimein = 0;
+					$currenttimeout = $checktimeout->format('h:i A');
+				}
+			}
+			$checkipdata = null;
+			//check if already timed in today
+			if(!empty($timedata)){
+
+				$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+				$datetoday = date('Y-m-d');
+				$emp_time = EmpTimePeer::getTime($id);
+				$currenttime = sizeof($emp_time) - 1;
+				$timein_data = $emp_time[$currenttime]->getTimeIn();
+				$timeout_data = $emp_time[$currenttime]->getTimeOut();
+				$checkipdata = $emp_time[$currenttime]->getCheckIp();
+				// echo $checkipdata;
+
+			}
+
+			$systime = date('H:i A');
+			$afternoon = date('H:i A', strtotime('12 pm'));
+
+			$userip = InitController::getUserIP($this);
+			$ip_add = ListIpPeer::getValidIP($userip);
+			$is_ip  = InitController::checkIP($userip);
+
+			$getTime = EmpTimePeer::getAllTime();
+			$getAllProfile = EmpProfilePeer::getAllProfile();
+			$et = EmpTimePeer::getEmpLastTimein($id);
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
+
+			$requestcount = EmpRequestQuery::create()
+				->filterByStatus('Pending')
+				->find()->count();
+
+			return $this->render('AdminBundle:Default:managetime.html.twig', array(
+				'name' => $name,
+				'page' => $page,
+				'role' => $role,
+				'user' => $user,
+				'timename' => $timename,
+				'getEmployee' => $getEmployee,
+				'getPos' => $getPos,
+				'getDept' => $getDept,
+				'userip' => $userip,
+				'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
+				'checkipdata' => $checkipdata,
+				'checkip' => $is_ip,
+				'currenttimein' => $currenttimein,
+				'timeflag' => $timeflag,
+				'systime' => $systime,
+				'afternoon' => $afternoon,
+				'getTime' => $getTime,
+				'getAllProfile' => $getAllProfile,
+				'requestcount' => $requestcount,
+
+			));
+		}
+	}
 	
     public function addEmployeeAction(Request $request){
     	$user = $this->getUser();
@@ -982,38 +1109,33 @@ class DefaultController extends Controller{
 		    	}
 			}
     }
-
-    public function sendRequestAction($value){
-
-
-		exit;
-	}
-
-
-	public function requestMeetingAction($id){
-		$requestMeeting = new EmpLeave();
+	
+	public function requestMeetingAction(Request $req){
+		$requestMeeting = new EmpRequest();
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
-		$requestMeeting->setRequest($id);
+		$requestMeeting->setRequest($req->request->get('reqmeetmessage'));
 		$requestMeeting->setStatus('Pending');
 		$requestMeeting->setDateStarted($current_date);
 		$requestMeeting->setDateEnded($current_date);
 		$requestMeeting->setEmpAccId($this->getUser()->getId());
-		$requestMeeting->setListLeaveTypeId(4);
+		$requestMeeting->setListRequestTypeId(4);
 		$requestMeeting->save();
-		echo 1;
+		echo json_encode(array('result' => 'ok'));
 		exit;
 	}
-	public function requestLeaveAction($id, $id2, $id3){
-		$leaveinput = new EmpLeave();
-		$leaveinput->setRequest($id);
+
+	public function requestLeaveAction(Request $req){
+
+		$leaveinput = new EmpRequest();
+		$leaveinput->setRequest($req->request->get('reasonleave'));
 		$leaveinput->setStatus('Pending');
-		$leaveinput->setDateStarted($id2);
-		$leaveinput->setDateEnded($id3);
+		$leaveinput->setDateStarted($req->request->get('leavestartdate'));
+		$leaveinput->setDateEnded($req->request->get('leaveenddate'));
 		$leaveinput->setEmpAccId($this->getUser()->getId());
-		$leaveinput->setListLeaveTypeId(1);
-		$leaveinput->save();	
-		echo 1;
+		$leaveinput->setListRequestTypeId($req->request->get('typeleave'));
+		$leaveinput->save();
+		echo json_encode(array('result' => 'ok'));
 		exit;
 		}
 
@@ -1068,21 +1190,76 @@ class DefaultController extends Controller{
     	$id = $user->getId();
 		$timename = self::timeInOut($id); 
 
-		$data = EmpLeaveQuery::create()
-		->filterByStatus('Pending')
-		->find()->count();
+//		$data = EmpLeaveQuery::create()
+//		->filterByStatus('Pending')
+//		->find()->count();
 
-		$getRequests = EmpLeavePeer::getAllLeave();
+		$getRequests = EmpRequestPeer::getAllRequest();
+		$timedata = EmpTimePeer::getTime($id);
+		$currenttimein = 0;
+		$currenttimeout = 0;
+		$timeflag = 0;
 
+		//get last timed in
+		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			$checktimein = $timedata[$ctr]->getTimeIn();
+			$checktimeout = $timedata[$ctr]->getTimeOut();
+			if(!is_null($checktimein) && is_null($checktimeout)){
+				$currenttimein = $checktimein->format('h:i A');
+
+
+			}else{
+				$currenttimein = 0;
+				$currenttimeout = $checktimeout->format('h:i A');
+			}
+		}
+		$checkipdata = null;
+		//check if already timed in today
+		if(!empty($timedata)){
+
+			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+			$datetoday = date('Y-m-d');
+			$emp_time = EmpTimePeer::getTime($id);
+			$currenttime = sizeof($emp_time) - 1;
+			$timein_data = $emp_time[$currenttime]->getTimeIn();
+			$timeout_data = $emp_time[$currenttime]->getTimeOut();
+			$checkipdata = $emp_time[$currenttime]->getCheckIp();
+			// echo $checkipdata;
+
+		}
+
+		$systime = date('H:i A');
+		$afternoon = date('H:i A', strtotime('12 pm'));
+
+		$userip = InitController::getUserIP($this);
+		$ip_add = ListIpPeer::getValidIP($userip);
+		$is_ip  = InitController::checkIP($userip);
+		$et = EmpTimePeer::getEmpLastTimein($id);
+		$emptimedate = $et->getDate();
+		if($emptimedate->format('Y-m-d') == $datetoday){
+			$timeflag = 1;
+		}
+
+		$requestcount = EmpRequestQuery::create()
+			->filterByStatus('Pending')
+			->find()->count();
 		return $this->render('AdminBundle:Default:notif.html.twig', array(
         	'name' => $name,
         	'page' => $page,
          	'role' => $role,
         	'user' => $user,
           	'timename' => $timename,
-          	'data' => $data,
           	'id' => $id,
-          	'getRequests' => $getRequests, 
+          	'getRequests' => $getRequests,
+			'userip' => $userip,
+			'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
+			'checkipdata' => $checkipdata,
+			'checkip' => $is_ip,
+			'currenttimein' => $currenttimein,
+			'timeflag' => $timeflag,
+			'systime' => $systime,
+			'afternoon' => $afternoon,
+			'requestcount' => $requestcount,
         ));
 	}
 
@@ -1178,7 +1355,7 @@ class DefaultController extends Controller{
 		$getDept = ListDeptPeer::getAllDept();
 
 		//check pending count
-		$data = EmpLeaveQuery::create()
+		$requestcount = EmpRequestQuery::create()
 			->filterByStatus('Pending')
 			->find()->count();
 
@@ -1217,18 +1394,7 @@ class DefaultController extends Controller{
 			$timein_data = $emp_time[$currenttime]->getTimeIn();
 			$timeout_data = $emp_time[$currenttime]->getTimeOut();
 			$checkipdata = $emp_time[$currenttime]->getCheckIp();
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-				$checkdate = $timedata[$ctr]->getDate();
 
-				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-					$timeflag = 1;
-				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-					$timeflag = 0;
-				}elseif($checkdate->format('Y-m-d') != $datetoday){
-					$timeflag = 0;
-				}
-
-			}
 		}
 		$firstchar = $fname[0];
 		$systime = date('H:i A');
@@ -1258,28 +1424,19 @@ class DefaultController extends Controller{
 					$over = 0;
 				}
 
-//				echo "Manhours: " . $answer ."Overtime: " . $over ."<br>";
 
 
-
-				// echo'<pre>';var_dump($manhours);
 			}
+		}
+		$et = EmpTimePeer::getEmpLastTimein($adminid);
+		$emptimedate = $et->getDate();
+		if($emptimedate->format('Y-m-d') == $datetoday){
+			$timeflag = 1;
 		}
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
-		if(!is_null($ip_add)){
-			$matchedip = $ip_add->getAllowedIp();
-		}
-		else{
-			$matchedip = '';
-		}
-		$ip_checker = 1;
-		if($userip == $matchedip){
-			$ip_checker = 1;
-		}else{
-			$ip_checker = 0;
-		}
+
 
 
 		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
@@ -1302,7 +1459,6 @@ class DefaultController extends Controller{
 			'role' => $role,
 			'user2' => $user2,
 			'profileId' => $profileid,
-			'data' => $data,
 			'contacttype' => $contacttype,
 			'conEmailId' => $conEmailId,
 			'conMobileId' => $conMobileId,
@@ -1322,6 +1478,7 @@ class DefaultController extends Controller{
 			'checkip' => $is_ip,
 			'systime' => $systime,
 			'afternoon' => $afternoon,
+			'requestcount' => $requestcount,
 		));
     }
 
@@ -1341,12 +1498,31 @@ class DefaultController extends Controller{
     	}
     }
 
-    public function declinedRequestAction($id, $id2, $id3){
-    $declined = EmpLeavePeer::retrieveByPk($id);
+    public function declinedRequestAction(Request $req){
+    $declined = EmpRequestPeer::retrieveByPk($req->request->get('leaveId'));
 		if(isset($declined) && !empty($declined)) {
-			$declined->setAdminId($id2);
+			$requesttype = $declined->getListRequestTypeId();
+			if($requesttype == 3){
+				$timeId = $declined->getEmpTimeId();
+				$emptime = EmpTimePeer::retrieveByPK($timeId);
+				$rejectemptime = new EmpTimeReject();
+				$rejectemptime->setTimeIn($emptime->getTimeIn());
+				$rejectemptime->setTimeOut($emptime->getTimeOut());
+				$rejectemptime->setIpAdd($emptime->getIpAdd());
+				$rejectemptime->setDate($emptime->getDate());
+				$rejectemptime->setEmpAccAccId($emptime->getEmpAccAccId());
+				$rejectemptime->setManhours($emptime->getManhours());
+				$rejectemptime->setOvertime($emptime->getOvertime());
+				$rejectemptime->setCheckIp($emptime->getCheckIp());
+				$rejectemptime->save();
+				$emptime->delete();
+			}
+			$declined->setAdminId($req->request->get('adminId'));
 			$declined->setStatus('Declined');
-			
+			$email = new EmailController();
+
+			$sendemail = $email->declinedRequestEmail($req, $this);
+
 			if($declined->save()){
 				$response = array('response' => 'success');
 			}else{

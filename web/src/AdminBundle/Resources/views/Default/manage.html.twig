@@ -12,6 +12,7 @@
         {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
         {% if role == 'ADMIN' %}
             <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+            <a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>
         {% endif %}
     </div>
 
@@ -29,22 +30,44 @@
 
             <div class="page-content">
                 <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                    <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                    <h3 class="center-align">Manage Employees</h3>
-                    {#<div class="center-align nav-menu" style="margin-top: 20px;">#}
-                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger view-emp-btn" style="color: white;">View Employees</a>#}
-                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger view-time-btn" style="color: white;">View Time logs</a>#}
-                        {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Requests</a>#}
-                    {#</div>#}
-                    <div class="top-nav" style="margin-top: 20px;">
-                        <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
-                    </div>
+                <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                <h3 class="center-align">Employees</h3>
+                    {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
+                <div class="top-nav" style="margin-top: 20px;">
+                <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
                 </div>
 
 
-    {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
-    {{ include ('AdminBundle:Default:managetime.html.twig') }}
             </div>
+                <div class="col-md-12 content manageemployees-content" style="display: block;">
+                    <div class="row" style="margin-left:5px;">
+                        <table class="bordered highlight emp-list">
+                            <thead>
+                            <tr>
+                                <th data-field="id">Employee Number</th>
+                                <th data-field="name">Name</th>
+                                <th data-field="price">Department</th>
+                                <th data-field="price">Position</th>
+                                <th data-field="price">Status</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for emp in getEmployee %}
+                                {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
+                                    <tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">
+                                        <td>{{emp.getEmployeeNumber}}</td>
+                                        <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
+                                        <td>{{emp.getListDept().DeptNames}}</td>
+                                        <td>{{emp.getListPos().PosNames}}</td>
+                                        <td>{{emp.getStatus}}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
         {#<div class="page-content">#}
             {#<div class="col-md-12 light-blue darken-1 heading z-depth-1">#}
             {#<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>#}
@@ -232,14 +255,17 @@
 
                     <p>Choose entity: </p>
                     <form action="#">
+                        <div class="radiobtn" style="margin-bottom: 20px;">
                         <input name="group1" type="radio" id="all-emp" class="export-radio-input" checked/>
                         <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
 
                         <input name="group1" type="radio" id="select-dept" class="export-radio-input"/>
                         <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
 
-                        <div class= "selectDept">
-                            <select id = "listdept" style="display:block; margin-top: 10px;">
+                        <input name="group1" type="radio" id="select-name" class="export-radio-input"/>
+                        <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
+                        </div>
+                            <select id = "listdept" class="departmentselect" style="width: 300px;">
                                 <option value="" disabled selected>Choose your department</option>
                                 <option value="1">Executive</option>
                                 <option value="2">Graphics</option>
@@ -250,19 +276,34 @@
                                 <option value="7">Admin</option>
                                 <option value="8">Maintenance</option>
                             </select>
-                        </div>
-                        <div class="row" style="margin-top: 10px;">
+
+                        {#<div class= "selectByname" style="width: 510px; margin-top: 20px; margin-bottom: 20px;">#}
+                            {#<select id = "listnames" class="browser-default">#}
+                                {#<option value="" disabled selected>Choose</option>#}
+                                {#{% for user in getAllProfile %}#}
+                                    {#<option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>#}
+                                {#{% endfor %}#}
+                            {#</select>#}
+
+
+
+                            <select id="empnames" class="input-name" style="width: 300px; margin-top: 50px;">
+                                <option value="" disabled selected>Type name here..</option>
+                                {% for user in getAllProfile %}
+                                <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                                {% endfor %}
+                            </select>
+
+                        <div class="row" style="margin-top: 20px;">
 
 
                             <div class="col-md-6">
                                 <label class="label">From:</label>
-                                <input name="start-date" placeholder="Start Date" class="start-date"
-                                       type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+                                <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
                             </div>
                             <div class="col-md-6">
                                 <label class="label">To:</label>
-                                <input name="end-date" placeholder="End Date" class="end-date"
-                                       type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+                                <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
 
                             </div>
                         </div>
@@ -338,11 +379,34 @@
 {% endblock %}
 
 {% block scripts %}
-   {{  parent() }}
+    <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
+    <script src="{{asset('prols2/js/html5.js')}}"></script>
+    <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
+    <script src="{{asset('prols2/js/materialize.js')}}"></script>
+    <script src="{{asset('prols2/js/script.js')}}"></script>
+    <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
 {% endblock %}
 {% block customjs %}
 <script type="text/javascript">
 $(document).ready(function(){
+    $('select').material_select('destroy');
+//    $('select').material_select();
+    {#$('.input-name').select2({#}
+        {#placeholder: "Type Name",#}
+        {#data: [#}
+
+            {#{% for names in getAllProfile %}#}
+            {#{id:'{{ names.empAccAccId }}',text:'{{ names.fname ~ ' ' ~ names.lname }}'},#}
+            {#{% endfor %}#}
+        {#]#}
+    {#});#}
+
     var inputfield = '';
     var empId = '';
     $('.btn-cancel-input').click(function(e){
@@ -387,76 +451,48 @@ $(document).ready(function(){
 
     $('.export-submit-btn').click(function(){
         var deptid = $('#listdept').val();
+        var empname = $('.input-name').val();
         var start  = new Date($('[name=start-date]').val());
         var end    = new Date($('[name=end-date]').val());
         var isDate = start == 'Invalid Date' ? 0 : 1;
         var s = start.getDate();
         var e = end.getDate();
-
         start   = start.toDateString();
         end     = end.toLocaleString();
 
-//        if(start == 'Invalid Date' || end == 'Invalid Date'){
-//            if(start == 'Invalid Date'){
-//                $('.start-date').css({'border-color' : 'red'});
-//                setTimeout(function(){
-//                    $('.start-date').css({'border-color' : 'gray'});
-//                }, 500);
-//            }
-//            if(end == 'Invalid Date'){
-//                $('.end-date').css({'border-color' : 'red'});
-//                setTimeout(function(){
-//                    $('.end-date').css({'border-color' : 'gray'});
-//                }, 500);
-//            }
-//            return;
-//        }
-//        if(start == 'Invalid Date' || end == 'Invalid Date'){
-//            if(start == 'Invalid Date'){
-//                $('.start-date').css({'border-color' : 'red'});
-//                setTimeout(function(){
-//                    $('.start-date').css({'border-color' : 'gray'});
-//                }, 500);
-//            }
-//            if(end == 'Invalid Date'){
-//                $('.end-date').css({'border-color' : 'red'});
-//                setTimeout(function(){
-//                    $('.end-date').css({'border-color' : 'gray'});
-//                }, 500);
-//            }
-//            return;
-//        }
         if(s > e){
-            alert('End date must be higher');
+            alert('End date must be greater than or equal to start date');
+            $('[name=start-date]').val('');
+            $('[name=end-date]').val('');
             return;
         }
         $('[name=start-date]').val('');
         $('[name=end-date]').val('');
         if ($('#select-dept:checked').length){
             if(deptid == null){
-                $('#listdept').css({'color' : 'red'});
+                $('#select2-listdept-container').css({'color' : 'red'});
                 setTimeout(function(){
-                    $('#listdept').css({'color' : 'black'});
+                    $('#select2-listdept-container').css({'color' : 'black'});
                 }, 500);
                return;
             }
         }
+        if ($('#select-name:checked').length){
+            if(empname == null){
+                $('#select2-empnames-container').css({'color' : 'red'});
+                setTimeout(function(){
+                    $('#select2-empnames-container').css({'color' : 'black'});
+                }, 500);
+                return;
+            }
+        }
         $('#exportchoice').closeModal();
-        window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start='
+        window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&empname=' + empname + '&start='
             + start + '&end=' + end
             + '&isDate=' + isDate, '_blank');
     });
-
-    $('.view-emp-btn').click(function(){
-        $('.managetime-content').hide();
-        $('.manageemployees-content').show();
-    });
-
-    $('.view-time-btn').click(function(){
-        $('.managetime-content').show();
-        $('.manageemployees-content').hide();
-    });
-
+    var picker = new Pikaday({ field: $('#datepicker')[0] });
+    var picker = new Pikaday({ field: $('#datepicker2')[0] });
 });
 
 </script>

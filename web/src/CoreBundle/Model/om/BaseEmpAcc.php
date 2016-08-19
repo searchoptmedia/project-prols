@@ -18,12 +18,14 @@ use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
-use CoreBundle\Model\EmpLeave;
-use CoreBundle\Model\EmpLeaveQuery;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EmpRequest;
+use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimeQuery;
+use CoreBundle\Model\EmpTimeReject;
+use CoreBundle\Model\EmpTimeRejectQuery;
 
 abstract class BaseEmpAcc extends BaseObject implements Persistent
 {
@@ -101,16 +103,16 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $key;
 
     /**
-     * @var        PropelObjectCollection|EmpLeave[] Collection to store aggregation of EmpLeave objects.
+     * @var        PropelObjectCollection|EmpRequest[] Collection to store aggregation of EmpRequest objects.
      */
-    protected $collEmpLeavesRelatedByEmpAccId;
-    protected $collEmpLeavesRelatedByEmpAccIdPartial;
+    protected $collEmpRequestsRelatedByEmpAccId;
+    protected $collEmpRequestsRelatedByEmpAccIdPartial;
 
     /**
-     * @var        PropelObjectCollection|EmpLeave[] Collection to store aggregation of EmpLeave objects.
+     * @var        PropelObjectCollection|EmpRequest[] Collection to store aggregation of EmpRequest objects.
      */
-    protected $collEmpLeavesRelatedByAdminId;
-    protected $collEmpLeavesRelatedByAdminIdPartial;
+    protected $collEmpRequestsRelatedByAdminId;
+    protected $collEmpRequestsRelatedByAdminIdPartial;
 
     /**
      * @var        PropelObjectCollection|EmpProfile[] Collection to store aggregation of EmpProfile objects.
@@ -123,6 +125,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      */
     protected $collEmpTimes;
     protected $collEmpTimesPartial;
+
+    /**
+     * @var        PropelObjectCollection|EmpTimeReject[] Collection to store aggregation of EmpTimeReject objects.
+     */
+    protected $collEmpTimeRejects;
+    protected $collEmpTimeRejectsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -148,13 +156,13 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * An array of objects scheduled for deletion.
      * @var		PropelObjectCollection
      */
-    protected $empLeavesRelatedByEmpAccIdScheduledForDeletion = null;
+    protected $empRequestsRelatedByEmpAccIdScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
      * @var		PropelObjectCollection
      */
-    protected $empLeavesRelatedByAdminIdScheduledForDeletion = null;
+    protected $empRequestsRelatedByAdminIdScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -167,6 +175,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $empTimesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $empTimeRejectsScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -599,13 +613,15 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collEmpLeavesRelatedByEmpAccId = null;
+            $this->collEmpRequestsRelatedByEmpAccId = null;
 
-            $this->collEmpLeavesRelatedByAdminId = null;
+            $this->collEmpRequestsRelatedByAdminId = null;
 
             $this->collEmpProfiles = null;
 
             $this->collEmpTimes = null;
+
+            $this->collEmpTimeRejects = null;
 
         } // if (deep)
     }
@@ -731,34 +747,36 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 $this->resetModified();
             }
 
-            if ($this->empLeavesRelatedByEmpAccIdScheduledForDeletion !== null) {
-                if (!$this->empLeavesRelatedByEmpAccIdScheduledForDeletion->isEmpty()) {
-                    EmpLeaveQuery::create()
-                        ->filterByPrimaryKeys($this->empLeavesRelatedByEmpAccIdScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->empLeavesRelatedByEmpAccIdScheduledForDeletion = null;
+            if ($this->empRequestsRelatedByEmpAccIdScheduledForDeletion !== null) {
+                if (!$this->empRequestsRelatedByEmpAccIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->empRequestsRelatedByEmpAccIdScheduledForDeletion as $empRequestRelatedByEmpAccId) {
+                        // need to save related object because we set the relation to null
+                        $empRequestRelatedByEmpAccId->save($con);
+                    }
+                    $this->empRequestsRelatedByEmpAccIdScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collEmpLeavesRelatedByEmpAccId !== null) {
-                foreach ($this->collEmpLeavesRelatedByEmpAccId as $referrerFK) {
+            if ($this->collEmpRequestsRelatedByEmpAccId !== null) {
+                foreach ($this->collEmpRequestsRelatedByEmpAccId as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
                 }
             }
 
-            if ($this->empLeavesRelatedByAdminIdScheduledForDeletion !== null) {
-                if (!$this->empLeavesRelatedByAdminIdScheduledForDeletion->isEmpty()) {
-                    EmpLeaveQuery::create()
-                        ->filterByPrimaryKeys($this->empLeavesRelatedByAdminIdScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->empLeavesRelatedByAdminIdScheduledForDeletion = null;
+            if ($this->empRequestsRelatedByAdminIdScheduledForDeletion !== null) {
+                if (!$this->empRequestsRelatedByAdminIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->empRequestsRelatedByAdminIdScheduledForDeletion as $empRequestRelatedByAdminId) {
+                        // need to save related object because we set the relation to null
+                        $empRequestRelatedByAdminId->save($con);
+                    }
+                    $this->empRequestsRelatedByAdminIdScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collEmpLeavesRelatedByAdminId !== null) {
-                foreach ($this->collEmpLeavesRelatedByAdminId as $referrerFK) {
+            if ($this->collEmpRequestsRelatedByAdminId !== null) {
+                foreach ($this->collEmpRequestsRelatedByAdminId as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -793,6 +811,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
             if ($this->collEmpTimes !== null) {
                 foreach ($this->collEmpTimes as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->empTimeRejectsScheduledForDeletion !== null) {
+                if (!$this->empTimeRejectsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->empTimeRejectsScheduledForDeletion as $empTimeReject) {
+                        // need to save related object because we set the relation to null
+                        $empTimeReject->save($con);
+                    }
+                    $this->empTimeRejectsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEmpTimeRejects !== null) {
+                foreach ($this->collEmpTimeRejects as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -989,16 +1025,16 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
 
 
-                if ($this->collEmpLeavesRelatedByEmpAccId !== null) {
-                    foreach ($this->collEmpLeavesRelatedByEmpAccId as $referrerFK) {
+                if ($this->collEmpRequestsRelatedByEmpAccId !== null) {
+                    foreach ($this->collEmpRequestsRelatedByEmpAccId as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
                             $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
                         }
                     }
                 }
 
-                if ($this->collEmpLeavesRelatedByAdminId !== null) {
-                    foreach ($this->collEmpLeavesRelatedByAdminId as $referrerFK) {
+                if ($this->collEmpRequestsRelatedByAdminId !== null) {
+                    foreach ($this->collEmpRequestsRelatedByAdminId as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
                             $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
                         }
@@ -1015,6 +1051,14 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
                 if ($this->collEmpTimes !== null) {
                     foreach ($this->collEmpTimes as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collEmpTimeRejects !== null) {
+                    foreach ($this->collEmpTimeRejects as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
                             $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
                         }
@@ -1128,17 +1172,20 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
         
         if ($includeForeignObjects) {
-            if (null !== $this->collEmpLeavesRelatedByEmpAccId) {
-                $result['EmpLeavesRelatedByEmpAccId'] = $this->collEmpLeavesRelatedByEmpAccId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            if (null !== $this->collEmpRequestsRelatedByEmpAccId) {
+                $result['EmpRequestsRelatedByEmpAccId'] = $this->collEmpRequestsRelatedByEmpAccId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collEmpLeavesRelatedByAdminId) {
-                $result['EmpLeavesRelatedByAdminId'] = $this->collEmpLeavesRelatedByAdminId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            if (null !== $this->collEmpRequestsRelatedByAdminId) {
+                $result['EmpRequestsRelatedByAdminId'] = $this->collEmpRequestsRelatedByAdminId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collEmpProfiles) {
                 $result['EmpProfiles'] = $this->collEmpProfiles->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collEmpTimes) {
                 $result['EmpTimes'] = $this->collEmpTimes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEmpTimeRejects) {
+                $result['EmpTimeRejects'] = $this->collEmpTimeRejects->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1333,15 +1380,15 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             // store object hash to prevent cycle
             $this->startCopy = true;
 
-            foreach ($this->getEmpLeavesRelatedByEmpAccId() as $relObj) {
+            foreach ($this->getEmpRequestsRelatedByEmpAccId() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addEmpLeaveRelatedByEmpAccId($relObj->copy($deepCopy));
+                    $copyObj->addEmpRequestRelatedByEmpAccId($relObj->copy($deepCopy));
                 }
             }
 
-            foreach ($this->getEmpLeavesRelatedByAdminId() as $relObj) {
+            foreach ($this->getEmpRequestsRelatedByAdminId() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addEmpLeaveRelatedByAdminId($relObj->copy($deepCopy));
+                    $copyObj->addEmpRequestRelatedByAdminId($relObj->copy($deepCopy));
                 }
             }
 
@@ -1354,6 +1401,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             foreach ($this->getEmpTimes() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addEmpTime($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getEmpTimeRejects() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEmpTimeReject($relObj->copy($deepCopy));
                 }
             }
 
@@ -1418,11 +1471,11 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      */
     public function initRelation($relationName)
     {
-        if ('EmpLeaveRelatedByEmpAccId' == $relationName) {
-            $this->initEmpLeavesRelatedByEmpAccId();
+        if ('EmpRequestRelatedByEmpAccId' == $relationName) {
+            $this->initEmpRequestsRelatedByEmpAccId();
         }
-        if ('EmpLeaveRelatedByAdminId' == $relationName) {
-            $this->initEmpLeavesRelatedByAdminId();
+        if ('EmpRequestRelatedByAdminId' == $relationName) {
+            $this->initEmpRequestsRelatedByAdminId();
         }
         if ('EmpProfile' == $relationName) {
             $this->initEmpProfiles();
@@ -1430,39 +1483,42 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ('EmpTime' == $relationName) {
             $this->initEmpTimes();
         }
+        if ('EmpTimeReject' == $relationName) {
+            $this->initEmpTimeRejects();
+        }
     }
 
     /**
-     * Clears out the collEmpLeavesRelatedByEmpAccId collection
+     * Clears out the collEmpRequestsRelatedByEmpAccId collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return EmpAcc The current object (for fluent API support)
-     * @see        addEmpLeavesRelatedByEmpAccId()
+     * @see        addEmpRequestsRelatedByEmpAccId()
      */
-    public function clearEmpLeavesRelatedByEmpAccId()
+    public function clearEmpRequestsRelatedByEmpAccId()
     {
-        $this->collEmpLeavesRelatedByEmpAccId = null; // important to set this to null since that means it is uninitialized
-        $this->collEmpLeavesRelatedByEmpAccIdPartial = null;
+        $this->collEmpRequestsRelatedByEmpAccId = null; // important to set this to null since that means it is uninitialized
+        $this->collEmpRequestsRelatedByEmpAccIdPartial = null;
 
         return $this;
     }
 
     /**
-     * reset is the collEmpLeavesRelatedByEmpAccId collection loaded partially
+     * reset is the collEmpRequestsRelatedByEmpAccId collection loaded partially
      *
      * @return void
      */
-    public function resetPartialEmpLeavesRelatedByEmpAccId($v = true)
+    public function resetPartialEmpRequestsRelatedByEmpAccId($v = true)
     {
-        $this->collEmpLeavesRelatedByEmpAccIdPartial = $v;
+        $this->collEmpRequestsRelatedByEmpAccIdPartial = $v;
     }
 
     /**
-     * Initializes the collEmpLeavesRelatedByEmpAccId collection.
+     * Initializes the collEmpRequestsRelatedByEmpAccId collection.
      *
-     * By default this just sets the collEmpLeavesRelatedByEmpAccId collection to an empty array (like clearcollEmpLeavesRelatedByEmpAccId());
+     * By default this just sets the collEmpRequestsRelatedByEmpAccId collection to an empty array (like clearcollEmpRequestsRelatedByEmpAccId());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1471,17 +1527,17 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      *
      * @return void
      */
-    public function initEmpLeavesRelatedByEmpAccId($overrideExisting = true)
+    public function initEmpRequestsRelatedByEmpAccId($overrideExisting = true)
     {
-        if (null !== $this->collEmpLeavesRelatedByEmpAccId && !$overrideExisting) {
+        if (null !== $this->collEmpRequestsRelatedByEmpAccId && !$overrideExisting) {
             return;
         }
-        $this->collEmpLeavesRelatedByEmpAccId = new PropelObjectCollection();
-        $this->collEmpLeavesRelatedByEmpAccId->setModel('EmpLeave');
+        $this->collEmpRequestsRelatedByEmpAccId = new PropelObjectCollection();
+        $this->collEmpRequestsRelatedByEmpAccId->setModel('EmpRequest');
     }
 
     /**
-     * Gets an array of EmpLeave objects which contain a foreign key that references this object.
+     * Gets an array of EmpRequest objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
@@ -1491,107 +1547,107 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      *
      * @param Criteria $criteria optional Criteria object to narrow the query
      * @param PropelPDO $con optional connection object
-     * @return PropelObjectCollection|EmpLeave[] List of EmpLeave objects
+     * @return PropelObjectCollection|EmpRequest[] List of EmpRequest objects
      * @throws PropelException
      */
-    public function getEmpLeavesRelatedByEmpAccId($criteria = null, PropelPDO $con = null)
+    public function getEmpRequestsRelatedByEmpAccId($criteria = null, PropelPDO $con = null)
     {
-        $partial = $this->collEmpLeavesRelatedByEmpAccIdPartial && !$this->isNew();
-        if (null === $this->collEmpLeavesRelatedByEmpAccId || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collEmpLeavesRelatedByEmpAccId) {
+        $partial = $this->collEmpRequestsRelatedByEmpAccIdPartial && !$this->isNew();
+        if (null === $this->collEmpRequestsRelatedByEmpAccId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEmpRequestsRelatedByEmpAccId) {
                 // return empty collection
-                $this->initEmpLeavesRelatedByEmpAccId();
+                $this->initEmpRequestsRelatedByEmpAccId();
             } else {
-                $collEmpLeavesRelatedByEmpAccId = EmpLeaveQuery::create(null, $criteria)
+                $collEmpRequestsRelatedByEmpAccId = EmpRequestQuery::create(null, $criteria)
                     ->filterByEmpAccRelatedByEmpAccId($this)
                     ->find($con);
                 if (null !== $criteria) {
-                    if (false !== $this->collEmpLeavesRelatedByEmpAccIdPartial && count($collEmpLeavesRelatedByEmpAccId)) {
-                      $this->initEmpLeavesRelatedByEmpAccId(false);
+                    if (false !== $this->collEmpRequestsRelatedByEmpAccIdPartial && count($collEmpRequestsRelatedByEmpAccId)) {
+                      $this->initEmpRequestsRelatedByEmpAccId(false);
 
-                      foreach ($collEmpLeavesRelatedByEmpAccId as $obj) {
-                        if (false == $this->collEmpLeavesRelatedByEmpAccId->contains($obj)) {
-                          $this->collEmpLeavesRelatedByEmpAccId->append($obj);
+                      foreach ($collEmpRequestsRelatedByEmpAccId as $obj) {
+                        if (false == $this->collEmpRequestsRelatedByEmpAccId->contains($obj)) {
+                          $this->collEmpRequestsRelatedByEmpAccId->append($obj);
                         }
                       }
 
-                      $this->collEmpLeavesRelatedByEmpAccIdPartial = true;
+                      $this->collEmpRequestsRelatedByEmpAccIdPartial = true;
                     }
 
-                    $collEmpLeavesRelatedByEmpAccId->getInternalIterator()->rewind();
+                    $collEmpRequestsRelatedByEmpAccId->getInternalIterator()->rewind();
 
-                    return $collEmpLeavesRelatedByEmpAccId;
+                    return $collEmpRequestsRelatedByEmpAccId;
                 }
 
-                if ($partial && $this->collEmpLeavesRelatedByEmpAccId) {
-                    foreach ($this->collEmpLeavesRelatedByEmpAccId as $obj) {
+                if ($partial && $this->collEmpRequestsRelatedByEmpAccId) {
+                    foreach ($this->collEmpRequestsRelatedByEmpAccId as $obj) {
                         if ($obj->isNew()) {
-                            $collEmpLeavesRelatedByEmpAccId[] = $obj;
+                            $collEmpRequestsRelatedByEmpAccId[] = $obj;
                         }
                     }
                 }
 
-                $this->collEmpLeavesRelatedByEmpAccId = $collEmpLeavesRelatedByEmpAccId;
-                $this->collEmpLeavesRelatedByEmpAccIdPartial = false;
+                $this->collEmpRequestsRelatedByEmpAccId = $collEmpRequestsRelatedByEmpAccId;
+                $this->collEmpRequestsRelatedByEmpAccIdPartial = false;
             }
         }
 
-        return $this->collEmpLeavesRelatedByEmpAccId;
+        return $this->collEmpRequestsRelatedByEmpAccId;
     }
 
     /**
-     * Sets a collection of EmpLeaveRelatedByEmpAccId objects related by a one-to-many relationship
+     * Sets a collection of EmpRequestRelatedByEmpAccId objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param PropelCollection $empLeavesRelatedByEmpAccId A Propel collection.
+     * @param PropelCollection $empRequestsRelatedByEmpAccId A Propel collection.
      * @param PropelPDO $con Optional connection object
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function setEmpLeavesRelatedByEmpAccId(PropelCollection $empLeavesRelatedByEmpAccId, PropelPDO $con = null)
+    public function setEmpRequestsRelatedByEmpAccId(PropelCollection $empRequestsRelatedByEmpAccId, PropelPDO $con = null)
     {
-        $empLeavesRelatedByEmpAccIdToDelete = $this->getEmpLeavesRelatedByEmpAccId(new Criteria(), $con)->diff($empLeavesRelatedByEmpAccId);
+        $empRequestsRelatedByEmpAccIdToDelete = $this->getEmpRequestsRelatedByEmpAccId(new Criteria(), $con)->diff($empRequestsRelatedByEmpAccId);
 
 
-        $this->empLeavesRelatedByEmpAccIdScheduledForDeletion = $empLeavesRelatedByEmpAccIdToDelete;
+        $this->empRequestsRelatedByEmpAccIdScheduledForDeletion = $empRequestsRelatedByEmpAccIdToDelete;
 
-        foreach ($empLeavesRelatedByEmpAccIdToDelete as $empLeaveRelatedByEmpAccIdRemoved) {
-            $empLeaveRelatedByEmpAccIdRemoved->setEmpAccRelatedByEmpAccId(null);
+        foreach ($empRequestsRelatedByEmpAccIdToDelete as $empRequestRelatedByEmpAccIdRemoved) {
+            $empRequestRelatedByEmpAccIdRemoved->setEmpAccRelatedByEmpAccId(null);
         }
 
-        $this->collEmpLeavesRelatedByEmpAccId = null;
-        foreach ($empLeavesRelatedByEmpAccId as $empLeaveRelatedByEmpAccId) {
-            $this->addEmpLeaveRelatedByEmpAccId($empLeaveRelatedByEmpAccId);
+        $this->collEmpRequestsRelatedByEmpAccId = null;
+        foreach ($empRequestsRelatedByEmpAccId as $empRequestRelatedByEmpAccId) {
+            $this->addEmpRequestRelatedByEmpAccId($empRequestRelatedByEmpAccId);
         }
 
-        $this->collEmpLeavesRelatedByEmpAccId = $empLeavesRelatedByEmpAccId;
-        $this->collEmpLeavesRelatedByEmpAccIdPartial = false;
+        $this->collEmpRequestsRelatedByEmpAccId = $empRequestsRelatedByEmpAccId;
+        $this->collEmpRequestsRelatedByEmpAccIdPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related EmpLeave objects.
+     * Returns the number of related EmpRequest objects.
      *
      * @param Criteria $criteria
      * @param boolean $distinct
      * @param PropelPDO $con
-     * @return int             Count of related EmpLeave objects.
+     * @return int             Count of related EmpRequest objects.
      * @throws PropelException
      */
-    public function countEmpLeavesRelatedByEmpAccId(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    public function countEmpRequestsRelatedByEmpAccId(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
     {
-        $partial = $this->collEmpLeavesRelatedByEmpAccIdPartial && !$this->isNew();
-        if (null === $this->collEmpLeavesRelatedByEmpAccId || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collEmpLeavesRelatedByEmpAccId) {
+        $partial = $this->collEmpRequestsRelatedByEmpAccIdPartial && !$this->isNew();
+        if (null === $this->collEmpRequestsRelatedByEmpAccId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEmpRequestsRelatedByEmpAccId) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getEmpLeavesRelatedByEmpAccId());
+                return count($this->getEmpRequestsRelatedByEmpAccId());
             }
-            $query = EmpLeaveQuery::create(null, $criteria);
+            $query = EmpRequestQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
@@ -1601,28 +1657,28 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 ->count($con);
         }
 
-        return count($this->collEmpLeavesRelatedByEmpAccId);
+        return count($this->collEmpRequestsRelatedByEmpAccId);
     }
 
     /**
-     * Method called to associate a EmpLeave object to this object
-     * through the EmpLeave foreign key attribute.
+     * Method called to associate a EmpRequest object to this object
+     * through the EmpRequest foreign key attribute.
      *
-     * @param    EmpLeave $l EmpLeave
+     * @param    EmpRequest $l EmpRequest
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function addEmpLeaveRelatedByEmpAccId(EmpLeave $l)
+    public function addEmpRequestRelatedByEmpAccId(EmpRequest $l)
     {
-        if ($this->collEmpLeavesRelatedByEmpAccId === null) {
-            $this->initEmpLeavesRelatedByEmpAccId();
-            $this->collEmpLeavesRelatedByEmpAccIdPartial = true;
+        if ($this->collEmpRequestsRelatedByEmpAccId === null) {
+            $this->initEmpRequestsRelatedByEmpAccId();
+            $this->collEmpRequestsRelatedByEmpAccIdPartial = true;
         }
 
-        if (!in_array($l, $this->collEmpLeavesRelatedByEmpAccId->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddEmpLeaveRelatedByEmpAccId($l);
+        if (!in_array($l, $this->collEmpRequestsRelatedByEmpAccId->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEmpRequestRelatedByEmpAccId($l);
 
-            if ($this->empLeavesRelatedByEmpAccIdScheduledForDeletion and $this->empLeavesRelatedByEmpAccIdScheduledForDeletion->contains($l)) {
-                $this->empLeavesRelatedByEmpAccIdScheduledForDeletion->remove($this->empLeavesRelatedByEmpAccIdScheduledForDeletion->search($l));
+            if ($this->empRequestsRelatedByEmpAccIdScheduledForDeletion and $this->empRequestsRelatedByEmpAccIdScheduledForDeletion->contains($l)) {
+                $this->empRequestsRelatedByEmpAccIdScheduledForDeletion->remove($this->empRequestsRelatedByEmpAccIdScheduledForDeletion->search($l));
             }
         }
 
@@ -1630,28 +1686,28 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
-     * @param	EmpLeaveRelatedByEmpAccId $empLeaveRelatedByEmpAccId The empLeaveRelatedByEmpAccId object to add.
+     * @param	EmpRequestRelatedByEmpAccId $empRequestRelatedByEmpAccId The empRequestRelatedByEmpAccId object to add.
      */
-    protected function doAddEmpLeaveRelatedByEmpAccId($empLeaveRelatedByEmpAccId)
+    protected function doAddEmpRequestRelatedByEmpAccId($empRequestRelatedByEmpAccId)
     {
-        $this->collEmpLeavesRelatedByEmpAccId[]= $empLeaveRelatedByEmpAccId;
-        $empLeaveRelatedByEmpAccId->setEmpAccRelatedByEmpAccId($this);
+        $this->collEmpRequestsRelatedByEmpAccId[]= $empRequestRelatedByEmpAccId;
+        $empRequestRelatedByEmpAccId->setEmpAccRelatedByEmpAccId($this);
     }
 
     /**
-     * @param	EmpLeaveRelatedByEmpAccId $empLeaveRelatedByEmpAccId The empLeaveRelatedByEmpAccId object to remove.
+     * @param	EmpRequestRelatedByEmpAccId $empRequestRelatedByEmpAccId The empRequestRelatedByEmpAccId object to remove.
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function removeEmpLeaveRelatedByEmpAccId($empLeaveRelatedByEmpAccId)
+    public function removeEmpRequestRelatedByEmpAccId($empRequestRelatedByEmpAccId)
     {
-        if ($this->getEmpLeavesRelatedByEmpAccId()->contains($empLeaveRelatedByEmpAccId)) {
-            $this->collEmpLeavesRelatedByEmpAccId->remove($this->collEmpLeavesRelatedByEmpAccId->search($empLeaveRelatedByEmpAccId));
-            if (null === $this->empLeavesRelatedByEmpAccIdScheduledForDeletion) {
-                $this->empLeavesRelatedByEmpAccIdScheduledForDeletion = clone $this->collEmpLeavesRelatedByEmpAccId;
-                $this->empLeavesRelatedByEmpAccIdScheduledForDeletion->clear();
+        if ($this->getEmpRequestsRelatedByEmpAccId()->contains($empRequestRelatedByEmpAccId)) {
+            $this->collEmpRequestsRelatedByEmpAccId->remove($this->collEmpRequestsRelatedByEmpAccId->search($empRequestRelatedByEmpAccId));
+            if (null === $this->empRequestsRelatedByEmpAccIdScheduledForDeletion) {
+                $this->empRequestsRelatedByEmpAccIdScheduledForDeletion = clone $this->collEmpRequestsRelatedByEmpAccId;
+                $this->empRequestsRelatedByEmpAccIdScheduledForDeletion->clear();
             }
-            $this->empLeavesRelatedByEmpAccIdScheduledForDeletion[]= clone $empLeaveRelatedByEmpAccId;
-            $empLeaveRelatedByEmpAccId->setEmpAccRelatedByEmpAccId(null);
+            $this->empRequestsRelatedByEmpAccIdScheduledForDeletion[]= $empRequestRelatedByEmpAccId;
+            $empRequestRelatedByEmpAccId->setEmpAccRelatedByEmpAccId(null);
         }
 
         return $this;
@@ -1663,7 +1719,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * an identical criteria, it returns the collection.
      * Otherwise if this EmpAcc is new, it will return
      * an empty collection; or if this EmpAcc has previously
-     * been saved, it will retrieve related EmpLeavesRelatedByEmpAccId from storage.
+     * been saved, it will retrieve related EmpRequestsRelatedByEmpAccId from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
@@ -1672,47 +1728,47 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @param Criteria $criteria optional Criteria object to narrow the query
      * @param PropelPDO $con optional connection object
      * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return PropelObjectCollection|EmpLeave[] List of EmpLeave objects
+     * @return PropelObjectCollection|EmpRequest[] List of EmpRequest objects
      */
-    public function getEmpLeavesRelatedByEmpAccIdJoinListLeaveType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    public function getEmpRequestsRelatedByEmpAccIdJoinListRequestType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
     {
-        $query = EmpLeaveQuery::create(null, $criteria);
-        $query->joinWith('ListLeaveType', $join_behavior);
+        $query = EmpRequestQuery::create(null, $criteria);
+        $query->joinWith('ListRequestType', $join_behavior);
 
-        return $this->getEmpLeavesRelatedByEmpAccId($query, $con);
+        return $this->getEmpRequestsRelatedByEmpAccId($query, $con);
     }
 
     /**
-     * Clears out the collEmpLeavesRelatedByAdminId collection
+     * Clears out the collEmpRequestsRelatedByAdminId collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return EmpAcc The current object (for fluent API support)
-     * @see        addEmpLeavesRelatedByAdminId()
+     * @see        addEmpRequestsRelatedByAdminId()
      */
-    public function clearEmpLeavesRelatedByAdminId()
+    public function clearEmpRequestsRelatedByAdminId()
     {
-        $this->collEmpLeavesRelatedByAdminId = null; // important to set this to null since that means it is uninitialized
-        $this->collEmpLeavesRelatedByAdminIdPartial = null;
+        $this->collEmpRequestsRelatedByAdminId = null; // important to set this to null since that means it is uninitialized
+        $this->collEmpRequestsRelatedByAdminIdPartial = null;
 
         return $this;
     }
 
     /**
-     * reset is the collEmpLeavesRelatedByAdminId collection loaded partially
+     * reset is the collEmpRequestsRelatedByAdminId collection loaded partially
      *
      * @return void
      */
-    public function resetPartialEmpLeavesRelatedByAdminId($v = true)
+    public function resetPartialEmpRequestsRelatedByAdminId($v = true)
     {
-        $this->collEmpLeavesRelatedByAdminIdPartial = $v;
+        $this->collEmpRequestsRelatedByAdminIdPartial = $v;
     }
 
     /**
-     * Initializes the collEmpLeavesRelatedByAdminId collection.
+     * Initializes the collEmpRequestsRelatedByAdminId collection.
      *
-     * By default this just sets the collEmpLeavesRelatedByAdminId collection to an empty array (like clearcollEmpLeavesRelatedByAdminId());
+     * By default this just sets the collEmpRequestsRelatedByAdminId collection to an empty array (like clearcollEmpRequestsRelatedByAdminId());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1721,17 +1777,17 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      *
      * @return void
      */
-    public function initEmpLeavesRelatedByAdminId($overrideExisting = true)
+    public function initEmpRequestsRelatedByAdminId($overrideExisting = true)
     {
-        if (null !== $this->collEmpLeavesRelatedByAdminId && !$overrideExisting) {
+        if (null !== $this->collEmpRequestsRelatedByAdminId && !$overrideExisting) {
             return;
         }
-        $this->collEmpLeavesRelatedByAdminId = new PropelObjectCollection();
-        $this->collEmpLeavesRelatedByAdminId->setModel('EmpLeave');
+        $this->collEmpRequestsRelatedByAdminId = new PropelObjectCollection();
+        $this->collEmpRequestsRelatedByAdminId->setModel('EmpRequest');
     }
 
     /**
-     * Gets an array of EmpLeave objects which contain a foreign key that references this object.
+     * Gets an array of EmpRequest objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
@@ -1741,107 +1797,107 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      *
      * @param Criteria $criteria optional Criteria object to narrow the query
      * @param PropelPDO $con optional connection object
-     * @return PropelObjectCollection|EmpLeave[] List of EmpLeave objects
+     * @return PropelObjectCollection|EmpRequest[] List of EmpRequest objects
      * @throws PropelException
      */
-    public function getEmpLeavesRelatedByAdminId($criteria = null, PropelPDO $con = null)
+    public function getEmpRequestsRelatedByAdminId($criteria = null, PropelPDO $con = null)
     {
-        $partial = $this->collEmpLeavesRelatedByAdminIdPartial && !$this->isNew();
-        if (null === $this->collEmpLeavesRelatedByAdminId || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collEmpLeavesRelatedByAdminId) {
+        $partial = $this->collEmpRequestsRelatedByAdminIdPartial && !$this->isNew();
+        if (null === $this->collEmpRequestsRelatedByAdminId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEmpRequestsRelatedByAdminId) {
                 // return empty collection
-                $this->initEmpLeavesRelatedByAdminId();
+                $this->initEmpRequestsRelatedByAdminId();
             } else {
-                $collEmpLeavesRelatedByAdminId = EmpLeaveQuery::create(null, $criteria)
+                $collEmpRequestsRelatedByAdminId = EmpRequestQuery::create(null, $criteria)
                     ->filterByEmpAccRelatedByAdminId($this)
                     ->find($con);
                 if (null !== $criteria) {
-                    if (false !== $this->collEmpLeavesRelatedByAdminIdPartial && count($collEmpLeavesRelatedByAdminId)) {
-                      $this->initEmpLeavesRelatedByAdminId(false);
+                    if (false !== $this->collEmpRequestsRelatedByAdminIdPartial && count($collEmpRequestsRelatedByAdminId)) {
+                      $this->initEmpRequestsRelatedByAdminId(false);
 
-                      foreach ($collEmpLeavesRelatedByAdminId as $obj) {
-                        if (false == $this->collEmpLeavesRelatedByAdminId->contains($obj)) {
-                          $this->collEmpLeavesRelatedByAdminId->append($obj);
+                      foreach ($collEmpRequestsRelatedByAdminId as $obj) {
+                        if (false == $this->collEmpRequestsRelatedByAdminId->contains($obj)) {
+                          $this->collEmpRequestsRelatedByAdminId->append($obj);
                         }
                       }
 
-                      $this->collEmpLeavesRelatedByAdminIdPartial = true;
+                      $this->collEmpRequestsRelatedByAdminIdPartial = true;
                     }
 
-                    $collEmpLeavesRelatedByAdminId->getInternalIterator()->rewind();
+                    $collEmpRequestsRelatedByAdminId->getInternalIterator()->rewind();
 
-                    return $collEmpLeavesRelatedByAdminId;
+                    return $collEmpRequestsRelatedByAdminId;
                 }
 
-                if ($partial && $this->collEmpLeavesRelatedByAdminId) {
-                    foreach ($this->collEmpLeavesRelatedByAdminId as $obj) {
+                if ($partial && $this->collEmpRequestsRelatedByAdminId) {
+                    foreach ($this->collEmpRequestsRelatedByAdminId as $obj) {
                         if ($obj->isNew()) {
-                            $collEmpLeavesRelatedByAdminId[] = $obj;
+                            $collEmpRequestsRelatedByAdminId[] = $obj;
                         }
                     }
                 }
 
-                $this->collEmpLeavesRelatedByAdminId = $collEmpLeavesRelatedByAdminId;
-                $this->collEmpLeavesRelatedByAdminIdPartial = false;
+                $this->collEmpRequestsRelatedByAdminId = $collEmpRequestsRelatedByAdminId;
+                $this->collEmpRequestsRelatedByAdminIdPartial = false;
             }
         }
 
-        return $this->collEmpLeavesRelatedByAdminId;
+        return $this->collEmpRequestsRelatedByAdminId;
     }
 
     /**
-     * Sets a collection of EmpLeaveRelatedByAdminId objects related by a one-to-many relationship
+     * Sets a collection of EmpRequestRelatedByAdminId objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param PropelCollection $empLeavesRelatedByAdminId A Propel collection.
+     * @param PropelCollection $empRequestsRelatedByAdminId A Propel collection.
      * @param PropelPDO $con Optional connection object
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function setEmpLeavesRelatedByAdminId(PropelCollection $empLeavesRelatedByAdminId, PropelPDO $con = null)
+    public function setEmpRequestsRelatedByAdminId(PropelCollection $empRequestsRelatedByAdminId, PropelPDO $con = null)
     {
-        $empLeavesRelatedByAdminIdToDelete = $this->getEmpLeavesRelatedByAdminId(new Criteria(), $con)->diff($empLeavesRelatedByAdminId);
+        $empRequestsRelatedByAdminIdToDelete = $this->getEmpRequestsRelatedByAdminId(new Criteria(), $con)->diff($empRequestsRelatedByAdminId);
 
 
-        $this->empLeavesRelatedByAdminIdScheduledForDeletion = $empLeavesRelatedByAdminIdToDelete;
+        $this->empRequestsRelatedByAdminIdScheduledForDeletion = $empRequestsRelatedByAdminIdToDelete;
 
-        foreach ($empLeavesRelatedByAdminIdToDelete as $empLeaveRelatedByAdminIdRemoved) {
-            $empLeaveRelatedByAdminIdRemoved->setEmpAccRelatedByAdminId(null);
+        foreach ($empRequestsRelatedByAdminIdToDelete as $empRequestRelatedByAdminIdRemoved) {
+            $empRequestRelatedByAdminIdRemoved->setEmpAccRelatedByAdminId(null);
         }
 
-        $this->collEmpLeavesRelatedByAdminId = null;
-        foreach ($empLeavesRelatedByAdminId as $empLeaveRelatedByAdminId) {
-            $this->addEmpLeaveRelatedByAdminId($empLeaveRelatedByAdminId);
+        $this->collEmpRequestsRelatedByAdminId = null;
+        foreach ($empRequestsRelatedByAdminId as $empRequestRelatedByAdminId) {
+            $this->addEmpRequestRelatedByAdminId($empRequestRelatedByAdminId);
         }
 
-        $this->collEmpLeavesRelatedByAdminId = $empLeavesRelatedByAdminId;
-        $this->collEmpLeavesRelatedByAdminIdPartial = false;
+        $this->collEmpRequestsRelatedByAdminId = $empRequestsRelatedByAdminId;
+        $this->collEmpRequestsRelatedByAdminIdPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related EmpLeave objects.
+     * Returns the number of related EmpRequest objects.
      *
      * @param Criteria $criteria
      * @param boolean $distinct
      * @param PropelPDO $con
-     * @return int             Count of related EmpLeave objects.
+     * @return int             Count of related EmpRequest objects.
      * @throws PropelException
      */
-    public function countEmpLeavesRelatedByAdminId(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    public function countEmpRequestsRelatedByAdminId(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
     {
-        $partial = $this->collEmpLeavesRelatedByAdminIdPartial && !$this->isNew();
-        if (null === $this->collEmpLeavesRelatedByAdminId || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collEmpLeavesRelatedByAdminId) {
+        $partial = $this->collEmpRequestsRelatedByAdminIdPartial && !$this->isNew();
+        if (null === $this->collEmpRequestsRelatedByAdminId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEmpRequestsRelatedByAdminId) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getEmpLeavesRelatedByAdminId());
+                return count($this->getEmpRequestsRelatedByAdminId());
             }
-            $query = EmpLeaveQuery::create(null, $criteria);
+            $query = EmpRequestQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
@@ -1851,28 +1907,28 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 ->count($con);
         }
 
-        return count($this->collEmpLeavesRelatedByAdminId);
+        return count($this->collEmpRequestsRelatedByAdminId);
     }
 
     /**
-     * Method called to associate a EmpLeave object to this object
-     * through the EmpLeave foreign key attribute.
+     * Method called to associate a EmpRequest object to this object
+     * through the EmpRequest foreign key attribute.
      *
-     * @param    EmpLeave $l EmpLeave
+     * @param    EmpRequest $l EmpRequest
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function addEmpLeaveRelatedByAdminId(EmpLeave $l)
+    public function addEmpRequestRelatedByAdminId(EmpRequest $l)
     {
-        if ($this->collEmpLeavesRelatedByAdminId === null) {
-            $this->initEmpLeavesRelatedByAdminId();
-            $this->collEmpLeavesRelatedByAdminIdPartial = true;
+        if ($this->collEmpRequestsRelatedByAdminId === null) {
+            $this->initEmpRequestsRelatedByAdminId();
+            $this->collEmpRequestsRelatedByAdminIdPartial = true;
         }
 
-        if (!in_array($l, $this->collEmpLeavesRelatedByAdminId->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddEmpLeaveRelatedByAdminId($l);
+        if (!in_array($l, $this->collEmpRequestsRelatedByAdminId->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEmpRequestRelatedByAdminId($l);
 
-            if ($this->empLeavesRelatedByAdminIdScheduledForDeletion and $this->empLeavesRelatedByAdminIdScheduledForDeletion->contains($l)) {
-                $this->empLeavesRelatedByAdminIdScheduledForDeletion->remove($this->empLeavesRelatedByAdminIdScheduledForDeletion->search($l));
+            if ($this->empRequestsRelatedByAdminIdScheduledForDeletion and $this->empRequestsRelatedByAdminIdScheduledForDeletion->contains($l)) {
+                $this->empRequestsRelatedByAdminIdScheduledForDeletion->remove($this->empRequestsRelatedByAdminIdScheduledForDeletion->search($l));
             }
         }
 
@@ -1880,28 +1936,28 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
-     * @param	EmpLeaveRelatedByAdminId $empLeaveRelatedByAdminId The empLeaveRelatedByAdminId object to add.
+     * @param	EmpRequestRelatedByAdminId $empRequestRelatedByAdminId The empRequestRelatedByAdminId object to add.
      */
-    protected function doAddEmpLeaveRelatedByAdminId($empLeaveRelatedByAdminId)
+    protected function doAddEmpRequestRelatedByAdminId($empRequestRelatedByAdminId)
     {
-        $this->collEmpLeavesRelatedByAdminId[]= $empLeaveRelatedByAdminId;
-        $empLeaveRelatedByAdminId->setEmpAccRelatedByAdminId($this);
+        $this->collEmpRequestsRelatedByAdminId[]= $empRequestRelatedByAdminId;
+        $empRequestRelatedByAdminId->setEmpAccRelatedByAdminId($this);
     }
 
     /**
-     * @param	EmpLeaveRelatedByAdminId $empLeaveRelatedByAdminId The empLeaveRelatedByAdminId object to remove.
+     * @param	EmpRequestRelatedByAdminId $empRequestRelatedByAdminId The empRequestRelatedByAdminId object to remove.
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function removeEmpLeaveRelatedByAdminId($empLeaveRelatedByAdminId)
+    public function removeEmpRequestRelatedByAdminId($empRequestRelatedByAdminId)
     {
-        if ($this->getEmpLeavesRelatedByAdminId()->contains($empLeaveRelatedByAdminId)) {
-            $this->collEmpLeavesRelatedByAdminId->remove($this->collEmpLeavesRelatedByAdminId->search($empLeaveRelatedByAdminId));
-            if (null === $this->empLeavesRelatedByAdminIdScheduledForDeletion) {
-                $this->empLeavesRelatedByAdminIdScheduledForDeletion = clone $this->collEmpLeavesRelatedByAdminId;
-                $this->empLeavesRelatedByAdminIdScheduledForDeletion->clear();
+        if ($this->getEmpRequestsRelatedByAdminId()->contains($empRequestRelatedByAdminId)) {
+            $this->collEmpRequestsRelatedByAdminId->remove($this->collEmpRequestsRelatedByAdminId->search($empRequestRelatedByAdminId));
+            if (null === $this->empRequestsRelatedByAdminIdScheduledForDeletion) {
+                $this->empRequestsRelatedByAdminIdScheduledForDeletion = clone $this->collEmpRequestsRelatedByAdminId;
+                $this->empRequestsRelatedByAdminIdScheduledForDeletion->clear();
             }
-            $this->empLeavesRelatedByAdminIdScheduledForDeletion[]= clone $empLeaveRelatedByAdminId;
-            $empLeaveRelatedByAdminId->setEmpAccRelatedByAdminId(null);
+            $this->empRequestsRelatedByAdminIdScheduledForDeletion[]= $empRequestRelatedByAdminId;
+            $empRequestRelatedByAdminId->setEmpAccRelatedByAdminId(null);
         }
 
         return $this;
@@ -1913,7 +1969,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * an identical criteria, it returns the collection.
      * Otherwise if this EmpAcc is new, it will return
      * an empty collection; or if this EmpAcc has previously
-     * been saved, it will retrieve related EmpLeavesRelatedByAdminId from storage.
+     * been saved, it will retrieve related EmpRequestsRelatedByAdminId from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
@@ -1922,14 +1978,14 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @param Criteria $criteria optional Criteria object to narrow the query
      * @param PropelPDO $con optional connection object
      * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return PropelObjectCollection|EmpLeave[] List of EmpLeave objects
+     * @return PropelObjectCollection|EmpRequest[] List of EmpRequest objects
      */
-    public function getEmpLeavesRelatedByAdminIdJoinListLeaveType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    public function getEmpRequestsRelatedByAdminIdJoinListRequestType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
     {
-        $query = EmpLeaveQuery::create(null, $criteria);
-        $query->joinWith('ListLeaveType', $join_behavior);
+        $query = EmpRequestQuery::create(null, $criteria);
+        $query->joinWith('ListRequestType', $join_behavior);
 
-        return $this->getEmpLeavesRelatedByAdminId($query, $con);
+        return $this->getEmpRequestsRelatedByAdminId($query, $con);
     }
 
     /**
@@ -2433,6 +2489,231 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
+     * Clears out the collEmpTimeRejects collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addEmpTimeRejects()
+     */
+    public function clearEmpTimeRejects()
+    {
+        $this->collEmpTimeRejects = null; // important to set this to null since that means it is uninitialized
+        $this->collEmpTimeRejectsPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEmpTimeRejects collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEmpTimeRejects($v = true)
+    {
+        $this->collEmpTimeRejectsPartial = $v;
+    }
+
+    /**
+     * Initializes the collEmpTimeRejects collection.
+     *
+     * By default this just sets the collEmpTimeRejects collection to an empty array (like clearcollEmpTimeRejects());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEmpTimeRejects($overrideExisting = true)
+    {
+        if (null !== $this->collEmpTimeRejects && !$overrideExisting) {
+            return;
+        }
+        $this->collEmpTimeRejects = new PropelObjectCollection();
+        $this->collEmpTimeRejects->setModel('EmpTimeReject');
+    }
+
+    /**
+     * Gets an array of EmpTimeReject objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EmpTimeReject[] List of EmpTimeReject objects
+     * @throws PropelException
+     */
+    public function getEmpTimeRejects($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpTimeRejectsPartial && !$this->isNew();
+        if (null === $this->collEmpTimeRejects || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEmpTimeRejects) {
+                // return empty collection
+                $this->initEmpTimeRejects();
+            } else {
+                $collEmpTimeRejects = EmpTimeRejectQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEmpTimeRejectsPartial && count($collEmpTimeRejects)) {
+                      $this->initEmpTimeRejects(false);
+
+                      foreach ($collEmpTimeRejects as $obj) {
+                        if (false == $this->collEmpTimeRejects->contains($obj)) {
+                          $this->collEmpTimeRejects->append($obj);
+                        }
+                      }
+
+                      $this->collEmpTimeRejectsPartial = true;
+                    }
+
+                    $collEmpTimeRejects->getInternalIterator()->rewind();
+
+                    return $collEmpTimeRejects;
+                }
+
+                if ($partial && $this->collEmpTimeRejects) {
+                    foreach ($this->collEmpTimeRejects as $obj) {
+                        if ($obj->isNew()) {
+                            $collEmpTimeRejects[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEmpTimeRejects = $collEmpTimeRejects;
+                $this->collEmpTimeRejectsPartial = false;
+            }
+        }
+
+        return $this->collEmpTimeRejects;
+    }
+
+    /**
+     * Sets a collection of EmpTimeReject objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $empTimeRejects A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setEmpTimeRejects(PropelCollection $empTimeRejects, PropelPDO $con = null)
+    {
+        $empTimeRejectsToDelete = $this->getEmpTimeRejects(new Criteria(), $con)->diff($empTimeRejects);
+
+
+        $this->empTimeRejectsScheduledForDeletion = $empTimeRejectsToDelete;
+
+        foreach ($empTimeRejectsToDelete as $empTimeRejectRemoved) {
+            $empTimeRejectRemoved->setEmpAcc(null);
+        }
+
+        $this->collEmpTimeRejects = null;
+        foreach ($empTimeRejects as $empTimeReject) {
+            $this->addEmpTimeReject($empTimeReject);
+        }
+
+        $this->collEmpTimeRejects = $empTimeRejects;
+        $this->collEmpTimeRejectsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EmpTimeReject objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EmpTimeReject objects.
+     * @throws PropelException
+     */
+    public function countEmpTimeRejects(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpTimeRejectsPartial && !$this->isNew();
+        if (null === $this->collEmpTimeRejects || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEmpTimeRejects) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEmpTimeRejects());
+            }
+            $query = EmpTimeRejectQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collEmpTimeRejects);
+    }
+
+    /**
+     * Method called to associate a EmpTimeReject object to this object
+     * through the EmpTimeReject foreign key attribute.
+     *
+     * @param    EmpTimeReject $l EmpTimeReject
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addEmpTimeReject(EmpTimeReject $l)
+    {
+        if ($this->collEmpTimeRejects === null) {
+            $this->initEmpTimeRejects();
+            $this->collEmpTimeRejectsPartial = true;
+        }
+
+        if (!in_array($l, $this->collEmpTimeRejects->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEmpTimeReject($l);
+
+            if ($this->empTimeRejectsScheduledForDeletion and $this->empTimeRejectsScheduledForDeletion->contains($l)) {
+                $this->empTimeRejectsScheduledForDeletion->remove($this->empTimeRejectsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EmpTimeReject $empTimeReject The empTimeReject object to add.
+     */
+    protected function doAddEmpTimeReject($empTimeReject)
+    {
+        $this->collEmpTimeRejects[]= $empTimeReject;
+        $empTimeReject->setEmpAcc($this);
+    }
+
+    /**
+     * @param	EmpTimeReject $empTimeReject The empTimeReject object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeEmpTimeReject($empTimeReject)
+    {
+        if ($this->getEmpTimeRejects()->contains($empTimeReject)) {
+            $this->collEmpTimeRejects->remove($this->collEmpTimeRejects->search($empTimeReject));
+            if (null === $this->empTimeRejectsScheduledForDeletion) {
+                $this->empTimeRejectsScheduledForDeletion = clone $this->collEmpTimeRejects;
+                $this->empTimeRejectsScheduledForDeletion->clear();
+            }
+            $this->empTimeRejectsScheduledForDeletion[]= $empTimeReject;
+            $empTimeReject->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -2468,13 +2749,13 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
-            if ($this->collEmpLeavesRelatedByEmpAccId) {
-                foreach ($this->collEmpLeavesRelatedByEmpAccId as $o) {
+            if ($this->collEmpRequestsRelatedByEmpAccId) {
+                foreach ($this->collEmpRequestsRelatedByEmpAccId as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collEmpLeavesRelatedByAdminId) {
-                foreach ($this->collEmpLeavesRelatedByAdminId as $o) {
+            if ($this->collEmpRequestsRelatedByAdminId) {
+                foreach ($this->collEmpRequestsRelatedByAdminId as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
@@ -2488,18 +2769,23 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collEmpTimeRejects) {
+                foreach ($this->collEmpTimeRejects as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
-        if ($this->collEmpLeavesRelatedByEmpAccId instanceof PropelCollection) {
-            $this->collEmpLeavesRelatedByEmpAccId->clearIterator();
+        if ($this->collEmpRequestsRelatedByEmpAccId instanceof PropelCollection) {
+            $this->collEmpRequestsRelatedByEmpAccId->clearIterator();
         }
-        $this->collEmpLeavesRelatedByEmpAccId = null;
-        if ($this->collEmpLeavesRelatedByAdminId instanceof PropelCollection) {
-            $this->collEmpLeavesRelatedByAdminId->clearIterator();
+        $this->collEmpRequestsRelatedByEmpAccId = null;
+        if ($this->collEmpRequestsRelatedByAdminId instanceof PropelCollection) {
+            $this->collEmpRequestsRelatedByAdminId->clearIterator();
         }
-        $this->collEmpLeavesRelatedByAdminId = null;
+        $this->collEmpRequestsRelatedByAdminId = null;
         if ($this->collEmpProfiles instanceof PropelCollection) {
             $this->collEmpProfiles->clearIterator();
         }
@@ -2508,6 +2794,10 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpTimes->clearIterator();
         }
         $this->collEmpTimes = null;
+        if ($this->collEmpTimeRejects instanceof PropelCollection) {
+            $this->collEmpTimeRejects->clearIterator();
+        }
+        $this->collEmpTimeRejects = null;
     }
 
     /**

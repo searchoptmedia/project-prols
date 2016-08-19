@@ -1,37 +1,310 @@
-<div class="col-md-12 content managetime-content" style="display: none;">
-        <div class="row" style="margin-left:5px;">
-            <table class="bordered highlight emp-list">
-                <thead>
-                <tr>
-                    <th data-field="id">Employee Number</th>
-                    <th data-field="name">Name</th>
-                    <th data-field="price">Time in</th>
-                    <th data-field="price">Time out</th>
-                    <th data-field="price">Date</th>
-                    <th data-field="price">Total Hour</th>
-                    <th data-field="price">Overtime</th>
-                </tr>
-                </thead>
+{% extends 'AdminBundle:Default:index.html.twig' %}
 
-                <tbody>
-                {#{% for time in getTime %}#}
-                            {#<tr>#}
+{% block nav %}
+    <div class="collection emp-nav">
+        <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+        <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+        <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
 
-                                {#<td>{{ time.Id }}</td>#}
-                                {#<td>{{ time.EmpAcc.getEmpProfiles[0].getEmployeeNumber}}</td>#}
-                                {#<td>{{ time.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ time.EmpAcc.getEmpProfiles[0].lname}}</td>#}
-                                {#<td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>#}
-                                {#<td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>#}
-                                {#<td>{{ time.Date | date('M d Y')}}</td>#}
-                                {#<td>{{ time.Manhours }}</td>#}
-                                {#<td>{{ time.Overtime }}</td>#}
-
-                            {#</tr>#}
-                {#{% endfor %}#}
-                </tbody>
-            </table>
-        </div>
     </div>
+
+    <div class="collection admin-nav">
+        {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
+        {% if role == 'ADMIN' %}
+            <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+        {% endif %}
+    </div>
+
+    <div class="collection logout-nav">
+        <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <section id="main-container">
+
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <div class="page-content">
+                        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                            <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                            <h3 class="center-align">Employee Time Logs</h3>
+                            {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
+                            <div class="top-nav" style="margin-top: 20px;">
+                                <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-12 content managetime-content">
+                            <div class="row" style="margin-left:5px;">
+                                <table class="bordered highlight emp-list">
+                                    <thead>
+                                    <tr>
+                                        <th data-field="id">Employee Number</th>
+                                        <th data-field="name">Name</th>
+                                        <th data-field="price">Time in</th>
+                                        <th data-field="price">Time out</th>
+                                        <th data-field="price">Date</th>
+                                        <th data-field="price">Total Hour</th>
+                                        <th data-field="price">Overtime</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% for time in getTime %}
+                                    <tr>
+
+                                    <td>{{ time.EmpAcc.getEmpProfiles[0].getEmployeeNumber}}</td>
+                                    <td>{{ time.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ time.EmpAcc.getEmpProfiles[0].lname}}</td>
+                                    <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
+                                    <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
+                                    <td>{{ time.Date | date('M d Y')}}</td>
+                                    <td>{{ time.Manhours }}</td>
+                                    <td>{{ time.Overtime }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div id="modal-emp" class="modal modal-fixed-footer">
+                        <form form action="{{ path('add_employee') }}" method="post">
+                            <div class="modal-content">
+                                <h4>Employee</h4>
+                                <p>Username<input name = "username" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
+                                <p>Password<input name = "password" placeholder="type here..." id="fname" type="password" class="input-field"></p>
+                                <p>Re-type Password<input name = "repassword" placeholder="type here..." id="fname" type="password" class="input-field"></p>
+                                <br>
+                                <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
+                                <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
+                                <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
+                                <p>Department</p>
+                                <div class="select-wrapper"><span class="caret">?</span>
+                                    <select name="dept" id="dept" class="initialized emp-dept">
+                                        <option value="" disabled selected>Select department</option>
+                                        {% for dept in getDept %}
+                                            <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <p>Position</p>
+                                <div class="select-wrapper"><span class="caret">?</span>
+                                    <select name="pos"id="pos" class="initialized emp-positions">
+                                        <option value="" disabled selected>Select position</option>
+                                        {% for pos in getPos %}
+                                            <option value="{{pos.Id}}">{{pos.PosNames}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <p>Employment Status</p>
+                                <div class="select-wrapper"><span class="caret">?</span>
+                                    <select name="status"id="status" class="initialized emp-status">
+                                        <option value="" disabled selected>Select status</option>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Contractual">Contractual</option>
+                                        <option value="Provisionary">Provisionary</option>
+                                        <option value="Home-based">Home-based</option>
+                                        <option value="Intern">Intern</option>
+                                    </select>
+                                </div>
+                                <br>
+                                <p>Company Email<input name="email" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>Telephone #<input name="telnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>Cellphone #<input name="cellnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>Address<input name="address" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>Birthday<input name="bday" placeholder="type here..." id="full_name" type="date" class="input-field"></p>
+                                <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                                <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+
+                            </div>
+                            <div class="modal-footer">
+                                <input type=submit value="add" class="modal-action modal-close waves-effect waves-green btn-flat addemp"></input>
+                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="modal-pos" class="modal modal-fixed-footer">
+                        <div class="modal-content">
+                            <h4>Position</h4>
+                            <input placeholder="type position here..." id="input-position" type="text">
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat addpos">Add</a>
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                        </div>
+                    </div>
+
+                    <div id="modal-dept" class="modal modal-fixed-footer">
+                        <div class="modal-content">
+                            <h4>Department</h4>
+                            <input placeholder="type department here..." id="input-department" type="text" >
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat adddept">Add</a>
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
+                        </div>
+                    </div>
+                    <div id="exportchoice" class="modal">
+                        <div class="modal-content">
+                            <h4>Export</h4>
+
+                            <p>Choose entity: </p>
+                            <form action="#">
+                                <input name="group1" type="radio" id="all-emp" class="export-radio-input" checked/>
+                                <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
+
+                                <input name="group1" type="radio" id="select-dept" class="export-radio-input"/>
+                                <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+
+                                <div class= "selectDept" style="width: 510px">
+                                    <select id = "listdept" class="browser-default">
+                                        <option value="" disabled selected>Choose your department</option>
+                                        <option value="1">Executive</option>
+                                        <option value="2">Graphics</option>
+                                        <option value="3">Development</option>
+                                        <option value="4">SEO</option>
+                                        <option value="5">Content</option>
+                                        <option value="6">Social Media</option>
+                                        <option value="7">Admin</option>
+                                        <option value="8">Maintenance</option>
+                                    </select>
+                                </div>
+                                <div class="row" style="margin-top: 10px;">
+
+
+                                    <div class="col-md-6">
+                                        <label class="label">From:</label>
+                                        <input name="start-date" placeholder="Start Date" class="start-date"
+                                               type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="label">To:</label>
+                                        <input name="end-date" placeholder="End Date" class="end-date"
+                                               type="text"onblur="(this.type='text')" onfocus="(this.type='date')">
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+                                    <a class="modal-action waves-effect waves-green btn-flat export-submit-btn">Export</a>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+        </section>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
+    <script src="{{asset('prols2/js/html5.js')}}"></script>
+    <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
+    <script src="{{asset('prols2/js/materialize.js')}}"></script>
+    <script src="{{asset('prols2/js/script.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
+    <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
+{% endblock %}
+{% block customjs %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('select').material_select();
+            var inputfield = '';
+            var empId = '';
+            $('.btn-cancel-input').click(function(e){
+                e.preventDefault();
+
+                $('#input-department').val('');
+                $('#input-position').val('');
+                $('.input-field').closest('.profile-data').find('input[type=text]').val('');
+                $('.input-field').closest('.profile-data').find('input[type=text]').css({'border-bottom-color' : '#9e9e9e'})
+            });
+
+
+            $("#upload-photo").change(function () {
+                var fileExtension = ['jpeg', 'jpg', 'png'];
+            });
+
+
+            $('.birth-date').pickadate({
+                selectMonths: true,
+                selectYears: 15
+            });
+
+            $('.addpos').click(function(){
+                inputfield=$('#input-position').val();
+                $.get("{{ path('add_position') }}" + inputfield,  function(data){
+                    console.log(data);
+                }, "json");
+            });
+
+            $('.adddept').click(function(){
+                inputfield=$('#input-department').val();
+                $.get("{{ path('add_department') }}" + inputfield,  function(data){
+                    console.log(data);
+                }, "json");
+                $('#input-department').val('');
+            });
+            $('.empProfile').click(function(){
+
+                empId = $(this).data('empid');
+                window.location.href = '{{ path('emp_page')}}' + empId;
+            });
+
+            $('.export-submit-btn').click(function(){
+                var deptid = $('#listdept').val();
+                var start  = new Date($('[name=start-date]').val());
+                var end    = new Date($('[name=end-date]').val());
+                var isDate = start == 'Invalid Date' ? 0 : 1;
+                var s = start.getDate();
+                var e = end.getDate();
+
+                start   = start.toDateString();
+                end     = end.toLocaleString();
+
+                if(s > e){
+                    alert('End date must be higher');
+                    return;
+                }
+                $('[name=start-date]').val('');
+                $('[name=end-date]').val('');
+                if ($('#select-dept:checked').length){
+                    if(deptid == null){
+                        $('#listdept').css({'color' : 'red'});
+                        setTimeout(function(){
+                            $('#listdept').css({'color' : 'black'});
+                        }, 500);
+                        return;
+                    }
+                }
+                $('#exportchoice').closeModal();
+                window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&start='
+                        + start + '&end=' + end
+                        + '&isDate=' + isDate, '_blank');
+            });
+
+        });
+
+    </script>
+{% endblock %}
 
 
 

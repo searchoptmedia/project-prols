@@ -16,48 +16,50 @@
 				<!-- <div class="row" style="margin-left:5px;"> -->
 				{% for requests in getRequests %}
 
-					{% if requests.status == 'Accepted' and requests.empAccId == id %}
-						{% if requests.listLeaveTypeId <= 3 %}
-						
-						<ul class="collection notif-list">
-						<li class="collection-item avatar">
-						<i class="material-icons circle">perm_identity</i>
-						<p>{{requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].lname}} accepted your requested leave </p>
-						</li>
-						</ul>
+					{% if requests.status == 'Accepted' and requests.empAccId == id and requests.listRequestTypeId <= 2 %}
 
-						{% endif %}{% endif %}
-					{% if requests.status == 'Accepted' %}
-						{% if requests.listLeaveTypeId == 4 %}
-						
+
 						<ul class="collection notif-list">
-						<li class="collection-item avatar">
-						<i class="material-icons circle">perm_identity</i>
-						<p>{{requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}} added a meeting: {{requests.request}}</p>
-						</li>
+							<li class="collection-item avatar">
+								<i class="material-icons circle leave-icon">schedule</i>
+								<p>{{requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].fname ~ ' ' ~
+									requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].lname}} accepted your requested leave.
+									<br> From&nbsp: {{ requests.dateStarted | date('M d Y') }} <br> To &nbsp &nbsp &nbsp: {{ requests.dateEnded | date('M d Y') }}</p>
+							</li>
 						</ul>
-						{% endif %}{% endif %}
-					
-			
+						<hr>
+						{% endif %}
+
+					{% if requests.status == 'Accepted' and requests.empAccId == id and requests.listRequestTypeId == 3 %}
+							<ul class="collection notif-list">
+								<li class="collection-item avatar">
+									<i class="material-icons circle req-icon">work</i>
+									<p>{{requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByAdminId.getEmpProfiles[0].lname}}
+										accepted your request to work outside the office.<br>Date: {{ requests.dateStarted | date('M d Y') }} </p>
+
+								</li>
+							</ul>
+						<hr>
+					{% endif %}
+
+					{% if requests.status == 'Accepted' and requests.listRequestTypeId == 4 %}
+						<ul class="collection notif-list">
+							<li class="collection-item avatar">
+								<i class="material-icons circle req-icon">perm_identity</i>
+								<p>{{requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ requests.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}
+									added a meeting:<br> {{requests.request}}</p>
+							</li>
+						</ul>
+						<hr>
+						{% endif %}
+
 				{% endfor %}	
-					
-	
-				<!-- </div>  -->          		
+
 			</div>
 		</div>
 
-		<!-- <div class="time-in-container"></div>
-
-		<div class="time-in center-align">
-			<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
-	        <div class="widget-subtitle plugin-date">Loading...</div>
-	        </div>
-			<p class="confirm-timein">Good Morning!</p>
-			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
-		</div> -->
-
 	</div>
-
+	</div>
 	</section>
 </section>
 {% endblock %}

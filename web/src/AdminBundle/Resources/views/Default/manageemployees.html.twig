@@ -1,32 +1,5 @@
-<div class="col-md-12 content manageemployees-content" style="display: block;">
-        <div class="row" style="margin-left:5px;">
-            <table class="bordered highlight emp-list">
-                <thead>
-                <tr>
-                    <th data-field="id">Employee Number</th>
-                    <th data-field="name">Name</th>
-                    <th data-field="price">Department</th>
-                    <th data-field="price">Position</th>
-                    <th data-field="price">Status</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {% for emp in getEmployee %}
-                    {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
-                           <tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">
-                                <td>{{emp.getEmployeeNumber}}</td>
-                                <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
-                                <td>{{emp.getListDept().DeptNames}}</td>
-                                <td>{{emp.getListPos().PosNames}}</td>
-                                <td>{{emp.getStatus}}</td>
-                            </tr>
-                    {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-
-
+<div class="center-align nav-menu" style="margin-top: 20px;">
+    <a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn btn-export" style="color: white;">View Employees</a>
+    <a href="{{ path('time_logs_page') }}" class="waves-effect waves-light btn btn-export" style="color: white;">View Time logs</a>
+    <a href="{{ path('view_request') }}" class="waves-effect waves-light btn btn-export" style="color: white;">View Requests</a>
+</div>

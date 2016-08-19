@@ -15,9 +15,10 @@ use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
-use CoreBundle\Model\EmpLeave;
 use CoreBundle\Model\EmpProfile;
+use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpTime;
+use CoreBundle\Model\EmpTimeReject;
 
 /**
  * @method EmpAccQuery orderById($order = Criteria::ASC) Order by the id column
@@ -44,13 +45,13 @@ use CoreBundle\Model\EmpTime;
  * @method EmpAccQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method EmpAccQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
- * @method EmpAccQuery leftJoinEmpLeaveRelatedByEmpAccId($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpLeaveRelatedByEmpAccId relation
- * @method EmpAccQuery rightJoinEmpLeaveRelatedByEmpAccId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpLeaveRelatedByEmpAccId relation
- * @method EmpAccQuery innerJoinEmpLeaveRelatedByEmpAccId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpLeaveRelatedByEmpAccId relation
+ * @method EmpAccQuery leftJoinEmpRequestRelatedByEmpAccId($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpRequestRelatedByEmpAccId relation
+ * @method EmpAccQuery rightJoinEmpRequestRelatedByEmpAccId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpRequestRelatedByEmpAccId relation
+ * @method EmpAccQuery innerJoinEmpRequestRelatedByEmpAccId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpRequestRelatedByEmpAccId relation
  *
- * @method EmpAccQuery leftJoinEmpLeaveRelatedByAdminId($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpLeaveRelatedByAdminId relation
- * @method EmpAccQuery rightJoinEmpLeaveRelatedByAdminId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpLeaveRelatedByAdminId relation
- * @method EmpAccQuery innerJoinEmpLeaveRelatedByAdminId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpLeaveRelatedByAdminId relation
+ * @method EmpAccQuery leftJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpRequestRelatedByAdminId relation
+ * @method EmpAccQuery rightJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpRequestRelatedByAdminId relation
+ * @method EmpAccQuery innerJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpRequestRelatedByAdminId relation
  *
  * @method EmpAccQuery leftJoinEmpProfile($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpProfile relation
  * @method EmpAccQuery rightJoinEmpProfile($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpProfile relation
@@ -59,6 +60,10 @@ use CoreBundle\Model\EmpTime;
  * @method EmpAccQuery leftJoinEmpTime($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpTime relation
  * @method EmpAccQuery rightJoinEmpTime($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpTime relation
  * @method EmpAccQuery innerJoinEmpTime($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpTime relation
+ *
+ * @method EmpAccQuery leftJoinEmpTimeReject($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpTimeReject relation
+ * @method EmpAccQuery rightJoinEmpTimeReject($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpTimeReject relation
+ * @method EmpAccQuery innerJoinEmpTimeReject($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpTimeReject relation
  *
  * @method EmpAcc findOne(PropelPDO $con = null) Return the first EmpAcc matching the query
  * @method EmpAcc findOneOrCreate(PropelPDO $con = null) Return the first EmpAcc matching the query, or a new EmpAcc object populated from the query conditions when no match is found
@@ -564,41 +569,41 @@ abstract class BaseEmpAccQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related EmpLeave object
+     * Filter the query by a related EmpRequest object
      *
-     * @param   EmpLeave|PropelObjectCollection $empLeave  the related object to use as filter
+     * @param   EmpRequest|PropelObjectCollection $empRequest  the related object to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return                 EmpAccQuery The current query, for fluid interface
      * @throws PropelException - if the provided filter is invalid.
      */
-    public function filterByEmpLeaveRelatedByEmpAccId($empLeave, $comparison = null)
+    public function filterByEmpRequestRelatedByEmpAccId($empRequest, $comparison = null)
     {
-        if ($empLeave instanceof EmpLeave) {
+        if ($empRequest instanceof EmpRequest) {
             return $this
-                ->addUsingAlias(EmpAccPeer::ID, $empLeave->getEmpAccId(), $comparison);
-        } elseif ($empLeave instanceof PropelObjectCollection) {
+                ->addUsingAlias(EmpAccPeer::ID, $empRequest->getEmpAccId(), $comparison);
+        } elseif ($empRequest instanceof PropelObjectCollection) {
             return $this
-                ->useEmpLeaveRelatedByEmpAccIdQuery()
-                ->filterByPrimaryKeys($empLeave->getPrimaryKeys())
+                ->useEmpRequestRelatedByEmpAccIdQuery()
+                ->filterByPrimaryKeys($empRequest->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByEmpLeaveRelatedByEmpAccId() only accepts arguments of type EmpLeave or PropelCollection');
+            throw new PropelException('filterByEmpRequestRelatedByEmpAccId() only accepts arguments of type EmpRequest or PropelCollection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the EmpLeaveRelatedByEmpAccId relation
+     * Adds a JOIN clause to the query using the EmpRequestRelatedByEmpAccId relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return EmpAccQuery The current query, for fluid interface
      */
-    public function joinEmpLeaveRelatedByEmpAccId($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinEmpRequestRelatedByEmpAccId($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('EmpLeaveRelatedByEmpAccId');
+        $relationMap = $tableMap->getRelation('EmpRequestRelatedByEmpAccId');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -613,14 +618,14 @@ abstract class BaseEmpAccQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'EmpLeaveRelatedByEmpAccId');
+            $this->addJoinObject($join, 'EmpRequestRelatedByEmpAccId');
         }
 
         return $this;
     }
 
     /**
-     * Use the EmpLeaveRelatedByEmpAccId relation EmpLeave object
+     * Use the EmpRequestRelatedByEmpAccId relation EmpRequest object
      *
      * @see       useQuery()
      *
@@ -628,51 +633,51 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return   \CoreBundle\Model\EmpLeaveQuery A secondary query class using the current class as primary query
+     * @return   \CoreBundle\Model\EmpRequestQuery A secondary query class using the current class as primary query
      */
-    public function useEmpLeaveRelatedByEmpAccIdQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useEmpRequestRelatedByEmpAccIdQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joinEmpLeaveRelatedByEmpAccId($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'EmpLeaveRelatedByEmpAccId', '\CoreBundle\Model\EmpLeaveQuery');
+            ->joinEmpRequestRelatedByEmpAccId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpRequestRelatedByEmpAccId', '\CoreBundle\Model\EmpRequestQuery');
     }
 
     /**
-     * Filter the query by a related EmpLeave object
+     * Filter the query by a related EmpRequest object
      *
-     * @param   EmpLeave|PropelObjectCollection $empLeave  the related object to use as filter
+     * @param   EmpRequest|PropelObjectCollection $empRequest  the related object to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return                 EmpAccQuery The current query, for fluid interface
      * @throws PropelException - if the provided filter is invalid.
      */
-    public function filterByEmpLeaveRelatedByAdminId($empLeave, $comparison = null)
+    public function filterByEmpRequestRelatedByAdminId($empRequest, $comparison = null)
     {
-        if ($empLeave instanceof EmpLeave) {
+        if ($empRequest instanceof EmpRequest) {
             return $this
-                ->addUsingAlias(EmpAccPeer::ID, $empLeave->getAdminId(), $comparison);
-        } elseif ($empLeave instanceof PropelObjectCollection) {
+                ->addUsingAlias(EmpAccPeer::ID, $empRequest->getAdminId(), $comparison);
+        } elseif ($empRequest instanceof PropelObjectCollection) {
             return $this
-                ->useEmpLeaveRelatedByAdminIdQuery()
-                ->filterByPrimaryKeys($empLeave->getPrimaryKeys())
+                ->useEmpRequestRelatedByAdminIdQuery()
+                ->filterByPrimaryKeys($empRequest->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByEmpLeaveRelatedByAdminId() only accepts arguments of type EmpLeave or PropelCollection');
+            throw new PropelException('filterByEmpRequestRelatedByAdminId() only accepts arguments of type EmpRequest or PropelCollection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the EmpLeaveRelatedByAdminId relation
+     * Adds a JOIN clause to the query using the EmpRequestRelatedByAdminId relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return EmpAccQuery The current query, for fluid interface
      */
-    public function joinEmpLeaveRelatedByAdminId($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinEmpRequestRelatedByAdminId($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('EmpLeaveRelatedByAdminId');
+        $relationMap = $tableMap->getRelation('EmpRequestRelatedByAdminId');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -687,14 +692,14 @@ abstract class BaseEmpAccQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'EmpLeaveRelatedByAdminId');
+            $this->addJoinObject($join, 'EmpRequestRelatedByAdminId');
         }
 
         return $this;
     }
 
     /**
-     * Use the EmpLeaveRelatedByAdminId relation EmpLeave object
+     * Use the EmpRequestRelatedByAdminId relation EmpRequest object
      *
      * @see       useQuery()
      *
@@ -702,13 +707,13 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return   \CoreBundle\Model\EmpLeaveQuery A secondary query class using the current class as primary query
+     * @return   \CoreBundle\Model\EmpRequestQuery A secondary query class using the current class as primary query
      */
-    public function useEmpLeaveRelatedByAdminIdQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useEmpRequestRelatedByAdminIdQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joinEmpLeaveRelatedByAdminId($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'EmpLeaveRelatedByAdminId', '\CoreBundle\Model\EmpLeaveQuery');
+            ->joinEmpRequestRelatedByAdminId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpRequestRelatedByAdminId', '\CoreBundle\Model\EmpRequestQuery');
     }
 
     /**
@@ -857,6 +862,80 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         return $this
             ->joinEmpTime($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpTime', '\CoreBundle\Model\EmpTimeQuery');
+    }
+
+    /**
+     * Filter the query by a related EmpTimeReject object
+     *
+     * @param   EmpTimeReject|PropelObjectCollection $empTimeReject  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpTimeReject($empTimeReject, $comparison = null)
+    {
+        if ($empTimeReject instanceof EmpTimeReject) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $empTimeReject->getEmpAccAccId(), $comparison);
+        } elseif ($empTimeReject instanceof PropelObjectCollection) {
+            return $this
+                ->useEmpTimeRejectQuery()
+                ->filterByPrimaryKeys($empTimeReject->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEmpTimeReject() only accepts arguments of type EmpTimeReject or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpTimeReject relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinEmpTimeReject($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpTimeReject');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpTimeReject');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpTimeReject relation EmpTimeReject object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpTimeRejectQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpTimeRejectQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinEmpTimeReject($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpTimeReject', '\CoreBundle\Model\EmpTimeRejectQuery');
     }
 
     /**

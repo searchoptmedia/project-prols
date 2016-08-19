@@ -24,7 +24,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
-		
+		$c->addDescendingOrderByColumn(self::DATE)->setLimit(30);
 		$_self = self::doSelect($c);
 
 		return $_self ? $_self : array();
@@ -66,6 +66,18 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		}
 
 		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)->addDescendingOrderByColumn(self::TIME_IN);
+
+		$_self = self::doSelectOne($c);
+
+		return $_self ? $_self : null;
+
+	}
+	public static function getLastTimeinDiffIp($id, Criteria $c = null){
+		if (is_null($c)) {
+			$c = new Criteria();
+		}
+
+		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)->addAnd(self::CHECK_IP, 0, Criteria::EQUAL)->addDescendingOrderByColumn(self::TIME_IN);
 
 		$_self = self::doSelectOne($c);
 

@@ -16,30 +16,14 @@ request_email:
 
 request_email_no_params:
     path:     /send/request/email/
-    defaults: { _controller: AdminBundle:Default:sendRequest }    
-
-admin_time_out:
-    path:     /admin/time_out/{id}
-    defaults: { _controller: AdminBundle:Default:timeOut }
-
-admin_time_out_no_params:
-    path:     /admin/time_out/
-    defaults: { _controller: AdminBundle:Default:timeOut }
-
-request_meeting_w_params:
-    path:     /request/meeting/{id}
-    defaults: { _controller: AdminBundle:Default:requestMeeting }
+    defaults: { _controller: AdminBundle:Default:sendRequest }
 
 request_meeting:
     path:     /request/meeting/
     defaults: { _controller: AdminBundle:Default:requestMeeting }
 
 request_leave:
-    path:     /request/leave/
-    defaults: { _controller: AdminBundle:Default:requestLeave }
-
-request_leave_w_params:
-    path:     /request/leave/{id}/{id2}/{id3}
+    path:     /request/leave
     defaults: { _controller: AdminBundle:Default:requestLeave }
 
 status_accept_with_params:
@@ -51,11 +35,7 @@ status_accept:
     defaults: { _controller: AdminBundle:Default:statusAccept }
 
 status_declined:
-    path:    /declined/
-    defaults: { _controller: AdminBundle:Default:declinedRequest }
-
-status_declined_w_params:
-    path:    /declined/{id}/{id2}/{id3}
+    path:    /declined
     defaults: { _controller: AdminBundle:Default:declinedRequest }
 
 check_time:
@@ -77,3 +57,7 @@ time_out:
 time_out_w_params:
     path: /timeout/{passw}
     defaults: { _controller: AdminBundle:Employee:TimeOut }
+
+time_logs_page:
+    path: /timelogs
+    defaults: { _controller: AdminBundle:Default:timeLogs}

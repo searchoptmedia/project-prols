@@ -86,11 +86,15 @@
  	$('.btn-reqmeeting').click(function(){
  		$('.form-reqmeeting').show();
  		$('.form-reqleave').hide();
- 	});
+		$('.sent').hide();
+		$('.required-field').hide();
+	});
 
  	$('.btn-reqleave').click(function(){
  		$('.form-reqleave').show();
  		$('.form-reqmeeting').hide();
+		$('.sent').hide();
+		$('.required-field').hide();
  	});
 
 // MODALS
@@ -220,21 +224,23 @@
 
 
 
-	$('.btn-accept').click(function(e){
-		e.preventDefault();
-
-		$('.accept-notif-container').css({'margin-top':'50px'})
-
-		setTimeout(function(){
-			$('.accept-notif-container').css({'margin-top' : '-55px'});
-		}, 5000);
-
-	});
+	// $('.btn-accept').click(function(e){
+	// 	e.preventDefault();
+    //
+	// 	$('.accept-notif-container').css({'margin-top':'50px'})
+    //
+	// 	setTimeout(function(){
+	// 		$('.accept-notif-container').css({'margin-top' : '-55px'});
+	// 	}, 5000);
+    //
+	// });
 
 	$('.btn-decline').click(function(e){
 		e.preventDefault();
 
-		$('.reject').css({'display':'block'})
+		$('.reject').css({'display':'block'});
+		$('.required-field').hide();
+		$('.reject-reason').val('');
 	});
 
 	$('.btn-submitleave').click(function(e){
@@ -250,27 +256,27 @@
 		}
  	});
 
- 	$('.btn-sendtoemail').click(function(e){
- 		e.preventDefault();
-
-	 	if($("#reject-reason").val() == ''){
-	 		 $("#reject-reason").closest('.reject').find('.required-field').css({'display' : 'block'})
-
-	 	} else {
-	 		$("#reject-reason").closest('.reject').find('.required-field').css({'display' : 'none'})
-	 		
-
-	 		$("#reject-reason").css({'display':'none'});
-	 		$('.sendtoemail-notif-container').css({'margin-top':'50px'})
-	 		$('.btn-reasoncancel').css({'display':'none'})
-	 		$('.btn-sendtoemail').css({'display':'none'})
-
-
-	 		setTimeout(function(){
-	 			$('.sendtoemail-notif-container').css({'margin-top' : '-55px'});
-	 		}, 5000);
- 		}
- 	});
+ 	// $('.btn-sendtoemail').click(function(e){
+ 	// 	e.preventDefault();
+     //
+	 // 	if($("#reject-reason").val() == ''){
+	 // 		 $("#reject-reason").closest('.reject').find('.required-field').css({'display' : 'block'})
+     //
+	 // 	} else {
+	 // 		$("#reject-reason").closest('.reject').find('.required-field').css({'display' : 'none'})
+	 //		
+     //
+	 // 		$("#reject-reason").css({'display':'none'});
+	 // 		$('.sendtoemail-notif-container').css({'margin-top':'50px'})
+	 // 		$('.btn-reasoncancel').css({'display':'none'})
+	 // 		$('.btn-sendtoemail').css({'display':'none'})
+     //
+     //
+	 // 		setTimeout(function(){
+	 // 			$('.sendtoemail-notif-container').css({'margin-top' : '-55px'});
+	 // 		}, 5000);
+ 	// 	}
+ 	// });
 
 	$('.btn-add-emp').click(function(e){
 	 		e.preventDefault();
@@ -343,17 +349,26 @@
 	        var fileExtension = ['jpeg', 'jpg', 'png'];
     });
 
- 		$('.initialized').material_select();
+ 		// $('.initialized').material_select();
 
  		// $('#calendar').fullCalendar('option', 'height', 650);
 	 	$('.modal-change').leanModal();
 	 	$('.modal-export').leanModal();
 
 	 $(".modal-content").closest("#exportchoice").find("#select-dept").change(function(){
-		 $(".selectDept").css({'display':'block'})
+		 $('.departmentselect').select2();
+		 $('.input-name').select2('destroy');
+		 $('#empnames').val('');
 	 });
 	 $(".modal-content").closest("#exportchoice").find("#all-emp").change(function(){
-		 $(".selectDept").css({'display':'none'})
+		 $('#listdept').val('');
+		 $('.departmentselect').select2('destroy');
+		 $('.input-name').select2('destroy');
+		 $('#empnames').val('');
+	 });
+	 $(".modal-content").closest("#exportchoice").find("#select-name").change(function(){
+		 $('.input-name').select2();
+		 $('.departmentselect').select2('destroy');
 		 $('#listdept').val('');
 	 });
  		

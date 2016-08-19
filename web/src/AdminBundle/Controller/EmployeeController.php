@@ -35,6 +35,8 @@ use CoreBundle\Model\EmpLeave;
 use CoreBundle\Model\EmpLeavePeer;
 use CoreBundle\Model\EmpLeaveQuery;
 use CoreBundle\Form\Type\EmpLeaveType;
+use CoreBundle\Model\EmpRequest;
+use CoreBundle\Model\EmpRequestPeer;
 
 use CoreBundle\Utilities\Mailer;
 
@@ -51,7 +53,7 @@ class EmployeeController extends Controller{
 	public function TimeInAction(Request $request){
 
 		date_default_timezone_set('Asia/Manila');
-
+		
 		//check session active
 		$user = $this->getUser();
 		if(empty($user)){
@@ -86,9 +88,6 @@ class EmployeeController extends Controller{
 					$empTimeSave->setCheckIp(1);
 				}else{
 					$empTimeSave->setCheckIp(0);
-					// $mailer = new Mailer();
-					// $send = $mailer->sendOutOfOfficeEmailToAdmin();
-
 				}
 			}
 			if($empTimeSave->save()){
@@ -101,6 +100,17 @@ class EmployeeController extends Controller{
 						$emailresp = 'No email sent';
 					} else {
 						$emailresp = 'Email Sent';
+
+						$requesttimein = new EmpRequest();
+						$requesttimein->setStatus('Pending');
+						$requesttimein->setRequest($request->request->get('message'));
+						$requesttimein->setEmpAccId($this->getUser()->getId());
+						$requesttimein->setDateStarted($datetoday);
+						$requesttimein->setDateEnded($datetoday);
+						$requesttimein->setListRequestTypeId(3);
+						$requesttimein->setEmpTimeId($empTimeSave->getId());
+						$requesttimein->save();
+
 					}
 				}
 			}
