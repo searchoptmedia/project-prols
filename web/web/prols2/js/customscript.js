@@ -374,20 +374,22 @@
 
 
 
-	 $('.export-radio-input').change( function () {
+	 $('.export-radio-input').change(function() {
 		 var type = $(this).data('type'),
 			 dept = $('.department-option-sect'),
 			 emp  = $('.employee-option-sect');
-		 
 		 emp.show();
 		 dept.show();
+		 $('.departmentselect,.input-name').val("").trigger("change");
 		 if(type == 'all') {
 			 dept.hide();
 			 emp.hide();
 		 } else if(type == 'dept') {
 			 emp.hide();
+			 $('#empnames').val('');
 		 } else {
 			dept.hide();
+			 $('#listdept').val('');
 		 }
 	 })
  		

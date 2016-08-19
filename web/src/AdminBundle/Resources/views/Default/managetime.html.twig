@@ -5,13 +5,13 @@
         <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
         <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-
     </div>
 
     <div class="collection admin-nav">
         {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
         {% if role == 'ADMIN' %}
             <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+            <a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>
         {% endif %}
     </div>
 

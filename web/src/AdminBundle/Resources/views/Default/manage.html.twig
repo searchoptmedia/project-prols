@@ -462,7 +462,7 @@ $(document).ready(function(){
         var s = start.getDate();
         var e = end.getDate();
         start   = start.toDateString();
-        end     = end.toLocaleString();
+        end     = end.toDateString();
 
         if(s > e){
             alert('End date must be greater than or equal to start date');
