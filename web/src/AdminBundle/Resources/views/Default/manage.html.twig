@@ -256,27 +256,28 @@
                     <p>Choose entity: </p>
                     <form action="#">
                         <div class="radiobtn" style="margin-bottom: 20px;">
-                        <input name="group1" type="radio" id="all-emp" class="export-radio-input" checked/>
+                        <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
                         <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
 
-                        <input name="group1" type="radio" id="select-dept" class="export-radio-input"/>
+                        <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
                         <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
 
-                        <input name="group1" type="radio" id="select-name" class="export-radio-input"/>
+                        <input name="group1" type="radio" id="select-name" class="export-radio-input" data-type="emp"/>
                         <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
                         </div>
-                            <select id = "listdept" class="departmentselect" style="width: 300px;">
-                                <option value="" disabled selected>Choose your department</option>
-                                <option value="1">Executive</option>
-                                <option value="2">Graphics</option>
-                                <option value="3">Development</option>
-                                <option value="4">SEO</option>
-                                <option value="5">Content</option>
-                                <option value="6">Social Media</option>
-                                <option value="7">Admin</option>
-                                <option value="8">Maintenance</option>
-                            </select>
-
+                            <div class="department-option-sect" style="display: none;">
+                                <select id = "listdept" class="departmentselect" style="width: 300px;">
+                                    <option value="" disabled selected>Choose your department</option>
+                                    <option value="1">Executive</option>
+                                    <option value="2">Graphics</option>
+                                    <option value="3">Development</option>
+                                    <option value="4">SEO</option>
+                                    <option value="5">Content</option>
+                                    <option value="6">Social Media</option>
+                                    <option value="7">Admin</option>
+                                    <option value="8">Maintenance</option>
+                                </select>
+                            </div>
                         {#<div class= "selectByname" style="width: 510px; margin-top: 20px; margin-bottom: 20px;">#}
                             {#<select id = "listnames" class="browser-default">#}
                                 {#<option value="" disabled selected>Choose</option>#}
@@ -286,13 +287,14 @@
                             {#</select>#}
 
 
-
-                            <select id="empnames" class="input-name" style="width: 300px; margin-top: 50px;">
-                                <option value="" disabled selected>Type name here..</option>
-                                {% for user in getAllProfile %}
-                                <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
-                                {% endfor %}
-                            </select>
+                            <div class="employee-option-sect" style="display: none;">
+                                <select id="empnames" class="input-name" style="width: 300px; margin-top: 50px;">
+                                    <option value="" disabled selected>Type name here..</option>
+                                    {% for user in getAllProfile %}
+                                    <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
 
                         <div class="row" style="margin-top: 20px;">
 
@@ -406,6 +408,8 @@ $(document).ready(function(){
             {#{% endfor %}#}
         {#]#}
     {#});#}
+
+    $('.departmentselect,.input-name').select2();
 
     var inputfield = '';
     var empId = '';

@@ -131,10 +131,13 @@ class DefaultController extends Controller{
 //    		}
     	}
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		$emptimedate = $et->getDate();
-		if($emptimedate->format('Y-m-d') == $datetoday){
-			$timeflag = 1;
+		if(!empty($et)){
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
 		}
+
 
 		$systime = date('H:i A');
 		$afternoon = date('H:i A', strtotime('12 pm')); 	
@@ -544,11 +547,12 @@ class DefaultController extends Controller{
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		$emptimedate = $et->getDate();
-		if($emptimedate->format('Y-m-d') == $datetoday){
-			$timeflag = 1;
+		if(!empty($et)){
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
 		}
-
 
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
@@ -653,10 +657,13 @@ class DefaultController extends Controller{
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
-				$timeflag = 1;
+			if(!empty($et)){
+				$emptimedate = $et->getDate();
+				if($emptimedate->format('Y-m-d') == $datetoday){
+					$timeflag = 1;
+				}
 			}
+
 		//echo '<pre>';var_dump($requestGet);exit;		
 			$userip = InitController::getUserIP($this);
 			$ip_add = ListIpPeer::getValidIP($userip);
@@ -897,9 +904,11 @@ class DefaultController extends Controller{
 			$getTime = EmpTimePeer::getAllTime();
 			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
-				$timeflag = 1;
+			if(!empty($et)){
+				$emptimedate = $et->getDate();
+				if($emptimedate->format('Y-m-d') == $datetoday){
+					$timeflag = 1;
+				}
 			}
 
 			$requestcount = EmpRequestQuery::create()
@@ -1235,9 +1244,11 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		$emptimedate = $et->getDate();
-		if($emptimedate->format('Y-m-d') == $datetoday){
-			$timeflag = 1;
+		if(!empty($et)){
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
 		}
 
 		$requestcount = EmpRequestQuery::create()
