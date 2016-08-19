@@ -24,7 +24,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
-		$c->addDescendingOrderByColumn(self::DATE)->setLimit(30);
+		$c->addDescendingOrderByColumn(self::DATE);
 		$_self = self::doSelect($c);
 
 		return $_self ? $_self : array();
