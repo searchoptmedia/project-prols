@@ -8,8 +8,11 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
+use CoreBundle\Model\ListDeptPeer;
+use CoreBundle\Model\ListPosPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 //use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -124,8 +127,8 @@ class EmployeeReportController extends Controller {
                     if($dateday == 'Sat' || $dateday == 'Sun'){
                         $overtime = $totalHoursDec;
 
-                        $totalHours = 0;
-                        $totalHoursDec = 0;
+//                        $totalHours = 0;
+//                        $totalHoursDec = 0;
 
                     }
                     if($overtime < 1){
@@ -146,7 +149,74 @@ class EmployeeReportController extends Controller {
         $filedate           = date('m/d/Y');
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', 'attachment; filename="employee_export"'.$filedate.'".csv"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_time_export.csv"');
+        return $response;
+    }
+
+
+    public function getEmployeeRecord()
+    {
+        $c = new \Criteria();
+        $deptid = $_REQUEST['deptid'];
+
+        if($deptid == 'null'){
+
+            $c->addAscendingOrderByColumn(EmpProfilePeer::ID);
+            $results = EmpProfilePeer::getEmployeeList($c);
+        }else{
+            $c->add(EmpProfilePeer::LIST_DEPT_ID, $deptid, \Criteria::EQUAL);
+            $c->addAscendingOrderByColumn(EmpProfilePeer::ID);
+            $results = EmpProfilePeer::getEmployeeList($c);
+        }
+        return $results;
+    }
+
+    /**
+     * Generate Employee List Report
+     * @param Request $req
+     * @return StreamedResponse
+     */
+    public function generateEmployeeReportAction(Request $req)
+    {
+        $response = new StreamedResponse();
+        $response->setCallback(function() {
+            $handle = fopen('php://output', 'w+');
+            // Add the header of the CSV file
+
+            fputcsv($handle, array('Employee ID', 'Name', 'Address', 'Birthday', 'Email', 'Department', 'Position'));
+
+            $records = $this->getEmployeeRecord();
+            foreach($records as $emp) {
+                $empid  = $emp->getEmpAccAccId();
+                $empacc = EmpAccPeer::getAcc($empid);
+
+                $email  = $empacc->getEmail();
+                $fname  = $emp->getFname();
+                $lname  = $emp->getLname();
+                $empnum = $emp->getEmployeeNumber();
+                $bday   = $emp->getBday()->format('M d Y');
+                $deptid = $emp->getListDeptDeptId();
+                $posid  = $emp->getListPosPosId();
+                $address = $emp->getAddress();
+
+                $getdept   = ListDeptPeer::getDept($deptid);
+                $getpos  = ListPosPeer::getPos($posid);
+
+                $dept = $getdept->getDeptNames();
+                $pos = $getpos->getPosNames();
+
+                fputcsv($handle, // The file pointer
+                    array("EMP-" . $empnum,  $lname . ", " . $fname, $address, $bday, $email, $dept, $pos)
+                );
+            }
+            exit;
+
+            fclose($handle);
+        });
+        $filedate           = date('m/d/Y');
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_list_export.csv"');
         return $response;
     }
 

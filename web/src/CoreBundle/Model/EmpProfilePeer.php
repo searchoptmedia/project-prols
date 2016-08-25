@@ -41,4 +41,14 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 		
 		return $record ? $record : array();
 	}
+	public static function getEmployeeList(Criteria $c = null)
+	{
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+		$rec = self::doSelect($c);
+
+		return $rec;
+
+	}
 }

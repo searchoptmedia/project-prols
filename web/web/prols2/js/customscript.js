@@ -17,6 +17,8 @@
  		$('.timeout-container').css({'display' : 'block'});
  		$('.confirm-timeout').css({'display' : 'block'});
  		$('.timeout').css({'display' : 'block'});
+		timer = 0;
+		checker = true;
  	});
 
  	// $('.btn-yes').click(function(e){
@@ -46,6 +48,7 @@
  		$('.confirm-timeout').css({'display' : 'block'});
  		$('.btn-yes').css({'display' : 'inline-block'});
  		$('.btn-cancel').css({'display' : 'inline-block'});
+		$('.forgot-timeout-modal').hide();
 
  	});
 

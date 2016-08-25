@@ -76,7 +76,8 @@ class DefaultController extends Controller{
 		return $timename;    	
     }
 
-    public function indexAction(Request $request){
+    public function indexAction(Request $request)
+	{
 
     	$user = $this->getUser();
 
@@ -108,34 +109,27 @@ class DefaultController extends Controller{
     	$checkipdata = null;
     	//check if already timed in today
     	if(!empty($timedata)){
-
-    	$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-    	$datetoday = date('Y-m-d');
-    	$emp_time = EmpTimePeer::getTime($id);
-    	$currenttime = sizeof($emp_time) - 1;
-    	$timein_data = $emp_time[$currenttime]->getTimeIn();
-		$timeout_data = $emp_time[$currenttime]->getTimeOut();
-		$checkipdata = $emp_time[$currenttime]->getCheckIp();
-    	// echo $checkipdata;
-
-//    		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-//    			$checkdate = $timedata[$ctr]->getDate();
-//    			if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
-//    				$timeflag = 1;
-//				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)){
-//					$timeflag = 0;
-//				}elseif($checkdate->format('Y-m-d') != $datetoday){
-//					$timeflag = 0;
-//				}
-//
-//    		}
+			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+			$datetoday = date('Y-m-d');
+			$emp_time = EmpTimePeer::getTime($id);
+			$currenttime = sizeof($emp_time) - 1;
+			$timein_data = $emp_time[$currenttime]->getTimeIn();
+			$timeout_data = $emp_time[$currenttime]->getTimeOut();
+			$checkipdata = $emp_time[$currenttime]->getCheckIp();
     	}
+
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
 			$emptimedate = $et->getDate();
+			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			if($emptimedate->format('Y-m-d') == $datetoday){
 				$timeflag = 1;
 			}
+
+			if(! empty($et->getTimeOut()))
+				$isTimeOut = 'true';
+		} else {
+			$isTimeOut = 'true';
 		}
 
 
@@ -174,10 +168,7 @@ class DefaultController extends Controller{
 				$userbdaynames[] = $u->getFname();
 			}
 		}
-		
-		$isTimeout = $request->query->get('isTimeout');
-		
-		
+
         return $this->render('AdminBundle:Default:index.html.twig', array(
 			'userbdaynames' => $userbdaynames,
         	'name' => $name,
@@ -197,11 +188,12 @@ class DefaultController extends Controller{
           	'checkipdata' => $checkipdata,
 			'checkip' => $ip_checker,
 			'requestcount' => $requestcount,
-			'isTimeout' => $isTimeout,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' =>$lasttimein,
 
         ));
     }
-
+	
 	public function checkTimeInAction()
 	{
 		$user = $this->getUser();
@@ -553,10 +545,14 @@ class DefaultController extends Controller{
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
+			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			$emptimedate = $et->getDate();
 			if($emptimedate->format('Y-m-d') == $datetoday){
 				$timeflag = 1;
 			}
+
+			if(! empty($et->getTimeOut()))
+				$isTimeOut = 'true';
 		}
 
 		$userip = InitController::getUserIP($this);
@@ -612,6 +608,8 @@ class DefaultController extends Controller{
 			'systime' => $systime,
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' => $lasttimein,
         	));
 
     }
@@ -663,10 +661,14 @@ class DefaultController extends Controller{
 
 			$et = EmpTimePeer::getEmpLastTimein($id);
 			if(!empty($et)){
+				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 				$emptimedate = $et->getDate();
 				if($emptimedate->format('Y-m-d') == $datetoday){
 					$timeflag = 1;
 				}
+
+				if(! empty($et->getTimeOut()))
+					$isTimeOut = 'true';
 			}
 
 		//echo '<pre>';var_dump($requestGet);exit;		
@@ -697,16 +699,22 @@ class DefaultController extends Controller{
 		   'systime' => $systime,
 		   'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' => $lasttimein,
         	));
 		}	
     }
 
-    public function statusAcceptAction($id, $id2){
+    public function statusAcceptAction(Request $req, $id, $id2){
 		$accept = EmpRequestPeer::retrieveByPk($id);
 		if(isset($accept) && !empty($accept)) {
 			$accept->setAdminId($id2);
 			$accept->setStatus('Accepted');
-			
+
+			$email = new EmailController();
+
+			$sendemail = $email->acceptRequestEmail($req, $this);
+
 			if($accept->save()){
 				$response = array('response' => 'success');
 			}else{
@@ -848,7 +856,7 @@ class DefaultController extends Controller{
    		
     }
 
-    public function manageAction(){
+    public function manageAction(Request $request){
 		$user = $this->getUser();
     	$name = $user->getUsername();
 		$page = 'View Request';
@@ -910,15 +918,22 @@ class DefaultController extends Controller{
 			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
 			if(!empty($et)){
+				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 				$emptimedate = $et->getDate();
 				if($emptimedate->format('Y-m-d') == $datetoday){
 					$timeflag = 1;
 				}
+
+				if(! empty($et->getTimeOut()))
+					$isTimeOut = 'true';
 			}
 
 			$requestcount = EmpRequestQuery::create()
 				->filterByStatus('Pending')
 				->find()->count();
+			
+			
+
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
         	'page' => $page,
@@ -939,6 +954,8 @@ class DefaultController extends Controller{
 			'getTime' => $getTime,
 			'getAllProfile' => $getAllProfile,
 			'requestcount' => $requestcount,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' => $lasttimein,
 
         	));       
 		} 	
@@ -1005,9 +1022,14 @@ class DefaultController extends Controller{
 			$getTime = EmpTimePeer::getAllTime();
 			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
-				$timeflag = 1;
+			if(!empty($et)){
+				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
+				$emptimedate = $et->getDate();
+				if($emptimedate->format('Y-m-d') == $datetoday){
+					$timeflag = 1;
+				}
+				if(! empty($et->getTimeOut()))
+					$isTimeOut = 'true';
 			}
 
 			$requestcount = EmpRequestQuery::create()
@@ -1034,6 +1056,8 @@ class DefaultController extends Controller{
 				'getTime' => $getTime,
 				'getAllProfile' => $getAllProfile,
 				'requestcount' => $requestcount,
+				'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+				'lasttimein' => $lasttimein,
 
 			));
 		}
@@ -1250,10 +1274,15 @@ class DefaultController extends Controller{
 		$is_ip  = InitController::checkIP($userip);
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
+			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			$emptimedate = $et->getDate();
 			if($emptimedate->format('Y-m-d') == $datetoday){
 				$timeflag = 1;
 			}
+			if(! empty($et->getTimeOut()))
+				$isTimeOut = 'true';
+
+
 		}
 
 		$requestcount = EmpRequestQuery::create()
@@ -1276,6 +1305,8 @@ class DefaultController extends Controller{
 			'systime' => $systime,
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' => $lasttimein,
         ));
 	}
 
@@ -1445,10 +1476,17 @@ class DefaultController extends Controller{
 			}
 		}
 		$et = EmpTimePeer::getEmpLastTimein($adminid);
-		$emptimedate = $et->getDate();
-		if($emptimedate->format('Y-m-d') == $datetoday){
-			$timeflag = 1;
+		if(!empty($et)){
+			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
+			$emptimedate = $et->getDate();
+			if($emptimedate->format('Y-m-d') == $datetoday){
+				$timeflag = 1;
+			}
+			if(! empty($et->getTimeOut()))
+				$isTimeOut = 'true';
 		}
+
+
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
@@ -1495,6 +1533,8 @@ class DefaultController extends Controller{
 			'systime' => $systime,
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
+			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+			'lasttimein' => $lasttimein,
 		));
     }
 

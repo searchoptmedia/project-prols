@@ -65,7 +65,8 @@ class EmpTimePeer extends BaseEmpTimePeer{
 			$c = new Criteria();
 		}
 
-		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)->addDescendingOrderByColumn(self::TIME_IN);
+		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)
+			->addDescendingOrderByColumn(self::TIME_IN);
 
 		$_self = self::doSelectOne($c);
 

@@ -177,14 +177,9 @@
                                 <div class="department-option-sect" style="display: none;">
                                     <select id = "listdept" class="departmentselect" style="width: 300px;">
                                         <option value="" disabled selected>Choose your department</option>
-                                        <option value="1">Executive</option>
-                                        <option value="2">Graphics</option>
-                                        <option value="3">Development</option>
-                                        <option value="4">SEO</option>
-                                        <option value="5">Content</option>
-                                        <option value="6">Social Media</option>
-                                        <option value="7">Admin</option>
-                                        <option value="8">Maintenance</option>
+                                        {% for dept in getDept %}
+                                            <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 {#<div class= "selectByname" style="width: 510px; margin-top: 20px; margin-bottom: 20px;">#}

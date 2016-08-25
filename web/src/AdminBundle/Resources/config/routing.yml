@@ -61,3 +61,15 @@ time_out_w_params:
 time_logs_page:
     path: /timelogs
     defaults: { _controller: AdminBundle:Default:timeLogs}
+
+auto_time_out:
+    path: /autotimeout
+    defaults: { _controller: AdminBundle:Employee:AutoTimeOut }
+
+admin_manage_working_time_new_day:
+    path: /admin/timein/{type}
+    defaults: { _controller: AdminBundle:Employee:ManageTimeOnNewDay }
+
+admin_employee_list_report:
+    path: /emplist/report
+    defaults: { _controller:AdminBundle:EmployeeReport:generateEmployeeReport }

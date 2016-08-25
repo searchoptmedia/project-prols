@@ -56,15 +56,46 @@ class EmailController extends Controller {
         $id   = $user->getId();
         $emp = EmpAccPeer::retrieveByPK($req->request->get('empId'));
         $empemail = $emp->getEmail();
-        //employee profile information
+        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
+        $empname = $empinfo->getFname() . " " .$empinfo->getLname();
+        //admin profile information
         $data = EmpProfilePeer::getInformation($id);
         $name = $data->getFname(). " " .$data->getLname();
 
-        $subject = 'Declined Request';
+        $subject = $req->request->get('requestname') . " " . 'Request Declined';
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($empemail);
 
-        $inputMessage = "Your request was declined<br><br><strong>Reason: </strong><br>" . $req->request->get('content');
+        $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $req->request->get('requestname') .
+            "</b> request was declined by <b>" .$name . "</b>.".
+            "<br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
+            "<br>Date ended: ". $req->request->get('dateend').
+            "<br><br><strong>Reason: </strong><br>" . $req->request->get('content');
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+
+        return $email ? 1: 0;
+    }
+
+    public function acceptRequestEmail($req, $class)
+    {
+        $user = $class->getUser();
+        $id   = $user->getId();
+        $emp = EmpAccPeer::retrieveByPK($req->request->get('empId'));
+        $empemail = $emp->getEmail();
+        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
+        $empname = $empinfo->getFname() . " " .$empinfo->getLname();
+        //admin profile information
+        $data = EmpProfilePeer::getInformation($id);
+        $name = $data->getFname(). " " .$data->getLname();
+
+        $subject = $req->request->get('requestname') . " " . " Request Accepted";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($empemail);
+
+        $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $req->request->get('requestname') .
+            "</b> request was accepted by <b>". $name .
+            "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
+            "<br>Date ended: ". $req->request->get('dateend');
 
         $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 

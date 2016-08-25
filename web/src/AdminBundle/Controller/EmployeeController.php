@@ -49,6 +49,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EmployeeController extends Controller{
 
+	protected $session;
+
+	function __construct()
+	{
+		$this->session = new Session();
+	}
 
 	public function TimeInAction(Request $request){
 
@@ -93,6 +99,9 @@ class EmployeeController extends Controller{
 				}
 			}
 			if($empTimeSave->save()){
+
+				$this->session->set('timeout', 'false');
+
 				$is_message = $request->request->get('is_message');
 				$emailresp = '';
 				if(!is_null($is_message)) {
@@ -182,5 +191,37 @@ class EmployeeController extends Controller{
 		exit;
 	}
 
+	public function autoTimeOutAction(){
+		$user = $this->getUser();
+		$id = $user->getId();
+		$emplasttime = EmpTimePeer::getEmpLastTimein($id);
+		$emplasttime->setTimeOut(new \DateTime('00:00:00'));
+		$emplasttime->save();
+		echo 1;
+		exit;
+	}
+
+	public function ManageTimeOnNewDayAction($type)
+	{
+		date_default_timezone_set('Asia/Manila');
+		$datetimetoday 	= date('Y-m-d H:i:s');
+		$session = new Session();
+		$userId = $this->getUser()->getId();
+
+		if($type == 'working') {
+			$session->set('isSameDay', '');
+		} else {
+
+			$user = $this->getUser();
+			$id = $user->getId();
+			$emplasttime = EmpTimePeer::getEmpLastTimein($id);
+			$emplasttime->setTimeOut($datetimetoday);
+			$emplasttime->save();
+		}
+
+		echo json_encode(array('success' => 1, 'user' => $userId, 'type' => $type));
+		exit;
+	}
+	
 //end
 }

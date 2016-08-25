@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
 
 
-
 </head>
 {% endblock %}
 
@@ -57,12 +56,10 @@
 
                     <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
 
-                    {% if timename == false %}
                     <br>
                     <div class="chip timechip" style="display: none">
                         Timed-in at {{currenttimein}}
                     </div>
-                    {% endif %}
                     <!-- <div class="chip timed-in">
                         Timed-in
                     </div> -->
@@ -130,7 +127,7 @@
                             {#<span class="title">Dexter Loor</span>#}
                             {#<p>On vacation-leave</p>#}
                         {#</li>#}
-                </ul>
+                {#</ul>#}
                 <div class="agenda-buttons">
                     <a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
                     <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
@@ -234,7 +231,6 @@
                             <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
                                id="time-in-button" data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
                                 <i class="material-icons left icon-timein">query_builder</i>Time in</a>
-
                         </div>
                     </div>
                 </div>
@@ -242,22 +238,33 @@
         </div>
     {% endif %}
 {#{% if isTimeout == 1 %}#}
-    {#<div class="time-in-container" style="display:none;">#}
-        {#<div class="time-in center-align">#}
-            {#<div class="valign-wrapper">#}
+    <div class="modal-container forgot-timeout-modal" style="display:none;">
+        <div class="center-align" style="position: relative; top: 350px;">
+            <div class="valign-wrapper">
 
-                {#<div class="prompt" style="display:block; width:100%; float:none; clear:both;">#}
-                        {#<p class="confirm-timein">You forgot to Time out yesterday</p>#}
-                    {#<div class="btn-block">#}
-                        {#<a class="waves-effect waves-light green btn-flat btn-large"#}
-                          {#data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">#}
-                            {#<i class="material-icons left icon-timein">query_builder</i>Time Out</a>#}
+                <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
+                        <p class="confirm-timein"><strong>It's another day!</strong></p>
+                    <br>
+                    <br>
+                    <div class="btn-block">
+                        <a class="waves-effect waves-light red btn-flat btn-large btn-timeout btn-timeout-newday" style="height: 54px; line-height: 55px; top: 0px;">
+                            <i class="material-icons left">query_builder</i>Time Out</a>
+                        &nbsp;
+                        <a class="waves-effect waves-light green btn-flat btn-large forgot-timeout-btn btn-keep-working" style="color: white; ">
+                            <i class="material-icons left">work</i>I'M STILL WORKING<span id="time">(30)</span></a>
+                    </div>
+                </div>
 
-                    {#</div>#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
+                <div class="prompt time-in-prompt" style="display:none; width:100%; float:none; clear:both;">
+
+                    <div class="btn-block">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {#{% endif %}#}
         <div class="timeout-container">
             <div class="timeout center-align">
@@ -272,7 +279,7 @@
 
                             <div class="btn-block">
                                 <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn"
-                                   id="time-out-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a>
+                                   id="time-out-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a> &nbsp;
                                 <a class="waves-effect waves-light red btn-flat btn-large btn-cancel timeout-cancel">Cancel</a>
                             </div>
                     </div>
@@ -320,6 +327,24 @@
             </div>
         </div>
     {% endif %}
+
+<div class="modal-container auto-timeout-notice" style="display:none;">
+    <div class="center-align" style="position: relative; top: 350px;">
+        <div class="valign-wrapper">
+
+            <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
+                <p class="confirm-timein">We have automatically timed out you!</p>
+                <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="auto-timeout-time-message">08/21/2016 12:00 AM</span></p>
+                <p class="confirm-timein" style="font-size: 24px">Last Timed in at <span class="auto-timeout-time-message-2">{{ lasttimein }}</span></p>
+                <br><br>
+                <div class="btn-block">
+                    <a class="waves-effect waves-light red btn-flat btn-large btn-forgot-timeout-show-timein" style="height: 54px; line-height: 55px; top: 0px;">
+                        <i class="material-icons left">query_builder</i>Time In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <footer></footer>
 {% block scripts %}
     <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
@@ -340,26 +365,207 @@
         var picker = new Pikaday({ field: $('#datepicker2')[0] });
     </script>
 {% endblock %}
+
+<script type="text/javascript">
+    var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
+    var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
+
+    function timeOutInit() {
+        //--------------12 AM ALERT MODAL-------------------------
+        var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
+        var displayTime = 30;
+        var display     = document.querySelector('#time');
+
+        function breakTime() {
+            /* Set Alert Hour in 24hr Notation */
+            var alertHour = 0;
+            /* Set Alert Minute */
+            var alertMinute = 0;
+            /* Set Alert Minute */
+            var alertSec = 0;
+            /* Set time for alert timeout */
+            var theDate = new Date();
+
+            //if 12am
+            if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
+                    && Math.abs(theDate.getSeconds()) == alertSec)) {
+                this.focus();
+                clearTimeout(alertInt);
+                alert('Good Morning!');
+                $('.forgot-timeout-modal').show();
+                startTimer(displayTime, display);
+            //if 1am onwards
+            } else if(dayNow == 'false') {
+                $('.forgot-timeout-modal').show();
+                startTimer(displayTime, display);
+            //else run loop
+            } else {
+                alertInt = setTimeout(breakTime, 50);
+            }
+
+            //console.log('time-trigger');
+        }
+
+        function checkTimeout() {
+            if(isTimeout == 'false') {
+                $('.forgot-timeout-modal').show();
+                startTimer(displayTime, display);
+            }
+            console.log('isTimeout? '+isTimeout);
+        }
+
+        function checkIf_AutoTimeOut() {
+            var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
+            var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
+
+            $d = new Date(timeOutDate);
+            var options = {
+                year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
+            $d = $d.toLocaleTimeString("en-us", options);
+            if(isAutoTimeOut == 'true') {
+                $('.auto-timeout-notice').show();
+                $('.auto-timeout-time-message').html($d);
+                $('.time-in-container').hide();
+                toggleTimeWidget('hide');
+            }
+        }
+
+        $('.forgot-timeout-btn').click(function () {
+            $('.forgot-timeout-modal').hide();
+            timer = 0;
+            checker = true;
+            isTimeout = '{{ app.session.get('timeout', 'true') }}'
+        });
+
+        //----------------BUTTON-TIMER--------------------
+        var checker = false;
+        var timer, seconds, timerInt = null;
+
+        function startTimer(duration, display) {
+            timer = duration, seconds;
+            timerInt = setInterval(function () {
+                //minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                //minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
+
+                if (--timer < 0) timer = 0;
+
+                if (seconds == 0 && checker == false) {
+                    checker = true;
+
+                    display.textContent = '';
+                    $('.forgot-timeout-modal').hide();
+                    manage_time_newday('timeout');
+                }
+            }, 1000);
+        }
+
+        function manage_time_newday(type) {
+            var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
+            if(type == 'working') {
+                url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
+            }
+
+            $.getJSON( url,
+                    function( data ) {
+                        if(type == 'working') toggleTimeWidget('show');
+                        else  toggleTimeWidget('hide');
+                    })
+                    .fail( function() {
+                        $('.modal-fail-ajax-container').show();
+                    });
+        }
+
+        $('.btn-keep-working').bind('click', function() {
+            manage_time_newday('working');
+        });
+
+        $('.btn-timeout-newday').bind('click', function() {
+            $('.timeout-cancel').click(function() {
+                clearInterval(timerInt);
+                display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
+                $('.forgot-timeout-modal').show();
+                startTimer(displayTime, display);
+            });
+        });
+
+        $('.btn-forgot-timeout-show-timein').bind('click', function() {
+            $('.auto-timeout-notice').hide();
+            toggleTimeInModal('show');
+        });
+
+        checkIf_AutoTimeOut();
+    }
+
+    window.onload = function () {
+        timeOutInit();
+    };
+</script>
+
 <script>
+
+    function toggleTimeWidget(act) {
+        if(act == 'show') {
+            $('.timed-in').show();
+            $('.btn-timeout').show();
+            $('.timechip').show();
+        } else {
+            $('.timed-in').hide();
+            $('.btn-timeout').hide();
+            $('.timechip').hide();
+        }
+    }
+
+    function toggleTimeInModal(act) {
+        if(act == 'show') {
+            $('.time-in-container').show();
+            $('.btn-timeout').hide();
+        }
+    }
+
+    initWidget = function() {
+        if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
+            toggleTimeWidget('show');
+
+        } else if(dayNow == '' && isTimeout == '') {
+
+            toggleTimeInModal('show');
+        }
+
+        if('{{ isTimeoutAlready }}' == 'true'){
+            toggleTimeWidget('hide');
+        }
+
+    }
+//    console.log('dayNow = ' + dayNow)
+//    console.log('isTimeout = ' + isTimeout)
+
+    initWidget();
+
+
     $('select').material_select();
     $('.caret').hide();
+    {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
 
-$.post( "{{ path('check_timein') }}", {}, function(data) {
-
-}).always(function(data) {
-    console.log(data)
-    var res = parseInt(data);
-    if(res == 1) {
-        console.log('ok')
-        $('.time-in-container').hide();
-        $('.btn-timeout').show();
-        $('.timechip').show();
-    }else{
-        $('.time-in-container').show();
-        $('.btn-timeout').hide();
-    }
-});
-var pass = ''
+    {#}).always(function(data) {#}
+        {#console.log(data)#}
+        {#var res = parseInt(data);#}
+        {#if(res == 1) {#}
+            {#console.log('ok')#}
+            {#$('.time-in-container').hide();#}
+            {#$('.btn-timeout').show();#}
+            {#$('.timechip').show();#}
+        {#}else{#}
+            {#$('.time-in-container').show();#}
+            {#$('.btn-timeout').hide();#}
+        {#}#}
+    {#});#}
+    var pass = ''
 
 {#$('.time-btn').click(function(e){#}
             {#e.preventDefault();#}
@@ -466,8 +672,10 @@ $('#time-in-button').click(function(){
     $('#time-in-button').hide();
     $('.loader-notif').show();
     $('.loader-notif').css({'top' : '0px'});
+    $('.forgot-timeout-modal').hide();
     $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
         console.log(data);
+        toggleTimeWidget('show');
         $('.time-in-container').css({'display' : 'none'});
         $('.timein-notif-container').css({'top':'0px'});
         $('.timed-in').css({'display' : 'block'});
@@ -499,7 +707,7 @@ $('#time-out-button').click(function(){
     $('#time-out-button').hide();
     $('.timeout-cancel').hide();
     $.post("{{ path('time_out') }}" + pass, function(data){
-
+        toggleTimeWidget('hide');
             //validate password
         if(data == true) {
             $('#time-out-button').show();
@@ -721,6 +929,8 @@ $('.diff-ip-reason').show();
 });
 
 $('.modal-trigger').leanModal();
+
+
 
 function showBirthday() {
 

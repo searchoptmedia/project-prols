@@ -7,12 +7,19 @@ use CoreBundle\Model\om\BaseEmpAccPeer;
 use \Criteria;
 
 class EmpAccPeer extends BaseEmpAccPeer{
-	public static function getInformation($id, Criteria $c = null){
+	public static function getAcc($id, Criteria $c = null){
 		if (is_null($c)) {
 			$c = new Criteria();
 		}
 
+		$c->add(self::ID, $id, Criteria::EQUAL);
+
+		$_self = self::doSelectOne($c);
+
+		return $_self ? $_self : null;
+
 	}
+
 
 	public static function getAllUser(Criteria $c = null)
 	{
