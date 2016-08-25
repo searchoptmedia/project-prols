@@ -73,7 +73,7 @@ class EmployeeController extends Controller{
 		$timeflag 		= 0;
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
-		$ip_add 		= ListIpPeer::getAllIp();
+		$ip_add 		= ListIpPeer::getValidIP($matchedip);
 
 		//Compare last time in date with date today 	
 		if(!empty($timedata)){
@@ -90,14 +90,12 @@ class EmployeeController extends Controller{
 			$empTimeSave->setIpAdd($matchedip);
 			$empTimeSave->setDate($datetoday);
 			$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
-				$allowedip = $ip_add[$ctr]->getAllowedIp();
+			$allowedip = $ip_add->getAllowedIp();
 				if($allowedip == $matchedip){
 					$empTimeSave->setCheckIp(1);
 				}else{
 					$empTimeSave->setCheckIp(0);
 				}
-			}
 			if($empTimeSave->save()){
 
 				$this->session->set('timeout', 'false');
