@@ -189,7 +189,7 @@ class DefaultController extends Controller{
 			'checkip' => $ip_checker,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' =>$lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 
         ));
     }
@@ -609,7 +609,7 @@ class DefaultController extends Controller{
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' => $lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
         	));
 
     }
@@ -700,7 +700,7 @@ class DefaultController extends Controller{
 		   'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' => $lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
         	));
 		}	
     }
@@ -955,7 +955,7 @@ class DefaultController extends Controller{
 			'getAllProfile' => $getAllProfile,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' => $lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 
         	));       
 		} 	
@@ -1057,7 +1057,7 @@ class DefaultController extends Controller{
 				'getAllProfile' => $getAllProfile,
 				'requestcount' => $requestcount,
 				'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-				'lasttimein' => $lasttimein,
+				'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 
 			));
 		}
@@ -1306,7 +1306,7 @@ class DefaultController extends Controller{
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' => $lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
         ));
 	}
 
@@ -1534,7 +1534,7 @@ class DefaultController extends Controller{
 			'afternoon' => $afternoon,
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-			'lasttimein' => $lasttimein,
+			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 		));
     }
 
