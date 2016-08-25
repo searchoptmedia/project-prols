@@ -2,11 +2,11 @@
 {% import 'AdminBundle:Default:notification.html.twig' as notif %}
 {% block head %}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
 
     {{ parent() }}
 {% endblock %}
-
         {% block nav %}
             <div class="collection emp-nav">
                 <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
@@ -29,60 +29,205 @@
         {% endblock %}
 
         {% block body %}
-            <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert">
+            {{ notif.update_profile_notif }}
+
+            <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert notification-modal">
                 <div class="timein-success"><h5>Password Changed!</h5></div>
             </div>
 
             {{ notif.notif_loader() }}
-
+            {#<div class="profile-image center-align">#}
+            {#<span>{{ propelrr.fname|slice(0,1)|upper }}</span>#}
+            {#</div>#}
             <div class="page-content">
                 <div class="col-md-12 light-blue darken-1 heading z-depth-1">
                     <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                    <div class="emp-photo">
-                        <div class="profile-image center-align">
-                            <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
-                            <!-- <img src="img/dexterloor.jpg" alt="" class="circle responsive-img z-depth-1"> -->
+                    <h3 class="center-align">{{ propelrr.fname }} {{ propelrr.lname }}</h3>
+                    {#<div class="top-nav"><a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a></div>#}
+                </div>
+
+                <div class="col-md-12 content" style="background-color: #e7e7e7;">
+
+                    <div class="emp-info-wrap">
+                        <div class="z-depth-1 profile-container2">
+
+                            <div class="emp-photo">
+                                <div class="profile-image center-align">
+                                    <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
+                                </div>
+                            </div>
+
+                            <div class="empinfo-left">
+
+                                <p><span class="p-lbl"><i class="fa fa-hashtag" aria-hidden="true"></i></span><span class="p-dta"></i>{{ propelrr.employeeNumber }}</span></p>
+                                <p><span class="p-lbl"><i class="fa fa-briefcase" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.getListPos().PosNames }}</span></p>
+                                <p><span class="p-lbl"><i class="fa fa-users" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.getListDept().DeptNames }}</span></p>
+                                <p><span class="p-lbl"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="p-dta">{{ user2.email }}</span></p>
+
+                            </div>
+                            <div class="empinfo-middle">
+                                <p><span class="p-lbl"><i class="fa fa-map-marker" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ propelrr.address }}" data-add="{{ profileId }}" type="text" id="addr" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                                <p><span class="p-lbl"><i class="fa fa-calendar" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.bday | date('M d Y') }}</span></p>
+                                <p><span class="p-lbl"><i class="fa fa-mobile" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ conMobile }}" data-cell="{{ conMobileId }}" type="text" id="cel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                                <p><span class="p-lbl"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ conTele }}" data-tel="{{ conTeleId }}" type="text" id="tel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                            </div>
+                            <div class="empinfo-right">
+                                <p><span class="p-lbl">SSS</span><span class="p-dta">22131231</span></p>
+                                <p><span class="p-lbl">BIR</span><span class="p-dta">22131231</span></p>
+                                <p><span class="p-lbl">Philhealth</span><span class="p-dta">22131231</span></p>
+                            </div>
+
+
+                            {#<div class="editprofile-btns">#}
+                                {#<a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>#}
+                                {#<a class="waves-effect waves-light btn orange btn-save-profile">Save</a>#}
+                                {#<a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a>#}
+                            {#</div>#}
                         </div>
+
+                        <!-- <div id="perf-chart" class="z-depth-1 demo-placeholder" style="width:100%;height:400px;"></div> -->
+
+                        <div class="input-field col s12 emp-tables">
+                            <select>
+                                <option value="1">Monthly Performance Chart</option>
+                                <option value="2">Daily Time Logs</option>
+                            </select>
+                        </div>
+
+                        <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table">
+                            <thead>
+                            <tr>
+                                <th data-field="Date">Month</th>
+                                <th data-field="Absences">Absences</th>
+                                <th data-field="Lates">Lates</th>
+                                <th data-field="Overtimes">Overtimes</th>
+                                <th data-field="Out of IP">Out of IP</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>Jan</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>3</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Feb</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td>7</td>
+                            </tr>
+                            <tr>
+                                <td>Mar</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Apr</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>May</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Jun</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Jul</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Aug</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Sep</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Oct</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Nov</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+                            <tr>
+                                <td>Dec</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                        <br>
+
                     </div>
-                    <div class="profile-title"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3>
-                        <div class="editprofile-btns">
-                            <!-- <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
-                            <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
-                            <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a> -->
+                </div>
+
+
+                {#<div class="profile-title"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3>#}
+                {#<div class="editprofile-btns">#}
+                {#<!-- <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>#}
+                {#<a class="waves-effect waves-light btn orange btn-save-profile">Save</a>#}
+                {#<a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a> -->#}
+                {#<a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a>#}
+                {#</div>#}
+                {#</div>#}
+
+                <div id="modal-changepw" class="modal">
+                    <div class="modal-content">
+                        <h4>Change Password</h4>
+                        <div class="chip" id="formchangedalert" style="display:none;">
+                            <strong>Password Changed!</strong>
                         </div>
-                    </div>
-
-
-                    <div class="profile-container2">
-
-
-                        <div class="empinfo-left">
-                            <input value="{{ profileId }}" type="text" name="profileId" hidden>
-                            <p><span class="p-lbl">Employee Number</span>:<span class="p-dta">{{empnumber}}</span></p>
-                            <p><span class="p-lbl">Position</span>:<span class="p-dta">{{ posStatus }}</span> </p>
-                            <p><span class="p-lbl">Department</span>:<span class="p-dta">{{deptnames}}</span></p>
-                            <p><span class="p-lbl">Company Email</span>:<span class="p-dta">{{conEmail}}</span></p>
-                        </div>
-
-
-                        <div class="empinfo-middle">
-                            <p><span class="p-lbl">Address</span>:<span class="p-dta"><input disabled value="{{ propelrr.address }}" type="text" id="addr" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
-                            <p><span class="p-lbl">Birthday</span>:<span class="p-dta">{{ propelrr.bday | date('M d Y')}}</span></p>
-                            <p><span class="p-lbl">Telephone</span>:<span class="p-dta"><input disabled value="{{conTele}}" type="text" id="tel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
-                            <p><span class="p-lbl">Cellphone</span>:<span class="p-dta"><input disabled value="{{conMobile}}" type="text" id="cel-p"  class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
-
-                        </div>
-
-                        <div class="empinfo-right">
-                            <p><span class="p-lbl">SSS</span>:<span class="p-dta"></span></p>
-                            <p><span class="p-lbl">BIR</span>:<span class="p-dta"></span> </p>
-                            <p><span class="p-lbl">Philhealth</span>:<span class="p-dta"></span></p>
-                        </div>
-
+                        <form action="{{ path('change_pass') }}" id = "changepass" method="post">
+                            <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
+                            <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
+                            <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
 
                     </div>
+                    <div class="modal-footer">
+                        <button type="submit" href="#!" class=" modal-action waves-effect waves-green btn-flat btn-changepw">Change</button>
+                        </form>
+                    </div>
+
 
                 </div>
+
 
             </div>
             </div>
@@ -100,112 +245,178 @@
 {% block customjs %}
     <script type="text/javascript">
         $(document).ready(function(){
-            var profileId = '';
-            var contactid = '';
-            var deptId = '';
-            $('#emailedit').click(function(){
-                profileId = $(this).data('eid');
-                contactid=$('#email-p').val();
-
-                $.get("{{ path('profile_email') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
-
-            });
-            $('#teledit').click(function(){
-                profileId = $(this).data('tid');
-                contactid=$('#tel-p').val();
-
-                $.get("{{ path('profile_tele') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
-
+            var profileId, telId, mobileId;
+            var addresscontainer  = $("#addr").val();
+            var telcontainer  = $("#tel-p").val();
+            var celcontainer  = $("#cel-p").val();
+            $('.btn-edit-profile').click(function(e){
+                e.preventDefault();
+                mobileId = $('#cel-p').data('cell');
+                profileId = $('#addr').data('add');
+                telId = $('#tel-p').data('tel');
+                $('.profile-container2 input').attr("disabled", false);
+                $('.edit-pdata').css({'display' : 'inline-block'});
+                $('.btn-save-profile').css({'display' : 'inline-block'});
+                $('.btn-cancel-profile').css({'display' : 'inline-block'});
+                $('.btn-edit-profile').css({'display' : 'none'});
             });
 
-            $('#celledit').click(function(){
-                profileId = $(this).data('cid');
-                contactid=$('#cel-p').val();
-
-                $.get("{{ path('profile_mobile') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
-
+            $(".edit-pdata").click(function(e) {
+                e.preventDefault();
+                $(this).parent('.p-dta').find('input').val('').focus();
+                // $(this).parent('.collection-item').find('.btn-edit').css({'display':'none'})
             });
 
-            $('#addressedit').click(function(){
-                profileId = $(this).data('aid');
-                contactid=$('#addr').val();
+            $('.btn-save-profile').click(function(e){
+                e.preventDefault();
+                $validate = false;
 
-                $.get("{{ path('profile_address') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
+                $('.btn-edit-profile').css({'display' : 'none'});
 
+                if( !$("#cel-p").val() == '') {
+                    $validate = true;
+                    $("#cel-p").closest('.p-dta').find('.btn-edit').css({'display' : 'block'});
+                    $("#cel-p").closest('.p-dta').find('.required-field').css({'display' : 'none'});
+
+
+                } else {
+                    $("#cel-p").closest('.p-dta').find('input[type=text]').css({'border-bottom-color' : '#f44336'});
+                    $("#cel-p").closest('.p-dta').find('.btn-edit').css({'display':'none'});
+                    $("#cel-p").closest('.p-dta').find('input').val('').focus();
+                    return;
+
+                }
+
+
+                if( !$("#tel-p").val() == '') {
+                    $validate = true;
+                    $("#tel-p").closest('.p-dta').find('.btn-edit').css({'display' : 'block'});
+                    $("#tel-p").closest('.p-dta').find('.required-field').css({'display' : 'none'})
+                } else {
+                    $("#tel-p").closest('.p-dta').find('input[type=text]').css({'border-bottom-color' : '#f44336'});
+                    $("#tel-p").closest('.p-dta').find('.btn-edit').css({'display':'none'});
+                    $("#tel-p").closest('.p-dta').find('input').val('').focus();
+                    return;
+
+                }
+
+                if( !$("#addr").val() == '') {
+                    $validate = true;
+                    $("#addr").closest('.p-dta').find('.btn-edit').css({'display' : 'block'});
+                    $("#addr").closest('.p-dta').find('.required-field').css({'display' : 'none'})
+                } else {
+                    $("#addr").closest('.p-dta').find('input[type=text]').css({'border-bottom-color' : '#f44336'});
+                    $("#addr").closest('.p-dta').find('.btn-edit').css({'display':'none'});
+                    $("#addr").closest('.p-dta').find('input').val('').focus();
+                    return;
+                }
+
+                var addressinput, telephoneinput, cellphoneinput
+
+                if(!$("#cel-p").val() == '' && $validate == true && !$("#tel-p").val() == '' && !$("#addr").val() == '') {
+                    addressinput    = $("#addr").val();
+                    telephoneinput  = $("#tel-p").val();
+                    cellphoneinput  = $("#cel-p").val();
+
+                    $.post("{{ path('update_profile') }}", {address:addressinput, telephone:telephoneinput, cellphone:cellphoneinput,
+                        telId:telId, mobileId:mobileId}, function(data){
+                    });
+                    $('.btn-save-profile').css({'display' : 'none'});
+                    $('.btn-cancel-profile').css({'display' : 'none'});
+                    $('.edit-pdata').css({'display' : 'none'});
+                    $('.btn-edit-profile').css({'display' : 'inline-block'});
+                    $('.emp-info input').attr("disabled", true);
+                    $('.update-profile-notif').css({'top' : '0px'});
+                    setTimeout(function(){
+                        $('.update-profile-notif').css({'top' : '-55px'});
+                    }, 5000);
+
+
+                    console.log('update success');
+                } else {
+                    e.preventDefault();
+                }
+                $('.profile-container2 input').attr("disabled", true);
             });
 
-            $('#bdayedit').click(function(){
-                profileId = $(this).data('bid');
-                contactid=$('#bday-p').val();
-
-                $.get("{{ path('profile_bday') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
-
-            });
-
-            $('#deptedit').click(function(){
-                profileId = $(this).data('did');
-                contactid = deptId;
-                $.get("{{ path('profile_dept') }}" + profileId + "/" + contactid,  function(data){
-                    console.log(data);
-                }, "json");
+            $('.btn-cancel-profile').click(function(e){
+                e.preventDefault();
+                $('.profile-container2 input').attr("disabled", true);
+                $('.edit-pdata').css({'display' : 'none'});
+                $('.btn-save-profile').css({'display' : 'none'});
+                $('.btn-cancel-profile').css({'display' : 'none'});
+                $('.btn-edit-profile').css({'display' : 'inline-block'});
 
             });
-
-            $('#dept').click(function(){
-                console.log('test');
-                //asdsa = $(this).attr('data-id');
-                //console.log(asdsa);
-            });
-
-
-            // $('.update-btn').hide();
-            // $('.cancel-btn').hide();
-            // $('.delete-btn').hide();
-            // $('.test-btn').click(function(){
-            //     {% if role == 'ADMIN' %}
-            //     $('.update-btn').show();
-            //     $('.cancel-btn').show();
-            //     $('.delete-btn').show();
-            //     $('.test-btn').hide();
-
-            //     $('#dept').attr("enabled", true);
-            //     $('.collection-item').find('input').attr("disabled", false);
-            //     $('.collection-item').find('.done').css({'display' : 'block'});
-            //     $('.collection-item').find('.edit').css({'display' : 'none'});
-            //     {% else %}
-            //     $('.update-btn').show();
-            //     $('.cancel-btn').show();
-            //     $('.delete-btn').show();
-            //     $('.test-btn').hide();
-            //     $('#tel-p').attr("disabled", false);
-            //     $('#cel-p').attr("disabled", false);
-            //     $('#addr').attr("disabled", false);
-            //     $('.collection-item').find('.done').css({'display' : 'block'});
-            //     $('.collection-item').find('.edit').css({'display' : 'none'});
-            //     {% endif %}
-            // });
-            // $('.cancel-btn').click(function(){
-            //     $('.update-btn').hide();
-            //     $('.cancel-btn').hide();
-            //     $('.delete-btn').hide();
-            //     $('.test-btn').show();
-            //     $('.collection-item').find('input').attr("disabled", true);
-            //     $('.collection-item').find('.done').css({'display' : 'none'});
-            //     $('.collection-item').find('.edit').css({'display' : 'block'});
-            // });
-
 
             $('.initialized').material_select();
+
+            $('#changepass').on('submit', function() {
+                $('#formchangedalert').hide();
+                var oldpass = $('#oldpw').val();
+                var newpass = $('#newpw').val();
+                var conpass = $('#confirmpw').val();
+                var error = false;
+                if(oldpass == '' || newpass == '' || conpass == '' ){
+                    error = true;
+                    $('#formchangedalert').text('All fields required');
+                    $('#formchangedalert').show();
+                    $('.changepass-container').show();
+                }
+                else if(newpass != conpass){
+                    error = true;
+                    $('#formchangedalert').text('Password does not match');
+                    $('#formchangedalert').show();
+                }
+                if(error) {
+                    return false;
+                }
+
+                var data = {oldpass:oldpass, newpass:newpass};
+                console.log(data);
+                $('.loader-notif').show();
+                $('.loader-notif').css({'top' : '0px'});
+                var jqxhr = $.post( "{{ path('change_pass') }}", data, function(data) {
+                    console.log(data);
+
+                })
+                        .done(function(data) {
+                            var data = eval('('+ data +')');
+                            if(data.error == true){
+
+                            }else{
+                                console.log(data);
+                                $('#oldpw').val('');
+                                $('#newpw').val('');
+                                $('#confirmpw').val('');
+                                $('.changepass-notif').css({'top' : '0px'});
+                                $('#modal-changepw').css({'display' : 'none'});
+                                $('.lean-overlay').css({'display' : 'none'});
+                                setTimeout(function(){
+                                    $('.changepass-notif').css({'top' : '-55px'});
+                                }, 3000);
+                            }
+                            $('#formchangedalert').text(data.response);
+                            $('#formchangedalert').show();
+                            console.log(data.response);
+                        })
+                        .fail(function(data) {
+                            console.log(data);
+                        })
+                        .always(function(data) {
+                            console.log(data);
+                            $('.loader-notif').hide();
+                            $('.loader-notif').css({'top' : '-55px'});
+                        });
+
+                return false;
+            });
+            $('.modal-change').click(function(){
+                alert
+                $('#modal-changepw').css({'display' : 'block'});
+                $('.lean-overlay').css({'display' : 'block'});
+                $('#formchangedalert').hide();
+            });
 
         });
     </script>

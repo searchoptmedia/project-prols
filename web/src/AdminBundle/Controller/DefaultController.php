@@ -729,130 +729,50 @@ class DefaultController extends Controller{
 		exit;
     }
 
-    public function profileTelUpdateAction($id, $id2)
-    {
-   
-    	$datacontact = EmpContactPeer::retrieveByPk($id);
-		$datacontact->setContact($id2);
-		$datacontact->save();
-		echo 1;
-		exit;
-    }
 
-    public function profileCellUpdateAction($id, $id2)
-    {
-   
-    	$datacontact = EmpContactPeer::retrieveByPk($id);
-		$datacontact->setContact($id2);
-		$datacontact->save();
-		echo 1;
-		exit;
-    }
-
-    public function profileAddressUpdateAction($id, $id2)
-    {
-   
-    	$datacontact = EmpProfilePeer::retrieveByPk($id);
-		$datacontact->setAddress($id2);
-		$datacontact->save();
-		echo 1;
-		exit;
-    }
-
-    public function profileEmailUpdateAction($id, $id2)
-    {
-   		$user = $this->getUser();
-    	$role = $user->getRole();
-
-   		if((strcasecmp($role, 'employee') == 0)){
-			return $this->redirect($this->generateUrl('profile_page'));
-		}	
-		else{
-    	$datacontact = EmpContactPeer::retrieveByPk($id);
-		$datacontact->setContact($id2);
-		$datacontact->save();
-		echo 1;
-		exit;
-		}
-    }
-
-    public function profileBdayUpdateAction($id, $id2)
-    {
-    	$user = $this->getUser();
-    	$role = $user->getRole();
-
-   		if((strcasecmp($role, 'employee') == 0)){
-			return $this->redirect($this->generateUrl('profile_page'));
-		}	
-		else{
-		$datacontact = EmpProfilePeer::retrieveByPk($id);
-		$datacontact->setBday($id2);
-		$datacontact->save();
-		echo 1;
-		exit;	
-		}	
-    }
-
-    public function profileDeptUpdateAction($id, $id2)
-    {
-    	$user = $this->getUser();
-    	$role = $user->getRole();
-
-   		if((strcasecmp($role, 'employee') == 0)){
-			return $this->redirect($this->generateUrl('profile_page'));
-		}	
-		else{
-	
-		$datacontact = EmpProfilePeer::retrieveByPk($id);
-		$datacontact->setListDeptDeptId($id2);
-		$datacontact->save();
-		echo 1;
-		exit;	
-		}	
-    }
 
     public function profileUpdateAction(Request $request){
-   		$profileId = $request->request->get('profileId');
-   		// $emailId = $request->request->get('emailId');
-   		$telId = $request->request->get('teleId');
+		$user = $this->getUser();
+		$empid = $user->getId();
+   		$telId = $request->request->get('telId');
    		$mobileId = $request->request->get('mobileId');
 
-   		$user = $this->getUser();
-    	$role = $user->getRole();
-   		
-   		if((strcasecmp($role, 'employee') == 0)){
-			return $this->redirect($this->generateUrl('profile_page'));
+		$updateprofile = EmpProfilePeer::getInformation($empid);
+		$updateprofile->setAddress($request->request->get('address'));
+		$updateprofile->save();
+
+		$profileId = $updateprofile->getId();
+
+		$updatetel = EmpContactPeer::retrieveByPk($telId);
+		if(empty($updatetel)){
+			$newtel = new EmpContact();
+			$newtel->setContact($request->request->get('telephone'));
+			$newtel->setEmpProfileId($profileId);
+			$newtel->setListContTypesId(3);
+			$newtel->save();
+
+		}else{
+			$updatetel->setContact($request->request->get('telephone'));
+			$updatetel->save();
 		}
-		else{
 
-	   		if(!empty($profileId)){
-	   			$updateprofile = EmpProfilePeer::retrieveByPk($profileId);
-		   		// $updateprofile->setEmployeeNumber($request->request->get('empnumber'));
-		   		// $updateprofile->setBday($request->request->get('bday'));
-		   		$updateprofile->setAddress($request->request->get('address'));
-		   		// $updateprofile->setListDeptDeptId($request->request->get('dept'));
-		   		$updateprofile->save();
 
-		  //  		$updateemail = EmpContactPeer::retrieveByPk($emailId);
-				// $updateemail->setContact($request->request->get('email'));
-				// $updateemail->save();
+		$updatecell = EmpContactPeer::retrieveByPk($mobileId);
+		if(empty($updatecell)){
+			$newcel = new EmpContact();
+			$newcel->setContact($request->request->get('cellphone'));
+			$newcel->setEmpProfileId($profileId);
+			$newcel->setListContTypesId(2);
+			$newcel->save();
+		}else{
+			$updatecell->setContact($request->request->get('cellphone'));
+			$updatecell->save();
+		}
 
-				$updatetel = EmpContactPeer::retrieveByPk($telId);
-				$updatetel->setContact($request->request->get('telephone'));
-				$updatetel->save();
+		$response = array('Update Successful' => 'success');
+		echo json_encode($response);
+		exit;
 
-				$updatecell = EmpContactPeer::retrieveByPk($mobileId);
-				$updatecell->setContact($request->request->get('cellphone'));
-				$updatecell->save();
-
-		   		$referer = $request->headers->get('referer');
-		        return new RedirectResponse($referer);
-	   		}else{
-	   			$response = array('Missing Input');
-				echo json_encode($response);
-				exit;
-	   		}
-	   	}
    		
     }
 

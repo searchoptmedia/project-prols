@@ -141,8 +141,6 @@
 	$('.btn-edit-profile').click(function(e){
     	e.preventDefault();
 
-        console.log('test');
-
         $('.profile-container input').attr("disabled", false); 
         $('.edit-pdata').css({'display' : 'inline-block'});
         $('.btn-save-profile').css({'display' : 'inline-block'});
@@ -212,17 +210,17 @@
     });
 
  
-
-  $('.btn-cancel-profile').click(function(e){
-        e.preventDefault();
-
-           	$('.profile-container input').attr("disabled", true);  
-            $('.edit-pdata').css({'display' : 'none'});
-            $('.btn-save-profile').css({'display' : 'none'});
-            $('.btn-cancel-profile').css({'display' : 'none'});
-            $('.btn-edit-profile').css({'display' : 'inline-block'});
-
-    });
+  //
+  // $('.btn-cancel-profile').click(function(e){
+  //       e.preventDefault();
+  //
+  //          	$('.profile-container input').attr("disabled", true);
+  //           $('.edit-pdata').css({'display' : 'none'});
+  //           $('.btn-save-profile').css({'display' : 'none'});
+  //           $('.btn-cancel-profile').css({'display' : 'none'});
+  //           $('.btn-edit-profile').css({'display' : 'inline-block'});
+  //
+  //   });
 
 
 

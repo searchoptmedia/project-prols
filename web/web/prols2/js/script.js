@@ -30,72 +30,72 @@ $(document).ready(function(){
         $('.btn-time').removeClass('time-out').find('.xn-text').html('Time In');
     });
 
-    $('.btn-edit-profile').click(function(e){
-        e.preventDefault();
-
-        console.log('test');
-
-        $('.list-group-item input').attr("readonly", false); 
-        $('.edit-this').css({'display' : 'block'});
-        $('.btn-save-profile').css({'display' : 'inline'});
-        $('.btn-cancel-profile').css({'display' : 'inline'});
-        $('.btn-edit-profile').css({'display' : 'none'});
-    });
-
-
-    $('.btn-save-profile').click(function(e){
-        e.preventDefault();
-        $validate = false;
-
-        $('.btn-edit-profile').css({'display' : 'none'});
-
-        if( !$("#cellP").val() == '') {
-            $validate = true;
-            $("#cellP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-            $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'none'})
-        } else {
-            $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-        }
-
-        if( !$("#telP").val() == '') {
-            $validate = true;
-            $("#telP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-            $("#telP").closest('.list-group-item').find('.required').css({'display' : 'none'})
-        } else {
-            $("#telP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-        }
-
-        if( !$("#address").val() == '') {
-            $validate = true;
-            $("#address").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-            $("#address").closest('.list-group-item').find('.required').css({'display' : 'none'})
-        } else {
-            $("#address").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-        }
+    // $('.btn-edit-profile').click(function(e){
+    //     e.preventDefault();
+    //
+    //     // console.log('test');
+    //
+    //     $('.list-group-item input').attr("readonly", false);
+    //     $('.edit-this').css({'display' : 'block'});
+    //     $('.btn-save-profile').css({'display' : 'inline'});
+    //     $('.btn-cancel-profile').css({'display' : 'inline'});
+    //     $('.btn-edit-profile').css({'display' : 'none'});
+    // });
 
 
-        if(!$("#cellP").val() == '' && $validate == true && !$("#telP").val() == '' && !$("#address").val() == '') {
-            $('.btn-save-profile').css({'display' : 'none'});
-            $('.btn-cancel-profile').css({'display' : 'none'});
-            $('.edit-this').css({'display' : 'none'});
-            $('.btn-edit-profile').css({'display' : 'block'});
-        } else {
-            e.preventDefault();
-        }
+    // $('.btn-save-profile').click(function(e){
+    //     e.preventDefault();
+    //     $validate = false;
+    //
+    //     $('.btn-edit-profile').css({'display' : 'none'});
+    //
+    //     if( !$("#cellP").val() == '') {
+    //         $validate = true;
+    //         $("#cellP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
+    //         $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'none'})
+    //     } else {
+    //         $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
+    //     }
+    //
+    //     if( !$("#telP").val() == '') {
+    //         $validate = true;
+    //         $("#telP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
+    //         $("#telP").closest('.list-group-item').find('.required').css({'display' : 'none'})
+    //     } else {
+    //         $("#telP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
+    //     }
+    //
+    //     if( !$("#address").val() == '') {
+    //         $validate = true;
+    //         $("#address").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
+    //         $("#address").closest('.list-group-item').find('.required').css({'display' : 'none'})
+    //     } else {
+    //         $("#address").closest('.list-group-item').find('.required').css({'display' : 'inline'})
+    //     }
+    //
+    //
+    //     if(!$("#cellP").val() == '' && $validate == true && !$("#telP").val() == '' && !$("#address").val() == '') {
+    //         $('.btn-save-profile').css({'display' : 'none'});
+    //         $('.btn-cancel-profile').css({'display' : 'none'});
+    //         $('.edit-this').css({'display' : 'none'});
+    //         $('.btn-edit-profile').css({'display' : 'block'});
+    //     } else {
+    //         e.preventDefault();
+    //     }
+    //
+    // });
 
-    });
 
-
-    $('.btn-cancel-profile').click(function(e){
-        e.preventDefault();
-
-            $('.list-group-item input').attr("readonly", false); 
-            $('.edit-this').css({'display' : 'none'});
-            $('.btn-save-profile').css({'display' : 'none'});
-            $('.btn-cancel-profile').css({'display' : 'none'});
-            $('.btn-edit-profile').css({'display' : 'block'});
-            $('.required').css({'display' : 'none'});
-    });
+    // $('.btn-cancel-profile').click(function(e){
+    //     e.preventDefault();
+    //
+    //         $('.list-group-item input').attr("readonly", false);
+    //         $('.edit-this').css({'display' : 'none'});
+    //         $('.btn-save-profile').css({'display' : 'none'});
+    //         $('.btn-cancel-profile').css({'display' : 'none'});
+    //         $('.btn-edit-profile').css({'display' : 'block'});
+    //         $('.required').css({'display' : 'none'});
+    // });
 
     $( ".edit-this" ).click(function(e) {
         e.preventDefault();
