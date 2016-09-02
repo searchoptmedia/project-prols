@@ -31,54 +31,6 @@ emp_page:
     path: /emp/
     defaults: { _controller: AdminBundle:Default:employeeProfile }
 
-profile_tele:
-    path: /teleupdate/
-    defaults: { _controller: AdminBundle:Default:profileTelUpdate }
-
-profile_tele_with_params:
-    path: /teleupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileCellUpdate }
-
-profile_mobile:
-    path: /cellupdate/
-    defaults: { _controller: AdminBundle:Default:profileCellUpdate }
-
-profile_mobile_with_params:
-    path: /cellupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileTelUpdate }
-
-profile_address:
-    path: /addupdate/
-    defaults: { _controller: AdminBundle:Default:profileAddressUpdate }
-
-profile_address_with_params:
-    path: /addupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileAddressUpdate }
-
-profile_email:
-    path: /emailupdate/
-    defaults: { _controller: AdminBundle:Default:profileEmailUpdate }
-
-profile_email_with_params:
-    path: /emailupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileEmailUpdate }
-
-profile_bday:
-    path: /bdayupdate/
-    defaults: { _controller: AdminBundle:Default:profileBdayUpdate }
-
-profile_bday_with_params:
-    path: /bdayupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileBdayUpdate }
-
-profile_dept:
-    path: /deptupdate/
-    defaults: { _controller: AdminBundle:Default:profileDeptpdate }
-
-profile_dept_with_params:
-    path: /deptupdate/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:profileDeptUpdate }
-
 view_request:
     path: /requests
     defaults: { _controller: AdminBundle:Default:request }

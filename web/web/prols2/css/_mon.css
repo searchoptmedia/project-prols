@@ -10,6 +10,28 @@
 span.badge.new.pending:after{
     content: " Pending";
 }
+
+.editprofile-btns{
+    top:-10px;
+}
+
+.btn-accept,.btn-decline{
+    color: white;
+}
+
+.top-nav-vl h3{
+    display:inline-block
+}
+.top-nav-vl .btn-select1{
+    float:right;
+    top:20px;
+    position:relative
+}
+
+.top-nav a {
+    margin: 5px;
+}
+
 .modal-container {
     position: fixed;
     width: 100%;
@@ -182,4 +204,17 @@ h5{
     100% {
         background: transparent;
     }
+}
+
+@media only screen and (max-width: 991px){
+    .top-nav a {
+        top: 10px;
+        float: none;
+        margin: 5px auto;
+        width: 200px;
+    }
+    .select2-container .select2-selection--single {
+        width: 70%;
+    }
+
 }

@@ -7,26 +7,6 @@
 
     {{ parent() }}
 {% endblock %}
-        {% block nav %}
-            <div class="collection emp-nav">
-                <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
-                <a href="{{ path('profile_page') }}" class="collection-item active"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
-                <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-
-            </div>
-
-            <div class="collection admin-nav">
-                {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
-                {% if role == 'ADMIN' %}
-                    <a href="{{ path('manage_employee') }}" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-                    {#<a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>#}
-                {% endif %}
-            </div>
-
-            <div class="collection logout-nav">
-                <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
-            </div>
-        {% endblock %}
 
         {% block body %}
             {{ notif.update_profile_notif }}
@@ -34,16 +14,11 @@
             <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert notification-modal">
                 <div class="timein-success"><h5>Password Changed!</h5></div>
             </div>
-
-            {{ notif.notif_loader() }}
-            {#<div class="profile-image center-align">#}
-                {#<span>{{ propelrr.fname|slice(0,1)|upper }}</span>#}
-            {#</div>#}
             <div class="page-content">
                 <div class="col-md-12 light-blue darken-1 heading z-depth-1">
                     <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                    <h3 class="center-align">{{ propelrr.fname }} {{ propelrr.lname }}</h3>
-                    <div class="top-nav"><a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a></div>
+                    {#<div class="top-nav"><a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a></div>#}
+                    <div class="top-nav"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3><a class="waves-effect waves-light btn modal-trigger modal-change orange changepwmodal" href="#modal-changepw">Change Password</a></div>
                 </div>
 
                 <div class="col-md-12 content" style="background-color: #e7e7e7;">
@@ -56,14 +31,11 @@
                                 <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                                 </div>
                             </div>
-
                             <div class="empinfo-left">
-
                                 <p><span class="p-lbl"><i class="fa fa-hashtag" aria-hidden="true"></i></span><span class="p-dta"></i>{{ propelrr.employeeNumber }}</span></p>
                                 <p><span class="p-lbl"><i class="fa fa-briefcase" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.getListPos().PosNames }}</span></p>
                                 <p><span class="p-lbl"><i class="fa fa-users" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.getListDept().DeptNames }}</span></p>
                                 <p><span class="p-lbl"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="p-dta">{{ user2.email }}</span></p>
-
                             </div>
                             <div class="empinfo-middle">
                                 <p><span class="p-lbl"><i class="fa fa-map-marker" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ propelrr.address }}" data-add="{{ profileId }}" type="text" id="addr" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
@@ -77,24 +49,46 @@
                                 <p><span class="p-lbl">Philhealth</span><span class="p-dta">22131231</span></p>
                             </div>
 
-
                             <div class="editprofile-btns">
+                                {#<a class="waves-effect waves-light btn orange btn-change-photo">Upload Photo</a>#}
                                 <a class="waves-effect waves-light btn orange btn-edit-profile">Edit</a>
                                 <a class="waves-effect waves-light btn orange btn-save-profile">Save</a>
                                 <a class="waves-effect waves-light btn orange btn-cancel-profile">Cancel</a>
                             </div>
                         </div>
 
-                        <!-- <div id="perf-chart" class="z-depth-1 demo-placeholder" style="width:100%;height:400px;"></div> -->
+                        {#<div id="perf-chart" class="z-depth-1 demo-placeholder" style="width:100%;height:400px;"></div>#}
 
-                        <div class="input-field col s12 emp-tables">
-                            <select>
-                                <option value="1">Monthly Performance Chart</option>
-                                <option value="2">Daily Time Logs</option>
-                            </select>
-                        </div>
+                        {#<div class="input-field col s12 emp-tables">#}
+                            {#<select class="emptable" id="emptable">#}
+                                {#<option value="1"> Daily Time Logs</option>#}
+                                {#<option value="2"> Monthly Performance Chart</option>#}
+                            {#</select>#}
+                        {#</div>#}
 
-                        <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table">
+                        <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time In</th>
+                                    <th>Time Out</th>
+                                    <th>Total Hour</th>
+                                    <th>Overtime</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for time in getAllTime %}
+                                <tr>
+                                    <td>{{ time.Date | date('M d Y')}}</td>
+                                    <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
+                                    <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
+                                    <td>{{ time.Manhours }}</td>
+                                    <td>{{ time.Overtime }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table month-perf-table" style="display:none">
                             <thead>
                             <tr>
                                 <th data-field="Date">Month</th>
@@ -106,6 +100,7 @@
                             </thead>
 
                             <tbody>
+
                             <tr>
                                 <td>Jan</td>
                                 <td>1</td>
@@ -193,7 +188,7 @@
 
                             </tbody>
                         </table>
-                        <br>
+                        <br><br>
 
                     </div>
                 </div>
@@ -221,7 +216,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" href="#!" class=" modal-action waves-effect waves-green btn-flat btn-changepw">Change</button>
+                            <button type="submit" href="#!" class=" modal-action waves-effect waves-light orange btn-flat btn-changepw" style="color:white;">Change</button>
                             </form>
                         </div>
 
@@ -238,7 +233,6 @@
             <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
             <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.0/jquery.validate.min.js"></script>
             <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
-
             {{ parent() }}
         {% endblock %}
 
@@ -429,6 +423,16 @@
                 $('#formchangedalert').hide();
             });
 
+            $('.emptable').change(function(){
+                var emptablevalue = $('#emptable').val();
+                if(emptablevalue == 1){
+                    $('.time-logs-table').show();
+                    $('.month-perf-table').hide();
+                }else{
+                    $('.time-logs-table').hide();
+                    $('.month-perf-table').show();
+                }
+            });
         });
     </script>
 {% endblock %}

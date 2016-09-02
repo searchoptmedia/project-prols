@@ -5,19 +5,13 @@
         <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
         <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-    </div>
-
-    <div class="collection admin-nav">
-        {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
         {% if role == 'ADMIN' %}
             <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
             {#<a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>#}
         {% endif %}
-    </div>
-
-    <div class="collection logout-nav">
         <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
     </div>
+
 {% endblock %}
 
 {% block body %}
@@ -30,10 +24,9 @@
                     <div class="page-content">
                         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
                             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                            <h3 class="center-align">Employee Time Logs</h3>
-                            {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
-                            <div class="top-nav" style="margin-top: 20px;">
-                                <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
+                            <div class="top-nav">
+                                <h3>Employee Time Logs</h3>
+                                {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
                             </div>
 
 
@@ -214,8 +207,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
-                                    <a class="modal-action waves-effect waves-green btn-flat export-submit-btn">Export</a>
+                                    <a href="#!" class=" modal-action modal-close waves-effect waves-light red btn-flat" style="color:white;">Cancel</a>
+                                    <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
                                 </div>
                                 {#<div class="modal-footer">#}
                                 {##}

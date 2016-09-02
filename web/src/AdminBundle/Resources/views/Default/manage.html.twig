@@ -1,161 +1,48 @@
 {% extends 'AdminBundle:Default:index.html.twig' %}
 
-{% block nav %}
-    <div class="collection emp-nav">
-        <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
-        <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
-        <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-
-    </div>
-
-    <div class="collection admin-nav">
-        {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
-        {% if role == 'ADMIN' %}
-            <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-            {#<a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>#}
-        {% endif %}
-    </div>
-
-    <div class="collection logout-nav">
-        <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
-    </div>
-{% endblock %}
-
 {% block body %}
 <section id="main-container">
- 
     <section id="main-wrapper">
         <div class="container-fluid">
-        <div class="row">
+            <div class="row">
+                <div class="page-content">
+                    <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                        <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                        <div class="top-nav">
+                            <h3>Employee List</h3>
+                            {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
+                        </div>
+                    </div>
+                    <div class="col-md-12 content manageemployees-content" style="display: block;">
+                        <div class="row" style="margin-left:5px;">
+                            <table class="bordered highlight emp-list">
+                                <thead>
+                                <tr>
+                                    <th data-field="id">Employee Number</th>
+                                    <th data-field="name">Name</th>
+                                    <th data-field="price">Department</th>
+                                    <th data-field="price">Position</th>
+                                    <th data-field="price">Status</th>
+                                </tr>
+                                </thead>
 
-            <div class="page-content">
-                <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                <h3 class="center-align">Employees</h3>
-                    {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
-                <div class="top-nav" style="margin-top: 20px;">
-                <a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
-                </div>
-
-
-            </div>
-                <div class="col-md-12 content manageemployees-content" style="display: block;">
-                    <div class="row" style="margin-left:5px;">
-                        <table class="bordered highlight emp-list">
-                            <thead>
-                            <tr>
-                                <th data-field="id">Employee Number</th>
-                                <th data-field="name">Name</th>
-                                <th data-field="price">Department</th>
-                                <th data-field="price">Position</th>
-                                <th data-field="price">Status</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            {% for emp in getEmployee %}
-                                {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
-                                    <tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">
-                                        <td>{{emp.getEmployeeNumber}}</td>
-                                        <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
-                                        <td>{{emp.getListDept().DeptNames}}</td>
-                                        <td>{{emp.getListPos().PosNames}}</td>
-                                        <td>{{emp.getStatus}}</td>
-                                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                <tbody>
+                                {% for emp in getEmployee %}
+                                    {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
+                                        <tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">
+                                            <td>{{emp.getEmployeeNumber}}</td>
+                                            <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
+                                            <td>{{emp.getListDept().DeptNames}}</td>
+                                            <td>{{emp.getListPos().PosNames}}</td>
+                                            <td>{{emp.getStatus}}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-        {#<div class="page-content">#}
-            {#<div class="col-md-12 light-blue darken-1 heading z-depth-1">#}
-            {#<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>#}
-                {#<h3 class="center-align">Employees</h3>#}
-                {#<div class="center-align nav-menu" style="margin-top: 20px;">#}
-                {#<a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn btn-export modal-trigger" style="color: white;">View Employees</a>#}
-                {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Time logs</a>#}
-                {#<a href="#" class="waves-effect waves-light btn green btn-export modal-trigger" style="color: white;">View Requests</a>#}
-                {#</div>#}
-            {#<div class="top-nav" style="margin-top: 20px;">#}
-                {#<a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>#}
-            {#</div>#}
-        {#</div>#}
-
-        {#<div class="col-md-12 content">#}
-            {#<div class="row" style="margin-left:5px;">#}
-                {#<table class="bordered highlight emp-list">#}
-                    {#<thead>#}
-                          {#<tr>#}
-                              {#<th data-field="id">Employee Number</th>#}
-                              {#<th data-field="name">Name</th>#}
-                              {#<th data-field="price">Department</th>#}
-                              {#<th data-field="price">Position</th>#}
-                              {#<th data-field="price">Status</th>#}
-                          {#</tr>#}
-                    {#</thead>#}
-
-                     {#<tbody>#}
-                        {#{% for emp in getEmployee %}#}
-                            {#{% if emp.getProfileStatus == 0 %}#}
-                                {#{% if emp.EmpAcc.getRole == 'employee' %}#}
-                          {#<tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">#}
-                            {#<td>{{emp.getEmployeeNumber}}</td>#}
-                            {#<td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>#}
-                            {#<td>{{emp.getListDept().DeptNames}}</td>#}
-                            {#<td>{{emp.getListPos().PosNames}}</td>#}
-                            {#<td>{{emp.getStatus}}</td>#}
-                          {#</tr>#}
-                                {#{% endif %}#}
-                            {#{% endif %}#}
-                          {#{% endfor %}#}
-                      {#</tbody>#}
-                {#</table>#}
-            {#</div>                  #}
-        {#</div>#}
-        {#</div>#}
-
-        {#<div class="page-content">#}
-            {#<div class="col-md-12 light-blue darken-1 heading z-depth-1">#}
-            {#<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>#}
-                {#<h3 class="center-align">Employees</h3>#}
-            {#<div class="top-nav">#}
-                {#<a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>#}
-            {#</div>#}
-        {#</div>#}
-
-        {#<div class="col-md-12 content">#}
-            {#<div class="row" style="margin-left:5px;">#}
-                {#<table class="bordered highlight emp-list">#}
-                    {#<thead>#}
-                          {#<tr>#}
-                              {#<th data-field="id">Employee Number</th>#}
-                              {#<th data-field="name">Name</th>#}
-                              {#<th data-field="price">Department</th>#}
-                              {#<th data-field="price">Position</th>#}
-                              {#<th data-field="price">Status</th>#}
-                          {#</tr>#}
-                    {#</thead>#}
-
-                     {#<tbody>#}
-                        {#{% for emp in getEmployee %}#}
-                            {#{% if emp.getProfileStatus == 0 %}#}
-                                {#{% if emp.EmpAcc.getRole == 'employee' %}#}
-                          {#<tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">#}
-                            {#<td>{{emp.getEmployeeNumber}}</td>#}
-                            {#<td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>#}
-                            {#<td>{{emp.getListDept().DeptNames}}</td>#}
-                            {#<td>{{emp.getListPos().PosNames}}</td>#}
-                            {#<td>{{emp.getStatus}}</td>#}
-                          {#</tr>#}
-                                {#{% endif %}#}
-                            {#{% endif %}#}
-                          {#{% endfor %}#}
-                      {#</tbody>#}
-                {#</table>#}
-            {#</div>                  #}
-        {#</div>#}
-        </div>
         {#<div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">#}
             {#<a class="btn-floating btn-large red">#}
             {#<i class="material-icons">add</i>#}
@@ -167,28 +54,30 @@
             {#</ul>#}
         {#</div>#}
 
-        <div id="modal-emp" class="modal modal-fixed-footer">
-            <form form action="{{ path('add_employee') }}" method="post">
-            <div class="modal-content">
-            <h4>Employee</h4>
-            <p>Username<input name = "username" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
-            <p>Password<input name = "password" placeholder="type here..." id="fname" type="password" class="input-field"></p>
-            <p>Re-type Password<input name = "repassword" placeholder="type here..." id="fname" type="password" class="input-field"></p>
-            <br>
-            <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
-            <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
-            <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
-            <p>Department</p>
-            <div class="select-wrapper"><span class="caret">?</span>
-                    <select name="dept" id="dept" class="initialized emp-dept">
-                            <option value="" disabled selected>Select department</option>
-                            {% for dept in getDept %}
-                            <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
-                            {% endfor %}
+        <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
+            <form method="post">
+            <div class="modal-content" >
+                <h4>Employee</h4>
+                <p>Username<input name = "username" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
+                <p>Password<input name = "password" placeholder="type here..." id="fname" type="password" class="input-field"></p>
+                <p>Re-type Password<input name = "repassword" placeholder="type here..." id="fname" type="password" class="input-field"></p>
+                <br>
+                <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
+                <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
+                <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
+                <p>Department</p>
+
+                <div class="select-wrapper"><span class="caret">?</span>
+                    <select name="dept" id="dept" class="initialized">
+                        <option value="" disabled selected>Select department</option>
+                        {% for dept in getDept %}
+                        <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
+                        {% endfor %}
                     </select>
-            </div>
+                </div>
 
                 <p>Position</p>
+
                 <div class="select-wrapper"><span class="caret">?</span>
                     <select name="pos"id="pos" class="initialized emp-positions">
                         <option value="" disabled selected>Select position</option>
@@ -199,6 +88,7 @@
                 </div>
 
                 <p>Employment Status</p>
+
                 <div class="select-wrapper"><span class="caret">?</span>
                     <select name="status"id="status" class="initialized emp-status">
                         <option value="" disabled selected>Select status</option>
@@ -210,16 +100,15 @@
                         <option value="Intern">Intern</option>
                     </select>
                 </div>
-                    <br>
-            <p>Company Email<input name="email" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>Telephone #<input name="telnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>Cellphone #<input name="cellnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>Address<input name="address" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>Birthday<input name="bday" placeholder="type here..." id="full_name" type="date" class="input-field"></p>
-            <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-            <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-
+                <br>
+                <p>Company Email<input name="email" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>Telephone #<input name="telnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>Cellphone #<input name="cellnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>Address<input name="address" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>Birthday<input name="bday" placeholder="type here..." id="full_name" type="date" class="input-field"></p>
+                <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
             </div>
             <div class="modal-footer">
                 <input type=submit value="add" class="modal-action modal-close waves-effect waves-green btn-flat addemp"></input>
@@ -272,15 +161,12 @@
                                 </select>
                             </div>
                         <div class="modal-footer">
-                        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
-                        <a class="modal-action waves-effect waves-green btn-flat export-submit-btn">Export</a>
-
+                        <a href="#!" class=" modal-action modal-close waves-effect waves-light red btn-flat" style="color:white;">Cancel</a>
+                        <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
                         </div>
-
                     </form>
                 </div>
             </div>
-
     </section>
 </section>
 {% endblock %}
@@ -302,8 +188,10 @@
 {% block customjs %}
 <script type="text/javascript">
 $(document).ready(function(){
-    $('select').material_select('destroy');
+//    $('select').material_select('destroy');
+//    $('.initialized').material_select();
 //    $('select').material_select();
+    $('select').material_select('destroy');
     {#$('.input-name').select2({#}
         {#placeholder: "Type Name",#}
         {#data: [#}
@@ -313,21 +201,23 @@ $(document).ready(function(){
             {#{% endfor %}#}
         {#]#}
     {#});#}
-
+    $('.modal-export').click(function(){
+        $('select').material_select('destroy');
+    });
+    $('.click-to-toggle').click(function(){
+        $('select').material_select();
+    });
     $('.departmentselect,.input-name').select2();
 
     var inputfield = '';
     var empId = '';
     $('.btn-cancel-input').click(function(e){
         e.preventDefault();
-
-                $('#input-department').val('');
-                $('#input-position').val('');
-                $('.input-field').closest('.profile-data').find('input[type=text]').val('');
-                $('.input-field').closest('.profile-data').find('input[type=text]').css({'border-bottom-color' : '#9e9e9e'})
+            $('#input-department').val('');
+            $('#input-position').val('');
+            $('.input-field').closest('.profile-data').find('input[type=text]').val('');
+            $('.input-field').closest('.profile-data').find('input[type=text]').css({'border-bottom-color' : '#9e9e9e'})
         });
-
-            
         $("#upload-photo").change(function () {
             var fileExtension = ['jpeg', 'jpg', 'png'];
     });

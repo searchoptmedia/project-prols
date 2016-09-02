@@ -361,6 +361,16 @@ img{
 	float: right;
     position: relative;
     right: 30px;
+    top: -50px;
+    /* top: 15px; */
+
+}
+
+.editprofile-btns2 {
+	float: right;
+    position: relative;
+    right: 30px;
+    display:none;
     /* top: 15px; */
 
 }
@@ -393,6 +403,11 @@ img{
 	padding:0px;
 }
 
+.changepw-con{
+	text-align: center;
+    margin-top: 10px;
+    display:none;
+}
 
 
 /*===END OF PROFILE===*/
@@ -401,6 +416,10 @@ img{
 /*===END OF NOTIFICATIONS===*/
 
 /*VIEW REQUESTS*/
+.btn-accept, .btn-decline{
+	font-weight: 500;
+	margin-left: 6px !important;
+}
 /*===END OF VIEW REQUESTS===*/
 
 /*MANAGE EMPLOYEES*/
@@ -411,6 +430,21 @@ img{
 	
 	position: relative;
     top: 15px;
+
+    .emp-quote{
+
+    	i{
+			padding-right:10px;
+    	}
+
+    	input{
+    		margin:0px;
+			width: 60%;
+			border:none;
+			font-size:22px;
+			color: #000;
+    	}
+    }
 
 	.emp-info{
 		font-size:16px;
@@ -853,7 +887,15 @@ height:auto;
 
 
 .top-nav{
-	float: right;
+	h3{
+		display: inline-block;
+	}
+
+	a{
+		float: right;
+		top: 20px;
+		position: relative;
+	}
 }
 
 
@@ -1106,6 +1148,7 @@ span.badge.new{
 		font-size: 32px;
 		padding-top: 40px;
 		font-size: 42px;
+		display:block;
 
 	}
 	.btn-timeout{
@@ -1115,6 +1158,12 @@ span.badge.new{
 	.top-nav{
 		float:none;
 		text-align: center;
+
+		a{
+			top: 10px;
+			float:none;
+			// display:block;
+		}
 	}
 
 	.btn-flat .materials-icon .res-menu{
@@ -1136,14 +1185,14 @@ span.badge.new{
 
 	}
 
-	.emp-photo{
-		float:none;
-		clear:both;
-		padding:0px;
+	.emp-photo {
+	    float: none;
+	    clear: both;
+	    padding: 0px;
+	    margin-top: 15px;
+	    left: 0px;
 	}
-	.profile-image{
-		margin: 0 auto;
-	}
+
 
 	.profile-title{
 		clear:both;
@@ -1154,25 +1203,29 @@ span.badge.new{
 
 	}
 
-	.profile-image{
+	.profile-image {
 
-		width: 120px;
-		height: 120px;
+		margin: 0 auto;
+		margin-top:15px;
 
-		span {
-			line-height: 120px;
-			font-size: 48px;
-			color: #fff;
-		}
-
-		img{
-			width: 120px;
-			height: 120px;
-			top: -120px;
-			right:0px;
-			position:relative;
-		}
+		img {
+	    width: 120px;
+	    height: 120px;
+	    top: -120px;
+	    right: 0px;
+	    position: relative;
+	        z-index: 10;
+	    width: 25%;
+	  
+	    width: 200px;
+	    height: 200px;
+	    /* right: 15px; */
+	    position: relative;
+	    top: -100%;
+	    /* text-align: center; */
 	}
+}
+
 
 	.emp-info-wrap{
 		.emp-info{
@@ -1240,6 +1293,8 @@ span.badge.new{
 
 		.empinfo-left, .empinfo-middle, .empinfo-right{
 			left: 0px;
+			display:block;
+			padding: 0px 15px;
 		}
 
 
@@ -1251,7 +1306,7 @@ span.badge.new{
 
 			.p-lbl{
 				padding:0;
-				width:80px;
+				width:30px;
 
 			}
 
@@ -1288,7 +1343,7 @@ span.badge.new{
 	
 	.heading h3{
 		font-size: 28px;
-		padding-top: 40px;
+		padding-top: 15px;
 
 	}
 
@@ -1356,7 +1411,14 @@ span.badge.new{
 		left:0;
 	}
 
-	
+
+ 	.changepwmodal{
+    float: right;
+    top: 15px;
+    display: none;
+}
+
+
 
 
 
@@ -1364,7 +1426,8 @@ span.badge.new{
 		top:0;
 		left:0;
 		max-width:100%;
-		padding-left: 15px;
+		padding-left: 0px;
+		padding-top: 0px;
 
 		.empinfo-left .p-lbl{
 			/*display:initial;*/
@@ -1374,16 +1437,16 @@ span.badge.new{
 
 			.p-lbl{
 				padding:0;
-				width:80px;
+				width:30px;
 
 			}
 
 			input[type=text]{
-				width: 130px;
+				width: 200px;
 			}
 
 			input[type=text]:disabled{
-				width: 130px;	
+				width: 200px;	
 			}
 
 		}	
@@ -1440,8 +1503,11 @@ span.badge.new{
 				}
 			}
 		}
-		
 
+		}
+
+		.emp-tables{
+			padding-bottom: 15px;
 		}
 
 	}
@@ -1468,6 +1534,11 @@ span.badge.new{
 		display:block;
 		text-align:center;
 	}
+
+	.changepw-con{
+		display:block;
+	}
+	
 
 	.employee-profile-center, 
 	.employee-profile-right {
@@ -1642,6 +1713,8 @@ span.badge.new{
 		width: 25%;
 
 	}
+
+
 
 
 }

@@ -4,20 +4,12 @@
         <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
         <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-
-    </div>
-
-    <div class="collection admin-nav">
-        {#<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>#}
         {% if role == 'ADMIN' %}
             <a href="{{ path('manage_employee') }}" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
             <a href="{{ path('view_request') }}" class="collection-item active">
                 <i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge reqcount">
                     <strong>{{ requestcount }}</strong></span>{% endif %}</a>
         {% endif %}
-    </div>
-
-    <div class="collection logout-nav">
         <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
     </div>
 {% endblock %}
@@ -36,10 +28,9 @@
         <div class="page-content">
         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
         <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-            <h3 class="center-align">Request List</h3>
-            {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
-            <div class="top-nav" style="margin-top: 20px;"><a class='dropdown-button btn orange btn-select1' href='#' data-activates='dropdown2'>Filter</a></div>
-            
+            <div class="top-nav-vl"><h3>Request List</h3><a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>
+            </div>
+            <div class="top-nav"></div>
         </div>
 
         <div class="col-md-12 content">
@@ -87,9 +78,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a href="#!" class="modal-action waves-effect waves-green btn-flat btn-accept"
+                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
                                    data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                                <a class="waves-effect waves-red btn-flat btn-decline">Decline</a>
+                                <a class="waves-effect waves-light red btn-flat btn-decline">Decline</a>
                             </div>
                         </div>
 
@@ -128,9 +119,10 @@
                                     <div class="chip required-field">required field!</div>
                                 </div>
                             </div>
-                            <div class="modal-footer" id="modal-footer">
-                                <a href="#!" class="modal-action waves-effect waves-green btn-flat btn-accept" data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                                <a class="waves-effect waves-red btn-flat btn-decline">Decline</a>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
+                                   data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
+                                <a class="waves-effect waves-light red btn-flat btn-decline">Decline</a>
                             </div>
                         </div>
 
@@ -169,8 +161,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a href="#!" class="modal-action waves-effect waves-green btn-flat btn-accept" data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                                <a class="waves-effect waves-red btn-flat btn-decline">Decline</a>
+                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
+                                   data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
+                                <a class="waves-effect waves-light red btn-flat btn-decline">Decline</a>
                             </div>
                         </div>
 
@@ -209,9 +202,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a href="#!" class="modal-action waves-effect waves-green btn-flat btn-accept"
+                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
                                    data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                                <a class="waves-effect waves-red btn-flat btn-decline">Decline</a>
+                                <a class="waves-effect waves-light red btn-flat btn-decline">Decline</a>
                             </div>
                         </div>
                     {% endfor %}
@@ -221,21 +214,23 @@
         </div>
 
         <!-- Dropdown Structure -->
-        <ul id='dropdown2' class='dropdown-content dd1'>
-            <li><a href="#!" class="allbtn">All</a></li>
-            <li class="divider"></li>
-            <li><a href="#!" class="vacleavebtn">Vacation Leave</a></li>
-            <li class="divider"></li>
-            <li><a href="#!" class="sickleavebtn">Sick Leave</a></li>
-            <li class="divider"></li>
-            <li><a href="#!" class="diffipbtn">IP Address</a></li>
-        </ul>
+            <ul id='dropdown2' class='dropdown-content dd1'>
+                <li><a href="#!" class="allbtn">All</a></li>
+                <li class="divider"></li>
+                <li><a href="#!" class="vacleavebtn">Vacation Leave</a></li>
+                <li class="divider"></li>
+                <li><a href="#!" class="sickleavebtn">Sick Leave</a></li>
+                <li class="divider"></li>
+                <li><a href="#!" class="diffipbtn">IP Address</a></li>
+            </ul>
             <!-- End of DS -->
 
 
 
     </div>
+
     </div>
+
 
 {% endblock %}
 {% block scripts %}

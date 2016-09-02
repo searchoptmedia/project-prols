@@ -86,7 +86,7 @@ class EmployeeReportController extends Controller {
             $handle = fopen('php://output', 'w+');
             // Add the header of the CSV file
 
-            fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (decimal)', 'Overtime'));
+            fputcsv($handle, array('Employee ID', 'Name', 'Time in', 'Time out', 'Date', 'Work in Office', 'Total hours (decimal)', 'Overtime', 'Undertime'));
 
             $records = $this->getRecord();
             foreach($records as $emp) {
@@ -98,7 +98,7 @@ class EmployeeReportController extends Controller {
 
                 $dateday        = $emp->getDate()->format('D');
                 $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
-
+                $undertime      = 0;
                 //record
                 $profile = EmpProfilePeer::getInformation($empid);
                 $fname   = $profile->getFname();
@@ -134,12 +134,15 @@ class EmployeeReportController extends Controller {
                     if($overtime < 1){
                         $overtime = 0;
                     }
+                    if($totalHours < 9){
+                        $undertime = 1;
+                    }
 //                    $totalHoursDec = $emp->getManhours();
 //                    $overtime = $emp->getOvertime();
                 }
-
+                $isUndertime = $undertime ? 'Yes':'No';
                 fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime)
+                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime, $isUndertime)
                 );
             }
             exit;
