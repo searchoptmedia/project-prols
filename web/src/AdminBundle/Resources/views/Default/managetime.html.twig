@@ -1,26 +1,10 @@
 {% extends 'AdminBundle:Default:index.html.twig' %}
-
-{% block nav %}
-    <div class="collection emp-nav">
-        <a href="{{ path('admin_homepage') }}" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
-        <a href="{{ path('profile_page') }}" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
-        <!-- <a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a> -->
-        {% if role == 'ADMIN' %}
-            <a href="{{ path('manage_employee') }}" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-            {#<a href="{{ path('view_request') }}" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}<span class="new badge">{{ requestcount }}</span>{% endif %}</a>#}
-        {% endif %}
-        <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
-    </div>
-
-{% endblock %}
-
+{% block title %}<title>Propelrr Log-in System| Manage</title>{% endblock %}
 {% block body %}
     <section id="main-container">
-
         <section id="main-wrapper">
             <div class="container-fluid">
                 <div class="row">
-
                     <div class="page-content">
                         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
                             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
@@ -28,10 +12,7 @@
                                 <h3>Employee Time Logs</h3>
                                 {{ include ('AdminBundle:Default:manageemployees.html.twig') }}
                             </div>
-
-
                         </div>
-
                         <div class="col-md-12 content managetime-content">
                             <div class="row" style="margin-left:5px;">
                                 <table class="bordered highlight emp-list">
@@ -64,11 +45,7 @@
                                 </table>
                             </div>
                         </div>
-
-
                     </div>
-
-
                     <div id="modal-emp" class="modal modal-fixed-footer">
                         <form form action="{{ path('add_employee') }}" method="post">
                             <div class="modal-content">
@@ -99,7 +76,6 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-
                                 <p>Employment Status</p>
                                 <div class="select-wrapper"><span class="caret">?</span>
                                     <select name="status"id="status" class="initialized emp-status">
@@ -175,14 +151,6 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                {#<div class= "selectByname" style="width: 510px; margin-top: 20px; margin-bottom: 20px;">#}
-                                {#<select id = "listnames" class="browser-default">#}
-                                {#<option value="" disabled selected>Choose</option>#}
-                                {#{% for user in getAllProfile %}#}
-                                {#<option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>#}
-                                {#{% endfor %}#}
-                                {#</select>#}
-
 
                                 <div class="employee-option-sect" style="display: none;">
                                     <select id="empnames" class="input-name" style="width: 300px; margin-top: 50px;">
@@ -207,7 +175,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="#!" class=" modal-action modal-close waves-effect waves-light red btn-flat" style="color:white;">Cancel</a>
+                                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
                                     <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
                                 </div>
                                 {#<div class="modal-footer">#}
@@ -223,35 +191,10 @@
         </section>
     </section>
 {% endblock %}
-
-{% block scripts %}
-    <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
-    <script src="{{asset('prols2/js/html5.js')}}"></script>
-    <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
-    <script src="{{asset('prols2/js/materialize.js')}}"></script>
-    <script src="{{asset('prols2/js/script.js')}}"></script>
-    <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
-{% endblock %}
 {% block customjs %}
     <script type="text/javascript">
         $(document).ready(function(){
             $('select').material_select('destroy');
-//    $('select').material_select();
-            {#$('.input-name').select2({#}
-            {#placeholder: "Type Name",#}
-            {#data: [#}
-
-            {#{% for names in getAllProfile %}#}
-            {#{id:'{{ names.empAccAccId }}',text:'{{ names.fname ~ ' ' ~ names.lname }}'},#}
-            {#{% endfor %}#}
-            {#]#}
-            {#});#}
 
             $('.departmentselect,.input-name').select2();
 
@@ -265,25 +208,19 @@
                 $('.input-field').closest('.profile-data').find('input[type=text]').val('');
                 $('.input-field').closest('.profile-data').find('input[type=text]').css({'border-bottom-color' : '#9e9e9e'})
             });
-
-
             $("#upload-photo").change(function () {
                 var fileExtension = ['jpeg', 'jpg', 'png'];
             });
-
-
             $('.birth-date').pickadate({
                 selectMonths: true,
                 selectYears: 15
             });
-
             $('.addpos').click(function(){
                 inputfield=$('#input-position').val();
                 $.get("{{ path('add_position') }}" + inputfield,  function(data){
                     console.log(data);
                 }, "json");
             });
-
             $('.adddept').click(function(){
                 inputfield=$('#input-department').val();
                 $.get("{{ path('add_department') }}" + inputfield,  function(data){
@@ -296,7 +233,6 @@
                 empId = $(this).data('empid');
                 window.location.href = '{{ path('emp_page')}}' + empId;
             });
-
             $('.export-submit-btn').click(function(){
                 var deptid = $('#listdept').val();
                 var empname = $('.input-name').val();

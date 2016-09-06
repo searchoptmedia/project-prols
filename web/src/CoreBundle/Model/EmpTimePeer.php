@@ -17,7 +17,19 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		$_self = self::doSelect($c);
 
 		return $_self ? $_self : array();
-	}	
+	}
+
+	public static function getTimeDescendingOrder($id, Criteria $c = null){
+		if (is_null($c)) {
+			$c = new Criteria();
+		}
+
+		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL);
+		$c->addDescendingOrderByColumn(self::DATE);
+		$_self = self::doSelect($c);
+
+		return $_self ? $_self : array();
+	}
 
 	public static function getAllTime(Criteria $c = null)
 	{

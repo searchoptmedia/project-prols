@@ -105,8 +105,8 @@ class EmployeeReportController extends Controller {
                 $lname   = $profile->getLname();
                 $empnum  = $profile->getEmployeeNumber();
 
-                $totalHours = "n/a";
-                $totalHoursDec = "n/a";
+                $totalHours = "N/A";
+                $totalHoursDec = "N/A";
                 $overtime = 0;
 
                 if(! empty($timeoutdata)) {

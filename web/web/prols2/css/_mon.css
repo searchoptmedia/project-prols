@@ -28,6 +28,10 @@ span.badge.new.pending:after{
     position:relative
 }
 
+.custombtn{
+    color: white;
+}
+
 .top-nav a {
     margin: 5px;
 }

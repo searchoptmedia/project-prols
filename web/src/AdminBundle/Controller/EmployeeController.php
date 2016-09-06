@@ -90,12 +90,17 @@ class EmployeeController extends Controller{
 			$empTimeSave->setIpAdd($matchedip);
 			$empTimeSave->setDate($datetoday);
 			$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			$allowedip = $ip_add->getAllowedIp();
+			if(!empty($ip_add)){
+				$allowedip = $ip_add->getAllowedIp();
 				if($allowedip == $matchedip){
 					$empTimeSave->setCheckIp(1);
 				}else{
 					$empTimeSave->setCheckIp(0);
 				}
+			}else{
+				$empTimeSave->setCheckIp(0);
+			}
+
 			if($empTimeSave->save()){
 
 				$this->session->set('timeout', 'false');

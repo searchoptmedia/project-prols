@@ -134,7 +134,8 @@ class DefaultController extends Controller{
 
 
 		$systime = date('H:i A');
-		$afternoon = date('H:i A', strtotime('12 pm')); 	
+		$timetoday = date('h:i A');
+		$afternoon = date('H:i A', strtotime('12 pm'));
 		//counts number of pending requests
 
 		$requestcount = EmpRequestQuery::create()
@@ -190,6 +191,7 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+			'timetoday' => $timetoday,
 
         ));
     }
@@ -539,8 +541,9 @@ class DefaultController extends Controller{
 		$checkipdata = $emp_time[$currenttime]->getCheckIp();
     	}
     	$firstchar = $fname[0];
-		$systime = date('H:i A');
-		$afternoon = date('H:i A', strtotime('12 pm'));
+		$systime = date('h:i A');
+		$timetoday = date('h:i A');
+		$afternoon = date('h:i A', strtotime('12 pm'));
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
@@ -558,7 +561,7 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
 
-		$getAllTimeData = EmpTimePeer::getTime($id);
+		$getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
         return $this->render('AdminBundle:Default:profile.html.twig', array(
         	'page' => $page,
@@ -604,6 +607,7 @@ class DefaultController extends Controller{
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'getAllTime' => $getAllTimeData,
+			'timetoday' => $timetoday,
         	));
 
     }
@@ -651,6 +655,7 @@ class DefaultController extends Controller{
 				$checkipdata = $emp_time[$currenttime]->getCheckIp();
 			}
 			$systime = date('H:i A');
+			$timetoday = date('h:i A');
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
 			$et = EmpTimePeer::getEmpLastTimein($id);
@@ -695,6 +700,7 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+			'timetoday' => $timetoday,
         	));
 		}	
     }
@@ -810,6 +816,7 @@ class DefaultController extends Controller{
 				// echo $checkipdata;
 			}
 			$systime = date('H:i A');
+			$timetoday = date('h:i A');
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
 			$userip = InitController::getUserIP($this);
@@ -856,6 +863,7 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+			'timetoday' => $timetoday,
 
         	));       
 		} 	
@@ -906,6 +914,7 @@ class DefaultController extends Controller{
 				// echo $checkipdata;
 			}
 			$systime = date('H:i A');
+			$timetoday = date('h:i A');
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
 			$userip = InitController::getUserIP($this);
@@ -951,6 +960,7 @@ class DefaultController extends Controller{
 				'requestcount' => $requestcount,
 				'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 				'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+				'timetoday' => $timetoday,
 
 			));
 		}
@@ -975,6 +985,9 @@ class DefaultController extends Controller{
 	    	$empDept = $request->request->get('dept');
 	    	$empPos = $request->request->get('pos');
 	    	$empStatus = $request->request->get('status');
+			$empEmail = $request->request->get('email');
+			$empTelNum = $request->request->get('telnum');
+			$empCelNum = $request->request->get('cellnum');
 
 		    date_default_timezone_set('Asia/Manila');
 		    $datetimetoday = date('Y-m-d H:i:s');
@@ -994,29 +1007,24 @@ class DefaultController extends Controller{
 			    	$addacc->setUsername($user);
 			    	$addacc->setPassword($pass);
 			    	$addacc->setRole('employee');
+					$addacc->setEmail($empEmail);
 			    	$addacc->save();
 			    	$newacc = $addacc->getId();
 
 			    	//add new profile
 		    		$addemp = new EmpProfile();
 			    	$addemp->setEmpAccAccId($newacc);
-			    	$addemp->setEmployeeNumber($request->request->get('empnum'));
-			    	$addemp->setFname($request->request->get('fname'));
-			    	$addemp->setLname($request->request->get('lname'));
-			    	$addemp->setAddress($request->request->get('address'));
-			    	$addemp->setBday($request->request->get('bday'));
+			    	$addemp->setEmployeeNumber($empNum);
+			    	$addemp->setFname($empFname);
+			    	$addemp->setLname($empLname);
+			    	$addemp->setAddress($empAddress);
+			    	$addemp->setBday($empBday);
 //			    	$addemp->setDateJoined($current_date);
-			    	$addemp->setListDeptDeptId($request->request->get('dept'));
-			    	$addemp->setListPosPosId($request->request->get('pos'));
-			    	$addemp->setStatus($request->request->get('status'));
+			    	$addemp->setListDeptDeptId($empDept);
+			    	$addemp->setListPosPosId($empPos);
+			    	$addemp->setStatus($empStatus);
 			    	$addemp->save();
 			    	$empid = $addemp->getId();
-
-			    	$empcontact = new EmpContact();
-			    	$empcontact->setEmpProfileId($empid);
-			    	$empcontact->setListContTypesId(1);
-			    	$empcontact->setContact($request->request->get('email'));
-			    	$empcontact->save();
 
 			    	$cellcontact = new EmpContact();
 			    	$cellcontact->setEmpProfileId($empid);
@@ -1030,14 +1038,14 @@ class DefaultController extends Controller{
 			    	$telcontact->setContact($request->request->get('telnum'));
 			    	$telcontact->save();
 
-			    	return $this->redirect($this->generateUrl('manage_employee'));	
+					$response = array('Added Successfully');
 	    			}
-
-	    	}else{
-		    		$response = array('Missing Input');
-					echo json_encode($response);
-					exit;
+	    		}else{
+					$response = array('Missing Input');
 		    	}
+			$resp = array('response' => $response);
+			echo json_encode($resp);
+			exit;
 			}
     }
 	
@@ -1167,6 +1175,7 @@ class DefaultController extends Controller{
 		}
 
 		$systime = date('H:i A');
+		$timetoday = date('h:i A');
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
 		$userip = InitController::getUserIP($this);
@@ -1207,6 +1216,7 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+			'timetoday' => $timetoday,
         ));
 	}
 
@@ -1345,6 +1355,7 @@ class DefaultController extends Controller{
 		}
 		$firstchar = $fname[0];
 		$systime = date('H:i A');
+		$timetoday = date('h:i A');
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
 		if(!empty($timedata) && !empty($timeout_data)){
@@ -1391,7 +1402,7 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
 
-
+		$getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
 		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
 			'name' => $name,
@@ -1435,6 +1446,8 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+			'timetoday' => $timetoday,
+			'getAllTime' => $getAllTimeData,
 		));
     }
 
