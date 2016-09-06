@@ -69,7 +69,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                     //check if not time out
                     if(empty($timedata->getTimeOut())) {
                         //if not yet timeout and currently within max hours(16)
-                        if($hours <= 18) {
+                        if($hours <= 32) {
                             //check if another day
                             $session->set('timeout', 'false');
 

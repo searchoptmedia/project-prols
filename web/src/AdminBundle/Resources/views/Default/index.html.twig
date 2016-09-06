@@ -287,6 +287,7 @@
                     $('.forgot-timeout-modal').hide();
                     manage_time_newday('timeout');
                 }
+                console.log('timer')
             }, 1000);
         }
 
@@ -311,7 +312,11 @@
         });
 
         $('.btn-timeout-newday').bind('click', function() {
-            $('.timeout-cancel').click(function() {
+            clearInterval(timerInt);
+
+            $('#time-out-button').attr('data-forgot', '1');
+
+            $('.timeout-cancel').bind('click', function() {
                 clearInterval(timerInt);
                 display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
                 $('.forgot-timeout-modal').show();
@@ -515,6 +520,7 @@ $('#time-in-button').click(function(){
 
 $('#time-out-button').click(function(){
     var pass = $('#confirmpw-timeout').val();
+    var isFromForgot = parseInt($(this).data('forgot') || 0);
 
     //check if password is empty
     if(pass == ''){
@@ -536,7 +542,8 @@ $('#time-out-button').click(function(){
             $('#errormessage').show();
             return;
         }
-            //time out success
+
+        //time out success
         $('.timeout-container').css({'display' : 'none'});
         $('.timeout').css({'display' : 'none'});
         $('.timeout-notif-container').css({'top':'0px'});
@@ -544,9 +551,13 @@ $('#time-out-button').click(function(){
         $('.timed-out').css({'display' : 'block'});
         $('.btn-timeout').css({'display' : 'none'});
         $('.timechip').hide();
+
         setTimeout(function(){
             $('.timeout-notif-container').css({'top' : '-55px'});
         }, 5000);
+
+        if(isFromForgot) window.location = '/logout';
+
     }).always(function(data){
         console.log(data);
         $('.loader-notif').hide();

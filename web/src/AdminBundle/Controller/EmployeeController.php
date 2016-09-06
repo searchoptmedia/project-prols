@@ -215,6 +215,9 @@ class EmployeeController extends Controller{
 			$session->set('isSameDay', '');
 		} else {
 
+			$session->set('isSameDay', '');
+			$session->set('timeout', 'true');
+
 			$user = $this->getUser();
 			$id = $user->getId();
 			$emplasttime = EmpTimePeer::getEmpLastTimein($id);
