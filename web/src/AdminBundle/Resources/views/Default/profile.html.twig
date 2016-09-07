@@ -12,7 +12,7 @@
         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
 
-            <div class="emp-photo hidden-desktop">
+            <div class="emp-photo">
                 <div class="profile-image center-align">
                     <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                 </div>
@@ -47,7 +47,7 @@
                                         <span class="p-lbl"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
                                         <span class="p-dta">
                                             <span id="addr" class="editable" data-add="{{ profileId }}">{{ propelrr.address }}</span>
-                                            {# <input disabled value=""  type="text" id="addr" class="editable"> #}
+                                            {# <input disabled value="{{ propelrr.address }}" data-add="{{ profileId }}" type="text" id="addr" class="editable"> #}
                                             <i class="material-icons edit-pdata">mode_edit</i>
                                         </span>
                                     </p>
