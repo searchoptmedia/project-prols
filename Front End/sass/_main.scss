@@ -1444,7 +1444,12 @@ span.badge.new{
 
 }
 
-@media only screen and (max-width: 767px){
+@media only screen and (max-width: 767px) {
+
+	.profile-image span {
+		line-height: 100px;
+    	font-size: 48px;
+	}
 
 	.top-nav {
 		padding-left: 35px;
