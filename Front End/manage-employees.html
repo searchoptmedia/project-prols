@@ -1,65 +1,125 @@
 <!doctype html>
 <html class="no-js" lang="">
+
 <head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>Propelrr Log-in System| Home</title>
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-<link rel="stylesheet" href="css/style.css" media="all"/>
-<link rel="stylesheet" href="sass/_main.scss" media="all"/>
-<link rel="stylesheet" href="css/fullcalendar/fullcalendar.css" media="all"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<title>Propelrr Log-in System | Manage Employees</title>
 
+	<link rel="stylesheet" href="css/fullcalendar/fullcalendar.css" media="all"/>
+	<link rel="stylesheet" href="css/style.css" media="all"/>
 </head>
+
 <body>
 <section id="main-container">
+
 	<header>
 	</header>
 
 	<section id="main-wrapper">
-	<div class="container-fluid">
-	<div class="row">
+		<div class="container-fluid">
+		<div class="row">
 
-		<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
-		<div class="timein-success"><h5>Time-in Successful</h5></div>
-		</div>
-
-		<div class="col-md-3 nav-right z-depth-1">
-			<div class="company-logo"><a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a></div>
-			<div class="collection emp-nav">
-				<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
-				<a href="#!" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
-				<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
-				<a href="#!" class="collection-item"><i class="material-icons nav-icon">input</i> Log out</a>
+			<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
+				<div class="timein-success"><h5>Time-in Successful!</h5></div>
 			</div>
-			<div class="collection admin-nav">
-				<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
-				<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
-		  	</div>
-		</div>
 
-	  	<div class="col-md-9 light-blue darken-1 heading z-depth-1">
-			<h3 class="center-align">Employees</h3>
-			<div class="x-nav">
-				<a class='dropdown-button btn amber btn-add1' href='#' data-activates='dropdown1'>Add</a>
-				<a class="waves-effect waves-light btn orange btn-export"><!-- <i class="material-icons nav-icon">import_export</i> -->Export</a>
+			<div class="col-md-12 green center-align timeout-notif-container light-green darken-1">
+				<div class="timeout-success"><h5>Time-out Successful!</h5></div>
+			</div> 
+			<div class="col-md-12 green center-align light-green darken-1 add-success-container">
+				<div class="add-success"><h5>Add Successfull!</h5></div>
+			</div> 
+
+			<div class="nav-right z-depth-1">
+				<div class="company-logo"><img src="img/propelrrlogo.png" style="border:1px solid #e0e0e0; border-radius:50%";></div>
+					<div class="rightpanel">	
+						<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+							<div class="widget-subtitle plugin-date">Loading...</div>
+						</div>
+						<a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a>
+						
+						<div class="chip timed-in">Timed-in</div>
+						<div class="chip timed-out">Timed-out</div>	
+					</div>
+				
+				<div class="clr"></div>
+
+				<div class="collection emp-nav">
+					<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+					<a href="profile2.html" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+					<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
+				</div>
+
+				<div class="collection admin-nav">
+					<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
+					<a href="manage-employees.html" class="collection-item active"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+				</div>
+
+				<div class="collection logout-nav">
+					<a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+				</div>
 			</div>
-		</div>
 
-		<!-- Dropdown Structure -->
-				  <ul id='dropdown1' class='dropdown-content dd1'>
-				    <li><a href="#!">Employee</a></li>
-				    <li class="divider"></li>
-				    <li><a href="#!">Position</a></li>
-				    <li class="divider"></li>
-				    <li><a href="#!">Department</a></li>
-				  </ul>
-			<!-- End of DS -->
+		<div class="page-content">
+			<div class="col-md-12 light-blue darken-1 heading z-depth-1">
+				<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+				<div class="top-nav">
+					<h3>Employees</h3>
+					<a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">Export</a>
+				</div>
+			</div>
 
-		<div class="col-md-9 content">
-		<table class="bordered highlight emp-list">
+<div id="exportchoice" class="modal">
+    <div class="modal-content">
+      <h4>Export</h4>
+
+      <p>Choose entity:</p>
+      <form action="#">
+	      <input name="group1" type="radio" id="all-emp"/>
+	      <label for="all-emp" class="lbl-info">All Employees</label>
+
+	       <input name="group1" type="radio" id="select-dept"/>
+	      <label for="select-dept" class="lbl-info">Select by Department</label>
+	       
+	      <div class="selectDept">
+	      	<select>
+	      	<option value="" disabled selected>Choose your department</option>
+		      	<option value="1">Corporate</option>
+		      	<option value="2">Developer</option>
+		      	<option value="3">SEO</option>
+		      	<option value="4">Content</option>
+		      	<option value="5">Creative</option>
+	      	</select>
+	      </div>
+      </form>
+
+      <p>Choose file/s to export:</p>
+      <form action="#" class="cbox-file">
+      	<input type="checkbox" id="profile" />
+      	<label for="profile" class="lbl-info">Profile</label>
+      	<input type="checkbox" id="contact" />
+      	<label for="contact" class="lbl-info">Telephone/Cellphone</label>
+      	<input type="checkbox" id="govt" />
+      	<label for="govt" class="lbl-info">SSS/BIR/PhilHealth</label>
+      	<input type="checkbox" id="logs" />
+      	<label for="logs" class="lbl-info">Time-In/Time-Out Logs</label>
+
+
+      </form>
+    </div>
+    <div class="modal-footer">
+    <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+     <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat btn-exportfiles">Export</a>
+      
+    </div>
+  </div>
+		<div class="col-md-12 content">
+			
+				<table class="bordered highlight emp-list">
 					<thead>
 				          <tr>
 				              <th data-field="id">Employee Number</th>
@@ -67,96 +127,309 @@
 				              <th data-field="price">Department</th>
 				              <th data-field="price">Position</th>
 				              <th data-field="price">Status</th>
+				              <th data-field="price">Last Timed-In / Date</th>
 				          </tr>
 				    </thead>
 
-				     <tbody>
-				          <tr>
-				            <td>001</td>
-				            <td>Dexter Loor</td>
-				            <td>Developer Department</td>
-				            <td>Senior Web Software Developer</td>
-				            <td>Regular</td>
-				          </tr>
-				          <tr>
+					<tbody>
+						<tr onclick="location.href='profile2.html'">
+							<td>001</td>
+							<td>Dexter Loor</td>
+							<td>Developer Department</td>
+							<td>Senior Web Software Developer</td>
+							<td>Regular</td>
+							 <td>10:30 AM 08/03/2016</td>
+						</tr>
+				        <tr>
 				           	<td>002</td>
 				            <td>Jarniel Cataluna</td>
 				            <td>Developer Department</td>
 				            <td>Junior Web Software Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				            <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				       		<td>003</td>
 				            <td>Elwin Dela Cruz</td>
 				            <td>Developer Department</td>
 				            <td>Front-end Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				            <td>001</td>
 				            <td>Dexter Loor</td>
 				            <td>Developer Department</td>
 				            <td>Senior Web Software Developer</td>
 				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
 				          </tr>
-				          <tr>
+				        <tr>
 				           	<td>002</td>
 				            <td>Jarniel Cataluna</td>
 				            <td>Developer Department</td>
 				            <td>Junior Web Software Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				       		<td>003</td>
 				            <td>Elwin Dela Cruz</td>
 				            <td>Developer Department</td>
 				            <td>Front-end Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				            <td>001</td>
 				            <td>Dexter Loor</td>
 				            <td>Developer Department</td>
 				            <td>Senior Web Software Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				           	<td>002</td>
 				            <td>Jarniel Cataluna</td>
 				            <td>Developer Department</td>
 				            <td>Junior Web Software Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				          <tr>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
 				       		<td>003</td>
 				            <td>Elwin Dela Cruz</td>
 				            <td>Developer Department</td>
 				            <td>Front-end Developer</td>
 				            <td>Regular</td>
-				          </tr>
-				      </tbody>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				            <td>001</td>
+				            <td>Dexter Loor</td>
+				            <td>Developer Department</td>
+				            <td>Senior Web Software Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				           	<td>002</td>
+				            <td>Jarniel Cataluna</td>
+				            <td>Developer Department</td>
+				            <td>Junior Web Software Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				       		<td>003</td>
+				            <td>Elwin Dela Cruz</td>
+				            <td>Developer Department</td>
+				            <td>Front-end Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				            <td>001</td>
+				            <td>Dexter Loor</td>
+				            <td>Developer Department</td>
+				            <td>Senior Web Software Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				           	<td>002</td>
+				            <td>Jarniel Cataluna</td>
+				            <td>Developer Department</td>
+				            <td>Junior Web Software Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				        <tr>
+				       		<td>003</td>
+				            <td>Elwin Dela Cruz</td>
+				            <td>Developer Department</td>
+				            <td>Front-end Developer</td>
+				            <td>Regular</td>
+				             <td>10:30 AM 08/03/2016</td>
+				        </tr>
+				    </tbody>
 				</table>
+			      		
+		</div>
+	</div>
+</div>
+
+	<div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+		<a class="btn-floating btn-large red"><i class="material-icons">add</i></a>
+			<ul class="add">
+				<li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
+				<li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
+				<li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
+			</ul>
+	</div>
+
+	<div id="modal-emp" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Employee</h4>
+		<div class="profile-data">	
+			<div class="chip required-field">required field!</div>
+				<p>Employee #<input placeholder="type here..." id="profile" type="text" class="input-field"></p>
+				<p>First Name<input placeholder="type here..." id="fname" type="text" class="input-field"></p>
+				<p>Last Name<input placeholder="type here..." id="lname" type="text" class="input-field"></p>
 				
+				<p>Department</p>	
+				<div class="select-wrapper"><span class="caret">▼</span>
+					<select class="initialized emp-dept">
+						<option value="" disabled="" selected="">Select Department</option>
+						<option value="1">Corporate</option>
+						<option value="2">Developer</option>
+						<option value="3">SEO</option>
+						<option value="4">Content</option>
+						<option value="5">Creative</option>
+	                </select>
+                </div>
+
+				
+				<p>Position</p>
+					<div class="select-wrapper"><span class="caret">▼</span>
+					<select class="initialized emp-positions">
+						<option value="" disabled="" selected="">Select Position</option>
+						<option value="1">President/CEO</option>
+						<option value="2">Vice President</option>
+						<option value="3">Web Software Engineer</option>
+						<option value="4">Senior SEO Specialist</option>
+						<option value="5">Content Strategist</option>
+						<option value="6">Social Media Specialist</option>
+						<option value="7">SEO Specialist</option>
+						<option value="8">Digital Marketing Assistant</option>
+						<option value="9">Front-end Developer</option>
+						<option value="10">Creative Director</option>
+						<option value="11">Senior Graphic Artist</option>
+						<option value="12">Graphic Artist</option>
+						<option value="13">Graphic Artist</option>
+						<option value="14">Company Driver</option>
+						<option value="12">Maintenance Personnel</option>
+	                </select>
+                </div>
+
+				
+				<p>Employment Status</p>
+					<div class="select-wrapper"><span class="caret">▼</span>
+					<select class="initialized emp-status">
+						<option value="" disabled="" selected="">Select Status</option>
+						<option value="1">Full-time</option>
+						<option value="2">Part-time</option>
+						<option value="3">Contractual</option>
+						<option value="4">Provisionary</option>
+						<option value="5">Home-based</option>
+						<option value="6">Intern</option>
+	                </select>
+                </div>
+
+
+				
+				<p>Company Email<input placeholder="type here..." id="comEmail" type="text" class="input-field"></p>
+				<p>Telephone #<input placeholder="type here..." id="telPhone" type="text" class="input-field"></p>
+				<p>Cellphone #<input placeholder="type here..." id="celPhone" type="text" class="input-field"></p>
+				<p>Birthdate<input id="birthdate" class="birth-date" placeholder="Select date"></p>
+				<p>Address<input placeholder="type here..." id="address" type="text" class="input-field"></p>
+				<p>SSS<input placeholder="type here..." id="sssnum" type="text" class="input-field"></p>
+				<p>BIR<input placeholder="type here..." id="birnum" type="text" class="input-field"></p>
+				<p>PhilHealth<input placeholder="type here..." id="phHealth" type="text" class="input-field"></p>
+				<form action="#" id="upload-photo">
+				    <div class="file-field input-field">
+				      <div class="btn orange btn-uploadphoto">
+				        <span>Upload</span>
+				        <input type="file">
+				      </div>
+				      <div class="file-path-wrapper">
+				        <input class="file-path validate" type="text">
+				        <p class="upload-pic">(.jpeg, .jpg, .png)</p>
+				      </div>
+				    </div>
+			  	</form>
+			</div>
+		</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action waves-effect waves-green btn-flat btn-add-emp">Add</a>
+				<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel-input">Cancel</a>
+			</div>
 		</div>
 
-		<!-- <div class="time-in-container"></div> -->
+		<div id="modal-pos" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<h4>Position</h4>
+				<input placeholder="type position here..." id="input-position" type="text">
+				<div class="chip required-field">
+					required field!
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action waves-effect waves-green btn-flat btn-add-pos">Add</a>
+				<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel-input">Cancel</a>
+			</div>
+		</div>
 
-		<!-- <div class="time-in center-align">
-			<div class="intro"><h1>Good Morning!</h1></div>
-			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
-		</div> -->
-	</div>
-	</div>
-
+		<div id="modal-dept" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<h4>Department</h4>
+				<input placeholder="type department here..." id="input-department" type="text" >
+				<div class="chip required-field">
+					required field!
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action waves-effect waves-green btn-flat btn-add-dept">Add</a>
+				<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat btn-cancel-input">Cancel</a>
+			</div>
+		</div>
 	</section>
 </section>
+
+		<div class="timeout-container">
+	<div class="timeout center-align">
+		<div class="valign-wrapper">
+			<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+				<div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+					<div class="widget-subtitle plugin-date">Loading...</div>
+				</div>
+					<p class="confirm-timeout">Are you sure you want to time-out?</p>
+				<div class="btn-block">
+					<a class="waves-effect waves-light green btn-flat btn-large btn-yes">Yes</a>
+					<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="logout-container">
+	<div class="logout center-align">
+		<div class="valign-wrapper">
+			<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+				<p class="confirm-logout">Are you sure you want to log-out?</p>
+				<div class="btn-block">
+					<a class="waves-effect waves-light green btn-flat btn-large btn-yes-logout" href="login.html">Yes</a>
+					<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <footer></footer>
+
 <script src="js/jquery.min.js"></script>
 <script src="js/html5.js"></script>
 <script src="js/modernizr-2.8.3.min.js"></script>
-<script type="text/javascript" src="js/materialize.js"></script>
+<script type="text/javascript" src="js/plugins/bootstrap/bootstrap.min.js"></script>  
+<script src="js/materialize.js"></script>
 
+<script type="text/javascript" src="js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
 
+<script type="text/javascript" src="js/plugins.js"></script> 
 <script type="text/javascript" src="js/customscript.js"></script>
 </body>
 </html>

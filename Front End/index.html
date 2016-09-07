@@ -1,67 +1,216 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="no-js" lang="">
 <head>
-	<title>Propelrr Online Login System</title>
-	<!-- START META -->
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<!-- END META -->
-	<!-- START CSS -->
-	<link rel="stylesheet" href="css/style.css" media="all"/>
-	<link rel="stylesheet" href="sass/_main.scss" media="all"/>
+
+	<title>Propelrr Log-in System | Profile</title>
+
 	<link rel="stylesheet" href="css/fullcalendar/fullcalendar.css" media="all"/>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<!-- END CSS -->
+	<link rel="stylesheet" href="css/style.css" media="all"/>
 </head>
 
 <body>
-	<!-- START PAGE CONTENT -->
-	<section id="main-container">
-		<header>
-		</header>
-		<section id="main-wrapper">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
-						<div class="timein-success"><h5>Time-in Successful!</h5></div>
-					</div>
-					<div class="col-md-3 nav-right z-depth-1">
-						<div class="company-logo"><a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a></div>
-						<div class="collection emp-nav">
-							<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
-							<a href="#!" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
-							<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
-							<a href="#!" class="collection-item"><i class="material-icons nav-icon">input</i> Log out</a>
+<section id="main-container">
+	<header>
+	</header>
+
+	<section id="main-wrapper">
+		<div class="container-fluid">
+		<div class="row">
+
+			<div class="col-md-12 green center-align timein-notif-container light-green darken-1 close-alert">
+				<div class="timein-success"><h5>Time-in Successful!</h5></div>
+			</div> 
+
+			<div class="col-md-12 green center-align timeout-notif-container light-green darken-1 close-alert">
+				<div class="timeout-success"><h5>Time-out Successful!</h5></div>
+			</div>                                                                                           
+
+			<div class="nav-right z-depth-1">
+				<div class="company-logo"><img src="img/propelrrlogo.png"></div>
+					<div class="rightpanel">	
+						<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+							<div class="widget-subtitle plugin-date">Loading...</div>
 						</div>
-						<div class="collection admin-nav">
-							<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
-							<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+						<a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a>
+					
+					<div class="chip timed-in">Timed-in</div>
+					<div class="chip timed-out">Timed-out</div>	
+				</div>
+				
+				<div class="clr"></div>
+
+			
+				<div class="collection emp-nav">
+					<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+					<a href="profile2.html" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+					<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
+					
+				</div>
+				
+				
+				<div class="collection admin-nav">
+					<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
+					<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+				</div>
+				
+
+				<div class="collection logout-nav">
+					<a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+				</div>
+			</div>
+
+		<div class="page-content">
+	  		<div class="col-md-12 light-blue darken-1 heading z-depth-1">
+	  		<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+				<h3 class="center-align"><div class="widget-subtitle plugin-date">Loading...</div></h3>
+			</div>
+
+				<div class="col-md-12 content">
+					<!-- <div class="row"> -->
+						<div class="col-md-12">	
+							<div id="alert_holder"></div>
+							<div class="modal-trigger calendar" href="#daily-agenda">                                
+								<div id="calendar" class="modal-trigger" href="#daily-agenda"></div>                            
+							</div>
 						</div>
+				</div>
+		</div>
+
+
+		<!-- Modal -->
+		<div id="daily_agenda" class="modal modal-fixed-footer">
+				
+			<div class="modal-content">
+				<h4>Daily Agenda | <div class="widget-subtitle plugin-date" style="display:inline;">Loading...</div> </h4>
+				<ul class="collection agenda-list">
+						<li class="collection-item avatar">
+							<i class="material-icons circle">perm_identity</i>
+							<span class="title">Mitchelle Viray</span>
+							<p>Meeting at 3PM</p>
+						</li>
+
+						<li class="collection-item avatar">
+							<i class="material-icons circle">perm_identity</i>
+							<span class="title">Dexter Loor</span>
+							<p>On vacation-leave</p>
+						</li>
+				</ul>
+				<div class="agenda-buttons">
+					<a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
+					<a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
+				</div>
+
+				<div class="form-reqmeeting">
+					<form id="form-meeting" action="" method="post">
+						<div class="input-field">
+							<input id="meeting" placeholder="Type your message here...">
+						</div>
+						<input class="waves-effect waves-light btn amber btn-submitmeeting" type="submit" name="" value="Submit">
+					</form>
+					<div class="chip required-field">
+						required field!
 					</div>
-					<div class="col-md-9 light-blue darken-1 heading z-depth-1">
-						<h3 class="center-align">June 23, 2016 Thursday</h3>
+					<div class="chip sent">
+						sent!
 					</div>
-					<div class="col-md-9 content">
+
+				</div>
+
+
+				<div class="form-reqleave">
+					<div class="input-field">
+						<input id="start-date" type="date"  placeholder="Start Date">
+						<input id="end-date" type="date"  placeholder="End Date">
+						<textarea id="reason-leave" class="materialize-textarea" placeholder="Reason...."></textarea>
 					</div>
-					<div class="time-in-container"></div>
-					<div class="time-in center-align">
-						<div class="intro"><h1>Good Morning!</h1></div>
-						<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+					<a class="waves-effect waves-light btn amber btn-submitleave">Sumbit</a>
+					<div class="chip required-field">
+						required field!
+					</div>
+					<div class="chip sent">
+						sent!
 					</div>
 				</div>
 			</div>
-		</section>
-	</section>
-	<footer></footer>
-	<!-- END PAGE CONTENT -->
-	<!-- START SCRIPT -->
-	<script src="js/jquery.min.js"></script>
-	<script src="js/html5.js"></script>
-	<script src="js/modernizr-2.8.3.min.js"></script>
-	<script type="text/javascript" src="js/customscript.js"></script>
-	<!-- END SCRIPT -->
-</body>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat close-modal-agenda">Close</a>
+			</div>
 
+		</div>
+		<!-- End of Modal -->
+
+	</div>
+	</div>
+
+	</section>
+</section>
+
+		<div class="time-in-container">
+			<div class="time-in center-align">
+				<div class="valign-wrapper">
+					
+			        <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+			        	<div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+						<div class="widget-subtitle plugin-date">Loading...</div></div>
+						<p class="confirm-timein">Good Morning!</p>
+						<div class="btn-block">
+							<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="timeout-container">
+			<div class="timeout center-align">
+				<div class="valign-wrapper">
+
+					<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+					<div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+						<div class="widget-subtitle plugin-date">Loading...</div></div>
+						<p class="confirm-timeout">Are you sure you want to time-out?</p>
+						<input id="confirmpw-timeout" type="password" placeholder="Enter password...">
+
+						<div class="btn-block">
+							<a class="waves-effect waves-light green btn-flat btn-large btn-yes">Yes</a>
+							<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="logout-container">
+		<div class="logout center-align">
+			<div class="valign-wrapper">
+
+				<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+					<p class="confirm-logout">Are you sure you want to log-out?</p>
+					<div class="btn-block">
+						<a class="waves-effect waves-light green btn-flat btn-large btn-yes-logout" href="login.html">Yes</a>
+						<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+
+
+<footer></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/html5.js"></script>
+<script src="js/modernizr-2.8.3.min.js"></script>
+<script src="js/materialize.js"></script>
+<script src="js/script.js"></script>
+<script type="text/javascript" src="js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="js/plugins/bootstrap/bootstrap.min.js"></script>  
+
+<script type="text/javascript" src="js/plugins.js"></script> 
+<script type="text/javascript" src="js/customscript.js"></script>
+</body>
 </html>

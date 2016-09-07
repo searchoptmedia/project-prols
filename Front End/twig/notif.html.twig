@@ -1,0 +1,155 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Propelrr Log-in System| Home</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="{{asset('css/style.css')}}" media="all"/>
+
+</head>
+<body>
+<section id="main-container">
+	<header>
+	</header>
+
+	<section id="main-wrapper">
+		<div class="container-fluid">
+		<div class="row">
+
+			<div class="col-md-12 green center-align timein-notif-container light-green darken-1">
+				<div class="timein-success"><h5>Time-in Successful!</h5></div>
+			</div> 
+
+			<div class="col-md-12 green center-align timeout-notif-container light-green darken-1">
+				<div class="timeout-success"><h5>Time-out Successful!</h5></div>
+			</div>                                                                                           
+
+			<div class="nav-right z-depth-1">
+				<div class="company-logo"><img src="img/propelrrlogo.png" style="border:1px solid #e0e0e0; border-radius:50%";></div>
+				<div class="rightpanel">	
+					<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+						<div class="widget-subtitle plugin-date">Loading...</div>
+					</div>
+					<a class="waves-effect waves-light btn-flat red btn-large btn-timeout"><i class="material-icons left">query_builder</i>Time Out</a>
+					
+					<div class="chip timed-in">
+						Timed-in
+					</div>
+					<div class="chip timed-out">
+						Timed-out
+					</div>
+						
+				</div>
+				
+				<div class="clr"></div>
+
+			
+				
+				<div class="collection emp-nav">
+					<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
+					<a href="profile2.html" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+					<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
+					
+				</div>
+
+				<div class="collection admin-nav">
+					<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
+					<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
+				</div>
+
+				<div class="collection logout-nav" style="top:350px">
+					<a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+				</div>
+			</div>
+
+		<div class="page-content">
+		  	<div class="col-md-12 light-blue darken-1 heading z-depth-1">
+		  		<div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+				<h3 class="center-align">Notifications</h3>
+			</div>
+
+			<div class="col-md-12 content">
+				<!-- <div class="row" style="margin-left:5px;"> -->
+					<ul class="collection notif-list">
+						<li class="collection-item avatar">
+						<i class="material-icons circle">perm_identity</i>
+						<p>Mitchelle Viray accepted your requested leave</p>
+						</li>
+
+						<li class="collection-item avatar">
+						<i class="material-icons circle">perm_identity</i>
+						<p>Dexter Loor added a meeting: "Tech team - meeting at 4pm"</p>
+						</li>
+					</ul>
+				<!-- </div>  -->          		
+			</div>
+		</div>
+
+		<!-- <div class="time-in-container"></div>
+
+		<div class="time-in center-align">
+			<div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+	        <div class="widget-subtitle plugin-date">Loading...</div>
+	        </div>
+			<p class="confirm-timein">Good Morning!</p>
+			<a class="waves-effect waves-light green btn-flat btn-large btn-timein"><i class="material-icons left icon-timein">query_builder</i>Time in</a>
+		</div> -->
+
+		<div class="timeout-container">
+			<div class="timeout center-align">
+				<div class="valign-wrapper">
+
+					<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+					<div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+						<div class="widget-subtitle plugin-date">Loading...</div></div>
+						<p class="confirm-timeout">Are you sure you want to time-out?</p>
+						<div class="btn-block">
+							<a class="waves-effect waves-light green btn-flat btn-large btn-yes">	
+							{% if timename == false %}
+
+								Yes</a>
+
+							{% endif %}
+							<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+
+	</section>
+</section>
+
+<div class="logout-container">
+		<div class="logout center-align">
+			<div class="valign-wrapper">
+
+				<div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+					<p class="confirm-logout">Are you sure you want to log-out?</p>
+					<div class="btn-block">
+						<a class="waves-effect waves-light green btn-flat btn-large btn-yes-logout" href="login.html">Yes</a>
+						<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<footer></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/html5.js"></script>
+<script src="js/modernizr-2.8.3.min.js"></script>
+<script src="js/materialize.js"></script>
+
+<script type="text/javascript" src="js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
+<script type="text/javascript" src="js/plugins/bootstrap/bootstrap.min.js"></script>  
+
+<script type="text/javascript" src="js/plugins.js"></script> 
+<script type="text/javascript" src="js/customscript.js"></script>
+</body>
+</html>
