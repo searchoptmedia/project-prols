@@ -44,15 +44,14 @@
                             <div class="col-lg-4 col-md-6">
                                 <div class="empinfo-middle empinfo-left">
                                     <p>
-                                        <span class="p-lbl"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
-                                        <span class="p-dta">
-                                            <span id="addr" class="editable" data-add="{{ profileId }}">{{ propelrr.address }}</span>
-                                            {# <input disabled value="{{ propelrr.address }}" data-add="{{ profileId }}" type="text" id="addr" class="editable"> #}
-                                            <i class="material-icons edit-pdata">mode_edit</i>
+                                        <span class="p-lbl"><i class="fa fa-map-marker" aria-hidden="true"></i></span><span class="p-dta">{#<input disabled value="{{ propelrr.address }}" data-add="{{ profileId }}" type="text" id="addr" class="editable"><i class="material-icons edit-pdata">mode_edit</i>#}
+                                            <input type="text" id="addrinput" class="editable" style="position: absolute;"/>
+                                            <span id="addr" >{{ propelrr.address }}</span><i class="material-icons edit-pdata addr-pdata">mode_edit</i>
                                         </span>
                                     </p>
                                     <p><span class="p-lbl"><i class="fa fa-calendar" aria-hidden="true"></i></span><span class="p-dta">{{ propelrr.bday | date('M d Y') }}</span></p>
-                                    <p><span class="p-lbl"><i class="fa fa-mobile" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ conMobile }}" data-cell="{{ conMobileId }}" type="text" id="cel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
+                                    <p><span class="p-lbl"><i class="fa fa-mobile" aria-hidden="true"></i></span><span class="p-dta">
+                                            <input disabled value="{{ conMobile }}" data-cell="{{ conMobileId }}" type="text" id="cel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
                                     <p><span class="p-lbl"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="p-dta"><input disabled value="{{ conTele }}" data-tel="{{ conTeleId }}" type="text" id="tel-p" class="editable"><i class="material-icons edit-pdata">mode_edit</i></span></p>
                                 </div>
                             </div>
@@ -236,7 +235,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             var profileId, telId, mobileId;
-            var addresscontainer  = $("#addr").val();
+            var addresscontainer  = $("#addr").html();
             var telcontainer  = $("#tel-p").val();
             var celcontainer  = $("#cel-p").val();
             $('.btn-edit-profile').click(function(e){
@@ -257,20 +256,25 @@
                 // $(this).parent('.collection-item').find('.btn-edit').css({'display':'none'})
             });
 
+            $('.addr-pdata').click(function(e){
+                e.preventDefault();
+                $('#addr').html('');
+            });
+
+
             $('.btn-save-profile').click(function(e){
                 e.preventDefault();
                 $validate = false;
-
                 $('.btn-edit-profile').css({'display' : 'none'});
 
-                if( !$("#addr").val() == '') {
+                if( !$("#addrinput").val() == '') {
                     $validate = true;
                     $("#addr").closest('.p-dta').find('.btn-edit').css({'display' : 'block'});
                     $("#addr").closest('.p-dta').find('.required-field').css({'display' : 'none'})
                 } else {
-                    $("#addr").closest('.p-dta').find('input[type=text]').css({'border-bottom-color' : '#f44336'});
+                    $("#addrinput").closest('.p-dta').find('input[type=text]').css({'border-bottom-color' : '#f44336'});
                     $("#addr").closest('.p-dta').find('.btn-edit').css({'display':'none'});
-                    $("#addr").closest('.p-dta').find('input').val('').focus();
+                    $("#addrinput").closest('.p-dta').find('input').val('').focus();
                     return;
                 }
 
@@ -298,10 +302,10 @@
                     return;
                 }
 
-                var addressinput, telephoneinput, cellphoneinput
+                var telephoneinput, cellphoneinput, addressinput
 
-                if(!$("#cel-p").val() == '' && $validate == true && !$("#tel-p").val() == '' && !$("#addr").val() == '') {
-                    addressinput    = $("#addr").val();
+                if(!$("#cel-p").val() == '' && $validate == true && !$("#tel-p").val() == '') {
+                    addressinput    = $("#addrinput").val();
                     telephoneinput  = $("#tel-p").val();
                     cellphoneinput  = $("#cel-p").val();
                     $('.loader-notif').show();
@@ -322,10 +326,9 @@
                     setTimeout(function(){
                         $('.update-profile-notif').css({'top' : '-55px'});
                     }, 5000);
-
-                    addresscontainer  = $("#addr").val();
                     telcontainer  = $("#tel-p").val();
                     celcontainer  = $("#cel-p").val();
+                    addresscontainer = $("#addrinput").val();
                     console.log('update success');
                 } else {
                     e.preventDefault();
@@ -335,7 +338,8 @@
 
             $('.btn-cancel-profile').click(function(e){
                 e.preventDefault();
-                $("#addr").val(addresscontainer);
+                $("#addr").html(addresscontainer);
+                $("#addrinput").val('');
                 $("#tel-p").val(telcontainer);
                 $("#cel-p").val(celcontainer);
                 $('.profile-container2 input').attr("disabled", true);
@@ -343,7 +347,6 @@
                 $('.btn-save-profile').css({'display' : 'none'});
                 $('.btn-cancel-profile').css({'display' : 'none'});
                 $('.btn-edit-profile').css({'display' : 'inline-block'});
-
             });
 
             $('.initialized').material_select();

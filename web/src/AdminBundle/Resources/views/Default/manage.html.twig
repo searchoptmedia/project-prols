@@ -1,7 +1,6 @@
 {% extends 'AdminBundle:Default:index.html.twig' %}
 {% block title %}<title>Propelrr Log-in System| Manage</title>{% endblock %}
 {% block body %}
-
     {{ notif.add_notif }}
     {{ notif.notif_loader }}
 <section id="main-container">
@@ -46,20 +45,19 @@
                         </div>
                     </div>
                 </div>
-
-        {#<div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">#}
-            {#<a class="btn-floating btn-large red">#}
-            {#<i class="material-icons">add</i>#}
-            {#</a>#}
-            {#<ul class="add">#}
-                {#<li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>#}
-                {#<li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>#}
-                {#<li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>#}
-            {#</ul>#}
-        {#</div>#}
+        <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+            <a class="btn-floating btn-large red">
+            <i class="material-icons">add</i>
+            </a>
+            <ul class="add">
+                <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
+                <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
+                <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
+            </ul>
+        </div>
 
         <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
-            <form action="{{ path('add_employee') }}" id="addemployeeform" method="post">
+            <form id="addemployeeform" method="post">
             <div class="modal-content add-employee-modal" >
                 <h4>Employee</h4>
                 <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
@@ -121,6 +119,9 @@
                 <div class="chip password-not-match" style="display: none;">
                 Password does not match
                 </div>
+                <div class="chip username-used" style="display: none;">
+                Username already used
+                </div>
                 <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
                 <button type="submit" href="#!" class="waves-effect waves-light orange custombtn btn-flat addemp" style="margin-right:5px;">Add</button>
             </div>
@@ -133,6 +134,9 @@
                 <input placeholder="type position here..." id="input-position" type="text">
                 <div class="chip required-field">
                     required field!
+                </div>
+                <div class="chip position-used" style="display: none;">
+                    Position already added
                 </div>
             </div>
             <div class="modal-footer">
@@ -149,11 +153,13 @@
                 <div class="chip required-field">
                     required field!
                 </div>
+                <div class="chip department-used" style="display: none;">
+                    Department already added
+                </div>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
                 <a href="#!" class="waves-effect waves-light orange custombtn btn-flat adddept" style="margin-right: 5px;">Add</a>
-
             </div>
         </div>
             <div id="exportchoice" class="modal">
@@ -192,7 +198,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
     var picker = new Pikaday({field: $('#datepicker')[0] });
-
+    picker.setDate('1990-01-01');
     $('select').material_select('destroy');
 
     $('.modal-export').click(function(){
@@ -226,12 +232,15 @@ $(document).ready(function(){
         $('#input-position').val('');
         $('.required-field').hide();
         $('.modal-footer').show();
+        $('.position-used').hide();
+
     });
 
     $('.btn-dept').click(function(){
         $('#input-department').val('');
         $('.required-field').hide();
         $('.modal-footer').show();
+        $('.department-used').hide();
     });
 
     $('.btn-emp').click(function(){
@@ -251,7 +260,11 @@ $(document).ready(function(){
         $('#celnum').val('');
         $('.missing-input').hide();
         $('.password-not-match').hide();
+        $('.username-used').hide();
+        $('.modal-footer').show();
     });
+
+
     var usernameinput, passwordinput, conpasswordinput, empnumber, fnameinput, lnameinput, departmentinput, positioninput, statusinput,
             emailinput, telnuminput, celnuminput, addressinput, bdayinput;
 
@@ -270,41 +283,92 @@ $(document).ready(function(){
         bdayinput           = $('.bday').val();
         telnuminput         = $('#telnum').val();
         celnuminput         = $('#celnum').val();
+
+        {% for usedUsers in allusers %}
+        var dbuser = '{{ usedUsers.Username }}';
+        var dbemail = '{{ usedUsers.Email }}';
+        var dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
+        if(usernameinput == dbuser){
+                $('.username-used').show();
+                $('.username-used').html('Username already used')
+                $('#username').css({'border-color': 'red'});
+                $('.missing-input').hide();
+                $('.password-not-match').hide();
+                document.getElementById("username").focus();
+                setTimeout(function(){
+                $('#username').css({'border-color' : '#9e9e9e'});
+                },1500);
+                return false;
+        }
+        if(emailinput == dbemail){
+            $('.username-used').show()
+            $('.username-used').html('Email already used')
+            $('.missing-input').hide();
+            $('.password-not-match').hide();
+            $('#companyemail').css({'border-color' : 'red'});
+            document.getElementById("companyemail").focus();
+            setTimeout(function(){
+                $('#companyemail').css({'border-color' : '#9e9e9e'});
+            },1500);
+            return false;
+        }
+
+        if(empnumber != ''){
+            if(empnumber == dbempnum){
+                $('.username-used').show()
+                $('.username-used').html('Employee Number already used')
+                $('.missing-input').hide();
+                $('.password-not-match').hide();
+                $('#empnum').css({'border-color' : 'red'});
+                document.getElementById("empnum").focus();
+                setTimeout(function(){
+                    $('#empnum').css({'border-color' : '#9e9e9e'});
+                },1500);
+                return false;
+            }
+        }
+        {% endfor %}
+
+        if(passwordinput != conpasswordinput){
+            $('.password-not-match').show();
+            $('.missing-input').hide();
+            $('.username-used').hide();
+            $('#password').css({'border-color' : 'red'});
+            document.getElementById("confirmpassword").focus();
+            $('#confirmpassword').css({'border-color' : 'red'});
+            setTimeout(function(){
+                $('#password').css({'border-color' : '#9e9e9e'});
+                $('#confirmpassword').css({'border-color' : '#9e9e9e'});
+            },1500);
+            return false;
+        }
         if(usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
         fnameinput == '' || lnameinput == '' || departmentinput == null || positioninput == null || statusinput == null || emailinput == '' ||
         addressinput == '' || bdayinput == ''){
-            if(usernameinput == ''){
-                $('#username').css({'border-color' : 'red'});
-                document.getElementById("username").focus();
-            }if(passwordinput == ''){
-                $('#password').css({'border-color' : 'red'});
-                document.getElementById("password").focus();
-            }if(conpasswordinput == ''){
-                $('#confirmpassword').css({'border-color' : 'red'});
-                document.getElementById("confirmpassword").focus();
-            }if(empnumber == ''){
-                $('#empnum').css({'border-color' : 'red'});
-                document.getElementById("empnum").focus();
-            }if(fnameinput == ''){
-                $('#fname').css({'border-color' : 'red'});
-                document.getElementById("fname").focus();
-            }if(lnameinput == ''){
-                $('#lname').css({'border-color' : 'red'});
-                document.getElementById("lname").focus();
-            }if(departmentinput == null){
-                $('.select-wrapper.emp-dept input.select-dropdown').css({'border-color' : 'red'});
-            }if(positioninput == null){
-                $('.select-wrapper.emp-positions input.select-dropdown').css({'border-color' : 'red'});
-            }if(statusinput == null){
-                $('.select-wrapper.emp-status input.select-dropdown').css({'border-color' : 'red'});
-            }if(emailinput == ''){
-                $('#companyemail').css({'border-color' : 'red'});
-                document.getElementById("companyemail").focus();
+            if(bdayinput == '') {
+                $('.bday').css({'border-color': 'red'});
             }if(addressinput == ''){
-                $('#address').css({'border-color' : 'red'});
-                document.getElementById("address").focus();
-            }if(bdayinput == ''){
-                $('.bday').css({'border-color' : 'red'});
+                $('#address').css({'border-color' : 'red'}).focus();
+            }if(emailinput == ''){
+                $('#companyemail').css({'border-color' : 'red'}).focus();
+            }if(statusinput == null){
+                $('.select-wrapper.emp-status input.select-dropdown').css({'border-color' : 'red'}).focus();
+            }if(positioninput == null){
+                $('.select-wrapper.emp-positions input.select-dropdown').css({'border-color' : 'red'}).focus();
+            }if(departmentinput == null) {
+                $('.select-wrapper.emp-dept input.select-dropdown').css({'border-color': 'red'}).focus();
+            }if(lnameinput == ''){
+                $('#lname').css({'border-color' : 'red'}).focus();
+            }if(fnameinput == ''){
+                $('#fname').css({'border-color' : 'red'}).focus();
+            }if(empnumber == ''){
+                $('#empnum').css({'border-color' : 'red'}).focus();
+            }if(conpasswordinput == ''){
+                $('#confirmpassword').css({'border-color' : 'red'}).focus();
+            }if(passwordinput == ''){
+                $('#password').css({'border-color' : 'red'}).focus();
+            }if(usernameinput == ''){
+                    $('#username').css({'border-color' : 'red'}).focus();
             }
             setTimeout(function(){
                 $('#username').css({'border-color' : '#9e9e9e'});
@@ -322,20 +386,10 @@ $(document).ready(function(){
             },1500);
             $('.missing-input').show();
             $('.password-not-match').hide();
+            $('.username-used').hide();
             return false;
         }
-        if(passwordinput != conpasswordinput){
-            $('.password-not-match').show();
-            $('.missing-input').hide();
-            $('#password').css({'border-color' : 'red'});
-            document.getElementById("confirmpassword").focus();
-            $('#confirmpassword').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('#password').css({'border-color' : '#9e9e9e'});
-                $('#confirmpassword').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return false;
-        }
+
         $('#modal-emp').closeModal();
         $('.add-emp-notif').css({'top' : '0px'});
         setTimeout(function(){
@@ -344,16 +398,31 @@ $(document).ready(function(){
         var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
         lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
         cellnum:celnuminput, telnum:telnuminput};
+        $('.loader-notif').show().css({'top' : '0px'});
         $.post('{{ path('add_employee') }}', input, function () {
-
+        }).always(function(data){
+            $('.loader-notif').hide().css({'top' : '-55px'});
         });
         return false;
-
     });
 
     $('.addpos').click(function(){
             inputfield = $('#input-position').val();
+        {% for usedPos in allpos %}
+        var dbpos = '{{ usedPos.PosNames }}';
+            if(inputfield == dbpos){
+                $('.position-used').show();
+                $('.required-field').hide();
+
+                $('#input-position').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#input-position').css({'border-color' : '#9e9e9e'});
+                },1500);
+                return;
+            }
+        {% endfor %}
         if(inputfield == ''){
+            $('.position-used').hide();
             $('#input-position').css({'border-color' : 'red'});
             $('.required-field').show();
             setTimeout(function(){
@@ -361,8 +430,7 @@ $(document).ready(function(){
             },1500);
             return;
         }
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
+        $('.loader-notif').show().css({'top' : '0px'});
         $.get("{{ path('add_position') }}" + inputfield,  function(data){
             console.log(data);
             $('.required-field').hide();
@@ -373,14 +441,27 @@ $(document).ready(function(){
                 $('.add-emp-notif').css({'top' : '-55px'});
             }, 2000);
             }).always(function(data){
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
-        });
+            $('.loader-notif').hide().css({'top' : '-55px'});
+            });
         });
 
     $('.adddept').click(function(){
         inputfield=$('#input-department').val();
+        {% for usedDept in alldept %}
+        var dbdept = '{{ usedDept.DeptNames }}';
+        if(inputfield == dbdept){
+            $('.department-used').show();
+            $('.required-field').hide();
+
+            $('#input-department').css({'border-color' : 'red'});
+            setTimeout(function(){
+                $('#input-department').css({'border-color' : '#9e9e9e'});
+            },1500);
+            return;
+        }
+        {% endfor %}
         if(inputfield == ''){
+            $('.department-used').hide();
             $('#input-department').css({'border-color' : 'red'});
             $('.required-field').show();
             setTimeout(function(){
@@ -388,11 +469,11 @@ $(document).ready(function(){
             },1500);
             return;
         }
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
+        $('.loader-notif').show().css({'top' : '0px'});
         $.get("{{ path('add_department') }}" + inputfield,  function(data){
             console.log(data);
             $('.required-field').hide();
+            $('.department-used').hide();
             $('#modal-dept').closeModal();
             $('.modal-footer').hide();
             $('.add-emp-notif').css({'top' : '0px'});
@@ -400,8 +481,7 @@ $(document).ready(function(){
                     $('.add-emp-notif').css({'top' : '-55px'});
                 }, 2000);
             }).always(function(data){
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
+            $('.loader-notif').hide().css({'top' : '-55px'});
             });
         });
 

@@ -840,6 +840,10 @@ class DefaultController extends Controller{
 			$requestcount = EmpRequestQuery::create()
 				->filterByStatus('Pending')
 				->find()->count();
+			
+			$AllUsers = EmpAccPeer::getAllUser();
+			$AllDepartments = ListDeptPeer::getAllDept();
+			$AllPositions = ListPosPeer::getAllPos();
 
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
@@ -864,7 +868,9 @@ class DefaultController extends Controller{
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
-
+			'allusers' => $AllUsers,
+			'alldept' => $AllDepartments,
+			'allpos' => $AllPositions,
         	));       
 		} 	
     }
@@ -991,7 +997,18 @@ class DefaultController extends Controller{
 
 		    date_default_timezone_set('Asia/Manila');
 		    $datetimetoday = date('Y-m-d H:i:s');
-	  		
+
+//			$AllUser = EmpAccPeer::getAllUser();
+//
+//			for ($ctr = 0; $ctr < sizeof($AllUser); $ctr++){
+//				$usedUsername = $AllUser[$ctr]->getUsername();
+//				if($usedUsername == $user){
+//					$response = array('Username already used');
+//					echo json_encode($response);
+//					exit;
+//				}
+//			}
+
 	  		//check if input is empty
 	    	if(!empty($empNum) && !empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
 	    		&& !empty($empDept) && !empty($empPos) && !empty($empPos) && !empty($empStatus) && !empty($user)
