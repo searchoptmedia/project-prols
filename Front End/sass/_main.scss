@@ -473,6 +473,15 @@ margin: 0;
 	padding: 15px;
 }
 
+
+.ve-list{
+	margin: 0px;
+	li{
+		display: inline-block;
+		margin: 0px 40px;
+	}
+}
+
 .ve-name, .ve-position{
 	margin:0px;
 }
@@ -491,8 +500,6 @@ margin: 0;
     padding: 0px 10px;
     // display:none;
 	}
-
-
 }
 
 .ve-img{
@@ -519,8 +526,12 @@ margin: 0;
 	img:hover{
 		cursor: pointer;
 	}
-	
+}
 
+.ve-desc{
+	a{
+		color: #000;
+	}
 }
 
 
@@ -566,16 +577,7 @@ margin: 0;
 //   opacity: 1;
 // }
 
-
-
-
-
-
-
 /*===END OF VIEW EMPLOYEES===*/
-
-
-
 
 .emp-info-wrap{
 	
@@ -1318,15 +1320,20 @@ span.badge.new{
 	font-size: 12px;
 }
 
-@media only screen and (max-width: 1200px){
+
+@media only screen and (max-width: 1300px){
 	.empinfo-right {
 		margin-top: 20px;
 	}
+
+	.ve-list li{
+		margin:0px 20px;
+	}
+
 }
 
 
 @media only screen and (max-width: 991px){
-
 
 	/*.nav-right{
 		width:300px;
@@ -1337,7 +1344,7 @@ span.badge.new{
 	}*/
 
 	.company-logo img {
-		width:70%;
+		width:40%;
 		height: auto;
 	}
 
@@ -1547,6 +1554,10 @@ span.badge.new{
 		text-align:center;
 	}
 
+	.ve-list li{
+		margin: 0px;
+	}
+
 }
 
 @media only screen and (min-width: 768px){
@@ -1564,6 +1575,8 @@ span.badge.new{
 		top: 40px;
 
 	}
+
+	
 }
 
 @media only screen and (max-width: 767px) {
@@ -1914,6 +1927,12 @@ span.badge.new{
 			left: 95%;
 		}
 	}
+
+	.ve-list li{
+		margin: 0px 25px;
+	}
+
+
 }
 
 

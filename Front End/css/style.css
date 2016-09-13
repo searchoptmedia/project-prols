@@ -8603,6 +8603,15 @@ margin: 0;
   padding: 15px;
 }
 
+.ve-list {
+  margin: 0px;
+}
+
+.ve-list li {
+  display: inline-block;
+  margin: 0px 40px;
+}
+
 .ve-name, .ve-position {
   margin: 0px;
 }
@@ -8644,6 +8653,10 @@ margin: 0;
 
 .ve-img img:hover {
   cursor: pointer;
+}
+
+.ve-desc a {
+  color: #000;
 }
 
 .ve-img .overlay {
@@ -9365,9 +9378,12 @@ span.badge.new {
   font-size: 12px;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1300px) {
   .empinfo-right {
     margin-top: 20px;
+  }
+  .ve-list li {
+    margin: 0px 20px;
   }
 }
 
@@ -9380,7 +9396,7 @@ span.badge.new {
 		margin-left:300px;
 	}*/
   .company-logo img {
-    width: 70%;
+    width: 40%;
     height: auto;
   }
   .collection a.collection-item {
@@ -9525,6 +9541,9 @@ span.badge.new {
     position: relative;
     padding-top: 0px;
     text-align: center;
+  }
+  .ve-list li {
+    margin: 0px;
   }
 }
 
@@ -9801,5 +9820,8 @@ span.badge.new {
   }
   .emp-tables .caret {
     left: 95%;
+  }
+  .ve-list li {
+    margin: 0px 25px;
   }
 }
