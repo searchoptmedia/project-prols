@@ -8588,6 +8588,19 @@ margin: 0;
 .btn-accept, .btn-decline {
   font-weight: 500;
   margin-left: 6px !important;
+  color: white;
+}
+
+.dropdown-content li {
+  min-height: 30px;
+}
+
+.dd1 li > a {
+  margin: 0px;
+}
+
+.dropdown-content li > a, .dropdown-content li > span {
+  line-height: 1;
 }
 
 /*===END OF VIEW REQUESTS===*/
@@ -9416,7 +9429,6 @@ span.badge.new {
     text-align: center;
   }
   .top-nav a {
-    top: 10px;
     float: none;
   }
   .btn-flat .materials-icon .res-menu {
@@ -9821,7 +9833,19 @@ span.badge.new {
   .emp-tables .caret {
     left: 95%;
   }
+  table {
+    margin: 0px;
+  }
   .ve-list li {
     margin: 0px 25px;
+  }
+  .dropdown-content li {
+    min-height: 30px;
+  }
+  .dd1 li > a {
+    margin: 0px;
+  }
+  .dropdown-content li > a, .dropdown-content li > span {
+    line-height: 1;
   }
 }
