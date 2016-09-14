@@ -9503,6 +9503,9 @@ span.badge.new {
     margin: 0px 0px;
     border-top: 1px solid #e7e7e7;
   }
+  table.responsive-table th {
+    text-align: left;
+  }
   table.responsive-table tr {
     padding: 0px 0px;
   }
@@ -9747,10 +9750,7 @@ span.badge.new {
     padding: 10px 16px 5px;
   }
   table {
-    width: 0px;
     max-width: 100%;
-    margin-left: 20px;
-    margin-right: 20px;
   }
   .clock2 {
     font-size: 20px;
@@ -9778,7 +9778,7 @@ span.badge.new {
     right: 180px;
   }
   .confirm-timeout, .confirm-logout {
-    font-size: 24px;
+    font-size: 20px;
   }
   .profile-info {
     border: none;
@@ -9846,9 +9846,6 @@ span.badge.new {
   .emp-tables .caret {
     left: 95%;
   }
-  table {
-    margin: 0px;
-  }
   .ve-list li {
     margin: 0px 25px;
   }
@@ -9860,5 +9857,8 @@ span.badge.new {
   }
   .dropdown-content li > a, .dropdown-content li > span {
     line-height: 1;
+  }
+  .timeout-container input {
+    width: 100%;
   }
 }

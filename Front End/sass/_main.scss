@@ -1485,6 +1485,9 @@ span.badge.new{
 		margin: 0px 0px;
 		border-top: 1px solid #e7e7e7;
 	}
+	table.responsive-table th{
+		text-align: left;
+	}
 
 	table.responsive-table tr{
 		padding: 0px 0px;
@@ -1833,10 +1836,7 @@ span.badge.new{
 	}
 
 	table{
-		width:0px;
 		max-width:100%;
-		margin-left:20px;
-		margin-right:20px;
 	}
 
 	.clock2{
@@ -1871,7 +1871,7 @@ span.badge.new{
 	}
 
 	.confirm-timeout, .confirm-logout{
-		font-size:24px;
+		font-size:20px;
 	}
 
 	.profile-info{
@@ -1960,9 +1960,7 @@ span.badge.new{
 		}
 	}
 
-	table{
-		margin: 0px;
-	}
+	
 
 
 	.ve-list li{
@@ -1979,6 +1977,12 @@ span.badge.new{
 
 	.dropdown-content li > a, .dropdown-content li > span{
 		line-height: 1;
+	}
+
+	.timeout-container{
+		input{
+			width: 100%;
+		}
 	}
 
 
