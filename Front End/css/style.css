@@ -9503,6 +9503,9 @@ span.badge.new {
     margin: 0px 0px;
     border-top: 1px solid #e7e7e7;
   }
+  table.responsive-table tr {
+    padding: 0px 0px;
+  }
   .profile-container2 {
     top: 0;
     left: 0;
@@ -9574,12 +9577,15 @@ span.badge.new {
 }
 
 @media only screen and (max-width: 767px) {
+  .main-logo {
+    width: 50%;
+  }
   .profile-image span {
     line-height: 100px;
     font-size: 48px;
   }
-  .top-nav {
-    padding-left: 35px;
+  .confirm-timein {
+    font-size: 40px;
   }
   .emp-photo.hidden-desktop {
     display: block;
@@ -9720,6 +9726,10 @@ span.badge.new {
   .content {
     padding: 0;
   }
+  .heading .center-align {
+    font-size: 18px;
+    margin-left: 30px;
+  }
   .heading h3 {
     font-size: 28px;
     xpadding-top: 40px;
@@ -9743,7 +9753,7 @@ span.badge.new {
     margin-right: 20px;
   }
   .clock2 {
-    font-size: 30px;
+    font-size: 20px;
   }
   #main-wrapper {
     position: relative;
@@ -9829,6 +9839,9 @@ span.badge.new {
     position: relative;
     top: 14px;
     left: 115px;
+  }
+  #modal-pos, #modal-dept {
+    height: 50%;
   }
   .emp-tables .caret {
     left: 95%;

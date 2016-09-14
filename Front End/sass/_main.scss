@@ -1486,6 +1486,10 @@ span.badge.new{
 		border-top: 1px solid #e7e7e7;
 	}
 
+	table.responsive-table tr{
+		padding: 0px 0px;
+	}
+
 
 
 	.profile-container2{
@@ -1591,14 +1595,22 @@ span.badge.new{
 
 @media only screen and (max-width: 767px) {
 
+	.main-logo{
+		width: 50%;
+	}
+
 	.profile-image span {
 		line-height: 100px;
     	font-size: 48px;
 	}
 
-	.top-nav {
-		padding-left: 35px;
+	.confirm-timein{
+		font-size: 40px;
 	}
+
+	// .top-nav {
+	// 	padding-left: 35px;
+	// }
 
 	.emp-photo.hidden-desktop {
 		display: block;
@@ -1791,11 +1803,17 @@ span.badge.new{
 	}
 
 
+	.heading{
+		.center-align{
+			font-size:18px;
+			margin-left:30px;
+		}
 
-	.heading h3{
+		h3{
 		font-size: 28px;
 		xpadding-top: 40px;
 
+		}
 	}
 
 	.btn-edit-profile{
@@ -1822,7 +1840,7 @@ span.badge.new{
 	}
 
 	.clock2{
-		font-size: 30px;
+		font-size: 20px;
 	}
 	#main-wrapper {
 		position: relative;
@@ -1931,6 +1949,10 @@ span.badge.new{
 		}
 	}
 
+	#modal-pos, #modal-dept{
+		height: 50%;
+	}
+
 	.emp-tables{
 
 		.caret{
@@ -1941,6 +1963,7 @@ span.badge.new{
 	table{
 		margin: 0px;
 	}
+
 
 	.ve-list li{
 		margin: 0px 25px;
