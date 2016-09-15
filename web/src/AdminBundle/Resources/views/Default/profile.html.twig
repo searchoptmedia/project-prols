@@ -238,6 +238,7 @@
             var addresscontainer  = $("#addr").html();
             var telcontainer  = $("#tel-p").val();
             var celcontainer  = $("#cel-p").val();
+
             $('.btn-edit-profile').click(function(e){
                 e.preventDefault();
                 mobileId = $('#cel-p').data('cell');
@@ -267,7 +268,7 @@
                 $validate = false;
                 $('.btn-edit-profile').css({'display' : 'none'});
 
-                if( !$("#addrinput").val() == '') {
+                if( !$("#addrinput").val() == '' || !$('#addr').html() == '') {
                     $validate = true;
                     $("#addr").closest('.p-dta').find('.btn-edit').css({'display' : 'block'});
                     $("#addr").closest('.p-dta').find('.required-field').css({'display' : 'none'})
@@ -306,6 +307,9 @@
 
                 if(!$("#cel-p").val() == '' && $validate == true && !$("#tel-p").val() == '') {
                     addressinput    = $("#addrinput").val();
+                    if(addressinput == ''){
+                        addressinput = $('#addr').html();
+                    }
                     telephoneinput  = $("#tel-p").val();
                     cellphoneinput  = $("#cel-p").val();
                     $('.loader-notif').show();
@@ -338,6 +342,7 @@
 
             $('.btn-cancel-profile').click(function(e){
                 e.preventDefault();
+                console.log()
                 $("#addr").html(addresscontainer);
                 $("#addrinput").val('');
                 $("#tel-p").val(telcontainer);
@@ -407,7 +412,6 @@
                 return false;
             });
             $('.modal-change').click(function(){
-                alert
                 $('#modal-changepw').css({'display' : 'block'});
                 $('.lean-overlay').css({'display' : 'block'});
                 $('#formchangedalert').hide();

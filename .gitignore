@@ -1,6 +1,3 @@
-/web/
-.idea
-/web/*
 .idea*
 /web/app/config/parameters.yml
 /web/app/cache/*

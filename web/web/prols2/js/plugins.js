@@ -484,17 +484,15 @@ $(function() {
             }
         }
     }();
-    
+
     var fullCalendar = function(){
-            
+
         var calendar = function(){
 
-            
-            
             if($("#calendar").length > 0){
-                
+
                 function prepare_external_list(){
-                    
+
                     $('#external-events .external-event').each(function() {
                             var eventObject = {title: $.trim($(this).text())};
 
@@ -504,11 +502,11 @@ $(function() {
                                     revert: true,
                                     revertDuration: 0
                             });
-                    });                    
-                    
+                    });
+
                 }
-                
-                
+
+
                 var date = new Date();
                 var d = date.getDate();
                 var m = date.getMonth();
@@ -517,6 +515,41 @@ $(function() {
                 prepare_external_list();
 
                 var calendar = $('#calendar').fullCalendar({
+                    events: '/addevent/acceptrequest',
+
+                    eventClick: function(calEvent){
+                    },
+
+                    dayClick: function(date){
+                        // console.log(moment(date).format('MM-DD-YYYY'));
+                        $('.agenda-list ul').remove();
+                        $(".agenda-list").append('<ul class="collection agenda-list"></ul>');
+
+                        $('#calendar').fullCalendar('clientEvents', function (event) {
+                            if (moment(date).format('MM-DD-YYYY') == moment(event.start).format('MM-DD-YYYY')){
+                                console.log(event.title);
+
+                                $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.title +'</span><p>'+ event.empname +'</p></li>');
+
+                                $('#head-title').html(event.title);
+                                $('#daterange').html(event.date);
+
+
+                            }
+                            if (moment(date).format('MM-DD-YYYY') == moment(event._end).format('MM-DD-YYYY')){
+                                console.log(event.title)
+                            }
+
+                        });
+
+                        $('#daily_agenda').openModal();
+                        $('.agenda-date').html("Daily Agenda - " + date.format('MMMM DD, YYYY'));
+                        $('.start-date').val('');
+                        $('.end-date').val('');
+                        $('#reason-leave-sbt').val('');
+                        $('#leavetype').val('');
+                        $('.form-reqleave').hide();
+                    },
 
                     header: {
                         left: 'prev,next today',
@@ -531,12 +564,10 @@ $(function() {
                     aspectRatio: 2,
                     windowResize: true,
 
-
                     select: function(start, end, allDay) {
 
-
-
-                    // $('#daily_agenda').openModal();
+                        // $(element).tooltip({title: event.title});
+                        // $('#daily_agenda').openModal();
 
                    // $('.btn-submitmeeting').off('click').click(function(e){
                    //      e.preventDefault();
@@ -595,7 +626,7 @@ $(function() {
                     }
 
                 });
-                
+
                 $("#new-event").on("click",function(){
                     var et = $("#new-event-text").val();
                     if(et != ''){
@@ -603,21 +634,21 @@ $(function() {
                         prepare_external_list();
                     }
                 });
-                
-            }            
+
+            }
         }
-        
+
         return {
             init: function(){
                 calendar();
             }
         }
     }();
-    
+
     formElements.init();
     uiElements.init();
-    templatePlugins.init();    
-    
+    templatePlugins.init();
+
     fullCalendar.init();
     
     /* My Custom Progressbar */

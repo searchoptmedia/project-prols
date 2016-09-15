@@ -169,7 +169,6 @@ class DefaultController extends Controller{
 				$userbdaynames[] = $u->getFname();
 			}
 		}
-
         return $this->render('AdminBundle:Default:index.html.twig', array(
 			'userbdaynames' => $userbdaynames,
         	'name' => $name,
@@ -670,7 +669,6 @@ class DefaultController extends Controller{
 					$isTimeOut = 'true';
 			}
 
-		//echo '<pre>';var_dump($requestGet);exit;		
 			$userip = InitController::getUserIP($this);
 			$ip_add = ListIpPeer::getValidIP($userip);
 			$is_ip  = InitController::checkIP($userip);
@@ -710,7 +708,7 @@ class DefaultController extends Controller{
 		if(isset($accept) && !empty($accept)) {
 			$accept->setAdminId($id2);
 			$accept->setStatus('Accepted');
-
+			
 			$email = new EmailController();
 
 			$sendemail = $email->acceptRequestEmail($req, $this);
@@ -728,9 +726,7 @@ class DefaultController extends Controller{
 		echo json_encode($response);
 		exit;
     }
-
-
-
+	
     public function profileUpdateAction(Request $request){
 		$user = $this->getUser();
 		$empid = $user->getId();
@@ -1600,6 +1596,81 @@ class DefaultController extends Controller{
 		//   	echo json_encode($response);
 		//   	$referer = $request->headers->get('referer');
 		// return new RedirectResponse($referer);
+	}
+
+	public function addRequestCalendarAction(){
+		$allRequest = EmpRequestPeer::getAllAcceptedRequest();
+
+		$request = [];
+		foreach ($allRequest as $a){
+		$requesttype = $a->getListRequestTypeId();
+			if($requesttype == 1){
+				$event = array(
+					'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
+					'id' => $a->getId(),
+					'title' => $a->getListRequestType()->getRequestType(),
+					'start' => $a->getDateStarted()->format('Y-m-d'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'editable' => false,
+					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
+						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
+
+				);
+			}else if($requesttype == 2){
+				$event = array(
+					'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
+					'id' => $a->getId(),
+					'title' => $a->getListRequestType()->getRequestType(),
+					'start' => $a->getDateStarted()->format('Y-m-d'),
+					'end' => $a->getDateEnded()->format('Y-m-d, 23:59:00'),
+					'color' => '#ff9800',
+					'editable' => false,
+					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
+						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
+				);
+			}else if($requesttype == 3){
+				$event = array(
+					'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
+					'id' => $a->getId(),
+					'title' => $a->getListRequestType()->getRequestType(),
+					'start' => $a->getDateStarted()->format('Y-m-d'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'color' => '#9e9e9e',
+					'editable' => false,
+					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
+						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
+				);
+			} else if($requesttype == 4) {
+				$event = array(
+					'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
+					'id' => $a->getId(),
+					'title' => $a->getListRequestType()->getRequestType(),
+					'start' => $a->getDateStarted()->format('Y-m-d'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'color' => '#4CAF50',
+					'editable' => false,
+					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
+						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
+				);
+			}
+			else if($requesttype == 5) {
+				$event = array(
+					'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
+					'id' => $a->getId(),
+					'title' => $a->getListRequestType()->getRequestType(),
+					'start' => $a->getDateStarted()->format('Y-m-d'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'color' => '#F44336',
+					'editable' => false,
+					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
+						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
+				);
+			}
+
+			array_push($request, $event);
+		}
+		echo json_encode($request);
+		exit;
 	}
 
 	public function sendEmailAction(Request $request)

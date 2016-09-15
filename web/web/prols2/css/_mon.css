@@ -1,3 +1,6 @@
+.fc-time{
+    display : none;
+}
 .label{
     color: #333333;
 }
@@ -220,5 +223,13 @@ h5{
     .select2-container .select2-selection--single {
         width: 70%;
     }
+
+    .select2-selection__arrow{
+        display:none;
+    }
+
+}
+
+@media only screen and (min-width: 0){
 
 }

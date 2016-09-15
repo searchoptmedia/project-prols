@@ -144,7 +144,7 @@
                                     <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
                                 </div>
                                 <div class="department-option-sect" style="display: none;">
-                                    <select id = "listdept" class="departmentselect" style="width: 300px;">
+                                    <select id = "listdept" class="departmentselect" style="width: 230px;">
                                         <option value="" disabled selected>Choose your department</option>
                                         {% for dept in getDept %}
                                             <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
@@ -153,7 +153,7 @@
                                 </div>
 
                                 <div class="employee-option-sect" style="display: none;">
-                                    <select id="empnames" class="input-name" style="width: 300px; margin-top: 50px;">
+                                    <select id="empnames" class="input-name" style="width: 230px; margin-top: 50px;">
                                         <option value="" disabled selected>Type name here..</option>
                                         {% for user in getAllProfile %}
                                             <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
@@ -162,8 +162,6 @@
                                 </div>
 
                                 <div class="row" style="margin-top: 20px;">
-
-
                                     <div class="col-md-6">
                                         <label class="label">From:</label>
                                         <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
@@ -178,16 +176,11 @@
                                     <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
                                     <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
                                 </div>
-                                {#<div class="modal-footer">#}
-                                {##}
-                                {#<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat btn-exportfiles export-submit-btnC">Export</a>#}
-
-                                {#</div>#}
                             </form>
-
+                            </div>
                         </div>
                     </div>
-
+                </div>
         </section>
     </section>
 {% endblock %}
@@ -219,17 +212,16 @@
                 inputfield=$('#input-position').val();
                 $.get("{{ path('add_position') }}" + inputfield,  function(data){
                     console.log(data);
-                }, "json");
+                });
             });
             $('.adddept').click(function(){
                 inputfield=$('#input-department').val();
                 $.get("{{ path('add_department') }}" + inputfield,  function(data){
                     console.log(data);
-                }, "json");
+                });
                 $('#input-department').val('');
             });
             $('.empProfile').click(function(){
-
                 empId = $(this).data('empid');
                 window.location.href = '{{ path('emp_page')}}' + empId;
             });
@@ -239,17 +231,8 @@
                 var start  = new Date($('[name=start-date]').val());
                 var end    = new Date($('[name=end-date]').val());
                 var isDate = start == 'Invalid Date' ? 0 : 1;
-                var s = start.getDate();
-                var e = end.getDate();
                 start   = start.toDateString();
                 end     = end.toDateString();
-
-                if(s > e){
-                    alert('End date must be greater than or equal to start date');
-                    $('[name=start-date]').val('');
-                    $('[name=end-date]').val('');
-                    return;
-                }
                 $('[name=start-date]').val('');
                 $('[name=end-date]').val('');
                 if ($('#select-dept:checked').length){
@@ -275,10 +258,37 @@
                         + start + '&end=' + end
                         + '&isDate=' + isDate, '_blank');
             });
-            var picker = new Pikaday({ field: $('#datepicker')[0] });
-            var picker = new Pikaday({ field: $('#datepicker2')[0] });
-        });
+            var picker = new Pikaday({field: document.getElementById('datepicker')});
+            var picker2 = new Pikaday({field: document.getElementById('datepicker2')});
+            $('.btn-export').click(function(){
+                $('.start-date').val('');
+                $('.end-date').val('');
+                picker.destroy();
+                picker2.destroy();
+                picker  = new Pikaday({field: document.getElementById('datepicker'), onSelect: function(){
+                        if(picker.getDate != ''){
+                            $('.end-date').val('');
+                            picker2.destroy();
+                            picker2 = new Pikaday({field: document.getElementById('datepicker2'), onSelect: function(){
+                                picker2.setEndRange(picker2.getDate());
+                                picker.setStartRange(picker.getDate());
+                                picker.setEndRange(picker2.getDate());
+                                }
+                            });
+                            picker.setStartRange(picker.getDate());
+                            picker.setEndRange(picker2.getDate());
+                            picker2.setStartRange(picker.getDate());
+                            picker2.show();
+                            picker2.setMinDate(picker.getDate());
+                            picker2.setMaxDate(new Date());
 
+                        }
+                    }
+                });
+                picker.setMaxDate(new Date());
+            });
+
+        });
     </script>
 {% endblock %}
 

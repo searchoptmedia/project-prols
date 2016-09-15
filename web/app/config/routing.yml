@@ -98,3 +98,8 @@ export:
 request_access:
     path: /requestaccess
     defaults: {_controller: AdminBundle:Default:requestAccess }
+
+
+add_event_accepted_request:
+    path: /addevent/acceptrequest
+    defaults: { _controller:AdminBundle:Default:addRequestCalendar }
