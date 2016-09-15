@@ -48,16 +48,13 @@
 					<a href="index.html" class="collection-item"><i class="material-icons nav-icon">reorder</i> Home</a>
 					<a href="profile2.html" class="collection-item"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
 					<a href="notif.html" class="collection-item"><i class="material-icons nav-icon">chat_bubble_outline</i> Notification <span class="new badge">2</span></a>
-					<a href="viewemployees.html" class="collection-item"><i class="material-icons nav-icon">contacts</i>View Employees</a>
 					
 				</div>
-				
-				
+
 				<div class="collection admin-nav">
 					<a href="vl.html" class="collection-item"><i class="material-icons nav-icon">view_agenda</i> View Requests <span class="new badge">1</span></a>
 					<a href="manage-employees.html" class="collection-item"><i class="material-icons nav-icon">list</i> Manage Employees</a>
 				</div>
-				
 
 				<div class="collection logout-nav">
 					<a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
@@ -83,7 +80,7 @@
 
 
 		<!-- Modal -->
-		<div id="daily_agenda" class="modal modal-fixed-footer">
+		<!-- <div id="daily_agenda" class="modal modal-fixed-footer">
 				
 			<div class="modal-content">
 				<h4>Daily Agenda | <div class="widget-subtitle plugin-date" style="display:inline;">Loading...</div> </h4>
@@ -125,6 +122,7 @@
 				<div class="form-reqleave">
 					<div class="input-field">
 						<input id="start-date" type="date"  placeholder="Start Date">
+
 						<input id="end-date" type="date"  placeholder="End Date">
 						<textarea id="reason-leave" class="materialize-textarea" placeholder="Reason...."></textarea>
 					</div>
@@ -141,8 +139,71 @@
 				<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat close-modal-agenda">Close</a>
 			</div>
 
-		</div>
+		</div> -->
+
+
 		<!-- End of Modal -->
+
+		<div id="daily_agenda" class="modal modal-fixed-footer">
+
+            <div class="modal-content">
+                <h4>Daily Agenda</h4>
+                                                                                                                                                    
+              <div class="agenda-buttons">
+                                        <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
+                </div>
+
+               
+                <div class="form-reqmeeting" style="display: none;">
+                    <div class="input-field">
+                        <input id="meeting" placeholder="Type your message here...">
+                    </div>
+                    <a class="waves-effect waves-light btn amber btn-submitmeeting">Sumbit</a>
+                    <div class="chip required-field">
+                        required field!
+                    </div>
+                    <div class="chip sent">
+                        sent!
+                    </div>
+                </div>
+
+              
+                <div class="form-reqleave" style="display: none;">
+                    <div class="input-field">
+                        <div class="row">
+                            <div class="select-wrapper col-md-6 reqleave-dd"><span class="caret">▼</span><ul id="select-options-79c55ebf-42fc-bdad-0b46-35a471414a88" class="dropdown-content select-dropdown "><li class="disabled "><span>Choose Type of Leave</span></li><li class=""><span>Sick Leave</span></li><li class=""><span>Vacation Leave</span></li></ul><select class="col-md-6 initialized reqleave-dd" name="leavetype" id="leavetype">
+                                <option value="" disabled="" selected="">Choose Type of Leave</option>
+                                <option value="1">Sick Leave</option>
+                                <option value="2">Vacation Leave</option>
+                            </select></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 reqleave-lbl">
+                                <p class="reqleave-p">From: </p>
+                                <input name="start-date" readonly="" placeholder="Start Date" class="start-date" id="datepicker">
+                            </div>
+                            <div class="col-md-6 reqleave-lbl">
+                                <p class="reqleave-p">To: </p>
+                                <input name="end-date" readonly="" placeholder="End Date" class="end-date" id="datepicker2">
+                            </div>
+                            <div class="col-md-12 reqleave-lbl">
+                                <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="waves-effect waves-light btn amber btn-submitleave">Sumbit</a>
+                    <div class="chip required-field">
+                        required field!
+                    </div>
+                    <div class="chip sent">
+                        sent!
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
+            </div>
+        </div>
 
 	</div>
 	</div>
@@ -174,8 +235,6 @@
 					<div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
 						<div class="widget-subtitle plugin-date">Loading...</div></div>
 						<p class="confirm-timeout">Are you sure you want to time-out?</p>
-						<input id="confirmpw-timeout" type="password" placeholder="Enter password...">
-
 						<div class="btn-block">
 							<a class="waves-effect waves-light green btn-flat btn-large btn-yes">Yes</a>
 							<a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
@@ -205,7 +264,7 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/html5.js"></script>
 <script src="js/modernizr-2.8.3.min.js"></script>
-<script src="js/materialize.js"></script>
+
 <script src="js/script.js"></script>
 <script type="text/javascript" src="js/plugins/moment.min.js"></script>
 <script type="text/javascript" src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
@@ -213,5 +272,7 @@
 
 <script type="text/javascript" src="js/plugins.js"></script> 
 <script type="text/javascript" src="js/customscript.js"></script>
+<script src="js/materialize.js"></script>
+
 </body>
 </html>

@@ -1,4 +1,4 @@
- $(document).ready(function(){  
+$(document).ready(function(){  
 
  	$('.btn-timein').click(function(e){
  		e.preventDefault();
@@ -83,6 +83,7 @@
  		$('.form-reqmeeting').css({'display':'none'});
  		$('.form-reqleave').css({'display':'none'});
  		$('.required-field').css({'display':'none'});
+ 		$('.lean-overlay').css({'display':'none'});
  		$('.sent').css({'display':'none'});
  		$('#meeting').val('');
  		$('#start-date').val('');

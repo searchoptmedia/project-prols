@@ -8214,87 +8214,6 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   display: none !important;
 }
 
-/*#main-container{
-width: 100%;
-height: 100%;
-}*/
-/*LOGIN*/
-/*.bg-top{
-position: absolute;
-top: 0;
-width: 100%;
-height: 35%;
-background: #00bddd;
-}
-
-.bg-bottom{
-position: absolute;
-top: 35%;
-width: 100%;
-height: 65%;
-background: #f9a022;
-}
-
-.login-page {
-width: 480px;
-padding: 8% 0 0;
-margin: auto;
-margin-top: -250px;
-}
-.form {
-position: absolute;
-top: calc(5% - 80px);
-z-index: 1;
-background: #FFFFFF;
-max-width: 360px;
-margin: 0 auto 100px;
-padding: 45px;
-text-align: center;
-box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-}
-.form input {
-font-family: "Roboto", sans-serif;
-outline: 0;
-background: #f2f2f2;
-width: 100%;
-border: 0;
-margin: 0 0 15px;
-padding: 15px;
-box-sizing: border-box;
-font-size: 14px;
-}
-.form button {
-font-family: "Roboto", sans-serif;
-text-transform: uppercase;
-outline: 0;
-background: #ef6730;
-width: 100%;
-border: 0;
-padding: 15px;
-color: #FFFFFF;
-font-size: 14px;
--webkit-transition: all 0.3 ease;
-transition: all 0.3 ease;
-cursor: pointer;
-}
-.form button:hover,.form button:active,.form button:focus {
-background: #ee4a07;
-}
-.form .message {
-margin: 15px 0 0;
-color: #b3b3b3;
-font-size: 14px;
-}
-.form .message a {
-color: #ef6730;
-text-decoration: none;
-}
-
-
-*{
-margin: 0; 
-}*/
-/*END OF LOGIN*/
 /*LOG-IN PAGE*/
 .main-logo {
   /*top: 100px;*/
@@ -8356,17 +8275,12 @@ margin: 0;
 }
 
 .profile-image {
-  /* top: 20px;
-	left: 20px;*/
   width: 50px;
   height: 50px;
   border-radius: 50%;
   background: #ff9800;
   position: relative;
   overflow: hidden;
-  /*position:relative;
-	top: 20px;
-	display: inline-block;*/
 }
 
 .profile-image span {
@@ -8393,7 +8307,6 @@ margin: 0;
 
 .profile-container2 {
   position: relative;
-  /* left: 10px; */
   background-color: white;
   padding-bottom: 15px;
   padding-top: 30px;
@@ -8429,7 +8342,6 @@ margin: 0;
 }
 
 .profile-container2 .empinfo-left .p-dta {
-  /*padding-left:20px;*/
   font-weight: 400;
   padding-left: 30px;
   display: block;
@@ -8441,7 +8353,6 @@ margin: 0;
 }
 
 .profile-container2 .empinfo-middle .p-dta {
-  /*padding-left:20px;*/
   font-weight: 400;
   display: block;
 }
@@ -8539,7 +8450,6 @@ margin: 0;
   position: relative;
   right: 15px;
   top: 0px;
-  /* top: 15px; */
 }
 
 .editprofile-btns2 {
@@ -8547,7 +8457,6 @@ margin: 0;
   position: relative;
   right: 30px;
   display: none;
-  /* top: 15px; */
 }
 
 .profile-title {
@@ -8902,10 +8811,6 @@ margin: 0;
   color: white;
 }
 
-/*.logout-nav{
-top:240px;
-height:auto;
-}*/
 /*===END OF MENU/NAVIGATION===*/
 /*NOTIF|FEEDBACKS|ALERTS*/
 .timein-notif-container,
@@ -9219,7 +9124,6 @@ label {
 }
 
 .fc-toolbar button {
-  /*background:none;*/
   border: none;
 }
 
@@ -9401,13 +9305,6 @@ span.badge.new {
 }
 
 @media only screen and (max-width: 991px) {
-  /*.nav-right{
-		width:300px;
-	}
-
-	.page-content{
-		margin-left:300px;
-	}*/
   .company-logo img {
     width: 40%;
     height: auto;
@@ -9445,13 +9342,6 @@ span.badge.new {
     position: relative;
     top: 40px;
   }
-  /*.emp-photo {
-	    float: none;
-	    clear: both;
-	    padding: 0px;
-	    margin-top: 15px;
-	    left: 0px;
-	}*/
   .profile-title {
     clear: both;
     float: none;
@@ -9515,7 +9405,6 @@ span.badge.new {
     clear: both;
     float: none;
     margin: 0 auto;
-    /* width: 500px;*/
     max-width: 100%;
   }
   .profile-container2 .empinfo-left, .profile-container2 .empinfo-middle, .profile-container2 .empinfo-right {
@@ -9840,6 +9729,9 @@ span.badge.new {
     top: 14px;
     left: 115px;
   }
+  .modal .modal-content {
+    padding: 15px;
+  }
   #modal-pos, #modal-dept {
     height: 50%;
   }
@@ -9860,5 +9752,43 @@ span.badge.new {
   }
   .timeout-container input {
     width: 100%;
+  }
+  .agenda-buttons {
+    float: none;
+  }
+  .agenda-buttons .btn-reqleave {
+    width: 100%;
+  }
+  .form-reqleave .caret {
+    display: none;
+  }
+  .form-reqleave .reqleave-dd {
+    padding: 0px 5px;
+  }
+  .form-reqleave .select-wrapper input.select-dropdown {
+    padding: 0px 5px;
+    margin-top: 10px;
+  }
+  .form-reqleave .reqleave-lbl {
+    margin: 0px;
+    padding: 0px 10px;
+  }
+  .form-reqleave .reqleave-p {
+    margin: 0px;
+  }
+  .form-reqleave #reason-leave-sbt {
+    padding: 0px;
+  }
+  .form-reqleave .btn-submitleave {
+    margin-top: 20px;
+  }
+  #exportchoice .modal-content [type="checkbox"] + label, #exportchoice .modal-content [type="radio"] + label {
+    padding-right: 0px;
+  }
+  #exportchoice .modal-content .selectDept .select-wrapper input.select-dropdown {
+    width: 100%;
+  }
+  #exportchoice .modal-content .select-wrapper input.select-dropdown {
+    padding-left: 0px;
   }
 }
