@@ -10,22 +10,22 @@ parameters:
 #    database_password: pr0L$L1v3@@
 
 #development
-#    database_host: 205.186.138.226
-#    database_port: 3306
-#    database_name: prols_staging
-#    database_user: prolsstageadmin
-#    database_password: pr0L$St@g1ng
+    database_host: 205.186.138.226
+    database_port: 3306
+    database_name: prols_staging
+    database_user: prolsstageadmin
+    database_password: pr0L$St@g1ng
 
 #    database_host: localhost
 #    database_port: null
 #    database_name: prols
 
 #local
-    database_host: localhost
-    database_port: null
-    database_name: prols
-    database_user: root
-    database_password: null
+#    database_host: localhost
+#    database_port: null
+#    database_name: prols
+#    database_user: root
+#    database_password: null
 
     mailer_transport: smtp
     mailer_host: 127.0.0.1
