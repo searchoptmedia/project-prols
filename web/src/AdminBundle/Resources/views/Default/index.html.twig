@@ -80,12 +80,19 @@
                 </div>
 
                 <div class="agenda-buttons">
-                    <a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
+                    {#<a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>#}
                     <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
                 </div>
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
+                    <div class="reqmeeting-emp-tag">
+                        <select class="select-emp-tag" multiple="multiple">
+                            {% for acc in allacc %}
+                            <option value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="input-field">
                         <input id="meeting" placeholder="Type your message here...">
                     </div>
@@ -101,7 +108,7 @@
                 <!------------REQUEST LEAVE FORM------------->
                 <div class="form-reqleave">
                     <div class="input-field" style="padding-top: 30px;">
-                        <div class="row" style="margin-bottom: 25px; margin-top: 10px;">
+                        <div class="row">
                             <select class="col-md-6" name="leavetype" id="leavetype">
                                 <option value="" disabled selected>Choose Type of Leave</option>
                                 <option value="1">Sick Leave</option>
@@ -110,16 +117,16 @@
                             </select>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <p>From: </p>
+                            <div class="col-md-6 reqleave-lbl">
+                                <p class="reqleave-p">From: </p>
                                 <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
                             </div>
-                            <div class="col-md-6">
-                                <p>To: </p>
+                            <div class="col-md-6 reqleave-lbl">
+                                <p class="reqleave-p">To: </p>
                                 <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
                             </div>
                             <div class="col-md-12">
-                                <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...." style="text-align: justify; margin-top: -10px;"></textarea>
+                                <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...."></textarea>
                             </div>
                         </div>
                     </div>
@@ -415,7 +422,11 @@
     }
     initWidget();
 
-    $('select').material_select();
+
+    $('.select-emp-tag').select2({
+        placeholder: 'Type name here',
+    });
+    $('#leavetype').material_select();
     $('.caret').hide();
     {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
 
@@ -531,6 +542,7 @@ $('#time-out-button').click(function(){
 
 $('.btn-submitmeeting').click(function(){
    var reqmeetmessage =  $('#meeting').val();
+    var taggedemail = $('.select-emp-tag').val();
     if(reqmeetmessage == ''){
         $('#meeting').css({'border-color' : 'red'});
         setTimeout(function(){
@@ -542,7 +554,7 @@ $('.btn-submitmeeting').click(function(){
     $('.loader-notif').show();
     $('.loader-notif').css({'top' : '0px'});
     $('.btn-submitmeeting').hide();
-    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage}, function(data){
+    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail}, function(data){
        console.log(data);
         $('#meeting').val('');
         $('.required-field').hide();

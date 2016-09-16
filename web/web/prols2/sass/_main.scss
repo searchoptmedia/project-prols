@@ -44,91 +44,7 @@
 .material-tooltip{
 	display: none !important;
 }
-/*#main-container{
-width: 100%;
-height: 100%;
-}*/
 
-/*LOGIN*/
-
-
-/*.bg-top{
-position: absolute;
-top: 0;
-width: 100%;
-height: 35%;
-background: #00bddd;
-}
-
-.bg-bottom{
-position: absolute;
-top: 35%;
-width: 100%;
-height: 65%;
-background: #f9a022;
-}
-
-.login-page {
-width: 480px;
-padding: 8% 0 0;
-margin: auto;
-margin-top: -250px;
-}
-.form {
-position: absolute;
-top: calc(5% - 80px);
-z-index: 1;
-background: #FFFFFF;
-max-width: 360px;
-margin: 0 auto 100px;
-padding: 45px;
-text-align: center;
-box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-}
-.form input {
-font-family: "Roboto", sans-serif;
-outline: 0;
-background: #f2f2f2;
-width: 100%;
-border: 0;
-margin: 0 0 15px;
-padding: 15px;
-box-sizing: border-box;
-font-size: 14px;
-}
-.form button {
-font-family: "Roboto", sans-serif;
-text-transform: uppercase;
-outline: 0;
-background: #ef6730;
-width: 100%;
-border: 0;
-padding: 15px;
-color: #FFFFFF;
-font-size: 14px;
--webkit-transition: all 0.3 ease;
-transition: all 0.3 ease;
-cursor: pointer;
-}
-.form button:hover,.form button:active,.form button:focus {
-background: #ee4a07;
-}
-.form .message {
-margin: 15px 0 0;
-color: #b3b3b3;
-font-size: 14px;
-}
-.form .message a {
-color: #ef6730;
-text-decoration: none;
-}
-
-
-*{
-margin: 0; 
-}*/
-
-/*END OF LOGIN*/
 
 /*LOG-IN PAGE*/
 .main-logo{
@@ -136,8 +52,7 @@ margin: 0;
 	position: relative;
 }
 
-.login-2{ 
-
+.login-2{
 	position:relative;
 	top:100px;
 	background-color: #ff9800;
@@ -193,17 +108,12 @@ margin: 0;
 }
 
 .profile-image{
-	/* top: 20px;
-	left: 20px;*/
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;
 	background: #ff9800;
 	position: relative;
 	overflow: hidden;
-	/*position:relative;
-	top: 20px;
-	display: inline-block;*/
 
 	span {
 		line-height: 50px;
@@ -233,7 +143,6 @@ margin: 0;
 
 .profile-container2{
 	position: relative;
-    /* left: 10px; */
     background-color: white;
     padding-bottom: 15px;
     padding-top: 30px;
@@ -271,7 +180,6 @@ margin: 0;
 		}
 
 		.p-dta{
-			/*padding-left:20px;*/
 			font-weight:400;
 			padding-left: 30px;
 			display: block;
@@ -286,7 +194,6 @@ margin: 0;
 		}
 
 		.p-dta{
-			/*padding-left:20px;*/
 			font-weight:400;
 			display: block;
 		}
@@ -343,9 +250,8 @@ margin: 0;
 			font-weight:400;
 		}
 	}
-
-
 }
+
 .emp-tables{
     	
 	xpadding-top:15px;
@@ -398,8 +304,6 @@ margin: 0;
     position: relative;
     right: 15px;
     top: 0px;
-    /* top: 15px; */
-
 }
 
 .editprofile-btns2 {
@@ -407,8 +311,6 @@ margin: 0;
     position: relative;
     right: 30px;
     display:none;
-    /* top: 15px; */
-
 }
 
 .profile-title {
@@ -455,12 +357,130 @@ margin: 0;
 .btn-accept, .btn-decline{
 	font-weight: 500;
 	margin-left: 6px !important;
+	color:white;
+}
+
+.dropdown-content li{
+		min-height: 30px;
+	}
+
+.dd1 li > a{
+	margin: 0px;	
+}
+
+.dropdown-content li > a, .dropdown-content li > span{
+	line-height: 1;
 }
 /*===END OF VIEW REQUESTS===*/
 
 /*MANAGE EMPLOYEES*/
 /*===END OF MANAGE EMPLOYEES===*/
 
+
+/*VIEW EMPLOYEES*/
+.viewemp-wrap{
+	padding: 15px;
+}
+
+.ve-info{
+	margin-top: 15px;
+	padding: 15px;
+}
+
+
+.ve-list{
+	margin: 0px;
+	li{
+		display: inline-block;
+		margin: 0px 40px;
+	}
+}
+
+.ve-name, .ve-position{
+	margin:0px;
+}
+
+.ve-name{
+	padding-top:10px;
+	font-weight:500;
+}
+
+.ve-picwrap{
+	.btn-viewprofile{
+	position: relative;
+    top: 150px;
+    right: 150px;
+    font-size: 12px;
+    padding: 0px 10px;
+	}
+}
+
+.ve-img{
+	margin: 0 auto;
+	width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #ff9800;
+    position: relative;
+	
+	span{
+		text-transform: uppercase;
+		line-height: 200px;
+		font-size: 32px;
+		color: #fff;
+	}
+
+	img{
+		width:100%;
+		height:auto;
+		display:block;
+	}
+
+	img:hover{
+		cursor: pointer;
+	}
+}
+
+.ve-desc{
+	a{
+		color: #000;
+	}
+}
+
+.ve-img .overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  // -webkit-transition: all 0.5s ease-out 0.5s;
+  // transition: all 0.5s ease-out 0.5s;
+}
+
+.ve-img:hover .overlay {
+  opacity: 1;
+
+  .info {
+  	@include transform(scale(1));
+	opacity: 1;
+  }
+}
+
+
+.ve-img a.info {
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin: 80px 0 0 0;
+  color: #fff;
+  @include transform(scale(0.5));
+  @include transition(all 0.3s ease);
+}
+
+
+/*===END OF VIEW EMPLOYEES===*/
 
 .emp-info-wrap{
 	
@@ -661,10 +681,6 @@ margin: 0;
 	color:white;
 }
 
-/*.logout-nav{
-top:240px;
-height:auto;
-}*/
 /*===END OF MENU/NAVIGATION===*/
 
 /*NOTIF|FEEDBACKS|ALERTS*/
@@ -851,8 +867,6 @@ height:auto;
 /*==END OF TIME-IN & TIME-OUT===*/
 
 
-
-
 .selectDept{
 	display:none;
 	.select-wrapper {
@@ -879,6 +893,8 @@ height:auto;
 			padding-left:30px;
 			padding-right:20px;
 		}
+
+
 	}
 }
 
@@ -929,7 +945,7 @@ height:auto;
 
 	a{
 		float: right;
-		top: 20px;
+		margin-top: 20px;
 		position: relative;
 	}
 }
@@ -938,7 +954,6 @@ height:auto;
 .dd1 li > a{
 	padding: 10px;
 }
-
 
 
 #modal-emp, 
@@ -961,8 +976,6 @@ height:auto;
 #modal-dept{
 	height: 30%;
 }
-
-
 
 label{
 	font-size: 14px;
@@ -987,7 +1000,6 @@ label{
 }
 
 
-
 .clock{
 	text-align: center;
 	.plugin-clock{
@@ -1010,7 +1022,6 @@ label{
 	margin-top:10px;
 
 	button{
-		/*background:none;*/
 		border:none;
 	}
 }
@@ -1203,26 +1214,23 @@ span.badge.new{
 	font-size: 12px;
 }
 
-@media only screen and (max-width: 1200px){
+
+@media only screen and (max-width: 1300px){
 	.empinfo-right {
 		margin-top: 20px;
 	}
+
+	.ve-list li{
+		margin:0px 20px;
+	}
+
 }
 
 
 @media only screen and (max-width: 991px){
 
-
-	/*.nav-right{
-		width:300px;
-	}
-
-	.page-content{
-		margin-left:300px;
-	}*/
-
 	.company-logo img {
-		width:70%;
+		width:40%;
 		height: auto;
 	}
 
@@ -1246,9 +1254,7 @@ span.badge.new{
 		text-align: center;
 
 		a{
-			top: 10px;
 			float:none;
-			// display:block;
 		}
 	}
 
@@ -1271,15 +1277,6 @@ span.badge.new{
 
 	}
 
-	/*.emp-photo {
-	    float: none;
-	    clear: both;
-	    padding: 0px;
-	    margin-top: 15px;
-	    left: 0px;
-	}*/
-
-
 	.profile-title{
 		clear:both;
 		float:none;
@@ -1290,10 +1287,8 @@ span.badge.new{
 	}
 
 	.profile-image {
-
 		margin: 0 auto;
 		margin-top:15px;
-
 	}
 
 	.profile-container2 .empinfo-right {
@@ -1302,36 +1297,34 @@ span.badge.new{
 
 
 	.emp-info-wrap{
+
 		.emp-info{
-		text-align: center;
-		letter-spacing: 0px;
+			text-align: center;
+			letter-spacing: 0px;
 
-		#addr{
-			width:80%;
-			font-size: 16px;
+				#addr{
+					width:80%;
+					font-size: 16px;
+				}
+
+				#tel-p{
+					width:20%;
+					font-size:14px;
+				}
+
+				#cel-p{
+					width:25%;
+					font-size:14px;
+				}
+
+				span{
+					font-size: 14px;
+				}
+
+				input[type=text]:disabled{
+					border:none;
+				}
 		}
-
-		#tel-p{
-			width:20%;
-			font-size:14px;
-		}
-
-		#cel-p{
-			width:25%;
-			font-size:14px;
-		}
-
-		span{
-			font-size: 14px;
-		}
-
-		input[type=text]:disabled{
-			border:none;
-		}
-		
-
-		}
-
 	}
 
 	.legendColorBox > div{
@@ -1345,16 +1338,19 @@ span.badge.new{
 		margin-left:0px;
 		margin-right:0px;
 		border-top: 1px solid #e7e7e7;
-
-		
 	}
 
 	.perf-table{
 		margin: 0px 0px;
 		border-top: 1px solid #e7e7e7;
 	}
+	table.responsive-table th{
+		text-align: left;
+	}
 
-
+	table.responsive-table tr{
+		padding: 0px 0px;
+	}
 
 	.profile-container2{
 		top:0;
@@ -1362,7 +1358,6 @@ span.badge.new{
 		clear: both;
 		float: none;
 		margin: 0 auto;
-		/* width: 500px;*/
 		max-width:100%;
 
 		.empinfo-left, .empinfo-middle, .empinfo-right{
@@ -1423,13 +1418,16 @@ span.badge.new{
 
 	.btn-edit-profile{
 		margin:0 auto;
-
 	}
 
 	.profile-title h3{
 		position:relative;
 		padding-top:0px;
 		text-align:center;
+	}
+
+	.ve-list li{
+		margin: 0px;
 	}
 
 }
@@ -1449,17 +1447,23 @@ span.badge.new{
 		top: 40px;
 
 	}
+
+	
 }
 
 @media only screen and (max-width: 767px) {
+
+	.main-logo{
+		width: 50%;
+	}
 
 	.profile-image span {
 		line-height: 100px;
     	font-size: 48px;
 	}
 
-	.top-nav {
-		padding-left: 35px;
+	.confirm-timein{
+		font-size: 40px;
 	}
 
 	.emp-photo.hidden-desktop {
@@ -1491,6 +1495,7 @@ span.badge.new{
 		margin-bottom: 15px;
 		padding: 0;
 	}
+
 	.profile-image{
 		margin: 0 auto;
 		width: 100px;
@@ -1607,8 +1612,6 @@ span.badge.new{
 		margin-left:0px;
 		margin-right:0px;
 		border-top: 1px solid #e7e7e7;
-
-		
 	}
 
 	.perf-table{
@@ -1632,16 +1635,15 @@ span.badge.new{
 	.employee-profile-right {
 		position: relative;
 		top: 40px;
-
 	}
 
 	.res-menu{
 		font-size: 30px !important;
 	}
+
 	.nav-right{
 		left: -325px;
 		width: 250px;
-
 	}
 
 	.page-content{
@@ -1653,11 +1655,17 @@ span.badge.new{
 	}
 
 
+	.heading{
+		.center-align{
+			font-size:18px;
+			margin-left:30px;
+		}
 
-	.heading h3{
+		h3{
 		font-size: 28px;
 		xpadding-top: 40px;
 
+		}
 	}
 
 	.btn-edit-profile{
@@ -1677,14 +1685,11 @@ span.badge.new{
 	}
 
 	table{
-		width:0px;
 		max-width:100%;
-		margin-left:20px;
-		margin-right:20px;
 	}
 
 	.clock2{
-		font-size: 30px;
+		font-size: 20px;
 	}
 	#main-wrapper {
 		position: relative;
@@ -1715,7 +1720,7 @@ span.badge.new{
 	}
 
 	.confirm-timeout, .confirm-logout{
-		font-size:24px;
+		font-size:20px;
 	}
 
 	.profile-info{
@@ -1793,12 +1798,101 @@ span.badge.new{
 		}
 	}
 
+	.modal .modal-content{
+		padding:15px;
+	}
+
+	#modal-pos, #modal-dept{
+		height: 50%;
+	}
+
 	.emp-tables{
 
 		.caret{
 			left: 95%;
 		}
 	}
+
+	.ve-list li{
+		margin: 0px 25px;
+	}
+
+	.dropdown-content li{
+		min-height: 30px;
+	}
+
+	.dd1 li > a{
+		margin: 0px;	
+	}
+
+	.dropdown-content li > a, .dropdown-content li > span{
+		line-height: 1;
+	}
+
+	.timeout-container{
+		input{
+			width: 100%;
+		}
+	}
+
+	.agenda-buttons{
+		float:none;
+		.btn-reqleave{
+			width: 100%;
+		}
+	}
+
+	.form-reqleave{
+		
+		.caret{
+			display:none;
+		}
+
+		.reqleave-dd{
+			padding: 0px 5px;
+		}
+		.select-wrapper input.select-dropdown{
+			padding: 0px 5px;
+			margin-top: 10px;
+		}
+
+		.reqleave-lbl{
+			margin: 0px;
+			padding: 0px 10px;
+		}
+
+		.reqleave-p{
+			margin: 0px;
+		}
+
+		#reason-leave-sbt{
+			padding: 0px;
+		}
+
+		.btn-submitleave{
+			margin-top: 20px;
+		}
+	}
+
+	#exportchoice{
+	.modal-content{
+
+		[type="checkbox"]+label, [type="radio"]+label{
+			padding-right:0px;
+		}
+
+		.selectDept .select-wrapper input.select-dropdown{
+			width:100%;
+		}
+
+		.select-wrapper input.select-dropdown{
+			padding-left: 0px;
+		}
+
+		
+	}
+}
+
 }
 
 

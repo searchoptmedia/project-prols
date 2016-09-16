@@ -1,3 +1,12 @@
+.select-emp-tag{
+    width:350px;
+}
+.select-wrapper input.select-dropdown{
+    padding-left: 0px;
+}
+.collection .collection-item.avatar{
+    min-height: 0px;
+}
 .fc-time{
     display : none;
 }
@@ -227,9 +236,4 @@ h5{
     .select2-selection__arrow{
         display:none;
     }
-
-}
-
-@media only screen and (min-width: 0){
-
 }

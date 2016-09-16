@@ -105,6 +105,31 @@ class EmailController extends Controller {
         return $email ? 1: 0;
     }
 
+    public function RequestMeetingEmail($req, $class)
+    {
+        $user = $class->getUser();
+        $id   = $user->getId();
+        $empemail = $req->request->get('taggedemail');
+        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
+        $empname = $empinfo->getFname() . " " .$empinfo->getLname();
+        //admin profile information
+        $data = EmpProfilePeer::getInformation($id);
+        $name = $data->getFname(). " " .$data->getLname();
+
+        $subject = $req->request->get('requestname') . " " . " Request Accepted";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($empemail);
+
+        $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $req->request->get('requestname') .
+            "</b> request was accepted by <b>". $name .
+            "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
+            "<br>Date ended: ". $req->request->get('dateend');
+
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+
+        return $email ? 1: 0;
+    }
+    
     public function requestTypeEmail($req, $class){
         $user = $class->getUser();
         $id   = $user->getId();
@@ -112,7 +137,12 @@ class EmailController extends Controller {
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
-        $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
+        if(empty($req->request->get('typeleave'))){
+            $requestlist = ListRequestTypePeer::retrieveByPK(4);
+        }else{
+            $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
+
+        }
         $requesttype = $requestlist->getRequestType();
 
         $admins = EmpAccPeer::getAdminInfo();
