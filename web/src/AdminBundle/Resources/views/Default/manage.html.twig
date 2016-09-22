@@ -394,7 +394,6 @@ $(document).ready(function(){
 
         {% for usedUsers in allusers %}
         var dbuser = '{{ usedUsers.Username }}';
-        var dbemail = '{{ usedUsers.Email }}';
         var dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
         if($('[name=employee-id]').val() == 0) {
 
@@ -407,18 +406,6 @@ $(document).ready(function(){
                 document.getElementById("username").focus();
                 setTimeout(function () {
                     $('#username').css({'border-color': '#9e9e9e'});
-                }, 1500);
-                return false;
-            }
-            if (emailinput == dbemail) {
-                $('.username-used').show()
-                $('.username-used').html('Email already used')
-                $('.missing-input').hide();
-                $('.password-not-match').hide();
-                $('#companyemail').css({'border-color': 'red'});
-                document.getElementById("companyemail").focus();
-                setTimeout(function () {
-                    $('#companyemail').css({'border-color': '#9e9e9e'});
                 }, 1500);
                 return false;
             }

@@ -239,4 +239,8 @@ h5{
     .select2-selection__arrow{
         display:none;
     }
+    .heading h3{
+        font-size: 24px;
+        padding-left: 15px;
+    }
 }

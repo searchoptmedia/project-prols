@@ -91,6 +91,7 @@
  		$('.form-reqleave').hide();
 		$('.sent').hide();
 		$('.required-field').hide();
+		$('.btn-submitleave').hide();
 	});
 
  	$('.btn-reqleave').click(function(){
@@ -98,6 +99,7 @@
  		$('.form-reqmeeting').hide();
 		$('.sent').hide();
 		$('.required-field').hide();
+		$('.btn-submitleave').show();
  	});
 
 // MODALS

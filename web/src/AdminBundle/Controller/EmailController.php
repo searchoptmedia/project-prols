@@ -174,6 +174,51 @@ class EmailController extends Controller {
 
         return $email ? 1: 0;
     }
+    
+    public function addEmployeeEmail($req, $class){
+        $user = $class->getUser();
+        $id   = $user->getId();
+
+        $employeeemail = $req->request->get('email');
+        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
+        $empusername = $req->request->get('username');
+        $emppassword = $req->request->get('password');
+
+
+        $subject = "PROLS Account";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($employeeemail);
+
+        $inputMessage = "Hi ". $empname . "!<br> Your account was successfully created.<br><br> Username: <b>" . $empusername . "</b>
+        <br>Password: <b>" . $emppassword . "</b><br>You can change your password in your profile page once you log in.<br><br>
+        <a href='http://login.propelrr.com/'>Login Here</a>";
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+
+        return $email ? 1: 0;
+    }
+
+    public function adminEditEmployeeProfileEmail($req, $class){
+        $user = $class->getUser();
+        $id   = $user->getId();
+
+        $adminprofile = EmpProfilePeer::getInformation($id);
+        $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
+
+        $employeeemail = $req->request->get('email');
+        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
+        $empusername = $req->request->get('username');
+        $emppassword = $req->request->get('password');
+
+
+        $subject = "PROLS Account Updated";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($employeeemail);
+
+        $inputMessage = "Hi ". $empname . "!<br> Your account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+
+        return $email ? 1: 0;
+    }
 
     static public function sendEmail($class, $subject, $from, $to, $content)
     {
@@ -189,5 +234,7 @@ class EmailController extends Controller {
         return $response;
 
     }
+    
+    
 
 }

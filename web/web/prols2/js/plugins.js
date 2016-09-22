@@ -547,6 +547,9 @@ $(function() {
                         $('#leavetype').val('');
                         $('.form-reqleave').hide();
                         $('.form-reqmeeting').hide();
+                        $('.btn-submitleave').hide();
+                        
+                        
                     },
 
                     header: {

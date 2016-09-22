@@ -107,6 +107,7 @@ class DefaultController extends Controller{
     			}
     		}
     	$checkipdata = null;
+		$datetoday = date('Y-m-d');
     	//check if already timed in today
     	if(!empty($timedata)){
 			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
@@ -1058,6 +1059,8 @@ class DefaultController extends Controller{
 			    	$telcontact->setContact($request->request->get('telnum'));
 			    	$telcontact->save();
 
+					$email = new EmailController();
+					$sendemail = $email->addEmployeeEmail($request, $this);
 					$response = array('Added Successfully');
 	    			}
 	    		}else{
@@ -1693,21 +1696,11 @@ class DefaultController extends Controller{
 			}
 			array_push($request, $event);
 		}
-//		foreach ($timedintoday as $t){
-//		$event = array(
-//			'id' => $a->getId(),
-//			'title' => "Timed in",
-//			'color' => '#4CAF50',
-//			'editable' => false,
-//		);
-//		array_push($request, $event);
-//		}
 		echo json_encode($request);
 		exit;
 	}
 
 	public function adminEditProfileAction(Request $request){
-		echo 1;
 		$user = $this->getUser();
 		$empid = $request->request->get('empid');
 		$telId = $request->request->get('telid');
@@ -1766,6 +1759,8 @@ class DefaultController extends Controller{
 			$updatecell->save();
 		}
 		$response = array('Update Successful' => 'success');
+		$email = new EmailController();
+		$sendemail = $email->adminEditEmployeeProfileEmail($request, $this);
 		echo json_encode($response);
 		exit;
 	}
