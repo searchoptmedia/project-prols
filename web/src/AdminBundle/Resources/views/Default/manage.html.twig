@@ -20,23 +20,46 @@
                             <table class="bordered highlight emp-list">
                                 <thead>
                                 <tr>
-                                    <th data-field="id">Employee Number</th>
-                                    <th data-field="name">Name</th>
-                                    <th data-field="price">Department</th>
-                                    <th data-field="price">Position</th>
-                                    <th data-field="price">Status</th>
+                                    <th>Employee Number</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 {% for emp in getEmployee %}
                                     {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
-                                        <tr class="empProfile" data-empid="{{emp.getEmpAccAccId}}">
+                                        <tr class="empProfile">
+
                                             <td>{{emp.getEmployeeNumber}}</td>
                                             <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
                                             <td>{{emp.getListDept().DeptNames}}</td>
                                             <td>{{emp.getListPos().PosNames}}</td>
-                                            <td>{{emp.getStatus}}</td>
+                                            <td>{{ emp.status }}</td>
+                                            <td style="float: right;"><button class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+                                                <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
+                                                        data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                        data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                        data-empnum="{{ emp.getEmployeeNumber }}"
+                                                        data-department="{{emp.getListDept().id}}"
+                                                        data-position="{{emp.getListPos().id}}"
+                                                        data-status="{{emp.getStatus}}"
+                                                        data-email="{{ emp.EmpAcc.getEmail }}"
+                                                        data-address="{{ emp.address }}"
+                                                        data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                        {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                            data-cellphone="{{ contact.contact }}"
+                                                            data-cellphoneid="{{ contact.id }}"
+                                                        {% endfor %}
+                                                        {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                            data-telephone="{{ contact.contact }}"
+                                                            data-telphoneid="{{ contact.id }}"
+                                                        {% endfor %}
+                                                        data-empid="{{ emp.empAccAccId }}">Edit
+                                                </button></td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -60,6 +83,7 @@
             <form id="addemployeeform" method="post">
             <div class="modal-content add-employee-modal" >
                 <h4>Employee</h4>
+                <input type="hidden" name="employee-id" value="">
                 <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
                 <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
                 <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
@@ -201,6 +225,90 @@ $(document).ready(function(){
     picker.setDate('1990-01-01');
     $('select').material_select('destroy');
 
+    //init
+    bindClick();
+
+    //bind all clicks
+    var empid, telid, cellid;
+    function bindClick() {
+        $('.btnEditEmployee').bind('click', function() {
+            var fname = $(this).data('fname'),
+                    lname = $(this).data('lname'),
+                    empnum = $(this).data('empnum'),
+                    department = $(this).data('department'),
+                    position = $(this).data('position'),
+                    status = $(this).data('status'),
+                    email = $(this).data('email'),
+                    address = $(this).data('address'),
+                    bday = $(this).data('bday'),
+                    telnum = $(this).data('telephone'),
+                    celnum = $(this).data('cellphone');
+                    empid = $(this).data('empid');
+                    telid = $(this).data('telphoneid');
+                    cellid = $(this).data('cellphoneid');
+//            $('[]').val(name);
+            $('[name=employee-id]').val("1");
+            $('#username').val('');
+            $('#password').val('');
+            $('#confirmpassword').val('');
+            $('[name=username]').attr("disabled", true);
+            $('[name=password]').attr("disabled", true);
+            $('[name=repassword]').attr("disabled", true);
+            $('[name=fname]').val(fname);
+            $('[name=lname]').val(lname);
+            $('[name=empnum]').val(empnum);
+            $('[name=email]').val(email);
+            $('[name=telnum]').val(telnum);
+            $('[name=cellnum]').val(celnum);
+            $('[name=address]').val(address);
+            $('[name=bday]').val(bday);
+            $('[name=dept]').find('option[value="' + department + '"]').prop("selected", false);
+            $('[name=dept]').find('option[value="' + department + '"]').prop("selected", true);
+            $('[name=pos]').find('option[value="' + position + '"]').prop("selected",false);
+            $('[name=pos]').find('option[value="' + position + '"]').prop("selected",true);
+            $('[name=status]').find('option:contains("' + status + '")').prop("selected",false);
+            $('[name=status]').find('option:contains("' + status + '")').prop("selected",true);
+            $('select').material_select();
+            $('#modal-emp').openModal();
+            $('.missing-input').hide();
+            $('.password-not-match').hide();
+            $('.username-used').hide();
+            $('.addemp').html('Update')
+            $('.add-emp-success').html('<h5>Update Successful</h5>');
+
+        });
+
+        $('.btn-emp').bind('click', function() {
+            $('[name=username]').attr("disabled", false);
+            $('[name=password]').attr("disabled", false);
+            $('[name=repassword]').attr("disabled", false);
+            $('[name=employee-id]').val('');
+            $('#username').val('');
+            $('#password').val('');
+            $('#confirmpassword').val('');
+            $('#empnum').val('');
+            $('#fname').val('');
+            $('#lname').val('');
+            $('#dept').val('');
+            $('#pos').val('');
+            $('#status').val('');
+            $('#companyemail').val('');
+            $('#address').val('');
+            $('.bday').val('');
+            $('#telnum').val('');
+            $('#celnum').val('');
+            $('.missing-input').hide();
+            $('.password-not-match').hide();
+            $('.username-used').hide();
+            $('.modal-footer').show();
+            $('#modal-emp').openModal();
+            $('.addemp').html('Add');
+            $('.add-emp-success').html('<h5>Added Successfully</h5>');
+
+        });
+        console.log($('[name=employee-id]').val())
+
+    }
     $('.modal-export').click(function(){
         $('select').material_select('destroy');
     });
@@ -243,26 +351,26 @@ $(document).ready(function(){
         $('.department-used').hide();
     });
 
-    $('.btn-emp').click(function(){
-        $('#username').val('');
-        $('#password').val('');
-        $('#confirmpassword').val('');
-        $('#empnum').val('');
-        $('#fname').val('');
-        $('#lname').val('');
-        $('#dept').val('');
-        $('#pos').val('');
-        $('#status').val('');
-        $('#companyemail').val('');
-        $('#address').val('');
-        $('.bday').val('');
-        $('#telnum').val('');
-        $('#celnum').val('');
-        $('.missing-input').hide();
-        $('.password-not-match').hide();
-        $('.username-used').hide();
-        $('.modal-footer').show();
-    });
+//    $('.btn-emp').click(function(){
+//        $('#username').val('');
+//        $('#password').val('');
+//        $('#confirmpassword').val('');
+//        $('#empnum').val('');
+//        $('#fname').val('');
+//        $('#lname').val('');
+//        $('#dept').val('');
+//        $('#pos').val('');
+//        $('#status').val('');
+//        $('#companyemail').val('');
+//        $('#address').val('');
+//        $('.bday').val('');
+//        $('#telnum').val('');
+//        $('#celnum').val('');
+//        $('.missing-input').hide();
+//        $('.password-not-match').hide();
+//        $('.username-used').hide();
+//        $('.modal-footer').show();
+//    });
 
 
     var usernameinput, passwordinput, conpasswordinput, empnumber, fnameinput, lnameinput, departmentinput, positioninput, statusinput,
@@ -288,43 +396,46 @@ $(document).ready(function(){
         var dbuser = '{{ usedUsers.Username }}';
         var dbemail = '{{ usedUsers.Email }}';
         var dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
-        if(usernameinput == dbuser){
+        if($('[name=employee-id]').val() == 0) {
+
+            if (usernameinput == dbuser) {
                 $('.username-used').show();
                 $('.username-used').html('Username already used')
                 $('#username').css({'border-color': 'red'});
                 $('.missing-input').hide();
                 $('.password-not-match').hide();
                 document.getElementById("username").focus();
-                setTimeout(function(){
-                $('#username').css({'border-color' : '#9e9e9e'});
-                },1500);
+                setTimeout(function () {
+                    $('#username').css({'border-color': '#9e9e9e'});
+                }, 1500);
                 return false;
-        }
-        if(emailinput == dbemail){
-            $('.username-used').show()
-            $('.username-used').html('Email already used')
-            $('.missing-input').hide();
-            $('.password-not-match').hide();
-            $('#companyemail').css({'border-color' : 'red'});
-            document.getElementById("companyemail").focus();
-            setTimeout(function(){
-                $('#companyemail').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return false;
-        }
-
-        if(empnumber != ''){
-            if(empnumber == dbempnum){
+            }
+            if (emailinput == dbemail) {
                 $('.username-used').show()
-                $('.username-used').html('Employee Number already used')
+                $('.username-used').html('Email already used')
                 $('.missing-input').hide();
                 $('.password-not-match').hide();
-                $('#empnum').css({'border-color' : 'red'});
-                document.getElementById("empnum").focus();
-                setTimeout(function(){
-                    $('#empnum').css({'border-color' : '#9e9e9e'});
-                },1500);
+                $('#companyemail').css({'border-color': 'red'});
+                document.getElementById("companyemail").focus();
+                setTimeout(function () {
+                    $('#companyemail').css({'border-color': '#9e9e9e'});
+                }, 1500);
                 return false;
+            }
+
+            if (empnumber != '') {
+                if (empnumber == dbempnum) {
+                    $('.username-used').show()
+                    $('.username-used').html('Employee Number already used')
+                    $('.missing-input').hide();
+                    $('.password-not-match').hide();
+                    $('#empnum').css({'border-color': 'red'});
+                    document.getElementById("empnum").focus();
+                    setTimeout(function () {
+                        $('#empnum').css({'border-color': '#9e9e9e'});
+                    }, 1500);
+                    return false;
+                }
             }
         }
         {% endfor %}
@@ -342,9 +453,9 @@ $(document).ready(function(){
             },1500);
             return false;
         }
-        if(usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
+        if((usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
         fnameinput == '' || lnameinput == '' || departmentinput == null || positioninput == null || statusinput == null || emailinput == '' ||
-        addressinput == '' || bdayinput == ''){
+        addressinput == '' || bdayinput == '') && $('[name=employee-id]').val() == 0){
             if(bdayinput == '') {
                 $('.bday').css({'border-color': 'red'});
             }if(addressinput == ''){
@@ -363,13 +474,16 @@ $(document).ready(function(){
                 $('#fname').css({'border-color' : 'red'}).focus();
             }if(empnumber == ''){
                 $('#empnum').css({'border-color' : 'red'}).focus();
-            }if(conpasswordinput == ''){
-                $('#confirmpassword').css({'border-color' : 'red'}).focus();
-            }if(passwordinput == ''){
-                $('#password').css({'border-color' : 'red'}).focus();
-            }if(usernameinput == ''){
+            }if($('[name=employee-id]').val() == 0){
+                if(conpasswordinput == ''){
+                    $('#confirmpassword').css({'border-color' : 'red'}).focus();
+                }if(passwordinput == ''){
+                    $('#password').css({'border-color' : 'red'}).focus();
+                }if(usernameinput == ''){
                     $('#username').css({'border-color' : 'red'}).focus();
+                }
             }
+
             setTimeout(function(){
                 $('#username').css({'border-color' : '#9e9e9e'});
                 $('#password').css({'border-color' : '#9e9e9e'});
@@ -391,18 +505,38 @@ $(document).ready(function(){
         }
 
         $('#modal-emp').closeModal();
-        $('.add-emp-notif').css({'top' : '0px'});
-        setTimeout(function(){
-            $('.add-emp-notif').css({'top' : '-55px'});
-        }, 2000);
+
+        console.log(cellid)
         var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
         lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
-        cellnum:celnuminput, telnum:telnuminput};
+        cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid};
         $('.loader-notif').show().css({'top' : '0px'});
-        $.post('{{ path('add_employee') }}', input, function () {
-        }).always(function(data){
-            $('.loader-notif').hide().css({'top' : '-55px'});
-        });
+
+        if($('[name=employee-id]').val() != 1){
+            $.post('{{ path('add_employee') }}', input, function () {
+            }).always(function(data){
+                $('.loader-notif').hide().css({'top' : '-55px'});
+            }).done(function () {
+                $('.add-emp-notif').css({'top' : '0px'});
+                setTimeout(function(){
+                    $('.add-emp-notif').css({'top' : '-55px'});
+                    location.reload();
+                }, 2000);
+            });
+        }else{
+            $.post('{{ path('admin_edit_employee_profile') }}', input, function () {
+            }).always(function(data){
+                $('.loader-notif').hide().css({'top' : '-55px'});
+            }).done(function(){
+                $('.add-emp-notif').css({'top' : '0px'});
+                setTimeout(function(){
+                    $('.add-emp-notif').css({'top' : '-55px'});
+                    location.reload();
+                }, 2000);
+
+            });
+        }
+
         return false;
     });
 
@@ -485,7 +619,7 @@ $(document).ready(function(){
             });
         });
 
-    $('.empProfile').click(function(){
+    $('.view-profile-btn').click(function(){
         empId = $(this).data('empid');
         window.location.href = '{{ path('emp_page')}}' + empId;
     });

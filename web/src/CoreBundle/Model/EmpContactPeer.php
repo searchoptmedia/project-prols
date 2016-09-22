@@ -19,4 +19,14 @@ class EmpContactPeer extends BaseEmpContactPeer{
 
 		return $_self ? $_self : array();
 	}
+
+	public static function getAllContact(Criteria $c = null)
+	{
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+		$_self = self::doSelect($c);
+
+		return $_self ? $_self : array();
+	}
 }

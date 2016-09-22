@@ -73,3 +73,7 @@ admin_manage_working_time_new_day:
 admin_employee_list_report:
     path: /emplist/report
     defaults: { _controller:AdminBundle:EmployeeReport:generateEmployeeReport }
+
+admin_edit_employee_profile:
+    path: /admin/edit/empprofile
+    defaults: { _controller:AdminBundle:Default:adminEditProfile }

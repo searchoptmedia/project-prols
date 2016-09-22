@@ -1,3 +1,6 @@
+.emp-list tbody{
+    cursor: default;
+}
 .select-emp-tag{
     width:350px;
 }

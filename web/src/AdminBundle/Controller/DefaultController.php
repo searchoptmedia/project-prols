@@ -160,6 +160,7 @@ class DefaultController extends Controller{
 			$ip_checker = 0;
 		}
 
+		$timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
 		$allusers = EmpProfilePeer::getAllProfile();
 		$allacc = EmpAccPeer::getAllUser();
 		$userbdaynames = array();
@@ -193,6 +194,7 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
 			'allacc' => $allacc,
+			't' => $timedintoday,
 
         ));
     }
@@ -842,6 +844,8 @@ class DefaultController extends Controller{
 			$AllUsers = EmpAccPeer::getAllUser();
 			$AllDepartments = ListDeptPeer::getAllDept();
 			$AllPositions = ListPosPeer::getAllPos();
+			
+			$getContact = EmpContactPeer::getAllContact();
 
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
         	'name' => $name,
@@ -869,6 +873,7 @@ class DefaultController extends Controller{
 			'allusers' => $AllUsers,
 			'alldept' => $AllDepartments,
 			'allpos' => $AllPositions,
+			'getContact' => $getContact
         	));       
 		} 	
     }
@@ -1068,6 +1073,7 @@ class DefaultController extends Controller{
 
 		$email = new EmailController();
 
+		
 		$sendemail = $email->requestTypeEmail($req, $this);
 
 		$requestMeeting = new EmpRequest();
@@ -1607,7 +1613,9 @@ class DefaultController extends Controller{
 
 	public function addRequestCalendarAction(){
 		$allRequest = EmpRequestPeer::getAllAcceptedRequest();
-
+		$datetoday = date('Y-m-d');
+		$timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
+		
 		$request = [];
 		foreach ($allRequest as $a){
 		$requesttype = $a->getListRequestTypeId();
@@ -1683,10 +1691,82 @@ class DefaultController extends Controller{
 					'requesttype' => $a->getListRequestType()->getRequestType(),
 				);
 			}
-
 			array_push($request, $event);
 		}
+//		foreach ($timedintoday as $t){
+//		$event = array(
+//			'id' => $a->getId(),
+//			'title' => "Timed in",
+//			'color' => '#4CAF50',
+//			'editable' => false,
+//		);
+//		array_push($request, $event);
+//		}
 		echo json_encode($request);
+		exit;
+	}
+
+	public function adminEditProfileAction(Request $request){
+		echo 1;
+		$user = $this->getUser();
+		$empid = $request->request->get('empid');
+		$telId = $request->request->get('telid');
+		$mobileId = $request->request->get('cellid');
+
+		$empNum = $request->request->get('empnum');
+		$empFname = $request->request->get('fname');
+		$empLname = $request->request->get('lname');
+		$empAddress = $request->request->get('address');
+		$empBday = $request->request->get('bday');
+		$empDept = $request->request->get('dept');
+		$empPos = $request->request->get('pos');
+		$empStatus = $request->request->get('status');
+		$empEmail = $request->request->get('email');
+		$empTelNum = $request->request->get('telnum');
+		$empCelNum = $request->request->get('cellnum');
+
+		$updateAcc = EmpAccPeer::getAcc($empid);
+		$updateAcc->setEmail($empEmail);
+		$updateAcc->save();
+
+		$updateprofile = EmpProfilePeer::getInformation($empid);
+		$updateprofile->setFname($empFname);
+		$updateprofile->setLname($empLname);
+		$updateprofile->setEmployeeNumber($empNum);
+		$updateprofile->setAddress($empAddress);
+		$updateprofile->setBday($empBday);
+		$updateprofile->setListDeptDeptId($empDept);
+		$updateprofile->setListPosPosId($empPos);
+		$updateprofile->setStatus($empStatus);
+		$updateprofile->setAddress($request->request->get('address'));
+		$updateprofile->save();
+
+		$profileId = $updateprofile->getId();
+
+		$updatetel = EmpContactPeer::retrieveByPk($telId);
+		if(empty($updatetel)){
+			$newtel = new EmpContact();
+			$newtel->setContact($empTelNum);
+			$newtel->setEmpProfileId($profileId);
+			$newtel->setListContTypesId(3);
+			$newtel->save();
+		}else{
+			$updatetel->setContact($empTelNum);
+			$updatetel->save();
+		}
+		$updatecell = EmpContactPeer::retrieveByPk($mobileId);
+		if(empty($updatecell)){
+			$newcel = new EmpContact();
+			$newcel->setContact($empCelNum);
+			$newcel->setEmpProfileId($profileId);
+			$newcel->setListContTypesId(2);
+			$newcel->save();
+		}else{
+			$updatecell->setContact($empCelNum);
+			$updatecell->save();
+		}
+		$response = array('Update Successful' => 'success');
+		echo json_encode($response);
 		exit;
 	}
 

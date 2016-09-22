@@ -81,26 +81,39 @@ class EmailController extends Controller {
 
     public function acceptRequestEmail($req, $class)
     {
-        $user = $class->getUser();
-        $id   = $user->getId();
-        $emp = EmpAccPeer::retrieveByPK($req->request->get('empId'));
-        $empemail = $emp->getEmail();
-        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
-        $empname = $empinfo->getFname() . " " .$empinfo->getLname();
-        //admin profile information
-        $data = EmpProfilePeer::getInformation($id);
-        $name = $data->getFname(). " " .$data->getLname();
+        $param  = $req->request->all();
+        $empid  = $param['empId'];
+        $reqName =   $param['requestname'];
+        $user   = $class->getUser();
+        $id     = $user->getId();
 
-        $subject = $req->request->get('requestname') . " " . " Request Accepted";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($empemail);
+        $employee = EmpAccPeer::retrieveByPK($empid);
 
-        $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $req->request->get('requestname') .
-            "</b> request was accepted by <b>". $name .
-            "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
-            "<br>Date ended: ". $req->request->get('dateend');
+        if(! empty($employee)) {
+            $empemail = $employee->getEmail();
+            $empinfo = EmpProfilePeer::getInformation($employee->getId());
+            $empname = $empinfo->getFname() . " " .$empinfo->getLname();
 
-        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+            //admin profile information
+            $data = EmpProfilePeer::getInformation($id);
+            $name = $data->getFname(). " " .$data->getLname();
+
+            $subject = $req->request->get('requestname') . " " . " Request Accepted";
+            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+            $to      = array($empemail);
+
+            $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $reqName .
+                "</b> request was accepted by <b>". $name .
+                "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
+                "<br>Date ended: ". $req->request->get('dateend');
+
+            $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+
+        } else {
+
+        }
+
+
 
         return $email ? 1: 0;
     }

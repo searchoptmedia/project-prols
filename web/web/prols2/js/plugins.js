@@ -515,9 +515,13 @@ $(function() {
                 prepare_external_list();
 
                 var calendar = $('#calendar').fullCalendar({
-                    events: '/addevent/acceptrequest',
+                    events:
+                        {
+                            url: '/addevent/acceptrequest',
+                        },
 
                     eventClick: function(calEvent){
+                        
                     },
 
                     dayClick: function(date){
@@ -528,7 +532,6 @@ $(function() {
                         $('#calendar').fullCalendar('clientEvents', function (event) {
                             if (moment(date).format('MM-DD-YYYY') == moment(event.start).format('MM-DD-YYYY')){
                                 $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.requesttype +'</span><p>'+ event.empname +'</p></li>');
-
                             }
                             if (moment(date).format('MM-DD-YYYY') == moment(event._end).format('MM-DD-YYYY')){
 

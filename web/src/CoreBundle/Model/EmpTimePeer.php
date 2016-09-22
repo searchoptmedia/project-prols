@@ -42,6 +42,17 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		return $_self ? $_self : array();
 	}
 
+	public static function getAllTimeToday($date, Criteria $c = null)
+	{
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+		$c->add(self::DATE, $date, Criteria::EQUAL);
+		$_self = self::doSelect($c);
+
+		return $_self ? $_self : array();
+	}
+
 	public static function getEmployeeTimes(Criteria $c = null)
 	{
 		if(is_null($c)){
