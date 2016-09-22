@@ -1,3 +1,6 @@
+.manageemployees-content{
+    padding-bottom: 140px;
+}
 .emp-list tbody{
     cursor: default;
 }
