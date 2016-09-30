@@ -84,14 +84,14 @@ class DefaultController extends Controller{
     	$name = $user->getUsername();
 		$page = 'Home';
     	$role = $user->getRole();
-    	$id = $user->getId();
+    	$id   = $user->getId();
 
-		$timename = self::timeInOut($id);   
-		$overtime = 0;
-		$timedata = EmpTimePeer::getTime($id);
-		$currenttimein = 0;
+		$timename 		= self::timeInOut($id);
+		$overtime 		= 0;
+		$timedata 		= EmpTimePeer::getTime($id);
+		$currenttimein 	= 0;
 		$currenttimeout = 0;
-		$timeflag = 0;
+		$timeflag 		= 0;
 
 		//get last timed in 
 	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
@@ -99,8 +99,6 @@ class DefaultController extends Controller{
     			$checktimeout = $timedata[$ctr]->getTimeOut();
     			if(!is_null($checktimein) && is_null($checktimeout)){
     				$currenttimein = $checktimein->format('h:i A');
-    				
-
     			}else{
     				$currenttimein = 0;
     				$currenttimeout = $checktimeout->format('h:i A');
@@ -110,19 +108,19 @@ class DefaultController extends Controller{
 		$datetoday = date('Y-m-d');
     	//check if already timed in today
     	if(!empty($timedata)){
-			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-			$datetoday = date('Y-m-d');
-			$emp_time = EmpTimePeer::getTime($id);
-			$currenttime = sizeof($emp_time) - 1;
-			$timein_data = $emp_time[$currenttime]->getTimeIn();
-			$timeout_data = $emp_time[$currenttime]->getTimeOut();
-			$checkipdata = $emp_time[$currenttime]->getCheckIp();
+			$overtime 		= date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+			$datetoday 		= date('Y-m-d');
+			$emp_time 		= EmpTimePeer::getTime($id);
+			$currenttime 	= sizeof($emp_time) - 1;
+			$timein_data 	= $emp_time[$currenttime]->getTimeIn();
+			$timeout_data 	= $emp_time[$currenttime]->getTimeOut();
+			$checkipdata 	= $emp_time[$currenttime]->getCheckIp();
     	}
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
 			$emptimedate = $et->getDate();
-			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
+			$lasttimein	 = $et->getTimeIn()->format('M d, Y, h:i A');
 			if($emptimedate->format('Y-m-d') == $datetoday){
 				$timeflag = 1;
 			}
@@ -133,10 +131,9 @@ class DefaultController extends Controller{
 			$isTimeOut = 'true';
 		}
 
-
-		$systime = date('H:i A');
-		$timetoday = date('h:i A');
-		$afternoon = date('H:i A', strtotime('12 pm'));
+		$systime 	= date('H:i A');
+		$timetoday 	= date('h:i A');
+		$afternoon 	= date('H:i A', strtotime('12 pm'));
 		//counts number of pending requests
 
 		$requestcount = EmpRequestQuery::create()
@@ -146,15 +143,12 @@ class DefaultController extends Controller{
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
 
-//		var_dump($this->getRequest()->server->all());
-//		exit;
 		if(!is_null($ip_add)){
 			$matchedip = $ip_add->getAllowedIp();
 		}
     	else{
     		$matchedip = '';
     	}
-
 		if($userip == $matchedip){
 			$ip_checker = 1;
 		}else{
@@ -162,12 +156,11 @@ class DefaultController extends Controller{
 		}
 
 		$timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
-		$allusers = EmpProfilePeer::getAllProfile();
-		$allacc = EmpAccPeer::getAllUser();
+		$allusers 	  = EmpProfilePeer::getAllProfile();
+		$allacc 	  = EmpAccPeer::getAllUser();
 		$userbdaynames = array();
 		foreach($allusers as $u){
 			$bday = $u->getBday()->format('m-d');
-//			echo $datetoday . "|" .$bday . '<br>';
 			if($bday == date('m-d')){
 				$userbdaynames[] = $u->getFname();
 			}
@@ -418,47 +411,47 @@ class DefaultController extends Controller{
     	
     	$page = 'Profile';
     	//employee account information
-    	$user = $this->getUser();
-    	$name = $user->getUsername();
-    	$role = $user->getRole();
-    	$pw = $user->getPassword();
-    	$id = $user->getId();
+    	$user  = $this->getUser();
+    	$name  = $user->getUsername();
+    	$role  = $user->getRole();
+    	$pw    = $user->getPassword();
+    	$id    = $user->getId();
 		$user2 = EmpAccPeer::retrieveByPK($id);
 
 		//employee profile information
-		$data = EmpProfilePeer::getInformation($id);
+		$data  = EmpProfilePeer::getInformation($id);
 		$data2 = EmpProfilePeer::getInformation($id);
 
-		$fname = $data->getFname();
-		$lname = $data->getLname();
-		$mname = $data->getMname();
-		$bday = $data->getBday();
-//		$bday = date_format($bday, 'd/m/y');
-		$address = $data->getAddress();
-		$img = $data->getImgPath();
+		$fname 		= $data->getFname();
+		$lname 		= $data->getLname();
+		$mname 		= $data->getMname();
+		$bday 		= $data->getBday();
+//		$bday 		= date_format($bday, 'd/m/y');
+		$address 	= $data->getAddress();
+		$img 		= $data->getImgPath();
 		$datejoined = $data->getDateJoined();
 //		$datejoined = date_format($datejoined, 'd/m/y');
-		$profileid = $data->getId();
-		$deptid = $data->getListDeptDeptId();
+		$profileid 	= $data->getId();
+		$deptid 	= $data->getListDeptDeptId();
 		
 		//employee contact information
 		
-		$datacontact = EmpContactPeer::getContact($profileid);		
-		$contact = '';
-		$conEmail = '';
-		$conMobile = '';
-		$conTele = '';
-		$conEmailId = '';
-		$conMobileId = '';
-		$conTeleId = '';
-		 $contacttype = '';
+		$datacontact  = EmpContactPeer::getContact($profileid);		
+		$contact 	  = '';
+		$conEmail 	  = '';
+		$conMobile 	  = '';
+		$conTele 	  = '';
+		$conEmailId   = '';
+		$conMobileId  = '';
+		$conTeleId 	  = '';
+		$contacttype  = '';
 
 		if(!is_null($datacontact)){
 			for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
     			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
-				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
+				$contacttype  =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 				$contactvalue =  $datacontact[$ct]->getContact();
-				$contactid = $datacontact[$ct]->getId();
+				$contactid 	  = $datacontact[$ct]->getId();
 				if(strcasecmp($contacttype, 'email') == 0){
 					$conEmail .= $contactvalue;
 					$conEmailId .= $contactid;
@@ -485,20 +478,20 @@ class DefaultController extends Controller{
 
 		if(!is_null($datawork)){
 			$workdeptid = $datawork->getListDeptDeptId();
-			$workposid = $datawork->getListPosPosId();
-			$empnumber = $datawork->getEmployeeNumber();
+			$workposid  = $datawork->getListPosPosId();
+			$empnumber  = $datawork->getEmployeeNumber();
 
-			$datadept = ListDeptPeer::getDept($workdeptid);
-			$datapos = ListPosPeer::getPos($workposid);
+			$datadept   = ListDeptPeer::getDept($workdeptid);
+			$datapos 	= ListPosPeer::getPos($workposid);
 
-			$deptnames = $datadept->getDeptNames();
-			$posStatus = $datapos->getPosNames();
+			$deptnames  = $datadept->getDeptNames();
+			$posStatus 	= $datapos->getPosNames();
 		}else{
 			$workdeptid = null;
-			$workposid = null;
-			$empnumber = null;
-			$deptnames = null;
-			$posStatus = null;
+			$workposid  = null;
+			$empnumber  = null;
+			$deptnames  = null;
+			$posStatus  = null;
 		}
 
 		$timename = self::timeInOut($id);    	
@@ -519,35 +512,35 @@ class DefaultController extends Controller{
     		}	
     	}
 
-		$timedata = EmpTimePeer::getTime($id);
-		$timeflag = 0;
-		$currenttimein = 0;
+		$timedata 		= EmpTimePeer::getTime($id);
+		$timeflag 		= 0;
+		$currenttimein 	= 0;
 		$currenttimeout = 0;
 	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-    			$checktimein = $timedata[$ctr]->getTimeIn();
+    			$checktimein  = $timedata[$ctr]->getTimeIn();
     			$checktimeout = $timedata[$ctr]->getTimeOut();
     			if(!is_null($checktimein) && is_null($checktimeout)){
     				$currenttimein = $checktimein->format('h:i A');
     				
     			}else{
-    				$currenttimein = 0;
+    				$currenttimein  = 0;
     				$currenttimeout = $checktimeout->format('h:i A');
     			}
     		}
     	$timeoutdata = '';
     	$checkipdata = null;
     	if(!empty($timedata)){
-    	$datetoday = date('Y-m-d');
-    	$emp_time = EmpTimePeer::getTime($id);
-    	$currenttime = sizeof($emp_time) - 1;
-    	$timein_data = $emp_time[$currenttime]->getTimeIn();
-		$timeout_data = $emp_time[$currenttime]->getTimeOut();
-		$checkipdata = $emp_time[$currenttime]->getCheckIp();
+    	$datetoday 		= date('Y-m-d');
+    	$emp_time 		= EmpTimePeer::getTime($id);
+    	$currenttime 	= sizeof($emp_time) - 1;
+    	$timein_data 	= $emp_time[$currenttime]->getTimeIn();
+		$timeout_data 	= $emp_time[$currenttime]->getTimeOut();
+		$checkipdata 	= $emp_time[$currenttime]->getCheckIp();
     	}
-    	$firstchar = $fname[0];
-		$systime = date('h:i A');
-		$timetoday = date('h:i A');
-		$afternoon = date('h:i A', strtotime('12 pm'));
+    	$firstchar 	= $fname[0];
+		$systime 	= date('h:i A');
+		$timetoday 	= date('h:i A');
+		$afternoon 	= date('h:i A', strtotime('12 pm'));
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
 		if(!empty($et)){
@@ -622,7 +615,7 @@ class DefaultController extends Controller{
     	$name = $user->getUsername();
 		$page = 'View Request';
     	$role = $user->getRole();
-    	$id = $user->getId();
+    	$id   = $user->getId();
 
 		$timename = self::timeInOut($id); 
 		// redirect to index if not Admin
@@ -984,37 +977,29 @@ class DefaultController extends Controller{
     	if((strcasecmp($role, 'employee') == 0)){
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}else{
-			$pass = $request->request->get('password');
-	    	$repass = $request->request->get('repassword');
-	    	$user = $request->request->get('username');
-	    	$empNum = $request->request->get('empnum');
-		    $empFname = $request->request->get('fname');
-		    $empLname = $request->request->get('lname');
+			$pass 		= $request->request->get('password');
+	    	$repass 	= $request->request->get('repassword');
+	    	$user 		= $request->request->get('username');
+	    	$empNum 	= $request->request->get('empnum');
+		    $empFname 	= $request->request->get('fname');
+		    $empLname 	= $request->request->get('lname');
 	    	$empAddress = $request->request->get('address');
-	    	$empBday = $request->request->get('bday');
-	    	$empDept = $request->request->get('dept');
-	    	$empPos = $request->request->get('pos');
-	    	$empStatus = $request->request->get('status');
-			$empEmail = $request->request->get('email');
-			$empTelNum = $request->request->get('telnum');
-			$empCelNum = $request->request->get('cellnum');
+	    	$empBday 	= $request->request->get('bday');
+	    	$empDept 	= $request->request->get('dept');
+	    	$empPos 	= $request->request->get('pos');
+	    	$empStatus 	= $request->request->get('status');
+			$empEmail 	= $request->request->get('email');
+			$empTelNum 	= $request->request->get('telnum');
+			$empCelNum 	= $request->request->get('cellnum');
+			$sss		= $request->request->get('sss');
+			$bir		= $request->request->get('bir');
+			$philhealth	= $request->request->get('philhealth');
 
 		    date_default_timezone_set('Asia/Manila');
 		    $datetimetoday = date('Y-m-d H:i:s');
 
-//			$AllUser = EmpAccPeer::getAllUser();
-//
-//			for ($ctr = 0; $ctr < sizeof($AllUser); $ctr++){
-//				$usedUsername = $AllUser[$ctr]->getUsername();
-//				if($usedUsername == $user){
-//					$response = array('Username already used');
-//					echo json_encode($response);
-//					exit;
-//				}
-//			}
-
 	  		//check if input is empty
-	    	if(!empty($empNum) && !empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
+	    	if(!empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
 	    		&& !empty($empDept) && !empty($empPos) && !empty($empPos) && !empty($empStatus) && !empty($user)
 	    		&& !empty($pass) && !empty($repass)){
 	    		//Check password and repassword
@@ -1044,19 +1029,22 @@ class DefaultController extends Controller{
 			    	$addemp->setListDeptDeptId($empDept);
 			    	$addemp->setListPosPosId($empPos);
 			    	$addemp->setStatus($empStatus);
+					$addemp->setSss($sss);
+					$addemp->setBir($bir);
+					$addemp->setPhilhealth($philhealth);
 			    	$addemp->save();
 			    	$empid = $addemp->getId();
 
 			    	$cellcontact = new EmpContact();
 			    	$cellcontact->setEmpProfileId($empid);
 			    	$cellcontact->setListContTypesId(2);
-			    	$cellcontact->setContact($request->request->get('cellnum'));
+			    	$cellcontact->setContact($empCelNum);
 			    	$cellcontact->save();
 
 					$telcontact = new EmpContact();
 			    	$telcontact->setEmpProfileId($empid);
 			    	$telcontact->setListContTypesId(3);
-			    	$telcontact->setContact($request->request->get('telnum'));
+			    	$telcontact->setContact($empTelNum);
 			    	$telcontact->save();
 
 					$email = new EmailController();
@@ -1073,19 +1061,19 @@ class DefaultController extends Controller{
     }
 	
 	public function requestMeetingAction(Request $req){
-
-		$email = new EmailController();
-
 		
-		$sendemail = $email->requestTypeEmail($req, $this);
+		$email = new EmailController();
+		
+		$sendemailemp = $email->RequestMeetingEmail($req, $this);
+		$sendemailadmin = $email->requestTypeEmail($req, $this);
 
 		$requestMeeting = new EmpRequest();
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
 		$requestMeeting->setRequest($req->request->get('reqmeetmessage'));
 		$requestMeeting->setStatus('Pending');
-		$requestMeeting->setDateStarted($current_date);
-		$requestMeeting->setDateEnded($current_date);
+		$requestMeeting->setDateStarted($req->request->get('reqmeetdate'));
+		$requestMeeting->setDateEnded($req->request->get('reqmeetdate'));
 		$requestMeeting->setEmpAccId($this->getUser()->getId());
 		$requestMeeting->setListRequestTypeId(4);
 		$requestMeeting->save();
@@ -1158,33 +1146,27 @@ class DefaultController extends Controller{
 	}
 
 	public function notifAction(){
-		$user = $this->getUser();
-    	$name = $user->getUsername();
-		$page = 'View Request';
-    	$role = $user->getRole();
-    	$id = $user->getId();
+		$user 	= $this->getUser();
+    	$name 	= $user->getUsername();
+		$page 	= 'View Request';
+    	$role 	= $user->getRole();
+    	$id 	= $user->getId();
 		$timename = self::timeInOut($id); 
 
-//		$data = EmpLeaveQuery::create()
-//		->filterByStatus('Pending')
-//		->find()->count();
-
-		$getRequests = EmpRequestPeer::getAllRequest();
-		$timedata = EmpTimePeer::getTime($id);
-		$currenttimein = 0;
+		$getRequests 	= EmpRequestPeer::getAllRequest();
+		$timedata 		= EmpTimePeer::getTime($id);
+		$currenttimein 	= 0;
 		$currenttimeout = 0;
-		$timeflag = 0;
+		$timeflag 		= 0;
 
 		//get last timed in
 		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-			$checktimein = $timedata[$ctr]->getTimeIn();
+			$checktimein  = $timedata[$ctr]->getTimeIn();
 			$checktimeout = $timedata[$ctr]->getTimeOut();
 			if(!is_null($checktimein) && is_null($checktimeout)){
 				$currenttimein = $checktimein->format('h:i A');
-
-
 			}else{
-				$currenttimein = 0;
+				$currenttimein 	= 0;
 				$currenttimeout = $checktimeout->format('h:i A');
 			}
 		}
@@ -1192,15 +1174,13 @@ class DefaultController extends Controller{
 		//check if already timed in today
 		if(!empty($timedata)){
 
-			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-			$datetoday = date('Y-m-d');
-			$emp_time = EmpTimePeer::getTime($id);
-			$currenttime = sizeof($emp_time) - 1;
-			$timein_data = $emp_time[$currenttime]->getTimeIn();
+			$overtime 	  = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+			$datetoday    = date('Y-m-d');
+			$emp_time 	  = EmpTimePeer::getTime($id);
+			$currenttime  = sizeof($emp_time) - 1;
+			$timein_data  = $emp_time[$currenttime]->getTimeIn();
 			$timeout_data = $emp_time[$currenttime]->getTimeOut();
-			$checkipdata = $emp_time[$currenttime]->getCheckIp();
-			// echo $checkipdata;
-
+			$checkipdata  = $emp_time[$currenttime]->getCheckIp();
 		}
 
 		$systime = date('H:i A');
@@ -1219,8 +1199,6 @@ class DefaultController extends Controller{
 			}
 			if(! empty($et->getTimeOut()))
 				$isTimeOut = 'true';
-
-
 		}
 
 		$requestcount = EmpRequestQuery::create()
@@ -1250,10 +1228,10 @@ class DefaultController extends Controller{
 	}
 
 	public function employeeProfileAction($id){
-		$user = $this->getUser();
-    	$name = $user->getUsername();
-    	$role = $user->getRole();
-    	$adminid = $user->getId();
+		$user 	  = $this->getUser();
+    	$name 	  = $user->getUsername();
+    	$role 	  = $user->getRole();
+    	$adminid  = $user->getId();
 		$timename = self::timeInOut($adminid);
 		if((strcasecmp($role, 'employee') == 0)){
 			return $this->redirect($this->generateUrl('admin_homepage'));
@@ -1263,20 +1241,20 @@ class DefaultController extends Controller{
 		$user2 = EmpAccPeer::retrieveByPK($id);
 
 		//employee profile information
-		$data = EmpProfilePeer::getInformation($id);
+		$data  = EmpProfilePeer::getInformation($id);
 		$data2 = EmpProfilePeer::getInformation($id);
 
-		$fname = $data->getFname();
-		$lname = $data->getLname();
-		$mname = $data->getMname();
-		$bday = $data->getBday();
-//		$bday = date_format($bday, 'd/m/y');
-		$address = $data->getAddress();
-		$img = $data->getImgPath();
+		$fname 	= $data->getFname();
+		$lname 	= $data->getLname();
+		$mname 	= $data->getMname();
+		$bday 	= $data->getBday();
+//		$bday 	= date_format($bday, 'd/m/y');
+		$img 	= $data->getImgPath();
+		$address 	= $data->getAddress();
 		$datejoined = $data->getDateJoined();
 //		$datejoined = date_format($datejoined, 'd/m/y');
-		$profileid = $data->getId();
-		$deptid = $data->getListDeptDeptId();
+		$profileid 	= $data->getId();
+		$deptid 	= $data->getListDeptDeptId();
 
 		//employee contact information
 
@@ -1383,7 +1361,7 @@ class DefaultController extends Controller{
 
 		}
 		$firstchar = $fname[0];
-		$systime = date('H:i A');
+		$systime   = date('H:i A');
 		$timetoday = date('h:i A');
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
@@ -1410,9 +1388,6 @@ class DefaultController extends Controller{
 				}else{
 					$over = 0;
 				}
-
-
-
 			}
 		}
 		$et = EmpTimePeer::getEmpLastTimein($adminid);
@@ -1425,7 +1400,6 @@ class DefaultController extends Controller{
 			if(! empty($et->getTimeOut()))
 				$isTimeOut = 'true';
 		}
-
 
 		$userip = InitController::getUserIP($this);
 		$ip_add = ListIpPeer::getValidIP($userip);
@@ -1531,33 +1505,6 @@ class DefaultController extends Controller{
 			$response = array('response' => 'not found');
 		}
 
-
-  //   	$user = $this->getUser();
-  //   	$id = $user->getId();
-
-		// //employee profile information
-		// $data = EmpProfilePeer::getInformation($id);
-		// $name = $data->getFname(). " " .$data->getLname();
-		// $profileid = $data->getId();
-		
-		// //employee contact information
-		// $datacontact = EmpContactPeer::getContact($profileid);		
-		// $conEmail = '';
-
-		// if(!is_null($datacontact)){
-		// 	for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
-  //   			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
-		// 		$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
-		// 		$contactvalue =  $datacontact[$ct]->getContact();
-		// 		if(strcasecmp($contacttype, 'email') == 0){
-		// 			$conEmail = $contactvalue;
-		// 		}
-  //  			}
-		// }else{
-		// 	$conEmail = null;
-		// }
-
-
 		echo json_encode($response);
 		exit;
     }
@@ -1584,11 +1531,11 @@ class DefaultController extends Controller{
     }
 
 	public function changePasswordAction(Request $request){
-		$response = '';
-		$error = '';
-		$user = $this->getUser();
-		$userid = $user->getId();
-		$getinfo = EmpAccPeer::retrieveByPk($userid);
+		$response 	= '';
+		$error 		= '';
+		$user 		= $this->getUser();
+		$userid 	= $user->getId();
+		$getinfo 	= EmpAccPeer::retrieveByPk($userid);
 		if(!is_null($getinfo)){
 			$oldpass = $getinfo->getPassword();
 			$inputpass = $request->request->get('oldpass');
@@ -1603,15 +1550,11 @@ class DefaultController extends Controller{
 				$response = 'Wrong Password';
 				$error = true;
 			}
-
 		}
 
 		$resp = array('response' => $response, 'error' => $error);
 		echo json_encode($resp);
 		exit;
-		//   	echo json_encode($response);
-		//   	$referer = $request->headers->get('referer');
-		// return new RedirectResponse($referer);
 	}
 
 	public function addRequestCalendarAction(){
@@ -1629,12 +1572,11 @@ class DefaultController extends Controller{
 					'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'start' => $a->getDateStarted()->format('Y-m-d'),
-					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:59'),
 					'editable' => false,
 					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'requesttype' => $a->getListRequestType()->getRequestType(),
-
 				);
 			}else if($requesttype == 2){
 				$event = array(
@@ -1643,7 +1585,7 @@ class DefaultController extends Controller{
 					'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'start' => $a->getDateStarted()->format('Y-m-d'),
-					'end' => $a->getDateEnded()->format('Y-m-d, 23:59:00'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:59'),
 					'color' => '#ff9800',
 					'editable' => false,
 					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
@@ -1657,7 +1599,7 @@ class DefaultController extends Controller{
 					'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'start' => $a->getDateStarted()->format('Y-m-d'),
-					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:59'),
 					'color' => '#9e9e9e',
 					'editable' => false,
 					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
@@ -1671,7 +1613,7 @@ class DefaultController extends Controller{
 					'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'start' => $a->getDateStarted()->format('Y-m-d'),
-					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:59'),
 					'color' => '#4CAF50',
 					'editable' => false,
 					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
@@ -1686,7 +1628,7 @@ class DefaultController extends Controller{
 					'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
 						$a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
 					'start' => $a->getDateStarted()->format('Y-m-d'),
-					'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
+					'end' => $a->getDateEnded()->format('Y-m-d 23:59:59'),
 					'color' => '#F44336',
 					'editable' => false,
 					'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
@@ -1696,27 +1638,49 @@ class DefaultController extends Controller{
 			}
 			array_push($request, $event);
 		}
+//
+//		$arraycontainer = [];
+//		foreach($timedintoday as $t){
+//			$timein = $t->getTimeIn()->format('H:i A') . " - " . $t->getEmpAcc()->getEmpProfiles()[0]->getFname() . " " . $t->getEmpAcc()->getEmpProfiles()[0]->getLname();
+//			array_push($arraycontainer, $timein);
+//		}
+//
+//		$arraycontainer = implode('<br>', $arraycontainer);
+//
+//		$eventTimeIn = array(
+//				'start' => $datetoday,
+//				'title' => 'Timed in today',
+//				'color' => "#4CAF50",
+//				'editable' => false,
+//				'empname' => $arraycontainer,
+//				'requesttype' => 'Timed in today',
+//			);
+//			array_push($request, $eventTimeIn);
+
 		echo json_encode($request);
 		exit;
 	}
 
 	public function adminEditProfileAction(Request $request){
-		$user = $this->getUser();
-		$empid = $request->request->get('empid');
-		$telId = $request->request->get('telid');
+		$user 	  = $this->getUser();
+		$empid 	  = $request->request->get('empid');
+		$telId 	  = $request->request->get('telid');
 		$mobileId = $request->request->get('cellid');
 
-		$empNum = $request->request->get('empnum');
-		$empFname = $request->request->get('fname');
-		$empLname = $request->request->get('lname');
+		$empNum 	= $request->request->get('empnum');
+		$empFname 	= $request->request->get('fname');
+		$empLname 	= $request->request->get('lname');
 		$empAddress = $request->request->get('address');
-		$empBday = $request->request->get('bday');
-		$empDept = $request->request->get('dept');
-		$empPos = $request->request->get('pos');
-		$empStatus = $request->request->get('status');
-		$empEmail = $request->request->get('email');
-		$empTelNum = $request->request->get('telnum');
-		$empCelNum = $request->request->get('cellnum');
+		$empBday 	= $request->request->get('bday');
+		$empDept 	= $request->request->get('dept');
+		$empPos 	= $request->request->get('pos');
+		$empStatus 	= $request->request->get('status');
+		$empEmail 	= $request->request->get('email');
+		$empTelNum 	= $request->request->get('telnum');
+		$empCelNum 	= $request->request->get('cellnum');
+		$sss		= $request->request->get('sss');
+		$bir		= $request->request->get('bir');
+		$philhealth	= $request->request->get('philhealth');
 
 		$updateAcc = EmpAccPeer::getAcc($empid);
 		$updateAcc->setEmail($empEmail);
@@ -1731,7 +1695,9 @@ class DefaultController extends Controller{
 		$updateprofile->setListDeptDeptId($empDept);
 		$updateprofile->setListPosPosId($empPos);
 		$updateprofile->setStatus($empStatus);
-		$updateprofile->setAddress($request->request->get('address'));
+		$updateprofile->setSss($sss);
+		$updateprofile->setBir($bir);
+		$updateprofile->setPhilhealth($philhealth);
 		$updateprofile->save();
 
 		$profileId = $updateprofile->getId();
@@ -1889,5 +1855,7 @@ class DefaultController extends Controller{
 		$response->headers->set('Content-Disposition', 'attachment; filename="export.csv"');
 		return $response;
 	}
+	
+
 //end
 }

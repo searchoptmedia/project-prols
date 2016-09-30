@@ -55,12 +55,12 @@ class EmailController extends Controller {
 
     public function declinedRequestEmail($req, $class)
     {
-        $user = $class->getUser();
-        $id   = $user->getId();
-        $emp = EmpAccPeer::retrieveByPK($req->request->get('empId'));
+        $user     = $class->getUser();
+        $id       = $user->getId();
+        $emp      = EmpAccPeer::retrieveByPK($req->request->get('empId'));
         $empemail = $emp->getEmail();
-        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
-        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+        $empinfo  = EmpProfilePeer::getInformation($req->request->get('empId'));
+        $empname  = $empinfo->getFname() . " " . $empinfo->getLname();
         //admin profile information
         $data = EmpProfilePeer::getInformation($id);
         $name = $data->getFname(). " " .$data->getLname();
@@ -81,18 +81,18 @@ class EmailController extends Controller {
 
     public function acceptRequestEmail($req, $class)
     {
-        $param  = $req->request->all();
-        $empid  = $param['empId'];
-        $reqName =   $param['requestname'];
-        $user   = $class->getUser();
-        $id     = $user->getId();
+        $param   = $req->request->all();
+        $empid   = $param['empId'];
+        $reqName = $param['requestname'];
+        $user    = $class->getUser();
+        $id      = $user->getId();
 
         $employee = EmpAccPeer::retrieveByPK($empid);
 
         if(! empty($employee)) {
             $empemail = $employee->getEmail();
-            $empinfo = EmpProfilePeer::getInformation($employee->getId());
-            $empname = $empinfo->getFname() . " " .$empinfo->getLname();
+            $empinfo  = EmpProfilePeer::getInformation($employee->getId());
+            $empname  = $empinfo->getFname() . " " .$empinfo->getLname();
 
             //admin profile information
             $data = EmpProfilePeer::getInformation($id);
@@ -103,18 +103,15 @@ class EmailController extends Controller {
             $to      = array($empemail);
 
             $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $reqName .
-                "</b> request was accepted by <b>". $name .
+                "</b> request was accepted by <b>" . $name .
                 "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
-                "<br>Date ended: ". $req->request->get('dateend');
+                "<br>Date ended: " . $req->request->get('dateend');
 
             $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
         } else {
 
         }
-
-
-
         return $email ? 1: 0;
     }
 
@@ -123,20 +120,15 @@ class EmailController extends Controller {
         $user = $class->getUser();
         $id   = $user->getId();
         $empemail = $req->request->get('taggedemail');
-        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
-        $empname = $empinfo->getFname() . " " .$empinfo->getLname();
-        //admin profile information
-        $data = EmpProfilePeer::getInformation($id);
-        $name = $data->getFname(). " " .$data->getLname();
 
-        $subject = $req->request->get('requestname') . " " . " Request Accepted";
+        $employeeProfile = EmpProfilePeer::getInformation($id);
+        $empname = $employeeProfile->getFname() . " " . $employeeProfile->getLname();
+
+        $subject = "Meeting Request by " . $empname;
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($empemail);
 
-        $inputMessage = "Hi " . $empname . "!<br><br>Your <b>" . $req->request->get('requestname') .
-            "</b> request was accepted by <b>". $name .
-            "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
-            "<br>Date ended: ". $req->request->get('dateend');
+        $inputMessage = "You are invited to attend the meeting requested by " . $empname . ".<br>Meeting Details: <br>" . nl2br($req->request->get('reqmeetmessage'));
 
         $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
@@ -180,7 +172,7 @@ class EmailController extends Controller {
         $id   = $user->getId();
 
         $employeeemail = $req->request->get('email');
-        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
+        $empname     = $req->request->get('fname') . " " . $req->request->get('lname');
         $empusername = $req->request->get('username');
         $emppassword = $req->request->get('password');
 
@@ -205,10 +197,7 @@ class EmailController extends Controller {
         $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
 
         $employeeemail = $req->request->get('email');
-        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
-        $empusername = $req->request->get('username');
-        $emppassword = $req->request->get('password');
-
+        $empname     = $req->request->get('fname') . " " . $req->request->get('lname');
 
         $subject = "PROLS Account Updated";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');

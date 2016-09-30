@@ -92,7 +92,7 @@
     <column name="lname" phpName="Lname" type="VARCHAR" size="45" required="true"/>
     <column name="mname" phpName="Mname" type="VARCHAR" size="45" required="true"/>
     <column name="bday" phpName="Bday" type="TIMESTAMP" required="true"/>
-    <column name="address" phpName="Address" type="VARCHAR" size="45" required="true"/>
+    <column name="address" phpName="Address" type="VARCHAR" size="255" required="true"/>
     <column name="gender" phpName="Gender" type="VARCHAR" size="10" required="true"/>
     <column name="img_path" phpName="ImgPath" type="VARCHAR" size="45" required="true"/>
     <column name="date_joined" phpName="DateJoined" type="TIMESTAMP" required="true"/>
@@ -100,7 +100,10 @@
     <column name="list_dept_id" phpName="ListDeptDeptId" type="INTEGER" required="true"/>
     <column name="list_pos_id" phpName="ListPosPosId" type="INTEGER" required="true"/>
     <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
-     <column name="profile_status" phpName="ProfileStatus" type="INTEGER" required="true"/>
+    <column name="profile_status" phpName="ProfileStatus" type="INTEGER" required="true"/>
+    <column name="sss" phpName="Sss" type="VARCHAR" size="255" required="true"/>
+    <column name="bir" phpName="Bir" type="VARCHAR" size="255" required="true"/>
+    <column name="philhealth" phpName="Philhealth" type="VARCHAR" size="255" required="true"/>
     <foreign-key foreignTable="emp_acc" name="fk_emp_profile_emp_acc" onDelete="RESTRICT" onUpdate="RESTRICT">
       <reference local="emp_acc_acc_id" foreign="id"/>
     </foreign-key>

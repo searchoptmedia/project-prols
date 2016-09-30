@@ -132,13 +132,11 @@ class EmployeeController extends Controller{
 		}else{
 			$message = 'Already Time in today';
 		}
-
 		$response = array('message' => $message, 'emailresp' => $emailresp);
 		echo json_encode($response);
     	exit;
     }
-
-
+	
 	public function TimeOutAction($passw){
 		date_default_timezone_set('Asia/Manila');
 
@@ -149,7 +147,7 @@ class EmployeeController extends Controller{
 			exit;
 		}
 		
-		$pass = $user->getPassword();
+		$pass 			= $user->getPassword();
 		$datetimetoday 	= date('Y-m-d H:i:s');
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);

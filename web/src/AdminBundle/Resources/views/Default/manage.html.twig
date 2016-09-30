@@ -39,7 +39,8 @@
                                             <td>{{emp.getListDept().DeptNames}}</td>
                                             <td>{{emp.getListPos().PosNames}}</td>
                                             <td>{{ emp.status }}</td>
-                                            <td style="float: right;"><button class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+                                            <td style="float: right;">
+                                                <button class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
                                                 <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
                                                         data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
                                                         data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
@@ -50,6 +51,9 @@
                                                         data-email="{{ emp.EmpAcc.getEmail }}"
                                                         data-address="{{ emp.address }}"
                                                         data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                        data-sss="{{ emp.sss }}"
+                                                        data-bir="{{ emp.bir }}"
+                                                        data-philhealth="{{ emp.philhealth }}"
                                                         {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
                                                             data-cellphone="{{ contact.contact }}"
                                                             data-cellphoneid="{{ contact.id }}"
@@ -59,7 +63,8 @@
                                                             data-telphoneid="{{ contact.id }}"
                                                         {% endfor %}
                                                         data-empid="{{ emp.empAccAccId }}">Edit
-                                                </button></td>
+                                                </button>
+                                            </td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -84,10 +89,12 @@
             <div class="modal-content add-employee-modal" >
                 <h4>Employee</h4>
                 <input type="hidden" name="employee-id" value="">
+                <div class="userpassinput">
                 <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
                 <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
                 <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
                 <br>
+                </div>
                 <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
                 <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
                 <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
@@ -132,9 +139,9 @@
                 <p>Cellphone #<input name="cellnum" placeholder="type here..." id="celnum" type="text" class="input-field"></p>
                 <p>Address<input name="address" placeholder="type here..." id="address" type="text" class="input-field"></p>
                 <p>Birthday<input name="bday" readonly placeholder="input here..." class="bday" id="datepicker"></p>
-                <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                <p>SSS<input placeholder="type here..." name="sss" id="sss" type="text" class="input-field"></p>
+                <p>BIR<input placeholder="type here..." name="bir" id="bir" type="text" class="input-field"></p>
+                <p>PhilHealth<input placeholder="type here..." name="philhealth" id="philhealth" type="text" class="input-field"></p>
             </div>
             <div class="modal-footer">
                 <div class="chip missing-input" style="display: none;">
@@ -232,20 +239,28 @@ $(document).ready(function(){
     var empid, telid, cellid;
     function bindClick() {
         $('.btnEditEmployee').bind('click', function() {
-            var fname = $(this).data('fname'),
-                    lname = $(this).data('lname'),
-                    empnum = $(this).data('empnum'),
-                    department = $(this).data('department'),
-                    position = $(this).data('position'),
-                    status = $(this).data('status'),
-                    email = $(this).data('email'),
-                    address = $(this).data('address'),
-                    bday = $(this).data('bday'),
-                    telnum = $(this).data('telephone'),
-                    celnum = $(this).data('cellphone');
-                    empid = $(this).data('empid');
-                    telid = $(this).data('telphoneid');
-                    cellid = $(this).data('cellphoneid');
+            var fname       = $(this).data('fname'),
+                lname       = $(this).data('lname'),
+                empnum      = $(this).data('empnum'),
+                department  = $(this).data('department'),
+                position    = $(this).data('position'),
+                status      = $(this).data('status'),
+                email       = $(this).data('email'),
+                address     = $(this).data('address'),
+                bday        = $(this).data('bday'),
+                telnum      = $(this).data('telephone'),
+                sss         = $(this).data('sss'),
+                bir         = $(this).data('bir'),
+                philhealth  = $(this).data('philhealth'),
+                celnum      = $(this).data('cellphone');
+
+                empid       = $(this).data('empid');
+                telid       = $(this).data('telphoneid');
+                cellid      = $(this).data('cellphoneid');
+
+            $('.add-employee-modal').find('h4').html(fname + " " + lname);
+            $('.userpassinput').hide();
+
 //            $('[]').val(name);
             $('[name=employee-id]').val("1");
             $('#username').val('');
@@ -262,6 +277,9 @@ $(document).ready(function(){
             $('[name=cellnum]').val(celnum);
             $('[name=address]').val(address);
             $('[name=bday]').val(bday);
+            $('[name=sss]').val(sss);
+            $('[name=bir]').val(bir);
+            $('[name=philhealth]').val(philhealth);
             $('[name=dept]').find('option[value="' + department + '"]').prop("selected", false);
             $('[name=dept]').find('option[value="' + department + '"]').prop("selected", true);
             $('[name=pos]').find('option[value="' + position + '"]').prop("selected",false);
@@ -279,6 +297,8 @@ $(document).ready(function(){
         });
 
         $('.btn-emp').bind('click', function() {
+            $('.userpassinput').show();
+            $('.add-employee-modal').find('h4').html('Employee');
             $('[name=username]').attr("disabled", false);
             $('[name=password]').attr("disabled", false);
             $('[name=repassword]').attr("disabled", false);
@@ -297,6 +317,9 @@ $(document).ready(function(){
             $('.bday').val('');
             $('#telnum').val('');
             $('#celnum').val('');
+            $('#sss').val('');
+            $('#bir').val('');
+            $('#philhealth').val('');
             $('.missing-input').hide();
             $('.password-not-match').hide();
             $('.username-used').hide();
@@ -304,10 +327,7 @@ $(document).ready(function(){
             $('#modal-emp').openModal();
             $('.addemp').html('Add');
             $('.add-emp-success').html('<h5>Added Successfully</h5>');
-
         });
-        console.log($('[name=employee-id]').val())
-
     }
     $('.modal-export').click(function(){
         $('select').material_select('destroy');
@@ -330,7 +350,6 @@ $(document).ready(function(){
             var fileExtension = ['jpeg', 'jpg', 'png'];
     });
 
-
     $('.birth-date').pickadate({
         selectMonths: true,
         selectYears: 15
@@ -341,7 +360,6 @@ $(document).ready(function(){
         $('.required-field').hide();
         $('.modal-footer').show();
         $('.position-used').hide();
-
     });
 
     $('.btn-dept').click(function(){
@@ -351,32 +369,11 @@ $(document).ready(function(){
         $('.department-used').hide();
     });
 
-//    $('.btn-emp').click(function(){
-//        $('#username').val('');
-//        $('#password').val('');
-//        $('#confirmpassword').val('');
-//        $('#empnum').val('');
-//        $('#fname').val('');
-//        $('#lname').val('');
-//        $('#dept').val('');
-//        $('#pos').val('');
-//        $('#status').val('');
-//        $('#companyemail').val('');
-//        $('#address').val('');
-//        $('.bday').val('');
-//        $('#telnum').val('');
-//        $('#celnum').val('');
-//        $('.missing-input').hide();
-//        $('.password-not-match').hide();
-//        $('.username-used').hide();
-//        $('.modal-footer').show();
-//    });
-
-
     var usernameinput, passwordinput, conpasswordinput, empnumber, fnameinput, lnameinput, departmentinput, positioninput, statusinput,
-            emailinput, telnuminput, celnuminput, addressinput, bdayinput;
+            emailinput, telnuminput, celnuminput, addressinput, bdayinput, sssinput, birinput, philhealthinput;
 
     $('#addemployeeform').on('submit', function(){
+
         usernameinput       = $('#username').val();
         passwordinput       = $('#password').val();
         conpasswordinput    = $('#confirmpassword').val();
@@ -391,9 +388,12 @@ $(document).ready(function(){
         bdayinput           = $('.bday').val();
         telnuminput         = $('#telnum').val();
         celnuminput         = $('#celnum').val();
+        sssinput            = $('#sss').val();
+        birinput            = $('#bir').val();
+        philhealthinput     = $('#philhealth').val();
 
         {% for usedUsers in allusers %}
-        var dbuser = '{{ usedUsers.Username }}';
+        var dbuser   = '{{ usedUsers.Username }}';
         var dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
         if($('[name=employee-id]').val() == 0) {
 
@@ -408,21 +408,6 @@ $(document).ready(function(){
                     $('#username').css({'border-color': '#9e9e9e'});
                 }, 1500);
                 return false;
-            }
-
-            if (empnumber != '') {
-                if (empnumber == dbempnum) {
-                    $('.username-used').show()
-                    $('.username-used').html('Employee Number already used')
-                    $('.missing-input').hide();
-                    $('.password-not-match').hide();
-                    $('#empnum').css({'border-color': 'red'});
-                    document.getElementById("empnum").focus();
-                    setTimeout(function () {
-                        $('#empnum').css({'border-color': '#9e9e9e'});
-                    }, 1500);
-                    return false;
-                }
             }
         }
         {% endfor %}
@@ -440,7 +425,7 @@ $(document).ready(function(){
             },1500);
             return false;
         }
-        if((usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
+        if((usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' ||
         fnameinput == '' || lnameinput == '' || departmentinput == null || positioninput == null || statusinput == null || emailinput == '' ||
         addressinput == '' || bdayinput == '') && $('[name=employee-id]').val() == 0){
             if(bdayinput == '') {
@@ -459,8 +444,6 @@ $(document).ready(function(){
                 $('#lname').css({'border-color' : 'red'}).focus();
             }if(fnameinput == ''){
                 $('#fname').css({'border-color' : 'red'}).focus();
-            }if(empnumber == ''){
-                $('#empnum').css({'border-color' : 'red'}).focus();
             }if($('[name=employee-id]').val() == 0){
                 if(conpasswordinput == ''){
                     $('#confirmpassword').css({'border-color' : 'red'}).focus();
@@ -475,7 +458,6 @@ $(document).ready(function(){
                 $('#username').css({'border-color' : '#9e9e9e'});
                 $('#password').css({'border-color' : '#9e9e9e'});
                 $('#confirmpassword').css({'border-color' : '#9e9e9e'});
-                $('#empnum').css({'border-color' : '#9e9e9e'});
                 $('#fname').css({'border-color' : '#9e9e9e'});
                 $('#lname').css({'border-color' : '#9e9e9e'});
                 $('#companyemail').css({'border-color' : '#9e9e9e'});
@@ -496,7 +478,7 @@ $(document).ready(function(){
         console.log(cellid)
         var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
         lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
-        cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid};
+        cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid, sss:sssinput, bir:birinput, philhealth:philhealthinput};
         $('.loader-notif').show().css({'top' : '0px'});
 
         if($('[name=employee-id]').val() != 1){
@@ -520,10 +502,8 @@ $(document).ready(function(){
                     $('.add-emp-notif').css({'top' : '-55px'});
                     location.reload();
                 }, 2000);
-
             });
         }
-
         return false;
     });
 

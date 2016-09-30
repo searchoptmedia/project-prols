@@ -517,11 +517,11 @@ $(function() {
                 var calendar = $('#calendar').fullCalendar({
                     events:
                         {
-                            url: '/addevent/acceptrequest',
+                            url: "/addevent/acceptrequest"
                         },
 
                     eventClick: function(calEvent){
-                        
+
                     },
 
                     dayClick: function(date){
@@ -533,10 +533,6 @@ $(function() {
                             if (moment(date).format('MM-DD-YYYY') == moment(event.start).format('MM-DD-YYYY')){
                                 $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.requesttype +'</span><p>'+ event.empname +'</p></li>');
                             }
-                            if (moment(date).format('MM-DD-YYYY') == moment(event._end).format('MM-DD-YYYY')){
-
-                            }
-
                         });
 
                         $('#daily_agenda').openModal();
@@ -548,8 +544,7 @@ $(function() {
                         $('.form-reqleave').hide();
                         $('.form-reqmeeting').hide();
                         $('.btn-submitleave').hide();
-                        
-                        
+                        $('.btn-submitmeeting').hide();
                     },
 
                     header: {
@@ -558,7 +553,7 @@ $(function() {
                         right: 'month,agendaWeek,agendaDay'
                     },
                     editable: true,
-                    eventSources: {url: "assets/ajax_fullcalendar.php"},
+                    // eventSources: [ "/addevent/acceptrequest","/addevent/timedin"],
                     droppable: true,
                     selectable: true,
                     selectHelper: true,

@@ -94,7 +94,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                 $refererUrl = $this->router->generate('admin_homepage', !empty($timeOutQry) ? $timeOutQry : array());
                 $response = new RedirectResponse($refererUrl);
             }else{
-                $response = array("Invalid Account"); 
+                $response = array("Account Inactive");
                 echo json_encode($response);
                 exit;
             }  

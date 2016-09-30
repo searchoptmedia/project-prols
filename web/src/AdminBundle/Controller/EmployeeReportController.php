@@ -91,59 +91,62 @@ class EmployeeReportController extends Controller {
             $records = $this->getRecord();
             foreach($records as $emp) {
                 $empid          = $emp->getEmpAccAccId();
-                $timeindata     = $emp->getTimeIn()->format('h:i A');
-                $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
-
-                $date           = $emp->getDate()->format('m/d/Y');
-
-                $dateday        = $emp->getDate()->format('D');
-                $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
-                $undertime      = 0;
-                //record
                 $profile = EmpProfilePeer::getInformation($empid);
-                $fname   = $profile->getFname();
-                $lname   = $profile->getLname();
-                $empnum  = $profile->getEmployeeNumber();
+                $profileStatus = $profile->getProfileStatus();
+                if($profileStatus == 0){
+                    $timeindata     = $emp->getTimeIn()->format('h:i A');
+                    $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
 
-                $totalHours = "N/A";
-                $totalHoursDec = "N/A";
-                $overtime = 0;
+                    $date           = $emp->getDate()->format('m/d/Y');
 
-                if(! empty($timeoutdata)) {
-                    $in = new \DateTime($emp->getTimeIn()->format('Y-m-d H:i:s'));
-                    $out = new \DateTime($emp->getTimeOut()->format('Y-m-d H:i:s'));
-                    $manhours = date_diff($out, $in);
+                    $dateday        = $emp->getDate()->format('D');
+                    $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
+                    $undertime      = 0;
+                    //record
+                    $fname   = $profile->getFname();
+                    $lname   = $profile->getLname();
+                    $empnum  = $profile->getEmployeeNumber();
 
-                    $totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
+                    $totalHours    = "N/A";
+                    $totalHoursDec = "N/A";
+                    $overtime = 0;
 
-                    $h = $manhours->format('%h');
-                    $i = intval($manhours->format('%i'));
-                    $i = $i > 0 ? ($i/60) : 0;
-                    $totalHoursDec = number_format($h + $i, 2);
+                    if(! empty($timeoutdata)) {
+                        $in = new \DateTime($emp->getTimeIn()->format('Y-m-d H:i:s'));
+                        $out = new \DateTime($emp->getTimeOut()->format('Y-m-d H:i:s'));
+                        $manhours = date_diff($out, $in);
 
-                    if($totalHoursDec > 9) {
-                        $overtime = $totalHoursDec - 9;
-                    }
-                    if($dateday == 'Sat' || $dateday == 'Sun'){
-                        $overtime = $totalHoursDec;
+                        $totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
+
+                        $h = $manhours->format('%h');
+                        $i = intval($manhours->format('%i'));
+                        $i = $i > 0 ? ($i/60) : 0;
+                        $totalHoursDec = number_format($h + $i, 2);
+
+                        if($totalHoursDec > 9) {
+                            $overtime = $totalHoursDec - 9;
+                        }
+                        if($dateday == 'Sat' || $dateday == 'Sun'){
+                            $overtime = $totalHoursDec;
 
 //                        $totalHours = 0;
 //                        $totalHoursDec = 0;
 
-                    }
-                    if($overtime < 1){
-                        $overtime = 0;
-                    }
-                    if($totalHours < 9){
-                        $undertime = 1;
-                    }
+                        }
+                        if($overtime < 1){
+                            $overtime = 0;
+                        }
+                        if($totalHours < 9){
+                            $undertime = 1;
+                        }
 //                    $totalHoursDec = $emp->getManhours();
 //                    $overtime = $emp->getOvertime();
+                    }
+                    $isUndertime = $undertime ? 'Yes':'No';
+                    fputcsv($handle, // The file pointer
+                        array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime, $isUndertime)
+                    );
                 }
-                $isUndertime = $undertime ? 'Yes':'No';
-                fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime, $isUndertime)
-                );
             }
             exit;
 
@@ -191,32 +194,37 @@ class EmployeeReportController extends Controller {
             $records = $this->getEmployeeRecord();
             foreach($records as $emp) {
                 $empid  = $emp->getEmpAccAccId();
-                $empacc = EmpAccPeer::getAcc($empid);
+                $profileStatus = $emp->getProfileStatus();
 
-                $email  = $empacc->getEmail();
-                $fname  = $emp->getFname();
-                $lname  = $emp->getLname();
-                $empnum = $emp->getEmployeeNumber();
-                $bday   = $emp->getBday()->format('M d Y');
-                $deptid = $emp->getListDeptDeptId();
-                $posid  = $emp->getListPosPosId();
-                $address = $emp->getAddress();
+                if($profileStatus == 0){
+                    $empacc = EmpAccPeer::getAcc($empid);
 
-                $getdept   = ListDeptPeer::getDept($deptid);
-                $getpos  = ListPosPeer::getPos($posid);
+                    $email  = $empacc->getEmail();
+                    $fname  = $emp->getFname();
+                    $lname  = $emp->getLname();
+                    $empnum = $emp->getEmployeeNumber();
+                    $bday   = $emp->getBday()->format('M d Y');
+                    $deptid = $emp->getListDeptDeptId();
+                    $posid  = $emp->getListPosPosId();
+                    $address = $emp->getAddress();
 
-                $dept = $getdept->getDeptNames();
-                $pos = $getpos->getPosNames();
+                    $getdept   = ListDeptPeer::getDept($deptid);
+                    $getpos  = ListPosPeer::getPos($posid);
 
-                fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $address, $bday, $email, $dept, $pos)
-                );
+                    $dept = $getdept->getDeptNames();
+                    $pos = $getpos->getPosNames();
+
+                    fputcsv($handle, // The file pointer
+                        array("EMP-" . $empnum,  $lname . ", " . $fname, $address, $bday, $email, $dept, $pos)
+                    );
+                }
+
             }
             exit;
 
             fclose($handle);
         });
-        $filedate           = date('m/d/Y');
+        $filedate = date('m/d/Y');
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_list_export.csv"');

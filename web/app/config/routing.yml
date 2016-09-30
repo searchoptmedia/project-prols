@@ -103,3 +103,7 @@ request_access:
 add_event_accepted_request:
     path: /addevent/acceptrequest
     defaults: { _controller:AdminBundle:Default:addRequestCalendar }
+
+add_event_timed_in_today:
+    path: /addevent/timedin
+    defaults: { _controller:AdminBundle:Default:timedInTodayCalendar }

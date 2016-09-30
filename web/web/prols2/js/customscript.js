@@ -87,11 +87,17 @@
  	$('.form-reqleave').hide();
 
  	$('.btn-reqmeeting').click(function(){
+		$('.meet-start-date').val('');
  		$('.form-reqmeeting').show();
  		$('.form-reqleave').hide();
 		$('.sent').hide();
 		$('.required-field').hide();
 		$('.btn-submitleave').hide();
+		$('#meeting').val('');
+		$('.btn-submitmeeting').show()
+		$('.select-emp-tag').val("");
+		$('.select2-selection__choice').remove();
+
 	});
 
  	$('.btn-reqleave').click(function(){
@@ -100,7 +106,11 @@
 		$('.sent').hide();
 		$('.required-field').hide();
 		$('.btn-submitleave').show();
- 	});
+		$('.start-date').val('');
+		$('.end-date').val('');
+		$('.btn-submitmeeting').hide()
+
+	});
 
 // MODALS
  	$('.modal-reason').leanModal();

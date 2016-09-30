@@ -74,9 +74,7 @@
                 <h4 class="agenda-date">Daily Agenda</h4>
                 <div class="agenda-list">
                     <ul class="collection agenda-list">
-
                         <li class="collection-item avatar" id="li-append"><i class="material-icons circle">perm_identity</i><span id="head-title"></span> <p id="daterange"></p></li>
-
                     </ul>
                 </div>
 
@@ -87,17 +85,22 @@
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
-                    <div class="reqmeeting-emp-tag">
-                        <select class="select-emp-tag" multiple="multiple">
-                            {% for acc in allacc %}
-                            <option value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
-                            {% endfor %}
-                        </select>
+
+                    <div class="row formmeeting">
+                        <div class="col-md-6 reqmeeting-lbl">
+                            <input name="meet-start-date" readonly placeholder="Start Date" class="meet-start-date" id="datepicker3">
+                        </div>
+                        <div class="col-md-6 reqmeeting-emp-tag">
+                            <select class="select-emp-tag materialize" multiple="multiple">
+                                {% for acc in allacc %}
+                                    <option value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="input-field">
-                        <input id="meeting" placeholder="Type your message here...">
+                        <textarea id="meeting" class="materialize-textarea" placeholder="Input meeting details here..."></textarea>
                     </div>
-                    <a class="waves-effect waves-light btn amber btn-submitmeeting">Submit</a>
                     <div class="chip required-field">
                         required field!
                     </div>
@@ -143,6 +146,8 @@
             <div class="modal-footer">
                 <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
                 <a class="waves-effect waves-light btn amber btn-submitleave" style="margin-right:5px;">Submit</a>
+                <a class="waves-effect waves-light btn amber btn-submitmeeting" style="margin-right:5px;">Submit</a>
+
 
             </div>
         </div>
@@ -174,8 +179,11 @@
     <script>
         var picker;
         var picker2;
+        var picker3;
         picker  = new Pikaday({field: document.getElementById('datepicker') });
         picker2 = new Pikaday({field: document.getElementById('datepicker2') });
+        picker3 = new Pikaday({field: document.getElementById('datepicker3') });
+            $('.meet-start-date').val('');
             $('.start-date').val('');
             $('.end-date').val('');
             picker.destroy();
@@ -199,6 +207,7 @@
                     }
                 });
                 picker.setMinDate(new Date());
+                picker3.setMinDate(new Date());
 
     </script>
 {% endblock %}
@@ -206,11 +215,11 @@
 <script type="text/javascript">
 
     //------------------------LEFT SIDEBAR JS-----------------------------------
-    {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
-    {% set indexPath =  path('admin_homepage') %}
-    {% set profilePath = path('profile_page') %}
-    {% set managePath = path('manage_employee') %}
-    {% set timeLogPath = path('time_logs_page') %}
+    {% set currentPath     = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
+    {% set indexPath       = path('admin_homepage') %}
+    {% set profilePath     = path('profile_page') %}
+    {% set managePath      = path('manage_employee') %}
+    {% set timeLogPath     = path('time_logs_page') %}
     {% set viewRequestPath = path('view_request') %}
 
     {% if currentPath == indexPath %}
@@ -401,10 +410,12 @@
 
 
     $('.select-emp-tag').select2({
-        placeholder: 'Type name here',
+        placeholder: 'Input name here',
+        width: '100%'
     });
     $('#leavetype').material_select();
     $('.caret').hide();
+
     {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
 
     {#}).always(function(data) {#}
@@ -512,26 +523,44 @@ $('#time-out-button').click(function(){
         $('.time-in-container').hide();
         $('.timeout-container').hide();
         $('.modal-logout-notify-container').show();
-        //                      $('.modal-session-content').show();
+        //$('.modal-session-content').show();
     });
 
 });
 
 $('.btn-submitmeeting').click(function(){
-   var reqmeetmessage =  $('#meeting').val();
+    var reqmeetmessage =  $('#meeting').val();
     var taggedemail = $('.select-emp-tag').val();
-    if(reqmeetmessage == ''){
-        $('#meeting').css({'border-color' : 'red'});
-        setTimeout(function(){
-            $('#meeting').css({'border-color': 'gray'})
-        }, 1000);
-        $('.required-field').show();
+    var reqmeetdate = $('.meet-start-date').val();
+    if(reqmeetdate == '' || reqmeetmessage == '' || taggedemail == null)
+    {
+        if(taggedemail == null){
+            $('.select2-container--default .select2-selection--multiple').css({'border-color' : 'red'});
+            setTimeout(function(){
+                $('.select2-container--default .select2-selection--multiple').css({'border-color': 'gray'})
+            }, 1000);
+        }
+        if(reqmeetmessage == ''){
+            $('#meeting').css({'border-color' : 'red'});
+            setTimeout(function(){
+                $('#meeting').css({'border-color': 'gray'})
+            }, 1000);
+            $('.required-field').show();
+        }
+        if(reqmeetdate == ''){
+            $('.meet-start-date').css({'border-color' : 'red'});
+            setTimeout(function(){
+                $('.meet-start-date').css({'border-color': 'gray'})
+            }, 1000);
+            $('.required-field').show();
+        }
         return;
     }
+
     $('.loader-notif').show();
     $('.loader-notif').css({'top' : '0px'});
     $('.btn-submitmeeting').hide();
-    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail}, function(data){
+    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail, reqmeetdate:reqmeetdate}, function(data){
        console.log(data);
         $('#meeting').val('');
         $('.required-field').hide();
@@ -552,7 +581,7 @@ $('.btn-submitleave').click(function(){
 
     var leavestartdate  = $('.start-date').val();
     var leaveenddate    = $('.end-date').val();
-    var reasonleave = $('#reason-leave-sbt').val();
+    var reasonleave     = $('#reason-leave-sbt').val();
     typeleave = 2;
     if(leavestartdate == '' || leaveenddate == '' || reasonleave == ''){
         if(leavestartdate == ''){

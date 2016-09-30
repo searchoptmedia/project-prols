@@ -30,6 +30,7 @@
 
                                     <tbody>
                                     {% for time in getTime %}
+                                        {% if time.EmpAcc.getEmpProfiles[0].getProfileStatus == 0 %}
                                     <tr>
 
                                     <td>{{ time.EmpAcc.getEmpProfiles[0].getEmployeeNumber}}</td>
@@ -40,6 +41,7 @@
                                     <td>{{ time.Manhours }}</td>
                                     <td>{{ time.Overtime }}</td>
                                     </tr>
+                                        {% endif %}
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -156,7 +158,9 @@
                                     <select id="empnames" class="input-name" style="width: 230px; margin-top: 50px;">
                                         <option value="" disabled selected>Type name here..</option>
                                         {% for user in getAllProfile %}
+                                            {% if user.profileStatus == 0 %}
                                             <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                                            {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
