@@ -1,6 +1,8 @@
 <?php
-class TimeWarning extends Controller{
-    public function indexAction(){
+class TimeWarning extends Controller3
+{
+    public function indexAction()
+    {
             // $query = "SELECT password FROM emp_acc WHERE password='admin'";
             date_default_timezone_set('Asia/Manila');
             $current_date = date('Y-m-d');
@@ -33,9 +35,12 @@ class TimeWarning extends Controller{
                     // $yesterday = date('Y-m-d', strtotime("-1 days"));
                     $consumedTime = 0;
 
-                    for ($count = sizeof($dataTime)-1; $count >= 0 ; $count--){
-                        if($dataTime[$count]['ID'] == $timeID){
-                            if($dataTime[$count]['time_out'] == NULL){
+                    for ($count = sizeof($dataTime)-1; $count >= 0 ; $count--)
+                    {
+                        if($dataTime[$count]['ID'] == $timeID)
+                        {
+                            if($dataTime[$count]['time_out'] == null)
+                            {
                                 $consumedTime += strtotime($current_whole_time) - strtotime($dataTime[$count]['time_in']);
                             }else{
                                 $consumedTime += strtotime($dataTime[$count]['time_out']) - strtotime($dataTime[$count]['time_in']);

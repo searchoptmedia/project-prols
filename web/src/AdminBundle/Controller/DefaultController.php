@@ -27,7 +27,7 @@ use CoreBundle\Model\ListLeaveTypePeer;
 use CoreBundle\Model\ListPos;
 use CoreBundle\Model\ListIp;
 use CoreBundle\Model\ListDept;
-
+use Symfony\Component\Validator\Constraints\Date;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
@@ -47,29 +47,36 @@ use Swift_SmtpTransport;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\Email;
 
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
 
 
-    public function timeInOut($id){
+    public function timeInOut($id)
+	{
 		//time in/out information
 		$datatime = EmpTimePeer::getTime($id);
 		$timename = '';
 
-		if(isset($datatime) && !empty($datatime)){
+		if(isset($datatime) && !empty($datatime))
+		{
 			$currenttime = sizeof($datatime) - 1;
 			$timein_data = $datatime[$currenttime]->getTimeIn();
 			$timeout_data = $datatime[$currenttime]->getTimeOut();
-			if(!is_null($timein_data) && !is_null($timeout_data)){
+			if(!is_null($timein_data) && !is_null($timeout_data))
+			{
 				// echo 'WORKING 1';
 				$timename = true;
-			}else if(!is_null($timein_data) && is_null($timeout_data)){
+			}else if(!is_null($timein_data) && is_null($timeout_data))
+			{
 				// echo 'WORKING 2';
 				$timename = false;
 			}				
-		} else if(isset($datatime) && empty($datatime)){
+		}
+		else if(isset($datatime) && empty($datatime))
+		{
 			// echo 'WORKING 3';
 			$timename = true;
 		}
@@ -94,14 +101,17 @@ class DefaultController extends Controller{
 		$timeflag = 0;
 
 		//get last timed in 
-	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
     			$checktimein = $timedata[$ctr]->getTimeIn();
     			$checktimeout = $timedata[$ctr]->getTimeOut();
     			if(!is_null($checktimein) && is_null($checktimeout)){
     				$currenttimein = $checktimein->format('h:i A');
     				
 
-    			}else{
+    			}
+				else
+				{
     				$currenttimein = 0;
     				$currenttimeout = $checktimeout->format('h:i A');
     			}
@@ -109,7 +119,8 @@ class DefaultController extends Controller{
     	$checkipdata = null;
 		$datetoday = date('Y-m-d');
     	//check if already timed in today
-    	if(!empty($timedata)){
+    	if(!empty($timedata))
+		{
 			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
 			$datetoday = date('Y-m-d');
 			$emp_time = EmpTimePeer::getTime($id);
@@ -120,19 +131,22 @@ class DefaultController extends Controller{
     	}
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		if(!empty($et)){
+		if(!empty($et))
+		{
 			$emptimedate = $et->getDate();
 			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-			if($emptimedate->format('Y-m-d') == $datetoday){
+			if($emptimedate->format('Y-m-d') == $datetoday)
+			{
 				$timeflag = 1;
 			}
 
 			if(! empty($et->getTimeOut()))
 				$isTimeOut = 'true';
-		} else {
+		}
+		else
+		{
 			$isTimeOut = 'true';
 		}
-
 
 		$systime = date('H:i A');
 		$timetoday = date('h:i A');
@@ -151,13 +165,16 @@ class DefaultController extends Controller{
 		if(!is_null($ip_add)){
 			$matchedip = $ip_add->getAllowedIp();
 		}
-    	else{
+    	else
+		{
     		$matchedip = '';
     	}
 
-		if($userip == $matchedip){
+		if($userip == $matchedip)
+		{
 			$ip_checker = 1;
-		}else{
+		}else
+		{
 			$ip_checker = 0;
 		}
 
@@ -165,10 +182,12 @@ class DefaultController extends Controller{
 		$allusers = EmpProfilePeer::getAllProfile();
 		$allacc = EmpAccPeer::getAllUser();
 		$userbdaynames = array();
-		foreach($allusers as $u){
+		foreach($allusers as $u)
+		{
 			$bday = $u->getBday()->format('m-d');
 //			echo $datetoday . "|" .$bday . '<br>';
-			if($bday == date('m-d')){
+			if($bday == date('m-d'))
+			{
 				$userbdaynames[] = $u->getFname();
 			}
 		}
@@ -206,28 +225,33 @@ class DefaultController extends Controller{
 		$id = $user->getId();
 		$timedata = EmpTimePeer::getEmpLastTimein($id);
 		//exit if found no record
-		if(is_null($timedata)) {
+		if(is_null($timedata))
+		{
 			echo 0;
 			exit;
 		}
 		$timeout = $timedata->getTimeOut();
 		$timeindate = $timedata->getDate()->format('Y-m-d');
 		$datetoday = date('Y-m-d');
-		if($timeindate == $datetoday && empty($timeout)){
+		if($timeindate == $datetoday && empty($timeout))
+		{
 			echo 1;
-		}else{
+		}
+		{
 			echo 0;
 		}
 		exit;
 	}
 
- 	public function timeInAction(Request $request, $id, $passw){
+ 	public function timeInAction(Request $request, $id, $passw)
+	{
 
 		date_default_timezone_set('Asia/Manila');
 
 		//check session active
 		$user = $this->getUser();
-		if(empty($user)){
+		if(empty($user))
+		{
 			// if session expire
 			echo 4;
 			exit;
@@ -241,40 +265,46 @@ class DefaultController extends Controller{
 		$timedata 		= EmpTimePeer::getTime($emp);
 		$emptime 		= EmpTimePeer::getTime($id);
 
-		if(!empty($emptime)) {
+		if(!empty($emptime))
+		{
 			$currenttime = sizeof($emptime) - 1;
 			$timein_data = $emptime[$currenttime]->getTimeIn();
 			$timeout_data = $emptime[$currenttime]->getTimeOut();
 			$id_data = $emptime[$currenttime]->getId();
 
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
 				$checkdate = $timedata[$ctr]->getDate();
 
-				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data)){
+				if($checkdate->format('Y-m-d') == $datetoday && !is_null($timeout_data))
+				{
 					$timeflag = 1;
-				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data)) {
+				}elseif($checkdate->format('Y-m-d') == $datetoday && is_null($timeout_data))
+				{
 					$timeflag = 0;
-				}elseif($checkdate->format('Y-m-d') != $datetoday){
+				}elseif($checkdate->format('Y-m-d') != $datetoday)
+				{
 					$timeflag = 0;
 				}
 
 			}
 		}
-    		
 
-    		if($timeflag == 0){
+    		if($timeflag == 0)
+			{
     			//set employee time
-
 		    	$empTimeSave = new EmpTime();
 
 		    	//employee time in/out
 		    	$emp_time = EmpTimePeer::getTime($id);
-				if(isset($emp_time) && !empty($emp_time)){
+				if(isset($emp_time) && !empty($emp_time))
+				{
 				$currenttime = sizeof($emp_time) - 1;
 				$timein_data = $emp_time[$currenttime]->getTimeIn();
 				$timeout_data = $emp_time[$currenttime]->getTimeOut();
 				$id_data = $emp_time[$currenttime]->getId();
-					if(!is_null($timein_data) && !is_null($timeout_data)){
+					if(!is_null($timein_data) && !is_null($timeout_data))
+					{
 						$ip_add = ListIpPeer::getAllIp();
 						$stat = 'WORKING 1';
 						$retval = 1;
@@ -282,27 +312,35 @@ class DefaultController extends Controller{
 				    	$empTimeSave->setIpAdd($matchedip);
 				    	$empTimeSave->setDate($datetoday);
 				    	$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-				    	for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
+				    	for($ctr = 0; $ctr < sizeof($ip_add); $ctr++)
+						{
 			    			$allowedip = $ip_add[$ctr]->getAllowedIp();
-			    			if($allowedip == $matchedip){
+			    			if($allowedip == $matchedip)
+							{
 			    				$empTimeSave->setCheckIp(1);
-			    			}else{
+			    			}else
+							{
 			    				$empTimeSave->setCheckIp(0);
 			    				// $mailer = new Mailer();
 			    				// $send = $mailer->sendOutOfOfficeEmailToAdmin();
 
 			    			}
 			    		}
-				    	if($empTimeSave->save()){
+				    	if($empTimeSave->save())
+						{
 							$is_message = $request->request->get('is_message');
-							if(!is_null($is_message)){
+							if(!is_null($is_message))
+							{
 								$email = new EmailController();
 								$sendemail = $email->sendTimeInRequest($request, $this);
 
-								if(! $sendemail){
+								if(! $sendemail)
+								{
 									//if error sending email
 									$retval = 5;
-								} else {
+								}
+								else
+								{
 									echo 1;
 									exit;
 								}
@@ -310,7 +348,8 @@ class DefaultController extends Controller{
 						}
 				    	echo $retval;
 						exit;
-					}else if(!is_null($timein_data) && is_null($timeout_data)){
+					}
+					else if(!is_null($timein_data) && is_null($timeout_data)){
 						$user = $this->getUser();
 						$pass = $user->getPassword();
 						$inputpass = $passw;
@@ -356,7 +395,8 @@ class DefaultController extends Controller{
 						}
 
 					}
-				}else{
+				}else
+				{
 					$ip_add = ListIpPeer::getAllIp();
 					$stat = 'WORKING 3';
 					$retval = 1;
@@ -365,25 +405,34 @@ class DefaultController extends Controller{
 			    	$empTimeSave->setDate($datetoday);
 			    	$empTimeSave->setEmpAccAccId($this->getUser()->getId());
 
-					for($ctr = 0; $ctr < sizeof($ip_add); $ctr++){
+					for($ctr = 0; $ctr < sizeof($ip_add); $ctr++)
+					{
 						$allowedip = $ip_add[$ctr]->getAllowedIp();
-						if($allowedip == $matchedip){
+						if($allowedip == $matchedip)
+						{
 							$empTimeSave->setCheckIp(1);
-						}else{
+						}
+						else
+						{
 							$empTimeSave->setCheckIp(0);
 						}
 					}
 
-					if($empTimeSave->save()){
+					if($empTimeSave->save())
+					{
 						$is_message = $request->request->get('is_message');
-						if(!is_null($is_message)){
+						if(!is_null($is_message))
+						{
 							$email = new EmailController();
 							$sendemail = $email->sendTimeInRequest($request, $this);
 
-							if(! $sendemail){
+							if(! $sendemail)
+							{
 								//if error sending email
 								$retval = 5;
-							} else {
+							}
+							else
+							{
 								echo 1;
 								exit;
 							}
@@ -392,9 +441,10 @@ class DefaultController extends Controller{
 			    	echo $retval;
 				}
 
-    		}else{
+    		}
+			else
+			{
     			$retval = 3;
-
     			echo $retval;
     		}
 	    	
@@ -410,12 +460,11 @@ class DefaultController extends Controller{
     		// 	$checkip = EmpTimePeer::retrieveByPk($id_data);
     		// 	$checkip->setCheckIp(1);
     		// }
-
     	exit;
     }
 
-    public function profileAction(){
-    	
+    public function profileAction()
+	{
     	$page = 'Profile';
     	//employee account information
     	$user = $this->getUser();
@@ -453,26 +502,35 @@ class DefaultController extends Controller{
 		$conTeleId = '';
 		 $contacttype = '';
 
-		if(!is_null($datacontact)){
-			for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
+		if(!is_null($datacontact))
+		{
+			for ($ct = 0; $ct < sizeof($datacontact); $ct++)
+			{
     			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
 				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 				$contactvalue =  $datacontact[$ct]->getContact();
 				$contactid = $datacontact[$ct]->getId();
-				if(strcasecmp($contacttype, 'email') == 0){
+				if(strcasecmp($contacttype, 'email') == 0)
+				{
 					$conEmail .= $contactvalue;
 					$conEmailId .= $contactid;
-				}elseif(strcasecmp($contacttype, 'mobile') == 0){
+				}
+				elseif(strcasecmp($contacttype, 'mobile') == 0)
+				{
 					$conMobile .= $contactvalue;
 					$conMobileId .= $contactid;
-				}elseif(strcasecmp($contacttype, 'telephone') == 0){
+				}
+				elseif(strcasecmp($contacttype, 'telephone') == 0)
+				{
 					$conTele .= $contactvalue;
 					$conTeleId .= $contactid;
 				}
 
     			$contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
    			} 			
-		}else{
+		}
+		else
+		{
 			$contact = null;
 			$contype = null;
 
@@ -483,7 +541,8 @@ class DefaultController extends Controller{
 		//employee work information
 		$datawork = EmpProfilePeer::retrieveByPk($profileid);
 
-		if(!is_null($datawork)){
+		if(!is_null($datawork))
+		{
 			$workdeptid = $datawork->getListDeptDeptId();
 			$workposid = $datawork->getListPosPosId();
 			$empnumber = $datawork->getEmployeeNumber();
@@ -493,7 +552,9 @@ class DefaultController extends Controller{
 
 			$deptnames = $datadept->getDeptNames();
 			$posStatus = $datapos->getPosNames();
-		}else{
+		}
+		else
+		{
 			$workdeptid = null;
 			$workposid = null;
 			$empnumber = null;
@@ -512,9 +573,11 @@ class DefaultController extends Controller{
 		//Check late
 		$late = 0;
     	$getEmpTime = EmpTimePeer::getTime($id);
-    	for ($ct = 0; $ct < sizeof($getEmpTime); $ct++) {
+    	for ($ct = 0; $ct < sizeof($getEmpTime); $ct++)
+		{
     		$checklate = $getEmpTime[$ct]->getTimeIn();
-    		if($checklate->format('H:i:s') > 12){
+    		if($checklate->format('H:i:s') > 12)
+			{
     		$late++;
     		}	
     	}
@@ -523,20 +586,25 @@ class DefaultController extends Controller{
 		$timeflag = 0;
 		$currenttimein = 0;
 		$currenttimeout = 0;
-	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
     			$checktimein = $timedata[$ctr]->getTimeIn();
     			$checktimeout = $timedata[$ctr]->getTimeOut();
-    			if(!is_null($checktimein) && is_null($checktimeout)){
+    			if(!is_null($checktimein) && is_null($checktimeout))
+				{
     				$currenttimein = $checktimein->format('h:i A');
-    				
-    			}else{
+    			}
+				else
+				{
     				$currenttimein = 0;
     				$currenttimeout = $checktimeout->format('h:i A');
     			}
     		}
+
     	$timeoutdata = '';
     	$checkipdata = null;
-    	if(!empty($timedata)){
+    	if(!empty($timedata))
+		{
     	$datetoday = date('Y-m-d');
     	$emp_time = EmpTimePeer::getTime($id);
     	$currenttime = sizeof($emp_time) - 1;
@@ -550,13 +618,14 @@ class DefaultController extends Controller{
 		$afternoon = date('h:i A', strtotime('12 pm'));
 
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		if(!empty($et)){
+		if(!empty($et))
+		{
 			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
+			if($emptimedate->format('Y-m-d') == $datetoday)
+			{
 				$timeflag = 1;
 			}
-
 			if(! empty($et->getTimeOut()))
 				$isTimeOut = 'true';
 		}
@@ -565,8 +634,14 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
 
+		//count duration
+
+
+
 		$getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
+
+        // add duration
         return $this->render('AdminBundle:Default:profile.html.twig', array(
         	'page' => $page,
         	'name' => $name,
@@ -610,14 +685,14 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-			'getAllTime' => $getAllTimeData,
+			'getAllTime' => $getAllTimeData, //GetAllTime Function
 			'timetoday' => $timetoday,
+//            'duration' => $total_dueFormat
         	));
 
     }
-
-    public function requestAction(){
-  
+    public function requestAction()
+	{
     	$user = $this->getUser();
     	$name = $user->getUsername();
 		$page = 'View Request';
@@ -626,31 +701,37 @@ class DefaultController extends Controller{
 
 		$timename = self::timeInOut($id); 
 		// redirect to index if not Admin
-		if((strcasecmp($role, 'employee') == 0)){
+		if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}	
-		else {
-		
+		else
+		{
 		$requestGet = EmpRequestPeer::getAllRequest();
 
 			$timedata = EmpTimePeer::getTime($id);
 			$timeflag = 0;
 			$currenttimein = 0;
 			$currenttimeout = 0;
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
 				$checktimein = $timedata[$ctr]->getTimeIn();
 				$checktimeout = $timedata[$ctr]->getTimeOut();
-				if(!is_null($checktimein) && is_null($checktimeout)){
+				if(!is_null($checktimein) && is_null($checktimeout))
+				{
 					$currenttimein = $checktimein->format('h:i A');
 
-				}else{
+				}
+				else
+				{
 					$currenttimein = 0;
 					$currenttimeout = $checktimeout->format('h:i A');
 				}
 			}
 			$timeoutdata = '';
 			$checkipdata = null;
-			if(!empty($timedata)){
+			if(!empty($timedata))
+			{
 				$datetoday = date('Y-m-d');
 				$emp_time = EmpTimePeer::getTime($id);
 				$currenttime = sizeof($emp_time) - 1;
@@ -663,17 +744,17 @@ class DefaultController extends Controller{
 			$afternoon = date('H:i A', strtotime('12 pm'));
 
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			if(!empty($et)){
+			if(!empty($et))
+			{
 				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 				$emptimedate = $et->getDate();
-				if($emptimedate->format('Y-m-d') == $datetoday){
+				if($emptimedate->format('Y-m-d') == $datetoday)
+				{
 					$timeflag = 1;
 				}
-
 				if(! empty($et->getTimeOut()))
 					$isTimeOut = 'true';
 			}
-
 			$userip = InitController::getUserIP($this);
 			$ip_add = ListIpPeer::getValidIP($userip);
 			$is_ip  = InitController::checkIP($userip);
@@ -707,10 +788,11 @@ class DefaultController extends Controller{
         	));
 		}	
     }
-
-    public function statusAcceptAction(Request $req, $id, $id2){
+    public function statusAcceptAction(Request $req, $id, $id2)
+	{
 		$accept = EmpRequestPeer::retrieveByPk($id);
-		if(isset($accept) && !empty($accept)) {
+		if(isset($accept) && !empty($accept))
+		{
 			$accept->setAdminId($id2);
 			$accept->setStatus('Accepted');
 			
@@ -718,13 +800,18 @@ class DefaultController extends Controller{
 
 			$sendemail = $email->acceptRequestEmail($req, $this);
 
-			if($accept->save()){
+			if($accept->save())
+			{
 				$response = array('response' => 'success');
-			}else{
+			}
+			else
+			{
 				$response = array('response' => 'not saved');
 			}
 			
-		} else {
+		}
+		else
+		{
 			$response = array('response' => 'not found');
 		}
 		
@@ -732,7 +819,8 @@ class DefaultController extends Controller{
 		exit;
     }
 	
-    public function profileUpdateAction(Request $request){
+    public function profileUpdateAction(Request $request)
+	{
 		$user = $this->getUser();
 		$empid = $user->getId();
    		$telId = $request->request->get('telId');
@@ -745,25 +833,31 @@ class DefaultController extends Controller{
 		$profileId = $updateprofile->getId();
 
 		$updatetel = EmpContactPeer::retrieveByPk($telId);
-		if(empty($updatetel)){
+		if(empty($updatetel))
+		{
 			$newtel = new EmpContact();
 			$newtel->setContact($request->request->get('telephone'));
 			$newtel->setEmpProfileId($profileId);
 			$newtel->setListContTypesId(3);
 			$newtel->save();
 
-		}else{
+		}
+		else
+		{
 			$updatetel->setContact($request->request->get('telephone'));
 			$updatetel->save();
 		}
 		$updatecell = EmpContactPeer::retrieveByPk($mobileId);
-		if(empty($updatecell)){
+		if(empty($updatecell))
+		{
 			$newcel = new EmpContact();
 			$newcel->setContact($request->request->get('cellphone'));
 			$newcel->setEmpProfileId($profileId);
 			$newcel->setListContTypesId(2);
 			$newcel->save();
-		}else{
+		}
+		else
+		{
 			$updatecell->setContact($request->request->get('cellphone'));
 			$updatecell->save();
 		}
@@ -772,7 +866,8 @@ class DefaultController extends Controller{
 		exit;
     }
 
-    public function manageAction(Request $request){
+    public function manageAction(Request $request)
+	{
 		$user = $this->getUser();
     	$name = $user->getUsername();
 		$page = 'View Request';
@@ -780,10 +875,12 @@ class DefaultController extends Controller{
     	$id = $user->getId();
 		$timename = self::timeInOut($id); 
 
-    	if((strcasecmp($role, 'employee') == 0)){
+    	if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
-		else{
+		else
+		{
 			$getEmployee = EmpProfilePeer::getAllProfile();
 			$getPos = ListPosPeer::getAllPos();
 			$getDept = ListDeptPeer::getAllDept();
@@ -793,20 +890,23 @@ class DefaultController extends Controller{
 			$timeflag = 0;
 
 			//get last timed in
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
 				$checktimein = $timedata[$ctr]->getTimeIn();
 				$checktimeout = $timedata[$ctr]->getTimeOut();
-				if(!is_null($checktimein) && is_null($checktimeout)){
+				if(!is_null($checktimein) && is_null($checktimeout))
+				{
 					$currenttimein = $checktimein->format('h:i A');
-				}else{
+				}else
+				{
 					$currenttimein = 0;
 					$currenttimeout = $checktimeout->format('h:i A');
 				}
 			}
 			$checkipdata = null;
 			//check if already timed in today
-			if(!empty($timedata)){
-
+			if(!empty($timedata))
+			{
 				$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
 				$datetoday = date('Y-m-d');
 				$emp_time = EmpTimePeer::getTime($id);
@@ -827,13 +927,14 @@ class DefaultController extends Controller{
 			$getTime = EmpTimePeer::getAllTime();
 			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			if(!empty($et)){
+			if(!empty($et))
+			{
 				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 				$emptimedate = $et->getDate();
-				if($emptimedate->format('Y-m-d') == $datetoday){
+				if($emptimedate->format('Y-m-d') == $datetoday)
+				{
 					$timeflag = 1;
 				}
-
 				if(! empty($et->getTimeOut()))
 					$isTimeOut = 'true';
 			}
@@ -878,8 +979,8 @@ class DefaultController extends Controller{
         	));       
 		} 	
     }
-
-	public function timeLogsAction(){
+	public function timeLogsAction()
+	{
 		$user = $this->getUser();
 		$name = $user->getUsername();
 		$page = 'View Request';
@@ -887,7 +988,8 @@ class DefaultController extends Controller{
 		$id = $user->getId();
 		$timename = self::timeInOut($id);
 
-		if((strcasecmp($role, 'employee') == 0)){
+		if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
 		else{
@@ -901,19 +1003,24 @@ class DefaultController extends Controller{
 			$timeflag = 0;
 
 			//get last timed in
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
 				$checktimein = $timedata[$ctr]->getTimeIn();
 				$checktimeout = $timedata[$ctr]->getTimeOut();
-				if(!is_null($checktimein) && is_null($checktimeout)){
+				if(!is_null($checktimein) && is_null($checktimeout))
+				{
 					$currenttimein = $checktimein->format('h:i A');
-				}else{
+				}
+				else
+				{
 					$currenttimein = 0;
 					$currenttimeout = $checktimeout->format('h:i A');
 				}
 			}
 			$checkipdata = null;
 			//check if already timed in today
-			if(!empty($timedata)){
+			if(!empty($timedata))
+			{
 				$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
 				$datetoday = date('Y-m-d');
 				$emp_time = EmpTimePeer::getTime($id);
@@ -934,16 +1041,17 @@ class DefaultController extends Controller{
 			$getTime = EmpTimePeer::getAllTime();
 			$getAllProfile = EmpProfilePeer::getAllProfile();
 			$et = EmpTimePeer::getEmpLastTimein($id);
-			if(!empty($et)){
+			if(!empty($et))
+			{
 				$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 				$emptimedate = $et->getDate();
-				if($emptimedate->format('Y-m-d') == $datetoday){
+				if($emptimedate->format('Y-m-d') == $datetoday)
+				{
 					$timeflag = 1;
 				}
 				if(! empty($et->getTimeOut()))
 					$isTimeOut = 'true';
 			}
-
 			$requestcount = EmpRequestQuery::create()
 				->filterByStatus('Pending')
 				->find()->count();
@@ -981,9 +1089,12 @@ class DefaultController extends Controller{
     	$role = $user->getRole();
    		
    		// Check role
-    	if((strcasecmp($role, 'employee') == 0)){
+    	if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}else{
+		}
+		else
+		{
 			$pass = $request->request->get('password');
 	    	$repass = $request->request->get('repassword');
 	    	$user = $request->request->get('username');
@@ -1016,13 +1127,17 @@ class DefaultController extends Controller{
 	  		//check if input is empty
 	    	if(!empty($empNum) && !empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
 	    		&& !empty($empDept) && !empty($empPos) && !empty($empPos) && !empty($empStatus) && !empty($user)
-	    		&& !empty($pass) && !empty($repass)){
+	    		&& !empty($pass) && !empty($repass))
+			{
 	    		//Check password and repassword
-		    	if($pass != $repass){
+		    	if($pass != $repass)
+				{
 			    	$response = array('Password does not match');
 					echo json_encode($response);
 					exit;
-		    	}else{
+		    	}
+				else
+				{
 		    		//add new acc
 			 		$addacc = new EmpAcc(); 
 			    	$addacc->setUsername($user);
@@ -1063,7 +1178,9 @@ class DefaultController extends Controller{
 					$sendemail = $email->addEmployeeEmail($request, $this);
 					$response = array('Added Successfully');
 	    			}
-	    		}else{
+	    		}
+				else
+				{
 					$response = array('Missing Input');
 		    	}
 			$resp = array('response' => $response);
@@ -1072,7 +1189,8 @@ class DefaultController extends Controller{
 			}
     }
 	
-	public function requestMeetingAction(Request $req){
+	public function requestMeetingAction(Request $req)
+	{
 
 		$email = new EmailController();
 
@@ -1093,7 +1211,8 @@ class DefaultController extends Controller{
 		exit;
 	}
 
-	public function requestLeaveAction(Request $req){
+	public function requestLeaveAction(Request $req)
+	{
 
 		$leaveinput = new EmpRequest();
 		$leaveinput->setRequest($req->request->get('reasonleave'));
@@ -1105,9 +1224,13 @@ class DefaultController extends Controller{
 		$leaveinput->save();
 		$email = new EmailController();
 		$sendemail = $email->requestTypeEmail($req, $this);
-		if (!$sendemail) {
+		if (!$sendemail)
+		{
 			$emailresp = 'No email sent';
-		} else {
+		}
+		else{{
+
+		}
 			$emailresp = 'Email Sent';
 		}
 			echo json_encode(array('result' => 'ok', 'emailresp' => $emailresp));
@@ -1118,16 +1241,23 @@ class DefaultController extends Controller{
 		$user = $this->getUser();
     	$role = $user->getRole();
    
-    	if((strcasecmp($role, 'employee') == 0)){
+    	if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}else{
+		}
+		else
+		{
 		$response = '';
-			if(isset($id) && !empty($id)){
+			if(isset($id) && !empty($id))
+			{
 				$addpos = new ListPos();
 				$addpos->setPosNames($id);
 				$addpos->save();
-				$response = array('Added successfully');	
-			}else{
+				$response = array('Added successfully');
+
+			}
+			else
+			{
 				$response = array('No input');
 			}
 			
@@ -1136,13 +1266,17 @@ class DefaultController extends Controller{
 		}
 	}
 
-	public function addDepartmentAction($id){
+	public function addDepartmentAction($id)
+	{
 		$user = $this->getUser();
     	$role = $user->getRole();
    
-    	if((strcasecmp($role, 'employee') == 0)){
+    	if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}else{
+		}
+		else
+		{
 			$response = '';
 			if(isset($id) && !empty($id)){
 			$addDept = new ListDept();
@@ -1157,7 +1291,8 @@ class DefaultController extends Controller{
 		}	
 	}
 
-	public function notifAction(){
+	public function notifAction()
+	{
 		$user = $this->getUser();
     	$name = $user->getUsername();
 		$page = 'View Request';
@@ -1176,21 +1311,26 @@ class DefaultController extends Controller{
 		$timeflag = 0;
 
 		//get last timed in
-		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+		{
 			$checktimein = $timedata[$ctr]->getTimeIn();
 			$checktimeout = $timedata[$ctr]->getTimeOut();
-			if(!is_null($checktimein) && is_null($checktimeout)){
+			if(!is_null($checktimein) && is_null($checktimeout))
+			{
 				$currenttimein = $checktimein->format('h:i A');
 
 
-			}else{
+			}
+			else
+			{
 				$currenttimein = 0;
 				$currenttimeout = $checktimeout->format('h:i A');
 			}
 		}
 		$checkipdata = null;
 		//check if already timed in today
-		if(!empty($timedata)){
+		if(!empty($timedata))
+		{
 
 			$overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
 			$datetoday = date('Y-m-d');
@@ -1290,29 +1430,36 @@ class DefaultController extends Controller{
 		$conTeleId = '';
 		$contacttype = '';
 
-		if(!is_null($datacontact)){
-			for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
+		if(!is_null($datacontact))
+		{
+			for ($ct = 0; $ct < sizeof($datacontact); $ct++)
+			{
 				// $contactArr[$ct] = $datacontact[$ct]->getContact();
 				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 				$contactvalue =  $datacontact[$ct]->getContact();
 				$contactid = $datacontact[$ct]->getId();
-				if(strcasecmp($contacttype, 'email') == 0){
+				if(strcasecmp($contacttype, 'email') == 0)
+				{
 					$conEmail .= $contactvalue;
 					$conEmailId .= $contactid;
-				}elseif(strcasecmp($contacttype, 'mobile') == 0){
+				}
+				elseif(strcasecmp($contacttype, 'mobile') == 0)
+				{
 					$conMobile .= $contactvalue;
 					$conMobileId .= $contactid;
-				}elseif(strcasecmp($contacttype, 'telephone') == 0){
+				}
+				elseif(strcasecmp($contacttype, 'telephone') == 0)
+				{
 					$conTele .= $contactvalue;
 					$conTeleId .= $contactid;
 				}
-
 				$contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
 			}
-		}else{
+		}
+		else
+		{
 			$contact = null;
 			$contype = null;
-
 			$contact2 = null;
 			$contype2 = null;
 		}
@@ -1320,7 +1467,8 @@ class DefaultController extends Controller{
 		//employee work information
 		$datawork = EmpProfilePeer::retrieveByPk($profileid);
 
-		if(!is_null($datawork)){
+		if(!is_null($datawork))
+		{
 			$workdeptid = $datawork->getListDeptDeptId();
 			$workposid = $datawork->getListPosPosId();
 			$empnumber = $datawork->getEmployeeNumber();
@@ -1330,7 +1478,9 @@ class DefaultController extends Controller{
 
 			$deptnames = $datadept->getDeptNames();
 			$posStatus = $datapos->getPosNames();
-		}else{
+		}
+		else
+		{
 			$workdeptid = null;
 			$workposid = null;
 			$empnumber = null;
@@ -1348,9 +1498,11 @@ class DefaultController extends Controller{
 		//Check late
 		$late = 0;
 		$getEmpTime = EmpTimePeer::getTime($id);
-		for ($ct = 0; $ct < sizeof($getEmpTime); $ct++) {
+		for ($ct = 0; $ct < sizeof($getEmpTime); $ct++)
+		{
 			$checklate = $getEmpTime[$ct]->getTimeIn();
-			if($checklate->format('H:i:s') > 12){
+			if($checklate->format('H:i:s') > 12)
+			{
 				$late++;
 			}
 		}
@@ -1360,20 +1512,31 @@ class DefaultController extends Controller{
 		$timeflag = 0;
 		$currenttimein = 0;
 		$currenttimeout = 0;
-		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+		{
 			$checktimein = $timedata[$ctr]->getTimeIn();
 			$checktimeout = $timedata[$ctr]->getTimeOut();
-			if(!is_null($checktimein) && is_null($checktimeout)){
+			if(!is_null($checktimein) && is_null($checktimeout))
+			{
 				$currenttimein = $checktimein->format('h:i A');
 
-			}else{
+			}
+			else
+			{
 				$currenttimein = 0;
 				$currenttimeout = $checktimeout->format('h:i A');
 			}
 		}
+        //add duration
+        $tmn_in = EmpTimePeer::getEmpLastTimein($id);
+        $date_now = date("h:i:sa");
+        $total_due = date_diff($tmn_in,$date_now);
+        $total_dueFormat = strtotime($total_due);
+
 		$timeoutdata = '';
 		$checkipdata = null;
-		if(!empty($timedata)){
+		if(!empty($timedata))
+		{
 			$datetoday = date('Y-m-d');
 			$emp_time = EmpTimePeer::getTime($adminid);
 			$currenttime = sizeof($emp_time) - 1;
@@ -1381,14 +1544,17 @@ class DefaultController extends Controller{
 			$timeout_data = $emp_time[$currenttime]->getTimeOut();
 			$checkipdata = $emp_time[$currenttime]->getCheckIp();
 
+
 		}
 		$firstchar = $fname[0];
 		$systime = date('H:i A');
 		$timetoday = date('h:i A');
 		$afternoon = date('H:i A', strtotime('12 pm'));
 
-		if(!empty($timedata) && !empty($timeout_data)){
-			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+		if(!empty($timedata) && !empty($timeout_data))
+		{
+			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
+			{
 				$timeindata = $timedata[$ctr]->getTimeIn();
 				$timeoutdata = $timedata[$ctr]->getTimeOut();
 				$in = new \DateTime($timeindata->format('Y-m-d H:i:s'));
@@ -1416,10 +1582,12 @@ class DefaultController extends Controller{
 			}
 		}
 		$et = EmpTimePeer::getEmpLastTimein($adminid);
-		if(!empty($et)){
+		if(!empty($et))
+		{
 			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
+			if($emptimedate->format('Y-m-d') == $datetoday)
+            {
 				$timeflag = 1;
 			}
 			if(! empty($et->getTimeOut()))
@@ -1477,16 +1645,21 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
 			'getAllTime' => $getAllTimeData,
+            'duration' => $total_dueFormat
+
 		));
     }
 
-    public function empDeleteAction($id){
+    public function empDeleteAction($id)
+	{
     	$user = $this->getUser();
     	$role = $user->getRole();
    
-    	if((strcasecmp($role, 'employee') == 0)){
+    	if((strcasecmp($role, 'employee') == 0))
+		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}else{
+		}else
+		{
 	    	$empinfo = EmpProfilePeer::retrieveByPk($id);
 	    	$empinfo->setProfileStatus(1);
 	    	$empinfo->save();
@@ -1496,11 +1669,14 @@ class DefaultController extends Controller{
     	}
     }
 
-    public function declinedRequestAction(Request $req){
+    public function declinedRequestAction(Request $req)
+	{
     $declined = EmpRequestPeer::retrieveByPk($req->request->get('leaveId'));
-		if(isset($declined) && !empty($declined)) {
+		if(isset($declined) && !empty($declined))
+		{
 			$requesttype = $declined->getListRequestTypeId();
-			if($requesttype == 3){
+			if($requesttype == 3)
+			{
 				$timeId = $declined->getEmpTimeId();
 				$emptime = EmpTimePeer::retrieveByPK($timeId);
 				$rejectemptime = new EmpTimeReject();
@@ -1521,13 +1697,16 @@ class DefaultController extends Controller{
 
 			$sendemail = $email->declinedRequestEmail($req, $this);
 
-			if($declined->save()){
+			if($declined->save())
+			{
 				$response = array('response' => 'success');
-			}else{
+			}else
+			{
 				$response = array('response' => 'not saved');
 			}
-			
-		} else {
+		}
+		else
+		{
 			$response = array('response' => 'not found');
 		}
 
@@ -1700,7 +1879,8 @@ class DefaultController extends Controller{
 		exit;
 	}
 
-	public function adminEditProfileAction(Request $request){
+	public function adminEditProfileAction(Request $request)
+	{
 		$user = $this->getUser();
 		$empid = $request->request->get('empid');
 		$telId = $request->request->get('telid');
@@ -1868,7 +2048,8 @@ class DefaultController extends Controller{
 
 				$H = intval($h);
 				$ot = $H - 9;
-					if($ot >= 0){
+					if($ot >= 0)
+					{
 						$over = $ot . 'hours ' . $i . ' minutes ';
 					}else{
 						$over = 0;

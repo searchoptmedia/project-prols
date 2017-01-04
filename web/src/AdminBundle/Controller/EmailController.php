@@ -109,11 +109,11 @@ class EmailController extends Controller {
 
             $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
-        } else {
+        }
+        else
+        {
 
         }
-
-
 
         return $email ? 1: 0;
     }

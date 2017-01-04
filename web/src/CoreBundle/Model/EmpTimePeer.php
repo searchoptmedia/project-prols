@@ -44,7 +44,8 @@ class EmpTimePeer extends BaseEmpTimePeer{
 
 	public static function getAllTimeToday($date, Criteria $c = null)
 	{
-		if(is_null($c)){
+		if(is_null($c))
+		{
 			$c = new Criteria();
 		}
 		$c->add(self::DATE, $date, Criteria::EQUAL);

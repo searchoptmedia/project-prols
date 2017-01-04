@@ -7,7 +7,8 @@ use CoreBundle\Model\om\BaseListContTypesPeer;
 use \Criteria;
 
 class ListContTypesPeer extends BaseListContTypesPeer{
-	public static function getContactType($id, Criteria $c = null){
+	public static function getContactType($id, Criteria $c = null)
+	{
 		if (is_null($c)) {
 			$c = new Criteria();
 		}	

@@ -3,7 +3,7 @@
     <title>Propelrr Log-in System| Profile</title>
 {% endblock %}
 {% block body %}
-    {{ notif.update_profile_notif }}
+    {{ notif.update_profile_notif() }}
     {{ notif.notif_loader() }}
     <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert notification-modal">
         <div class="timein-success"><h5>Password Changed!</h5></div>
@@ -89,6 +89,7 @@
                                 <th>Date</th>
                                 <th>Time In</th>
                                 <th>Time Out</th>
+                                <th>Duration</th>
                                 <th>Total Hour</th>
                                 <th>Overtime</th>
                             </tr>
@@ -99,6 +100,7 @@
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
+                                <td> </td>
                                 <td>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
                             </tr>

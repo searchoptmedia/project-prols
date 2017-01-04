@@ -75,6 +75,7 @@
                             <th>Date</th>
                             <th>Time In</th>
                             <th>Time Out</th>
+                            <th>Duration</th>
                             <th>Total Hour</th>
                             <th>Overtime</th>
                         </tr>
@@ -85,6 +86,7 @@
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
+                                <td>{{ time.Duration }}</td>
                                 <td>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
                             </tr>
@@ -100,59 +102,57 @@
                             <th data-field="Overtimes">Overtimes</th>
                             <th data-field="Out of IP">Out of IP</th>
                         </tr>
-                        </thead>
-
-                        <tbody>
-
-                        <tr>
-                            <td>Jan</td>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
-                            <td>4</td>
-                        </tr>
-                        <tr>
-                            <td>Feb</td>
-                            <td>5</td>
-                            <td>6</td>
-                            <td>6</td>
-                            <td>7</td>
-                        </tr>
-                        <tr>
-                            <td>Mar</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>9</td>
-                        </tr>
-                        <tr>
-                            <td>Apr</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>9</td>
-                        </tr>
-                        <tr>
-                            <td>May</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>9</td>
-                        </tr>
-                        <tr>
-                            <td>Jun</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>9</td>
-                        </tr>
-                        <tr>
-                            <td>Jul</td>
-                            <td>8</td>
-                            <td>8</td>
-                            <td>9</td>
-                            <td>9</td>
-                        </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Jan</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>Feb</td>
+                                    <td>5</td>
+                                    <td>6</td>
+                                    <td>6</td>
+                                    <td>7</td>
+                                </tr>
+                                <tr>
+                                    <td>Mar</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                </tr>
+                                <tr>
+                                    <td>Apr</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                </tr>
+                                <tr>
+                                    <td>May</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                </tr>
+                                <tr>
+                                    <td>Jun</td>
+                                    <td>8</td>
+                                    <td>8</td>
+                                    <td>9</td>
+                                    <td>9</td>
+                                </tr>
+                            <tr>
+                                <td>Jul</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>9</td>
+                            </tr>
                         <tr>
                             <td>Aug</td>
                             <td>8</td>

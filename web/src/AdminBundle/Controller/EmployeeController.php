@@ -47,22 +47,23 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
-class EmployeeController extends Controller{
-
+class EmployeeController extends Controller
+{
 	protected $session;
 
 	function __construct()
 	{
 		$this->session = new Session();
 	}
-
-	public function TimeInAction(Request $request){
-
+	public function TimeInAction(Request $request)
+	{
 		date_default_timezone_set('Asia/Manila');
 		
 		//check session active
 		$user = $this->getUser();
-		if(empty($user)){
+
+		if(empty($user))
+		{
 			// if session expire
 			echo 'Session Expire';
 			exit;
@@ -76,45 +77,54 @@ class EmployeeController extends Controller{
 		$ip_add 		= ListIpPeer::getValidIP($matchedip);
 
 		//Compare last time in date with date today 	
-		if(!empty($timedata)){
+		if(!empty($timedata))
+		{
 			$emptimedate = $timedata->getDate();
-			if($emptimedate == $datetoday){
+			if($emptimedate == $datetoday)
+			{
 				$timeflag = 1;
 			}
 		}
-
 		//Time in
-		if($timeflag == 0){
+		if($timeflag == 0)
+		 {
 			$empTimeSave = new EmpTime();
 			$empTimeSave->setTimeIn($datetimetoday);
 			$empTimeSave->setIpAdd($matchedip);
 			$empTimeSave->setDate($datetoday);
 			$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			if(!empty($ip_add)){
+			if(!empty($ip_add))
+			{
 				$allowedip = $ip_add->getAllowedIp();
-				if($allowedip == $matchedip){
+				if($allowedip == $matchedip)
+				{
 					$empTimeSave->setCheckIp(1);
-				}else{
+				}
+				else
+				{
 					$empTimeSave->setCheckIp(0);
 				}
-			}else{
+			}
+			else
+			{
 				$empTimeSave->setCheckIp(0);
 			}
-
-			if($empTimeSave->save()){
-
+			if($empTimeSave->save())
+			{
 				$this->session->set('timeout', 'false');
-
 				$is_message = $request->request->get('is_message');
 				$emailresp = '';
-				if(!is_null($is_message)) {
+				if(!is_null($is_message))
+				{
 					$email = new EmailController();
 					$sendemail = $email->sendTimeInRequest($request, $this);
-					if (!$sendemail) {
+					if (!$sendemail)
+					{
 						$emailresp = 'No email sent';
-					} else {
+					}
+					else
+					{
 						$emailresp = 'Email Sent';
-
 						$requesttimein = new EmpRequest();
 						$requesttimein->setStatus('Pending');
 						$requesttimein->setRequest($request->request->get('message'));
@@ -129,21 +139,23 @@ class EmployeeController extends Controller{
 				}
 			}
 			$message = 'Time in Successful';
-		}else{
+		}
+		else
+		{
 			$message = 'Already Time in today';
 		}
-
 		$response = array('message' => $message, 'emailresp' => $emailresp);
 		echo json_encode($response);
     	exit;
     }
 
-
-	public function TimeOutAction($passw){
+	public function TimeOutAction($passw)
+	{
 		date_default_timezone_set('Asia/Manila');
 
 		$user = $this->getUser();
-		if(empty($user)){
+		if(empty($user))
+		{
 			// if session expire
 			echo 1;
 			exit;
@@ -157,7 +169,8 @@ class EmployeeController extends Controller{
 		$inputpass 		= $passw;
 		$error 			= false;
 
-		if($pass == $inputpass){
+		if($pass == $inputpass)
+		{
 			//set time out
 			$timeout = EmpTimePeer::retrieveByPK($timeinId);
 			$timeout->setTimeOut($datetimetoday);
@@ -171,19 +184,25 @@ class EmployeeController extends Controller{
 			$totalHoursDec = number_format($h + $i, 2);
 
 			//set total hours and overtime
-			if(date('D') == 'Sat' || date('D')=='Sun'){
+			if(date('D') == 'Sat' || date('D')=='Sun')
+			{
 				$timeout->setOvertime($totalHoursDec);
-			}else{
+			}
+			else
+			{
 				$timeout->setManhours($totalHoursDec);
 				$overtime = 0;
-				if($totalHoursDec > 9) {
+				if($totalHoursDec > 9)
+				{
 					$overtime = $totalHoursDec - 9;
 				}
 				$timeout->setOvertime($overtime);
 			}
 			$timeout->save();
 			$message = 'Time out successful';
-		}else{
+		}
+		else
+		{
 			$error = true;
 			$message = 'Wrong Password';
 			echo $error;
@@ -194,7 +213,8 @@ class EmployeeController extends Controller{
 		exit;
 	}
 
-	public function autoTimeOutAction(){
+	public function autoTimeOutAction()
+	{
 		$user = $this->getUser();
 		$id = $user->getId();
 		$emplasttime = EmpTimePeer::getEmpLastTimein($id);
@@ -203,7 +223,6 @@ class EmployeeController extends Controller{
 		echo 1;
 		exit;
 	}
-
 	public function ManageTimeOnNewDayAction($type)
 	{
 		date_default_timezone_set('Asia/Manila');
@@ -211,13 +230,14 @@ class EmployeeController extends Controller{
 		$session = new Session();
 		$userId = $this->getUser()->getId();
 
-		if($type == 'working') {
+		if($type == 'working')
+		{
 			$session->set('isSameDay', '');
-		} else {
-
+		}
+		else
+		{
 			$session->set('isSameDay', '');
 			$session->set('timeout', 'true');
-
 			$user = $this->getUser();
 			$id = $user->getId();
 			$emplasttime = EmpTimePeer::getEmpLastTimein($id);
@@ -228,6 +248,6 @@ class EmployeeController extends Controller{
 		echo json_encode(array('success' => 1, 'user' => $userId, 'type' => $type));
 		exit;
 	}
-	
+
 //end
 }
