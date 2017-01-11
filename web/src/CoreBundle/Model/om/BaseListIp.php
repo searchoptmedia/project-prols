@@ -76,7 +76,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -87,7 +87,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Get the [allowed_ip] column value.
-     * 
+     *
      * @return string
      */
     public function getAllowedIp()
@@ -98,7 +98,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return string
      */
     public function getStatus()
@@ -109,7 +109,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return ListIp The current object (for fluent API support)
      */
@@ -130,7 +130,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Set the value of [allowed_ip] column.
-     * 
+     *
      * @param  string $v new value
      * @return ListIp The current object (for fluent API support)
      */
@@ -151,7 +151,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  string $v new value
      * @return ListIp The current object (for fluent API support)
      */
@@ -446,13 +446,13 @@ abstract class BaseListIp extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`allowed_ip`':						
+                    case '`allowed_ip`':
                         $stmt->bindValue($identifier, $this->allowed_ip, PDO::PARAM_STR);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
                 }
@@ -634,7 +634,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
 
         return $result;
     }

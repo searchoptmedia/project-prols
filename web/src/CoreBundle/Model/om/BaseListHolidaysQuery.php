@@ -92,7 +92,7 @@ abstract class BaseListHolidaysQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   ListHolidays|ListHolidays[]|mixed the result, formatted by the current formatter
@@ -147,7 +147,7 @@ abstract class BaseListHolidaysQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `date`, `name`, `type` FROM `list_holidays` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

@@ -1109,6 +1109,7 @@ class DefaultController extends Controller{
 			$empEmail = $request->request->get('email');
 			$empTelNum = $request->request->get('telnum');
 			$empCelNum = $request->request->get('cellnum');
+			$empCapability = $request->request->get('capabilities');
 
 		    date_default_timezone_set('Asia/Manila');
 		    $datetimetoday = date('Y-m-d H:i:s');
@@ -1144,6 +1145,7 @@ class DefaultController extends Controller{
 			    	$addacc->setPassword($pass);
 			    	$addacc->setRole('employee');
 					$addacc->setEmail($empEmail);
+					$addacc->setCapabilities($empCapability);
 			    	$addacc->save();
 			    	$newacc = $addacc->getId();
 
@@ -1897,9 +1899,11 @@ class DefaultController extends Controller{
 		$empEmail = $request->request->get('email');
 		$empTelNum = $request->request->get('telnum');
 		$empCelNum = $request->request->get('cellnum');
+		$empCapability = $request->request->get('capabilities');
 
 		$updateAcc = EmpAccPeer::getAcc($empid);
 		$updateAcc->setEmail($empEmail);
+		$updateAcc->setCapabilities($empCapability);
 		$updateAcc->save();
 
 		$updateprofile = EmpProfilePeer::getInformation($empid);

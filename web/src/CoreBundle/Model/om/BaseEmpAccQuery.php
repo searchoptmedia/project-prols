@@ -30,6 +30,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAccQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method EmpAccQuery orderByRole($order = Criteria::ASC) Order by the role column
  * @method EmpAccQuery orderByKey($order = Criteria::ASC) Order by the key column
+ * @method EmpAccQuery orderByCapabilities($order = Criteria::ASC) Order by the capabilities column
  *
  * @method EmpAccQuery groupById() Group by the id column
  * @method EmpAccQuery groupByUsername() Group by the username column
@@ -40,6 +41,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAccQuery groupByEmail() Group by the email column
  * @method EmpAccQuery groupByRole() Group by the role column
  * @method EmpAccQuery groupByKey() Group by the key column
+ * @method EmpAccQuery groupByCapabilities() Group by the capabilities column
  *
  * @method EmpAccQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpAccQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -76,6 +78,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAcc findOneByEmail(string $email) Return the first EmpAcc filtered by the email column
  * @method EmpAcc findOneByRole(string $role) Return the first EmpAcc filtered by the role column
  * @method EmpAcc findOneByKey(string $key) Return the first EmpAcc filtered by the key column
+ * @method EmpAcc findOneByCapabilities(string $capabilities) Return the first EmpAcc filtered by the capabilities column
  *
  * @method array findById(int $id) Return EmpAcc objects filtered by the id column
  * @method array findByUsername(string $username) Return EmpAcc objects filtered by the username column
@@ -86,6 +89,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method array findByEmail(string $email) Return EmpAcc objects filtered by the email column
  * @method array findByRole(string $role) Return EmpAcc objects filtered by the role column
  * @method array findByKey(string $key) Return EmpAcc objects filtered by the key column
+ * @method array findByCapabilities(string $capabilities) Return EmpAcc objects filtered by the capabilities column
  */
 abstract class BaseEmpAccQuery extends ModelCriteria
 {
@@ -138,7 +142,7 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpAcc|EmpAcc[]|mixed the result, formatted by the current formatter
@@ -191,9 +195,9 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key` FROM `emp_acc` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key`, `capabilities` FROM `emp_acc` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -566,6 +570,35 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpAccPeer::KEY, $key, $comparison);
+    }
+
+    /**
+     * Filter the query on the capabilities column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCapabilities('fooValue');   // WHERE capabilities = 'fooValue'
+     * $query->filterByCapabilities('%fooValue%'); // WHERE capabilities LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $capabilities The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function filterByCapabilities($capabilities = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($capabilities)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $capabilities)) {
+                $capabilities = str_replace('*', '%', $capabilities);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpAccPeer::CAPABILITIES, $capabilities, $comparison);
     }
 
     /**

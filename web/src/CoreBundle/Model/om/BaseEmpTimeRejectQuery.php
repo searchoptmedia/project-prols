@@ -119,7 +119,7 @@ abstract class BaseEmpTimeRejectQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpTimeReject|EmpTimeReject[]|mixed the result, formatted by the current formatter
@@ -174,7 +174,7 @@ abstract class BaseEmpTimeRejectQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `time_in`, `time_out`, `ip_add`, `date`, `emp_acc_acc_id`, `manhours`, `overtime`, `check_ip` FROM `emp_time_reject` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

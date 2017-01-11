@@ -103,7 +103,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -114,7 +114,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Get the [request] column value.
-     * 
+     *
      * @return string
      */
     public function getRequest()
@@ -125,7 +125,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return string
      */
     public function getStatus()
@@ -136,7 +136,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -171,12 +171,12 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [ip_add] column value.
-     * 
+     *
      * @return string
      */
     public function getIpAdd()
@@ -187,7 +187,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Get the [emp_time_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpTimeId()
@@ -198,7 +198,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpApproval The current object (for fluent API support)
      */
@@ -219,7 +219,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Set the value of [request] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpApproval The current object (for fluent API support)
      */
@@ -240,7 +240,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpApproval The current object (for fluent API support)
      */
@@ -261,7 +261,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpApproval The current object (for fluent API support)
@@ -284,7 +284,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Set the value of [ip_add] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpApproval The current object (for fluent API support)
      */
@@ -305,7 +305,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_time_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpApproval The current object (for fluent API support)
      */
@@ -632,22 +632,22 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`request`':						
+                    case '`request`':
                         $stmt->bindValue($identifier, $this->request, PDO::PARAM_STR);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
-                    case '`date`':						
+                    case '`date`':
                         $stmt->bindValue($identifier, $this->date, PDO::PARAM_STR);
                         break;
-                    case '`ip_add`':						
+                    case '`ip_add`':
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
-                    case '`emp_time_id`':						
+                    case '`emp_time_id`':
                         $stmt->bindValue($identifier, $this->emp_time_id, PDO::PARAM_INT);
                         break;
                 }
@@ -854,7 +854,7 @@ abstract class BaseEmpApproval extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpTime) {
                 $result['EmpTime'] = $this->aEmpTime->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

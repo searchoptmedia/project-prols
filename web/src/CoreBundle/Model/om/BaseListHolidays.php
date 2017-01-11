@@ -84,7 +84,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -95,7 +95,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -130,12 +130,12 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [name] column value.
-     * 
+     *
      * @return string
      */
     public function getName()
@@ -146,7 +146,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Get the [type] column value.
-     * 
+     *
      * @return string
      */
     public function getType()
@@ -157,7 +157,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return ListHolidays The current object (for fluent API support)
      */
@@ -178,7 +178,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return ListHolidays The current object (for fluent API support)
@@ -201,7 +201,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Set the value of [name] column.
-     * 
+     *
      * @param  string $v new value
      * @return ListHolidays The current object (for fluent API support)
      */
@@ -222,7 +222,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
 
     /**
      * Set the value of [type] column.
-     * 
+     *
      * @param  string $v new value
      * @return ListHolidays The current object (for fluent API support)
      */
@@ -521,16 +521,16 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`date`':						
+                    case '`date`':
                         $stmt->bindValue($identifier, $this->date, PDO::PARAM_STR);
                         break;
-                    case '`name`':						
+                    case '`name`':
                         $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
-                    case '`type`':						
+                    case '`type`':
                         $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
                         break;
                 }
@@ -716,7 +716,7 @@ abstract class BaseListHolidays extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
 
         return $result;
     }

@@ -107,7 +107,7 @@ abstract class BaseEmpApprovalQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpApproval|EmpApproval[]|mixed the result, formatted by the current formatter
@@ -162,7 +162,7 @@ abstract class BaseEmpApprovalQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `request`, `status`, `date`, `ip_add`, `emp_time_id` FROM `emp_approval` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

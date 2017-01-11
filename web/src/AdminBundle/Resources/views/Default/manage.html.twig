@@ -50,6 +50,7 @@
                                                         data-email="{{ emp.EmpAcc.getEmail }}"
                                                         data-address="{{ emp.address }}"
                                                         data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                        data-capabilities="{{ emp.EmpAcc.getCapabilities }}"
                                                         {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
                                                             data-cellphone="{{ contact.contact }}"
                                                             data-cellphoneid="{{ contact.id }}"
@@ -84,57 +85,76 @@
             <div class="modal-content add-employee-modal" >
                 <h4>Employee</h4>
                 <input type="hidden" name="employee-id" value="">
-                <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
-                <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
-                <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
-                <br>
-                <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
-                <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
-                <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
-                <p>Department</p>
+                <div class="row">
+                    <div class="col-md-7 col-lg-8">
+                        <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
+                        <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
+                        <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
+                        <br>
+                        <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
+                        <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
+                        <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
+                        <p>Department</p>
 
-                <div class="select-wrapper"><span class="caret">?</span>
-                    <select name="dept" id="dept" class="initialized emp-dept">
-                        <option value="" disabled selected>Select department</option>
-                        {% for dept in getDept %}
-                        <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
-                        {% endfor %}
-                    </select>
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="dept" id="dept" class="initialized emp-dept">
+                                <option value="" disabled selected>Select department</option>
+                                {% for dept in getDept %}
+                                <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <p>Position</p>
+
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="pos"id="pos" class="initialized emp-positions">
+                                <option value="" disabled selected>Select position</option>
+                                {% for pos in getPos %}
+                                <option value="{{pos.Id}}">{{pos.PosNames}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <p>Employment Status</p>
+
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="status"id="status" class="initialized emp-status">
+                                <option value="" disabled selected>Select status</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contractual">Contractual</option>
+                                <option value="Provisionary">Provisionary</option>
+                                <option value="Home-based">Home-based</option>
+                                <option value="Intern">Intern</option>
+                            </select>
+                        </div>
+                        <br>
+                        <p>Company Email<input name="email" placeholder="type here..." id="companyemail" type="text" class="input-field"></p>
+                        <p>Telephone #<input name="telnum" placeholder="type here..." id="telnum" type="text" class="input-field"></p>
+                        <p>Cellphone #<input name="cellnum" placeholder="type here..." id="celnum" type="text" class="input-field"></p>
+                        <p>Address<input name="address" placeholder="type here..." id="address" type="text" class="input-field"></p>
+                        <p>Birthday<input name="bday" readonly placeholder="input here..." class="bday" id="datepicker"></p>
+                        <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                        <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                        <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                    </div>
+                    <div class="col-md-5 col-lg-4 div-capabilities-area">
+                        <big>User Capabilities</big>
+                        <p>
+                            <input type="checkbox" class="filled-in allow-edit-employee" id="filled-in-box-1" value="1" />
+                            <label for="filled-in-box-1" class="black-text">Add/Edit Employee</label>
+                        </p>
+                        <p>
+                            <input type="checkbox" class="filled-in allow-edit-position" id="filled-in-box-2" value="2" />
+                            <label for="filled-in-box-2" class="black-text">Add/Edit Position</label>
+                        </p>
+                        <p>
+                            <input type="checkbox" class="filled-in allow-edit-department" id="filled-in-box-3" value="3" />
+                            <label for="filled-in-box-3" class="black-text">Add/Edit Department</label>
+                        </p>
+                    </div>
                 </div>
-
-                <p>Position</p>
-
-                <div class="select-wrapper"><span class="caret">?</span>
-                    <select name="pos"id="pos" class="initialized emp-positions">
-                        <option value="" disabled selected>Select position</option>
-                        {% for pos in getPos %}
-                        <option value="{{pos.Id}}">{{pos.PosNames}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <p>Employment Status</p>
-
-                <div class="select-wrapper"><span class="caret">?</span>
-                    <select name="status"id="status" class="initialized emp-status">
-                        <option value="" disabled selected>Select status</option>
-                        <option value="Full-time">Full-time</option>
-                        <option value="Part-time">Part-time</option>
-                        <option value="Contractual">Contractual</option>
-                        <option value="Provisionary">Provisionary</option>
-                        <option value="Home-based">Home-based</option>
-                        <option value="Intern">Intern</option>
-                    </select>
-                </div>
-                <br>
-                <p>Company Email<input name="email" placeholder="type here..." id="companyemail" type="text" class="input-field"></p>
-                <p>Telephone #<input name="telnum" placeholder="type here..." id="telnum" type="text" class="input-field"></p>
-                <p>Cellphone #<input name="cellnum" placeholder="type here..." id="celnum" type="text" class="input-field"></p>
-                <p>Address<input name="address" placeholder="type here..." id="address" type="text" class="input-field"></p>
-                <p>Birthday<input name="bday" readonly placeholder="input here..." class="bday" id="datepicker"></p>
-                <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
             </div>
             <div class="modal-footer">
                 <div class="chip missing-input" style="display: none;">
@@ -246,6 +266,7 @@ $(document).ready(function(){
                     empid = $(this).data('empid');
                     telid = $(this).data('telphoneid');
                     cellid = $(this).data('cellphoneid');
+                    capabilities = $(this).data('capabilities');
 //            $('[]').val(name);
             $('[name=employee-id]').val("1");
             $('#username').val('');
@@ -276,6 +297,14 @@ $(document).ready(function(){
             $('.addemp').html('Update');
             $('.add-emp-success').html('<h5>Update Successful</h5>');
 
+            $('.div-capabilities-area').find('input:checkbox').prop('checked', false);
+            if(capabilities.length) {
+                var c = capabilities.split(',');
+                console.log(c)
+                for(i in c) {
+                    $('.div-capabilities-area').find('input[value='+c[i]+']').prop('checked', true);
+                }
+            }
         });
 
         $('.btn-emp').bind('click', function() {
@@ -440,6 +469,7 @@ $(document).ready(function(){
             },1500);
             return false;
         }
+
         if((usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
         fnameinput == '' || lnameinput == '' || departmentinput == null || positioninput == null || statusinput == null || emailinput == '' ||
         addressinput == '' || bdayinput == '') && $('[name=employee-id]').val() == 0){
@@ -497,6 +527,16 @@ $(document).ready(function(){
         var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
         lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
         cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid};
+
+        input.capabilities = [];
+
+        $('.div-capabilities-area').find(':checkbox').each(function() {
+            if(this.checked) input.capabilities.push(this.value);
+        });
+
+        if(input.capabilities.length) input.capabilities = input.capabilities.join(',');
+        else input.capabilities = '';
+
         $('.loader-notif').show().css({'top' : '0px'});
 
         if($('[name=employee-id]').val() != 1){
