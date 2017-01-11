@@ -54,6 +54,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 
         if ($token->getUser() instanceof EmpAcc)
         {
+            echo json_encode($empStatus); exit;
             if($empStatus == 1)
             {
                 //get date today
