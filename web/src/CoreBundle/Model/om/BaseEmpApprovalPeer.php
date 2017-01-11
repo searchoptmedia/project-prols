@@ -364,7 +364,7 @@ abstract class BaseEmpApprovalPeer
 
         return null; // just to be explicit
     }
-    
+
     /**
      * Clear the instance pool.
      *
@@ -379,7 +379,7 @@ abstract class BaseEmpApprovalPeer
       }
         EmpApprovalPeer::$instances = array();
     }
-    
+
     /**
      * Method to invalidate the instance pool of all tables related to emp_approval
      * by a foreign key with ON DELETE CASCADE
@@ -422,7 +422,7 @@ abstract class BaseEmpApprovalPeer
 
         return (int) $row[$startcol];
     }
-    
+
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -433,7 +433,7 @@ abstract class BaseEmpApprovalPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-    
+
         // set the class once to avoid overhead in the loop
         $cls = EmpApprovalPeer::getOMClass();
         // populate the object(s)
@@ -915,7 +915,7 @@ abstract class BaseEmpApprovalPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-            
+
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EmpApprovalPeer::clearRelatedInstancePool();
             $con->commit();

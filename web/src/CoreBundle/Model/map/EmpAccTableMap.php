@@ -51,6 +51,7 @@ class EmpAccTableMap extends TableMap
         $this->addColumn('email', 'Email', 'VARCHAR', true, 45, null);
         $this->addColumn('role', 'Role', 'VARCHAR', true, 45, null);
         $this->addColumn('key', 'Key', 'VARCHAR', false, 255, null);
+        $this->addColumn('capabilities', 'Capabilities', 'VARCHAR', false, 20, null);
         // validators
     } // initialize()
 

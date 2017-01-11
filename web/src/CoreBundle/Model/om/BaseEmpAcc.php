@@ -103,6 +103,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $key;
 
     /**
+     * The value for the capabilities field.
+     * @var        string
+     */
+    protected $capabilities;
+
+    /**
      * @var        PropelObjectCollection|EmpRequest[] Collection to store aggregation of EmpRequest objects.
      */
     protected $collEmpRequestsRelatedByEmpAccId;
@@ -184,7 +190,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -195,7 +201,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [username] column value.
-     * 
+     *
      * @return string
      */
     public function getUsername()
@@ -206,7 +212,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [password] column value.
-     * 
+     *
      * @return string
      */
     public function getPassword()
@@ -217,7 +223,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [timestamp] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -252,12 +258,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [ip_add] column value.
-     * 
+     *
      * @return string
      */
     public function getIpAdd()
@@ -268,7 +274,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return string
      */
     public function getStatus()
@@ -279,7 +285,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [email] column value.
-     * 
+     *
      * @return string
      */
     public function getEmail()
@@ -290,7 +296,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [role] column value.
-     * 
+     *
      * @return string
      */
     public function getRole()
@@ -301,7 +307,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [key] column value.
-     * 
+     *
      * @return string
      */
     public function getKey()
@@ -311,8 +317,19 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [capabilities] column value.
+     *
+     * @return string
+     */
+    public function getCapabilities()
+    {
+
+        return $this->capabilities;
+    }
+
+    /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -333,7 +350,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [username] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -354,7 +371,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [password] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -375,7 +392,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Sets the value of [timestamp] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpAcc The current object (for fluent API support)
@@ -398,7 +415,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [ip_add] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -419,7 +436,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -440,7 +457,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [email] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -461,7 +478,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [role] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -482,7 +499,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [key] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -500,6 +517,27 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
         return $this;
     } // setKey()
+
+    /**
+     * Set the value of [capabilities] column.
+     *
+     * @param  string $v new value
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setCapabilities($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->capabilities !== $v) {
+            $this->capabilities = $v;
+            $this->modifiedColumns[] = EmpAccPeer::CAPABILITIES;
+        }
+
+
+        return $this;
+    } // setCapabilities()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -542,6 +580,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->email = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
             $this->role = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
             $this->key = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
+            $this->capabilities = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -551,7 +590,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 9; // 9 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpAcc object", $e);
@@ -888,6 +927,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::KEY)) {
             $modifiedColumns[':p' . $index++]  = '`key`';
         }
+        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) {
+            $modifiedColumns[':p' . $index++]  = '`capabilities`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `emp_acc` (%s) VALUES (%s)',
@@ -899,32 +941,35 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`username`':						
+                    case '`username`':
                         $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
                         break;
-                    case '`password`':						
+                    case '`password`':
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
                         break;
-                    case '`timestamp`':						
+                    case '`timestamp`':
                         $stmt->bindValue($identifier, $this->timestamp, PDO::PARAM_STR);
                         break;
-                    case '`ip_add`':						
+                    case '`ip_add`':
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
                         break;
-                    case '`email`':						
+                    case '`email`':
                         $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
                         break;
-                    case '`role`':						
+                    case '`role`':
                         $stmt->bindValue($identifier, $this->role, PDO::PARAM_STR);
                         break;
-                    case '`key`':						
+                    case '`key`':
                         $stmt->bindValue($identifier, $this->key, PDO::PARAM_STR);
+                        break;
+                    case '`capabilities`':
+                        $stmt->bindValue($identifier, $this->capabilities, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1127,6 +1172,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             case 8:
                 return $this->getKey();
                 break;
+            case 9:
+                return $this->getCapabilities();
+                break;
             default:
                 return null;
                 break;
@@ -1165,12 +1213,13 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $keys[6] => $this->getEmail(),
             $keys[7] => $this->getRole(),
             $keys[8] => $this->getKey(),
+            $keys[9] => $this->getCapabilities(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->collEmpRequestsRelatedByEmpAccId) {
                 $result['EmpRequestsRelatedByEmpAccId'] = $this->collEmpRequestsRelatedByEmpAccId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1248,6 +1297,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             case 8:
                 $this->setKey($value);
                 break;
+            case 9:
+                $this->setCapabilities($value);
+                break;
         } // switch()
     }
 
@@ -1281,6 +1333,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setEmail($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setRole($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setKey($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setCapabilities($arr[$keys[9]]);
     }
 
     /**
@@ -1301,6 +1354,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::EMAIL)) $criteria->add(EmpAccPeer::EMAIL, $this->email);
         if ($this->isColumnModified(EmpAccPeer::ROLE)) $criteria->add(EmpAccPeer::ROLE, $this->role);
         if ($this->isColumnModified(EmpAccPeer::KEY)) $criteria->add(EmpAccPeer::KEY, $this->key);
+        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) $criteria->add(EmpAccPeer::CAPABILITIES, $this->capabilities);
 
         return $criteria;
     }
@@ -1372,6 +1426,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $copyObj->setEmail($this->getEmail());
         $copyObj->setRole($this->getRole());
         $copyObj->setKey($this->getKey());
+        $copyObj->setCapabilities($this->getCapabilities());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -2727,6 +2782,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $this->email = null;
         $this->role = null;
         $this->key = null;
+        $this->capabilities = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;

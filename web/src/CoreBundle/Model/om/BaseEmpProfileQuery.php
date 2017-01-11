@@ -158,7 +158,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpProfile|EmpProfile[]|mixed the result, formatted by the current formatter
@@ -213,7 +213,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status`, `profile_status` FROM `emp_profile` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
