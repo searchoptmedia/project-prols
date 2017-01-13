@@ -1084,7 +1084,8 @@ class DefaultController extends Controller{
 		}
 	}
 	
-    public function addEmployeeAction(Request $request){
+    public function addEmployeeAction(Request $request)
+	{
     	$user = $this->getUser();
     	$role = $user->getRole();
    		
@@ -1213,6 +1214,7 @@ class DefaultController extends Controller{
 		exit;
 	}
 
+	//request leave functionality
 	public function requestLeaveAction(Request $req)
 	{
 
@@ -1230,16 +1232,16 @@ class DefaultController extends Controller{
 		{
 			$emailresp = 'No email sent';
 		}
-		else{{
-
-		}
+		else
+        {
 			$emailresp = 'Email Sent';
 		}
 			echo json_encode(array('result' => 'ok', 'emailresp' => $emailresp));
 		exit;
 		}
 
-	public function addPositionAction($id){
+	public function addPositionAction($id)
+    {
 		$user = $this->getUser();
     	$role = $user->getRole();
    
@@ -1321,7 +1323,6 @@ class DefaultController extends Controller{
 			{
 				$currenttimein = $checktimein->format('h:i A');
 
-
 			}
 			else
 			{
@@ -1353,10 +1354,12 @@ class DefaultController extends Controller{
 		$ip_add = ListIpPeer::getValidIP($userip);
 		$is_ip  = InitController::checkIP($userip);
 		$et = EmpTimePeer::getEmpLastTimein($id);
-		if(!empty($et)){
+		if(!empty($et))
+        {
 			$lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
 			$emptimedate = $et->getDate();
-			if($emptimedate->format('Y-m-d') == $datetoday){
+			if($emptimedate->format('Y-m-d') == $datetoday)
+            {
 				$timeflag = 1;
 			}
 			if(! empty($et->getTimeOut()))
@@ -1364,7 +1367,6 @@ class DefaultController extends Controller{
 
 
 		}
-
 		$requestcount = EmpRequestQuery::create()
 			->filterByStatus('Pending')
 			->find()->count();
@@ -1529,11 +1531,11 @@ class DefaultController extends Controller{
 				$currenttimeout = $checktimeout->format('h:i A');
 			}
 		}
-        //add duration
-        $tmn_in = EmpTimePeer::getEmpLastTimein($id);
-        $date_now = date("h:i:sa");
-        $total_due = date_diff($tmn_in,$date_now);
-        $total_dueFormat = strtotime($total_due);
+//        //add duration
+//        $tmn_in = EmpTimePeer::getEmpLastTimein($id);
+//        $date_now = date("h:i:sa");
+//        $total_due = date_diff($tmn_in,$date_now);
+//        $total_dueFormat = strtotime($total_due);
 
 		$timeoutdata = '';
 		$checkipdata = null;
@@ -1578,8 +1580,6 @@ class DefaultController extends Controller{
 				}else{
 					$over = 0;
 				}
-
-
 
 			}
 		}
@@ -1647,11 +1647,10 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
 			'getAllTime' => $getAllTimeData,
-            'duration' => $total_dueFormat
+
 
 		));
     }
-
     public function empDeleteAction($id)
 	{
     	$user = $this->getUser();
