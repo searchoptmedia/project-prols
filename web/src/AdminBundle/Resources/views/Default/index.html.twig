@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="{{ asset('prols2/css/select2.min.css') }}" rel="stylesheet" />
 <link href="{{ asset('prols2/css/pikaday.css') }}" rel="stylesheet" />
-<link rel="stylesheet" href="{{asset('prols2/css/fullcalendar/fullcalendar.css')}}" media="all"/>
+<link rel="stylesheet" href="{{asset('prols2/css/fullcalendar/fullcalendar.css')}}" media ="all"/>
 <link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
 <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
 <link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
@@ -21,7 +21,15 @@
     }
 </style>
 </head>
+<style>
+#btn-reqleave {
+    height: auto;
+    width: auto;
+    border: none;
+    border-radius: 1px;
 
+}
+</style>
 <body>
 {{ notif.notif_loader() }}
 {{ notif.request_leave_notif }}
@@ -41,7 +49,7 @@
                     <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
                     <br>
                     <div class="chip timechip" style="display: none">
-                        Timed-in at {{currenttimein}}
+                        Timed-in at {{ currenttimein }}
                     </div>
                 </div>
                 <div class="clr"></div>
@@ -86,7 +94,7 @@
                 </div>
 
                 <div class="agenda-buttons">
-                    {#<a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>#}
+                    <a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
                     <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
                 </div>
 
@@ -114,27 +122,26 @@
                 <!------------REQUEST LEAVE FORM------------->
                 <div class="form-reqleave">
                     <div class="input-field" style="padding-top: 30px;">
+
                         <div class="row">
-                            {#<select class="col-md-6" name="leavetype" id="leavetype">#}
-                                {#<option value="" disabled selected>Choose Type of Leave</option>#}
-                                {#<option value="1">Sick Leave</option>#}
-                                {#<option value="2">Vacation Leave</option>#}
-                                {#<option value="5">Emergency Leave</option>#}
-                            {#</select>#}
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 reqleave-lbl">
-                                <p class="reqleave-p">From: </p>
-                                <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
-                            </div>
-                            <div class="col-md-6 reqleave-lbl">
-                                <p class="reqleave-p">To: </p>
-                                <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
+                            <div class="multi_reqleaveform">
+                                <div class="req_inner">
+                                    <div class="col-md-6 reqleave-lbl">
+                                        <p class="reqleave-p">From: </p>
+                                        <input name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">
+                                    </div>
+                                     <div class="col-md-6 reqleave-lbl">
+                                        <p class="reqleave-p">To: </p>
+                                        <input name="end-date" readonly placeholder="End Date" class="end-date datepicker" id="end_date">
+                                     </div>
+                                </div>
                             </div>
                             <div class="col-md-12">
                                 <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...."></textarea>
                             </div>
+
                         </div>
+
                     </div>
 
                     <div class="chip required-field">
@@ -173,40 +180,54 @@
     <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
+
+    <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
 {% endblock %}
 
 {% block customjs %}
     <script>
-        var picker;
-        var picker2;
-        picker  = new Pikaday({field: document.getElementById('datepicker') });
-        picker2 = new Pikaday({field: document.getElementById('datepicker2') });
-            $('.start-date').val('');
-            $('.end-date').val('');
-            picker.destroy();
-            picker2.destroy();
-                picker  = new Pikaday({field: document.getElementById('datepicker'), onSelect: function(){
-                    picker2.hide();
-                    $('.end-date').val('');
-                        if(picker.getDate != ''){
-                            picker2.destroy();
-                            picker2 = new Pikaday({field: document.getElementById('datepicker2'), onSelect: function(){
-                                picker2.setEndRange(picker2.getDate());
-                                picker.setStartRange(picker.getDate());
-                                picker.setEndRange(picker2.getDate());
-                            } });
-                            picker.setStartRange(picker.getDate());
-                            picker.setEndRange(picker2.getDate());
-                            picker2.setStartRange(picker.getDate());
-                            picker2.show();
-                            picker2.setMinDate(picker.getDate());
-                        }
-                    }
-                });
-                picker.setMinDate(new Date());
+
+//        pickDay('');
+//        var i = 0;
+//            function pickDay(i) {
+//                console.log('pikass');
+//                var picker;
+//                var picker2;
+//                picker = new Pikaday({field: document.querySelector('#start_date'+i)});
+//               picker2 = new Pikaday({field: document.querySelector('#end_date'+i)});
+//           $('.start-date').val('');
+//                $('.end-date').val('');
+//              picker.destroy();
+//             picker2.destroy();
+//                picker = new Pikaday({
+//                    field: document.querySelector('#start_date'+i), onSelect: function () {
+//                       picker2.hide();
+//                       $('.end-date').val('');
+//                        if (picker.getDate != '') {
+//                          picker2.destroy();
+//                            picker2 = new Pikaday({
+//                                field: document.querySelector('#end_date'+i), onSelect: function () {
+//                                    picker2.setEndRange(picker2.getDate());
+//                                    picker.setStartRange(picker.getDate());
+//                                    picker.setEndRange(picker2.getDate());
+//                                }
+//                            });
+//                            picker.setStartRange(picker.getDate());
+//                            picker.setEndRange(picker2.getDate());
+//                            picker2.setStartRange(picker.getDate());
+//                            picker2.show();
+//                            picker2.setMinDate(picker.getDate());
+//                         }
+//                    }
+//                });
+//                picker.setMinDate(new Date());
+//
+//            }
 
     </script>
+
 {% endblock %}
+
 
 <script type="text/javascript">
 
@@ -267,7 +288,8 @@
         }
 
         function checkTimeout() {
-            if(isTimeout == 'false') {
+            if(isTimeout == 'false')
+            {
                 $('.forgot-timeout-modal').show();
                 startTimer(displayTime, display);
             }
@@ -284,7 +306,8 @@
                 day: "numeric", hour: "2-digit", minute: "2-digit"
             };
             $d = $d.toLocaleTimeString("en-us", options);
-            if(isAutoTimeOut == 'true') {
+            if(isAutoTimeOut == 'true')
+            {
                 $('.auto-timeout-notice').show();
                 $('.auto-timeout-time-message').html($d);
                 $('.time-in-container').hide();
@@ -426,7 +449,7 @@
         {#}#}
     {#});#}
 
-var pass = ''
+var pass = '';
 
 $('#time-in-button').click(function(){
     var message = $('#diffip-input-reason').val(), error = false,
@@ -553,6 +576,9 @@ $('.btn-submitmeeting').click(function(){
     });
 });
     var typeleave = '';
+
+
+    //leave
 $('.btn-submitleave').click(function(){
 
     var leavestartdate  = $('.start-date').val();
@@ -635,5 +661,43 @@ function showBirthday() {
 }
 
 </script>
+<script>
+
+// request on leave function multiple
+//    $(document).ready(function(){
+//
+//                var unique_id = 0;
+//                $(".btn-reqleave").click(function (e) {
+//                    var parent = $('.multi_reqleaveform');
+//                    var req_dates = parent.find('.req_inner').eq(0).clone(true);
+//                    var length = parent.find('.req_inner').length + 1;
+//                    req_dates.find('#start_date').attr('id', req_dates.find('#start_date').attr('id') + length);
+//                    req_dates.find('#end_end').attr('id', req_dates.find('#end_date').attr('id') + length);
+//                    parent.append(req_dates);
+////                    var newInput = $('<input name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">');
+////                    newInput.appendTo(".reqleave-lbl").pickadate();
+//
+//                    $(document).on('click',".start_date", function() {
+//                        pickDay();
+//                    });
+//
+//                });
+//         });
+
+
+        //        $(".multi_reqleaveform").on('click','#')
+//            $('body').on('focus',"#start_date", function(){
+//            $(this).datepicker();
+//        });
+//    $('.btn-submitleave').click(function() {
+//        $(document).ready(function () {
+//            var start_date = $('#start-date').serialize();
+//            console.log(start_date);
+//        });
+//    });
+
+
+</script>
+
 </body>
 </html>
