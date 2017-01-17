@@ -1,4 +1,4 @@
-{% import 'AdminBundle:Default:notification.html.twig' as notif %}
+ {% import 'AdminBundle:Default:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
 {% set userbdaynames = userbdaynames|default([]) %}
 <!doctype html>
@@ -100,12 +100,16 @@
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
-                    <div class="reqmeeting-emp-tag">
+                    <div class="reqmeeting-emp-tag" id="">
+                        <br/><br/>
+                      <br/><br/>
                         <select class="select-emp-tag" multiple="multiple">
                             {% for acc in allacc %}
                             <option value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
                             {% endfor %}
+
                         </select>
+
                     </div>
                     <div class="input-field">
                         <input id="meeting" placeholder="Type your message here...">
@@ -181,52 +185,10 @@
     <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
 
+    //
     <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
 {% endblock %}
 
-{% block customjs %}
-    <script>
-
-//        pickDay('');
-//        var i = 0;
-//            function pickDay(i) {
-//                console.log('pikass');
-//                var picker;
-//                var picker2;
-//                picker = new Pikaday({field: document.querySelector('#start_date'+i)});
-//               picker2 = new Pikaday({field: document.querySelector('#end_date'+i)});
-//           $('.start-date').val('');
-//                $('.end-date').val('');
-//              picker.destroy();
-//             picker2.destroy();
-//                picker = new Pikaday({
-//                    field: document.querySelector('#start_date'+i), onSelect: function () {
-//                       picker2.hide();
-//                       $('.end-date').val('');
-//                        if (picker.getDate != '') {
-//                          picker2.destroy();
-//                            picker2 = new Pikaday({
-//                                field: document.querySelector('#end_date'+i), onSelect: function () {
-//                                    picker2.setEndRange(picker2.getDate());
-//                                    picker.setStartRange(picker.getDate());
-//                                    picker.setEndRange(picker2.getDate());
-//                                }
-//                            });
-//                            picker.setStartRange(picker.getDate());
-//                            picker.setEndRange(picker2.getDate());
-//                            picker2.setStartRange(picker.getDate());
-//                            picker2.show();
-//                            picker2.setMinDate(picker.getDate());
-//                         }
-//                    }
-//                });
-//                picker.setMinDate(new Date());
-//
-//            }
-
-    </script>
-
-{% endblock %}
 
 
 <script type="text/javascript">
@@ -544,7 +506,7 @@ $('#time-out-button').click(function(){
     });
 
 });
-
+    //request meeting function
 $('.btn-submitmeeting').click(function(){
    var reqmeetmessage =  $('#meeting').val();
     var taggedemail = $('.select-emp-tag').val();
@@ -663,7 +625,8 @@ function showBirthday() {
 </script>
 <script>
 
-// request on leave function multiple
+
+        //add request leave
 //    $(document).ready(function(){
 //
 //                var unique_id = 0;
@@ -674,12 +637,10 @@ function showBirthday() {
 //                    req_dates.find('#start_date').attr('id', req_dates.find('#start_date').attr('id') + length);
 //                    req_dates.find('#end_end').attr('id', req_dates.find('#end_date').attr('id') + length);
 //                    parent.append(req_dates);
-////                    var newInput = $('<input name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">');
+////               var newInput = $('<input name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">');
 ////                    newInput.appendTo(".reqleave-lbl").pickadate();
 //
-//                    $(document).on('click',".start_date", function() {
-//                        pickDay();
-//                    });
+//
 //
 //                });
 //         });
@@ -697,6 +658,50 @@ function showBirthday() {
 //    });
 
 
+</script>
+
+<script>
+//    $(document).ready(function(){
+//
+//        var today = new Date();
+//        var dd = today.getDate();
+//        var mm = today.getMonth()+1; //January is 0!
+//
+//        var yyyy = today.getFullYear();
+//        if(dd<10){
+//            dd='0'+dd;
+//        }
+//        if(mm<10){
+//            mm='0'+mm;
+//        }
+//        var today = dd+'/'+mm+'/'+yyyy;
+//        console.log(today);
+//    });
+
+        $(document).ready(function(){
+
+        });
+
+//get compute Time Duration
+    function computeTime(){
+              //time out
+                var getTimeIn = $('.time-logs-table').find('tbody').find('tr').data('time-in');
+                   var d = new Date(getTimeIn);
+                    var past_hour = d.getHours();
+                    var past_minutes = d.getMinutes();
+
+                    //Date Today
+                    var date = new Date();
+                    var present_hour = date.getHours();
+
+                    var diff_a = present_hour - past_hour;
+                    if(!diff_a)
+                    {
+                        diff_a = '';
+                    }
+                    $("#duration-time").html(diff_a);
+      }
+        computeTime();
 </script>
 
 </body>

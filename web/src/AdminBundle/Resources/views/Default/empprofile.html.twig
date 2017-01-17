@@ -71,7 +71,7 @@
 
                     <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
                         <thead>
-                        <tr>
+                        <tr {% if( time.TimeOut is empty) %} class="active" data-timein="{{ time.TimeIn | date('h:i A') }}" {% endif %}>
                             <th>Date</th>
                             <th>Time In</th>
                             <th>Time Out</th>
@@ -82,14 +82,16 @@
                         </thead>
                         <tbody>
                         {% for time in getAllTime %}
+
                             <tr>
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td>{{ time.Duration }}</td>
+                                <td>0</td>
                                 <td>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
                             </tr>
+
                         {% endfor %}
                         </tbody>
                     </table>
@@ -413,6 +415,20 @@
                 }
             });
         });
+    </script>
+    <script>
+        $(document).ready(function(){
+            var row1 = $(this).attr("data-timein");
+            alert(row1);
+        });
+        function computeTime(){
+            //time out
+            var row = $('.time-logs-table').find('tbody').find('tr.active');
+
+        }
+        computeTime();
+
+        alert("AS");
     </script>
 {% endblock %}
 
