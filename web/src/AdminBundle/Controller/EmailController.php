@@ -89,7 +89,8 @@ class EmailController extends Controller {
 
         $employee = EmpAccPeer::retrieveByPK($empid);
 
-        if(! empty($employee)) {
+        if(! empty($employee))
+        {
             $empemail = $employee->getEmail();
             $empinfo = EmpProfilePeer::getInformation($employee->getId());
             $empname = $empinfo->getFname() . " " .$empinfo->getLname();
@@ -143,12 +144,15 @@ class EmailController extends Controller {
         return $email ? 1: 0;
     }
     
-    public function requestTypeEmail($req, $class){
+    public function requestTypeEmail($req, $class)
+    {
         $user = $class->getUser();
         $id   = $user->getId();
 
+        
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
 
         if(empty($req->request->get('typeleave'))){
             $requestlist = ListRequestTypePeer::retrieveByPK(4);
@@ -158,6 +162,7 @@ class EmailController extends Controller {
         }
         $requesttype = $requestlist->getRequestType();
 
+        $taggedemail = $req->request->get('taggedemail');
         $admins = EmpAccPeer::getAdminInfo();
         $adminemails = array();
         foreach ($admins as $admin){
@@ -166,10 +171,12 @@ class EmailController extends Controller {
 
         $subject = $requesttype . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($adminemails);
+        $to      = array($adminemails,$taggedemail);
+
 
         $inputMessage = "Hi admin!" . "<br><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
         "<br><br>" . "Click the link below to view the pending request" . "<br>http://login.propelrr.com/requests";
+        
         $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
         return $email ? 1: 0;
