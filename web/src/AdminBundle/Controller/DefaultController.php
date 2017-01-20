@@ -107,8 +107,6 @@ class DefaultController extends Controller{
     			$checktimeout = $timedata[$ctr]->getTimeOut();
     			if(!is_null($checktimein) && is_null($checktimeout)){
     				$currenttimein = $checktimein->format('h:i A');
-    				
-
     			}
 				else
 				{
@@ -588,8 +586,13 @@ class DefaultController extends Controller{
 		$currenttimeout = 0;
 	   		for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
 			{
+
+
     			$checktimein = $timedata[$ctr]->getTimeIn();
     			$checktimeout = $timedata[$ctr]->getTimeOut();
+//				$date_due = new DateTime();
+//				$hours_diff = date_diff($checktimein,$date_due);
+				//duration diff format
     			if(!is_null($checktimein) && is_null($checktimeout))
 				{
     				$currenttimein = $checktimein->format('h:i A');
@@ -685,9 +688,9 @@ class DefaultController extends Controller{
 			'requestcount' => $requestcount,
 			'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-			'getAllTime' => $getAllTimeData, //GetAllTime Function
+			'getAllTime' => $getAllTimeData,
 			'timetoday' => $timetoday,
-//            'duration' => $total_dueFormat
+//			'duration' => $hours_diff
         	));
 
     }
@@ -1194,9 +1197,10 @@ class DefaultController extends Controller{
 	
 	public function requestMeetingAction(Request $req)
 	{
-
+        //request meeting functionality
 		$email = new EmailController();
 
+		
 		
 		$sendemail = $email->requestTypeEmail($req, $this);
 
@@ -1204,6 +1208,10 @@ class DefaultController extends Controller{
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
 		$requestMeeting->setRequest($req->request->get('reqmeetmessage'));
+
+        
+//        $requestMeeting->setRequest($req->request->get('taggedemail'));
+        
 		$requestMeeting->setStatus('Pending');
 		$requestMeeting->setDateStarted($current_date);
 		$requestMeeting->setDateEnded($current_date);
@@ -1520,6 +1528,9 @@ class DefaultController extends Controller{
 		{
 			$checktimein = $timedata[$ctr]->getTimeIn();
 			$checktimeout = $timedata[$ctr]->getTimeOut();
+//			$date_due = date('m/d/Y h:i:s a', time());
+//				$diff_due = $checktimein - $date_due;
+//				$hours_diff = $diff_due / (60*60);
 			if(!is_null($checktimein) && is_null($checktimeout))
 			{
 				$currenttimein = $checktimein->format('h:i A');
@@ -1603,6 +1614,9 @@ class DefaultController extends Controller{
 
 		$getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
+		
+		
+
 		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
 			'name' => $name,
 			'fname' => $fname,
@@ -1647,6 +1661,7 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
 			'getAllTime' => $getAllTimeData,
+			'duration' => $hours_diff
 
 
 		));

@@ -82,7 +82,7 @@
                             {#<option value="2"> Monthly Performance Chart</option>#}
                         {#</select>#}
                     {#</div>#}
-
+                    <div id="a"></div>
                     <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
                         <thead>
                             <tr>
@@ -95,15 +95,19 @@
                             </tr>
                         </thead>
                         <tbody>
+
                         {% for time in getAllTime %}
-                            <tr>
+
+                            <tr {% if( time.TimeOut is empty) %} class="active" data-time-in="{{ time.TimeIn | date('m/d/Y h:i A') }}" {% endif %}>
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td> </td>
+                                <td id="duration-time"></td>
                                 <td>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
+
                             </tr>
+
                         {% endfor %}
                         </tbody>
                     </table>
@@ -431,6 +435,11 @@
             });
         });
     </script>
+
+
 {% endblock %}
+
+
+
 
 
