@@ -1,5 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
+    database_driver: pdo_mysql
     database_host: 205.186.138.226
     database_port: 3306
     database_name: prols_staging
