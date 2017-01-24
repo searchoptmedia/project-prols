@@ -128,8 +128,10 @@ $(function() {
         }// END Tagsinput
 
         //iCheckbox and iRadion - custom elements
-        var feiCheckbox = function(){
-            if($(".icheckbox").length > 0){
+        var feiCheckbox = function()
+        {
+            if($(".icheckbox").length > 0)
+            {
                  $(".icheckbox,.iradio").iCheck({checkboxClass: 'icheckbox_minimal-grey',radioClass: 'iradio_minimal-grey'});
             }
         }
@@ -485,6 +487,8 @@ $(function() {
         }
     }();
 
+
+    //full calendar js
     var fullCalendar = function(){
 
         var calendar = function(){
@@ -506,7 +510,6 @@ $(function() {
 
                 }
 
-
                 var date = new Date();
                 var d = date.getDate();
                 var m = date.getMonth();
@@ -525,7 +528,7 @@ $(function() {
                     },
 
                     dayClick: function(date){
-                        // console.log(moment(date).format('MM-DD-YYYY'));
+                     console.log(moment(date).format('MM-DD-YYYY'));
                         $('.agenda-list ul').remove();
                         $(".agenda-list").append('<ul class="collection agenda-list"></ul>');
 
@@ -561,6 +564,7 @@ $(function() {
                     eventSources: {url: "assets/ajax_fullcalendar.php"},
                     droppable: true,
                     selectable: true,
+                    
                     selectHelper: true,
                     fixedWeekCount: false,
                     // aspectRatio: 2,
