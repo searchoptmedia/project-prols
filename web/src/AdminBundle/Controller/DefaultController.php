@@ -2,6 +2,7 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\EmpRequestQuery;
@@ -50,6 +51,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\Email;
 
+use Pagerfanta\Adapter\PropelAdapter;
+use Pagerfanta\Pagerfanta;
 //-------------------------FOR ADMIN------------------------------------
 class DefaultController extends Controller{
 
@@ -391,7 +394,6 @@ class DefaultController extends Controller{
 							$response = array('message' => $message, 'error' => $error);
 							echo json_encode($response);
 						}
-
 					}
 				}else
 				{
@@ -875,10 +877,12 @@ class DefaultController extends Controller{
     	$name = $user->getUsername();
 		$page = 'View Request';
     	$role = $user->getRole();
-    	$id = $user->getId();
-		$timename = self::timeInOut($id); 
+		$capabilities = $user->getCapabilities();
 
-    	if((strcasecmp($role, 'employee') == 0))
+    	$id = $user->getId();
+		$timename = self::timeInOut($id);
+
+    	if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
@@ -1203,14 +1207,12 @@ class DefaultController extends Controller{
 		
 		
 		$sendemail = $email->requestTypeEmail($req, $this);
-
+        
 		$requestMeeting = new EmpRequest();
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
 		$requestMeeting->setRequest($req->request->get('reqmeetmessage'));
-
         
-//        $requestMeeting->setRequest($req->request->get('taggedemail'));
         
 		$requestMeeting->setStatus('Pending');
 		$requestMeeting->setDateStarted($current_date);
@@ -1661,7 +1663,6 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
 			'getAllTime' => $getAllTimeData,
-			'duration' => $hours_diff
 
 
 		));
@@ -2089,4 +2090,16 @@ class DefaultController extends Controller{
 		return $response;
 	}
 //end
+
+    public function listAction(Request $request)
+    {
+       $q = new EmpProfileQuery();
+        $list_q = $q->find();
+        $adapter = new PropelAdapter($list_q);
+        $pagerfanta = new Pagerfanta($adapter);
+
+        $page = $request->query->get('page', 1);
+
+
+    }
 }

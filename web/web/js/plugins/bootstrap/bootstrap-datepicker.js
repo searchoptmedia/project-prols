@@ -33,7 +33,7 @@
 	}
 	function alias(method){
 		return function(){
-			return this[method].apply(this, arguments);
+			return this[method].apply(this, arguments);	
 		};
 	}
 
@@ -798,7 +798,7 @@
 						clsName.push('disabled');
 					if (before.classes)
 						clsName = clsName.concat(before.classes.split(/\s+/));
-					if (before.tooltip)
+					if (before.tooltip)																																																																			
 						tooltip = before.tooltip;
 				}
 
@@ -888,7 +888,7 @@
 						this.picker.find('.prev').css({visibility: 'hidden'});
 					}
 					else {
-						this.picker.find('.prev').css({visibility: 'visible'});
+						this.picker.find('.prev').css({visibility: 'visible'});					
 					}
 					if (this.o.endDate !== Infinity && year >= this.o.endDate.getUTCFullYear()){
 						this.picker.find('.next').css({visibility: 'hidden'});

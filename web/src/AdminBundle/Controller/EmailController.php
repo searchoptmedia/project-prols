@@ -22,7 +22,8 @@ use Swift_Message;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 
-class EmailController extends Controller {
+class EmailController extends Controller
+{
 
     public function sendTimeInRequest($req, $class)
     {
@@ -115,10 +116,8 @@ class EmailController extends Controller {
         {
 
         }
-
         return $email ? 1: 0;
     }
-
     public function RequestMeetingEmail($req, $class)
     {
         $user = $class->getUser();
@@ -143,7 +142,17 @@ class EmailController extends Controller {
 
         return $email ? 1: 0;
     }
-    
+    //notify user that he/she request for meeting
+    public function notifyEmployeeRequest($req, $class)
+    {
+        $user = $class->getUser();
+        $id = $user->getId();
+
+        $empinfo = EmpProfilePeer::getInformation($id);
+        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
+
+    }
     public function requestTypeEmail($req, $class)
     {
         $user = $class->getUser();
@@ -163,6 +172,7 @@ class EmailController extends Controller {
         $requesttype = $requestlist->getRequestType();
 
         $taggedemail = $req->request->get('taggedemail');
+
         $admins = EmpAccPeer::getAdminInfo();
         $adminemails = array();
         foreach ($admins as $admin){
@@ -174,7 +184,7 @@ class EmailController extends Controller {
         $to      = array($adminemails,$taggedemail);
 
 
-        $inputMessage = "Hi admin!" . "<br><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
+        $inputMessage = "<strong>Hi admin!" . "<br><b></strong>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
         "<br><br>" . "Click the link below to view the pending request" . "<br>http://login.propelrr.com/requests";
         
         $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
@@ -241,7 +251,9 @@ class EmailController extends Controller {
         return $response;
 
     }
-    
-    
+
+
 
 }
+
+?>
