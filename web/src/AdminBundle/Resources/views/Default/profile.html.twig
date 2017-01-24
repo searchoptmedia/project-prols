@@ -14,6 +14,8 @@
 
             <div class="emp-photo">
                 <div class="profile-image center-align">
+
+
                     <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                 </div>
             </div>
@@ -98,7 +100,7 @@
 
                         {% for time in getAllTime %}
 
-                            <tr {% if( time.TimeOut is empty) %} class="active" data-time-in="{{ time.TimeIn | date('m/d/Y h:i A') }}" {% endif %}>
+                            <tr {% if( time.TimeOut is empty) %} class="active" data-time-in="{{ time.TimeIn | date('m/d/Y h:i A')  }}" {% endif %}>
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
@@ -435,6 +437,8 @@
             });
         });
     </script>
+
+
 
 
 {% endblock %}

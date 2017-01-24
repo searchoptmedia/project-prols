@@ -18,6 +18,14 @@
     <div class="collection emp-nav">
         <a href="{{ path('admin_homepage') }}" class="collection-item index-page"><i class="material-icons nav-icon">reorder</i> Home</a>
         <a href="{{ path('profile_page') }}" class="collection-item profile-page"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
+        {% set capabilities = app.user.capabilities|split(',') %}
+        {% if app.user.capabilities|length!='' %}
+        <a href="{{ path('manage_employee') }}" class="collection-item manage-page">
+            <i class="material-icons nav-icon">list</i> Manage Employees</a>
+        {% endif %}
         <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
+
     </div>
 {% endmacro %}
+
+

@@ -39,7 +39,11 @@
                                             <td>{{emp.getListDept().DeptNames}}</td>
                                             <td>{{emp.getListPos().PosNames}}</td>
                                             <td>{{ emp.status }}</td>
-                                            <td style="float: right;"><button class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+                                            {% set capabilities = app.user.capabilities|split('') %}
+                                            {% if role == 'ADMIN' %}
+                                            <td style="float: right;"><button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+
+
                                                 <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
                                                         data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
                                                         data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
@@ -60,7 +64,34 @@
                                                             data-telphoneid="{{ contact.id }}"
                                                         {% endfor %}
                                                         data-empid="{{ emp.empAccAccId }}">Edit
+
                                                 </button></td>
+                                            {% endif %}
+                                                {% if 1 in capabilities  %}
+                                                    <td style="float: right;">
+                                                    <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
+                                                            data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                            data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                            data-empnum="{{ emp.getEmployeeNumber }}"
+                                                            data-department="{{emp.getListDept().id}}"
+                                                            data-position="{{emp.getListPos().id}}"
+                                                            data-status="{{emp.getStatus}}"
+                                                            data-email="{{ emp.EmpAcc.getEmail }}"
+                                                            data-address="{{ emp.address }}"
+                                                            data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                            data-capabilities="{{ emp.EmpAcc.getCapabilities }}"
+                                                            {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                                data-cellphone="{{ contact.contact }}"
+                                                                data-cellphoneid="{{ contact.id }}"
+                                                            {% endfor %}
+                                                            {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                                data-telephone="{{ contact.contact }}"
+                                                                data-telphoneid="{{ contact.id }}"
+                                                            {% endfor %}
+                                                            data-empid="{{ emp.empAccAccId }}">Edit
+
+                                                    </button></td>
+                                                {% endif %}
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -73,11 +104,30 @@
             <a class="btn-floating btn-large red">
             <i class="material-icons">add</i>
             </a>
-            <ul class="add">
-                <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
-                <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
-                <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
-            </ul>
+            {% set capabilities = app.user.capabilities|split('') %}
+
+                <ul class="add">
+                    {% if 1 in capabilities %}
+                    <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
+                    {% endif %}
+                    {% if 2 in capabilities %}
+                    <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
+                    {% endif %}
+                    {% if 3 in capabilities %}
+                    <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
+                    {% endif %}
+                    {% if role == 'ADMIN' %}
+                        <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
+                        <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
+                        <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
+                    {% endif  %}
+                </ul>
+
+
+
+
+
+
         </div>
 
         <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
@@ -86,7 +136,11 @@
                 <h4>Employee</h4>
                 <input type="hidden" name="employee-id" value="">
                 <div class="row">
+                    {% if role == 'ADMIN' %}
                     <div class="col-md-7 col-lg-8">
+                       {% else %}
+                        <div class="col-md-12 col-lg-12">
+                            {% endif %}
                         <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
                         <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
                         <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
@@ -139,20 +193,27 @@
                         <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
                         <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
                     </div>
+                    {% if role == 'ADMIN' %}
                     <div class="col-md-5 col-lg-4 div-capabilities-area">
                         <big>User Capabilities</big>
+
                         <p>
                             <input type="checkbox" class="filled-in allow-edit-employee" id="filled-in-box-1" value="1" />
                             <label for="filled-in-box-1" class="black-text">Add/Edit Employee</label>
                         </p>
+
+
                         <p>
                             <input type="checkbox" class="filled-in allow-edit-position" id="filled-in-box-2" value="2" />
                             <label for="filled-in-box-2" class="black-text">Add/Edit Position</label>
                         </p>
+
+
                         <p>
                             <input type="checkbox" class="filled-in allow-edit-department" id="filled-in-box-3" value="3" />
                             <label for="filled-in-box-3" class="black-text">Add/Edit Department</label>
                         </p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 {% block title %}
     <title>Propelrr Log-in System| Profile</title>
 {% endblock %}
+
 {% block body %}
     {{ notif.update_profile_notif }}
     {{ notif.notif_loader() }}
@@ -71,7 +72,7 @@
 
                     <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
                         <thead>
-                        <tr {% if( time.TimeOut is empty) %} class="active" data-timein="{{ time.TimeIn | date('h:i A') }}" {% endif %}>
+                        <tr>
                             <th>Date</th>
                             <th>Time In</th>
                             <th>Time Out</th>
@@ -83,7 +84,7 @@
                         <tbody>
                         {% for time in getAllTime %}
 
-                            <tr>
+                            <tr  {% if( time.TimeOut is empty) %} class="active" data-timein="{{ time.TimeIn | date('h:i A') }}" {% endif %}>
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
