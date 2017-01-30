@@ -18,6 +18,18 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         return $_self ? $_self : array();
     }
+    public static function getIndividualRequest($id ,Criteria $c = null)
+    {
+        if (is_null($c)) {
+            $c = new Criteria();
+        }
+
+        $c->add(self::EMP_ACC_ID, $id, Criteria::EQUAL);
+
+        $_self = self::doSelect($c);
+
+        return $_self ? $_self : null;
+    }
 
     public static function getAllAcceptedRequest(Criteria $c = null)
     {

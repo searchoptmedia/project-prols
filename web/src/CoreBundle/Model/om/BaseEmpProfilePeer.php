@@ -411,7 +411,7 @@ abstract class BaseEmpProfilePeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -426,7 +426,7 @@ abstract class BaseEmpProfilePeer
       }
         EmpProfilePeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to emp_profile
      * by a foreign key with ON DELETE CASCADE
@@ -469,7 +469,7 @@ abstract class BaseEmpProfilePeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -480,7 +480,7 @@ abstract class BaseEmpProfilePeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = EmpProfilePeer::getOMClass();
         // populate the object(s)
@@ -1089,7 +1089,7 @@ abstract class BaseEmpProfilePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpProfilePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpProfilePeer::LIST_DEPT_ID, ListDeptPeer::ID, $join_behavior);
 
         $criteria->addJoin(EmpProfilePeer::LIST_POS_ID, ListPosPeer::ID, $join_behavior);
@@ -1142,7 +1142,7 @@ abstract class BaseEmpProfilePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpProfilePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpProfilePeer::EMP_ACC_ACC_ID, EmpAccPeer::ID, $join_behavior);
 
         $criteria->addJoin(EmpProfilePeer::LIST_POS_ID, ListPosPeer::ID, $join_behavior);
@@ -1195,7 +1195,7 @@ abstract class BaseEmpProfilePeer
         if ($con === null) {
             $con = Propel::getConnection(EmpProfilePeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpProfilePeer::EMP_ACC_ACC_ID, EmpAccPeer::ID, $join_behavior);
 
         $criteria->addJoin(EmpProfilePeer::LIST_DEPT_ID, ListDeptPeer::ID, $join_behavior);
@@ -1271,7 +1271,7 @@ abstract class BaseEmpProfilePeer
                 if ($key2 !== null) {
                     $obj2 = ListDeptPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = ListDeptPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1290,7 +1290,7 @@ abstract class BaseEmpProfilePeer
                 if ($key3 !== null) {
                     $obj3 = ListPosPeer::getInstanceFromPool($key3);
                     if (!$obj3) {
-
+    
                         $cls = ListPosPeer::getOMClass();
 
                     $obj3 = new $cls();
@@ -1369,7 +1369,7 @@ abstract class BaseEmpProfilePeer
                 if ($key2 !== null) {
                     $obj2 = EmpAccPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = EmpAccPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1388,7 +1388,7 @@ abstract class BaseEmpProfilePeer
                 if ($key3 !== null) {
                     $obj3 = ListPosPeer::getInstanceFromPool($key3);
                     if (!$obj3) {
-
+    
                         $cls = ListPosPeer::getOMClass();
 
                     $obj3 = new $cls();
@@ -1467,7 +1467,7 @@ abstract class BaseEmpProfilePeer
                 if ($key2 !== null) {
                     $obj2 = EmpAccPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = EmpAccPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1486,7 +1486,7 @@ abstract class BaseEmpProfilePeer
                 if ($key3 !== null) {
                     $obj3 = ListDeptPeer::getInstanceFromPool($key3);
                     if (!$obj3) {
-
+    
                         $cls = ListDeptPeer::getOMClass();
 
                     $obj3 = new $cls();
@@ -1701,7 +1701,7 @@ abstract class BaseEmpProfilePeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EmpProfilePeer::clearRelatedInstancePool();
             $con->commit();

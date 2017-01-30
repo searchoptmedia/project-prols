@@ -88,7 +88,7 @@ abstract class BaseListIpQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   ListIp|ListIp[]|mixed the result, formatted by the current formatter
@@ -143,7 +143,7 @@ abstract class BaseListIpQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `allowed_ip`, `status` FROM `list_ip` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

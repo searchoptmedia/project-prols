@@ -17,6 +17,8 @@ use Symfony\Component\Debug\Debug;
 //    exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 //}
 
+ini_set('max_execution_time', 300); //300 seconds = 5 minutes
+
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 Debug::enable();
 

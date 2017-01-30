@@ -91,7 +91,6 @@
                                 <th>Date</th>
                                 <th>Time In</th>
                                 <th>Time Out</th>
-                                <th>Duration</th>
                                 <th>Total Hour</th>
                                 <th>Overtime</th>
                             </tr>
@@ -104,8 +103,7 @@
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td id="duration-time"></td>
-                                <td>{{ time.Manhours }}</td>
+                                <td {% if( time.TimeOut is empty) %}id="duration-time"{% endif %}>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
 
                             </tr>
@@ -435,6 +433,44 @@
                     $('.month-perf-table').show();
                 }
             });
+
+            /**
+             * Created by admin on 1/19/2017.
+             */
+            function computeTime(){
+                //time out
+                var getTimeIn = $('.time-logs-table').find('tbody').find('tr').data('time-in');
+                var d = new Date(getTimeIn);
+                var past_hour = d.getHours();
+                var past_minutes = d.getMinutes();
+
+//                    var duration = past_hour + ':' + past_minutes;
+
+                //Date Today
+                var date = new Date();
+                var present_hour = date.getHours();
+                var present_minute = date.getMinutes();
+
+                //compute for duration
+
+                var duration_hours = present_hour - past_hour;
+                var duration_min =  present_minute - past_minutes;
+                var num_of_hours = 'hr';
+                if(duration_hours > 1)
+                {
+                    num_of_hours = 'hrs';
+                    var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
+                }
+                var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
+                console.log(total_duration);
+                if(!total_duration)
+                {
+                    total_duration = 0;
+                }
+
+                $("#duration-time").html(total_duration);
+            }
+            computeTime();
         });
     </script>
 

@@ -1,4 +1,4 @@
- {% import 'AdminBundle:Default:notification.html.twig' as notif %}
+{% import 'AdminBundle:Default:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
 {% set userbdaynames = userbdaynames|default([]) %}
 <!doctype html>
@@ -19,17 +19,21 @@
     label.black {
         color: #555 !important;
     }
+    .select-emp-tag{
+        width: 500px;
+    }
 </style>
-</head>
 <style>
-#btn-reqleave {
-    height: auto;
-    width: auto;
-    border: none;
-    border-radius: 1px;
+    #btn-reqleave {
+        height: auto;
+        width: auto;
+        border: none;
+        border-radius: 1px;
 
-}
+    }
 </style>
+    {% block css %}{% endblock %}
+</head>
 <body>
 {{ notif.notif_loader() }}
 {{ notif.request_leave_notif }}
@@ -43,6 +47,7 @@
             <div class="nav-right z-depth-1">
                 <div class="company-logo">
                     <img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%";>
+                    <h4 style="font-size: 23px;">{{ app.user.username|upper }}</h4>
                 </div>
                 <div class="rightpanel">
                     <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
@@ -56,7 +61,7 @@
                 </div>
                 <div class="clr"></div>
             {% block nav %}
-                    {% if role == 'ADMIN' %}
+                    {% if user.role == 'ADMIN' %}
                         {{ sidenav.admin_navbar(requestcount) }}
                     {% else %}
                         {{ sidenav.emp_navbar() }}
@@ -108,9 +113,8 @@
                       <br/><br/>
                         <select class="select-emp-tag" multiple="multiple">
                             {% for acc in allacc %}
-                            <option name="select2[]" value="{{ acc.email }}" data-empo-name="{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                            <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
                             {% endfor %}
-
                         </select>
 
                     </div>
@@ -194,7 +198,6 @@
 
     //
     <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('prols2/js/computeDuration.js') }}"></script>
 {% endblock %}
 
 
@@ -355,7 +358,7 @@
             $('.auto-timeout-notice').hide();
             toggleTimeInModal('show');
         });
-        checkIf_AutoTimeOut();
+        //checkIf_AutoTimeOut();
     }
     window.onload = function () {
         timeOutInit();
@@ -458,6 +461,11 @@ $('#time-in-button').click(function(){
         console.log(data);
         $('.loader-notif').hide();
         $('.loader-notif').css({'top' : '-55px'});
+    }).fail( function() {
+        $('.error-notif-container').css({'top':'0px'});
+        setTimeout(function(){
+            $('.timein-notif-container').css({'top' : '-55px'});
+        }, 5000);
     });
 });
 
@@ -490,7 +498,7 @@ $('#time-out-button').click(function(){
         $('.timeout-container').css({'display' : 'none'});
         $('.timeout').css({'display' : 'none'});
         $('.timeout-notif-container').css({'top':'0px'});
-        //                            $('.timed-in').css({'display' : 'none'});
+//                                    $('.timed-in').css({'display' : 'none'});
         $('.timed-out').css({'display' : 'block'});
         $('.btn-timeout').css({'display' : 'none'});
         $('.timechip').hide();
@@ -518,13 +526,16 @@ $('#time-out-button').click(function(){
 $('.btn-submitmeeting').click(function(){
    var reqmeetmessage =  $('#meeting').val();
 
+    var tagged = [];
 
     var taggedemail = $('.select-emp-tag').select2("val");
+
+
     console.log(taggedemail);
 
 
     if(reqmeetmessage == ''){
-        $('#meeting').css({'border-color' : 'red'});
+        $('#meeting').css({'border-color' : 'red    '});
         setTimeout(function(){
             $('#meeting').css({'border-color': 'gray'})
         }, 1000);
@@ -532,9 +543,10 @@ $('.btn-submitmeeting').click(function(){
         return;
     }
     $('.loader-notif').show();
+
     $('.loader-notif').css({'top' : '0px'});
     $('.btn-submitmeeting').hide();
-    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail}, function(data){
+    $.post("{{ path('request_meeting') }}", { reqmeetmessage:reqmeetmessage, taggedemail:taggedemail }, function(data){
        console.log(data);
         $('#meeting').val('');
         $('.required-field').hide();
@@ -583,7 +595,6 @@ $('.btn-submitleave').click(function(){
         $('.required-field').show();
         return;
     }
-
     $('.loader-notif').show();
     $('.loader-notif').css({'top' : '0px'});
     $('.btn-submitleave').hide();
@@ -640,18 +651,18 @@ function showBirthday() {
 
 
 
-    $(document).ready(function(){
-                var unique_id = 0;
-                $(document).on("click","#add-request-form",function (e) {
-                    var parent = $('.multi_reqleaveform');
-                    var req_dates = parent.find('.req_inner').eq(0).clone(true);
-                    var length = parent.find('.req_inner').length + 1;
-                    req_dates.find('#start_date').attr('id', req_dates.find('#start_date').attr('id') + length);
-                    req_dates.find('#end_end').attr('id', req_dates.find('#end_date').attr('id') + length);
-                    parent.append(req_dates);
-                });
-
-         });
+//    $(document).ready(function(){
+//                var unique_id = 0;
+//                $(document).on("click","#add-request-form",function (e) {
+//                    var parent = $('.multi_reqleaveform');
+//                    var req_dates = parent.find('.req_inner').eq(0).clone(true);
+//                    var length = parent.find('.req_inner').length + 1;
+//                    req_dates.find('#start_date').attr('id', req_dates.find('#start_date').attr('id') + length);
+//                    req_dates.find('#end_end').attr('id', req_dates.find('#end_date').attr('id') + length);
+//                    parent.append(req_dates);
+//                });
+//
+//         });
 
 
         //        $(".multi_reqleaveform").on('click','#')
@@ -693,7 +704,9 @@ function showBirthday() {
 //get compute Time Duration
 
 </script>
+<script>
 
+</script>
 {% block customjs %}{% endblock %}
 
 </body>

@@ -25,7 +25,8 @@
                 <table class="bordered highlight emp-list">
                     <thead>
                           <tr>
-                              <th data-field="id">Name</th>
+                              <th data-field="id">Name
+                              <th data-field="tagged">Tagged Person</th>
                               <th data-field="name">Status</th>
                               <th data-field="price">Category</th>
                               <th data-field="price">Start Date</th>
@@ -35,6 +36,7 @@
 
                     <!--ALL REQUEST-->
                     <tbody class="allrequest">
+
                     {% for request in allrequest %}
                         <tr class="modal-reason all" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
                             data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
@@ -42,6 +44,7 @@
                             ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
                             data-request="{{request.listRequestType.requestType}}">
                             <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
+                            <td></td>
                             <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
                                 {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
                                 {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
@@ -55,7 +58,9 @@
                             <div class="modal-content">
                                 <h4>Request Info</h4>
                                 <p id="request-name"></p>
+                                <p id="request-name-tag"></p>
                                 <p id="leave-date-started"></p>
+
                                 <p style="font-size: 24px; margin-top: 10px; margin-bottom: -15px;">Reason:</p>
                                 <p id='leave-reason-texts'></p>
                                 <div class="rejects"><br>
@@ -66,9 +71,10 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
                                 <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
                                    data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
+                                <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
+
                             </div>
                         </div>
 
@@ -200,7 +206,7 @@
                     </tbody>
 
                     <!--MEETING REQUESTS-->
-                    <tbody style="display: none" class="meetingtable">
+                    <tbody style="display: none" class="meetingcontent">
                     {% for request in allrequest if request.listRequestTypeId == 4%}
                         <tr class="modal-reason request-meeting" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
                             data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
@@ -214,6 +220,7 @@
                                 {% endif %}</td>
                             <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
                             <td>{{ request.dateStarted|date('n/d/Y')}}</td>
+                            <td></td>
                             <td>{{ request.dateEnded|date('n/d/Y')}}</td>
                         </tr>
 
@@ -227,7 +234,7 @@
                                 <div class="rejects"><br>
                                     <input class="reject-reason" placeholder="type your reason here...">
                                     <a href="#!" class="modal-action waves-effect waves-light red btn-flat btn-sendtoemail" data-uid="{{ userid }}" style="color:white">Decline</a>
-                                    <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>
+                                    {#<a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>#}
                                     <div class="chip required-field">required field!</div>
                                 </div>
                             </div>
@@ -238,22 +245,34 @@
                             </div>
                         </div>
                     {% endfor %}
+
+
                     </tbody>
                 </table>
         </div>
         </div>
 
+
         <!-- Dropdown Structure -->
+
             <ul id='dropdown2' class='dropdown-content dd1'>
+                {% if user.role == 'ADMIN' %}
                 <li><a href="#!" class="allbtn">All</a></li>
                 <li class="divider"></li>
                 <li><a href="#!" class="vacleavebtn">Vacation Leave</a></li>
                 <li class="divider"></li>
                 <li><a href="#!" class="sickleavebtn">Sick Leave</a></li>
                 <li class="divider"></li>
+                {#Meeting leave button #}
+                <li><a href="#!" class="meetingleavebtn">Meeting</a></li>
                 <li><a href="#!" class="diffipbtn">IP Address</a></li>
+                {% else %}
+                <li><a href="#!" class="meetingleavebtn">Meeting</a></li>
+                {% endif %}
             </ul>
             <!-- End of DS -->
+
+
 
 
 
@@ -275,12 +294,14 @@
             $('.sickleavecontent').hide();
             $('.vacationleavecontent').hide();
             $('.diffipcontent').hide();
+            $('.meetingcontent').hide();
         });
         $('.vacleavebtn').click(function(){
             $('.allrequest').hide();
             $('.sickleavecontent').hide();
             $('.vacationleavecontent').show();
             $('.diffipcontent').hide();
+            $('.meetingcontent').hide();
         });
 
         $('.sickleavebtn').click(function(){
@@ -288,13 +309,21 @@
             $('.vacationleavecontent').hide();
             $('.sickleavecontent').show();
             $('.diffipcontent').hide();
+            $('.meetingcontent').hide();
         });
-
+        $('.meetingleavebtn').click(function() {
+            $('.allrequest').hide();
+            $('.vacationleavecontent').hide();
+            $('.sickleavecontent').hide();
+            $('.diffipcontent').hide();
+            $('.meetingcontent').show();
+        });
         $('.diffipbtn').click(function(){
             $('.diffipcontent').show();
             $('.allrequest').hide();
             $('.vacationleavecontent').hide();
             $('.sickleavecontent').hide();
+            $('.meetingcontent').hide();
         });
 
         var adminId, leaveId, status, empId, label, datestart, dateend, reqname, reqtype, requestname, reason, statlabel;
@@ -316,6 +345,7 @@
             requestname = $(this).data('request');
             reason = $(this).data('reason');
             $('#request-name').html('<b>Name: </b>' + reqname);
+            $('#request-name-tag').html('<b>Tagged Person: </b>');
             $('#leave-reason-texts').html(reason);
             $('#leave-date-started').html('<b>Start date: </b>' + datestart + ' - '+ '<b>End date: </b>' + dateend);
             $('#modal1').openModal();
