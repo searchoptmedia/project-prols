@@ -1,5 +1,6 @@
 <?php
 
+
 namespace AdminBundle\Controller;
 
 use CoreBundle\Model\EmpProfileQuery;
@@ -7,6 +8,12 @@ use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EmpTimeReject;
+use CoreBundle\Model\RequestMeetingsTag;
+use CoreBundle\Model\RequestMeetingsTagPeer;
+use CoreBundle\Model\RequestMeetingsTagsPeer;
+use CoreBundle\Model\RequestMeetingTags;
+use CoreBundle\Model\RequestMeetingTagsPeer;
+use CoreBundle\Model\RequestMeetingTagsQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -703,21 +710,37 @@ class DefaultController extends Controller{
 		$page = 'View Request';
     	$role = $user->getRole();
     	$id = $user->getId();
-
-		$timename = self::timeInOut($id); 
+        $capabilities = $user->getCapabilities();
+		$timename = self::timeInOut($id);
 		// redirect to index if not Admin
-		if((strcasecmp($role, 'employee') == 0))
+		if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
+
 		}	
 		else
 		{
-		$requestGet = EmpRequestPeer::getAllRequest();
+
+
+			if(empty($capabilities) && (strcasecmp($role,'ADMIN')== 0))
+			{
+				$getEmployeeRequest = EmpRequestPeer::getAllRequest();
+
+			}
+			else{
+				$getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
+			}
+
+
+
+
 
 			$timedata = EmpTimePeer::getTime($id);
 			$timeflag = 0;
 			$currenttimein = 0;
 			$currenttimeout = 0;
+
+			
 			for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
 			{
 				$checktimein = $timedata[$ctr]->getTimeIn();
@@ -772,10 +795,9 @@ class DefaultController extends Controller{
 			return $this->render('AdminBundle:Default:request.html.twig', array(
         	'name' => $name,
         	'page' => $page,
-         	'role' => $role,
         	'user' => $user,
           	'timename' => $timename,
-          	'allrequest' => $requestGet,
+          	'allrequest' => $getEmployeeRequest,
           	'userid' =>$id,
 		    'timeflag' => $timeflag,
 		    'currenttimein' => $currenttimein,
@@ -1095,9 +1117,9 @@ class DefaultController extends Controller{
 	{
     	$user = $this->getUser();
     	$role = $user->getRole();
-   		
+        $capabilities = $user->getCapabilities();
    		// Check role
-    	if((strcasecmp($role, 'employee') == 0))
+    	if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
@@ -1204,16 +1226,83 @@ class DefaultController extends Controller{
         //request meeting functionality
 		$email = new EmailController();
 
-		
-		
 		$sendemail = $email->requestTypeEmail($req, $this);
         
 		$requestMeeting = new EmpRequest();
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
 		$requestMeeting->setRequest($req->request->get('reqmeetmessage'));
-        
-        
+        $taggedemail = $req->request->get('taggedemail');
+		$requestId = $req->request->get('reqId');
+
+        $tag_names = array();
+		$tag_id = array();
+		$old_tagged_ids = array();
+
+        $requesttag = new RequestMeetingTags();
+
+		if(!empty($requestId)) {
+			$requesttag = EmpRequestPeer::retrieveByPK($requestId);
+
+			$reqMeetingTags = RequestMeetingTagsQuery::create()
+				->filterByRequestId($requestId->getId())
+				->filterByStatus(1)
+				->find();
+
+
+			if($reqMeetingTags)
+			{
+				foreach ($reqMeetingTags as $r)
+				{
+					$old_tagged_ids[] = $r->getEmpAccId();
+				}
+			}
+		} else {
+			$requesttag = new EmpRequest();
+		}
+
+
+        foreach($taggedemail as $tagemail)
+        {
+
+			$tag_record = EmpAccPeer::getUserInfo($tagemail);
+			$tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
+
+            $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
+
+			$tag_id[]  = $tag_profile->getId();
+
+            $send =  $email->sendEmailMeetingRequest($req, $tag_record->getEmail(), $this, array("type" => 1));
+			
+
+        }
+		if(!empty($requestId))
+		{
+			foreach ($old_tagged_ids as $empId)
+			{
+				if (!in_array($empId, $tag_id))
+				{
+					$reqMeetingTags = RequestMeetingTagsQuery::create()
+						->filterByRequestId($requesttag->getId())
+						->filterByEmpAccId($empId)
+						->filterByStatus(1)
+						->findOne();
+
+					$reqMeetingTags->setStatus(0);
+					$reqMeetingTags->save();
+				}
+			}
+		}
+
+        $tagnames = implode("," ,$tag_names);
+
+
+        $send = $email->sendEmailMeetingRequest($req, $this->getUser()->getEmail() , $this ,array("names" =>$tagnames,
+            "type" => 2));
+
+
+
+
 		$requestMeeting->setStatus('Pending');
 		$requestMeeting->setDateStarted($current_date);
 		$requestMeeting->setDateEnded($current_date);
@@ -1221,13 +1310,15 @@ class DefaultController extends Controller{
 		$requestMeeting->setListRequestTypeId(4);
 		$requestMeeting->save();
 		echo json_encode(array('result' => 'ok'));
-		exit;
+
+
+        exit;
+
 	}
 
 	//request leave functionality
 	public function requestLeaveAction(Request $req)
 	{
-
 		$leaveinput = new EmpRequest();
 		$leaveinput->setRequest($req->request->get('reasonleave'));
 		$leaveinput->setStatus('Pending');
@@ -1254,9 +1345,10 @@ class DefaultController extends Controller{
     {
 		$user = $this->getUser();
     	$role = $user->getRole();
-   
-    	if((strcasecmp($role, 'employee') == 0))
+        $capabilities = $user->getCapabilities();
+    	if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
+			
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
 		else
@@ -1284,8 +1376,8 @@ class DefaultController extends Controller{
 	{
 		$user = $this->getUser();
     	$role = $user->getRole();
-   
-    	if((strcasecmp($role, 'employee') == 0))
+        $capabilities = $user->getCapabilities();
+    	if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}

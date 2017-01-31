@@ -137,7 +137,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -148,7 +148,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [time_in] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -183,12 +183,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Get the [optionally formatted] temporal [time_out] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -223,12 +223,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Get the [ip_add] column value.
-     *
+     * 
      * @return string
      */
     public function getIpAdd()
@@ -239,7 +239,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -274,12 +274,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Get the [emp_acc_acc_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEmpAccAccId()
@@ -290,7 +290,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [manhours] column value.
-     *
+     * 
      * @return double
      */
     public function getManhours()
@@ -301,7 +301,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [overtime] column value.
-     *
+     * 
      * @return double
      */
     public function getOvertime()
@@ -312,7 +312,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [check_ip] column value.
-     *
+     * 
      * @return int
      */
     public function getCheckIp()
@@ -323,7 +323,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -344,7 +344,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [time_in] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -367,7 +367,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [time_out] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -390,7 +390,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [ip_add] column.
-     *
+     * 
      * @param  string $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -411,7 +411,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -434,7 +434,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_acc_acc_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -459,7 +459,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [manhours] column.
-     *
+     * 
      * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -480,7 +480,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [overtime] column.
-     *
+     * 
      * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -501,7 +501,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [check_ip] column.
-     *
+     * 
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -855,31 +855,31 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`time_in`':
+                    case '`time_in`':						
                         $stmt->bindValue($identifier, $this->time_in, PDO::PARAM_STR);
                         break;
-                    case '`time_out`':
+                    case '`time_out`':						
                         $stmt->bindValue($identifier, $this->time_out, PDO::PARAM_STR);
                         break;
-                    case '`ip_add`':
+                    case '`ip_add`':						
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
-                    case '`date`':
+                    case '`date`':						
                         $stmt->bindValue($identifier, $this->date, PDO::PARAM_STR);
                         break;
-                    case '`emp_acc_acc_id`':
+                    case '`emp_acc_acc_id`':						
                         $stmt->bindValue($identifier, $this->emp_acc_acc_id, PDO::PARAM_INT);
                         break;
-                    case '`manhours`':
+                    case '`manhours`':						
                         $stmt->bindValue($identifier, $this->manhours, PDO::PARAM_STR);
                         break;
-                    case '`overtime`':
+                    case '`overtime`':						
                         $stmt->bindValue($identifier, $this->overtime, PDO::PARAM_STR);
                         break;
-                    case '`check_ip`':
+                    case '`check_ip`':						
                         $stmt->bindValue($identifier, $this->check_ip, PDO::PARAM_INT);
                         break;
                 }
@@ -1106,7 +1106,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

@@ -40,7 +40,7 @@
                                             <td>{{emp.getListPos().PosNames}}</td>
                                             <td>{{ emp.status }}</td>
                                             {% set capabilities = app.user.capabilities|split('') %}
-                                            {% if role == 'ADMIN' %}
+                                            {% if user.role == 'ADMIN' %}
                                             <td style="float: right;"><button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
 
 
@@ -92,7 +92,8 @@
 
                                                     </button></td>
                                                 {% endif %}
-                                        </tr>
+                                                </tr>
+
                                     {% endif %}
                                 {% endfor %}
                                 </tbody>
@@ -100,6 +101,7 @@
                         </div>
                     </div>
                 </div>
+
         <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
             <a class="btn-floating btn-large red">
             <i class="material-icons">add</i>
@@ -123,20 +125,14 @@
                     {% endif  %}
                 </ul>
 
-
-
-
-
-
         </div>
-
         <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
             <form id="addemployeeform" method="post">
             <div class="modal-content add-employee-modal" >
                 <h4>Employee</h4>
                 <input type="hidden" name="employee-id" value="">
                 <div class="row">
-                    {% if role == 'ADMIN' %}
+                    {% if user.role == 'ADMIN' %}
                     <div class="col-md-7 col-lg-8">
                        {% else %}
                         <div class="col-md-12 col-lg-12">
@@ -193,7 +189,7 @@
                         <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
                         <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
                     </div>
-                    {% if role == 'ADMIN' %}
+                    {% if user.role == 'ADMIN' %}
                     <div class="col-md-5 col-lg-4 div-capabilities-area">
                         <big>User Capabilities</big>
 
@@ -213,10 +209,12 @@
                             <input type="checkbox" class="filled-in allow-edit-department" id="filled-in-box-3" value="3" />
                             <label for="filled-in-box-3" class="black-text">Add/Edit Department</label>
                         </p>
-                        {% endif %}
+
                     </div>
+                    {% endif %}
                 </div>
             </div>
+
             <div class="modal-footer">
                 <div class="chip missing-input" style="display: none;">
                     REQUIRED FIELD!
@@ -227,12 +225,18 @@
                 <div class="chip username-used" style="display: none;">
                 Username already used
                 </div>
-                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
-                <button type="submit" href="#!" class="waves-effect waves-light orange custombtn btn-flat addemp" style="margin-right:5px;">Add</button>
-            </div>
-            </form>
-        </div>
 
+                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
+
+                <button type="submit" href="#!" class="waves-effect waves-light orange custombtn btn-flat addemp" style="margin-right:5px;">Add</button>
+
+                </div>
+
+                </div>
+            </form>
+</div>
+            {% set capabilities = app.user.capabilities|split(',') %}
+            {% if 1 in capabilities %}
         <div id="modal-pos" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4>Position</h4>
@@ -244,12 +248,16 @@
                     Position already added
                 </div>
             </div>
+
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
                 <a href="#!" class="waves-effect waves-light orange custombtn btn-flat addpos" style="margin-right: 5px;">Add</a>
 
             </div>
+
         </div>
+            {% endif %}
+
 
         <div id="modal-dept" class="modal modal-fixed-footer">
             <div class="modal-content">
@@ -328,6 +336,7 @@ $(document).ready(function(){
                     telid = $(this).data('telphoneid');
                     cellid = $(this).data('cellphoneid');
                     capabilities = $(this).data('capabilities');
+            console.log(capabilities)
 //            $('[]').val(name);
             $('[name=employee-id]').val("1");
             $('#username').val('');
@@ -359,12 +368,14 @@ $(document).ready(function(){
             $('.add-emp-success').html('<h5>Update Successful</h5>');
 
             $('.div-capabilities-area').find('input:checkbox').prop('checked', false);
+
             if(capabilities.length) {
                 var c = capabilities.split(',');
-                console.log(c)
                 for(i in c) {
                     $('.div-capabilities-area').find('input[value='+c[i]+']').prop('checked', true);
                 }
+            } else if(capabilities > 0) {
+                $('.div-capabilities-area').find('input[value='+capabilities+']').prop('checked', true);
             }
         });
 
@@ -441,26 +452,26 @@ $(document).ready(function(){
         $('.department-used').hide();
     });
 
-//    $('.btn-emp').click(function(){
-//        $('#username').val('');
-//        $('#password').val('');
-//        $('#confirmpassword').val('');
-//        $('#empnum').val('');
-//        $('#fname').val('');
-//        $('#lname').val('');
-//        $('#dept').val('');
-//        $('#pos').val('');
-//        $('#status').val('');
-//        $('#companyemail').val('');
-//        $('#address').val('');
-//        $('.bday').val('');
-//        $('#telnum').val('');
-//        $('#celnum').val('');
-//        $('.missing-input').hide();
-//        $('.password-not-match').hide();
-//        $('.username-used').hide();
-//        $('.modal-footer').show();
-//    });
+    $('.btn-emp').click(function(){
+        $('#username').val('');
+        $('#password').val('');
+        $('#confirmpassword').val('');
+        $('#empnum').val('');
+        $('#fname').val('');
+        $('#lname').val('');
+        $('#dept').val('');
+        $('#pos').val('');
+        $('#status').val('');
+        $('#companyemail').val('');
+        $('#address').val('');
+        $('.bday').val('');
+        $('#telnum').val('');
+        $('#celnum').val('');
+        $('.missing-input').hide();
+        $('.password-not-match').hide();
+        $('.username-used').hide();
+        $('.modal-footer').show();
+    });
 
 
     var usernameinput, passwordinput, conpasswordinput, empnumber, fnameinput, lnameinput, departmentinput, positioninput, statusinput,
@@ -584,15 +595,17 @@ $(document).ready(function(){
 
         $('#modal-emp').closeModal();
 
-        console.log(cellid)
+        console.log(cellid);
         var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
         lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
         cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid};
 
+        //update capabilities
         input.capabilities = [];
 
         $('.div-capabilities-area').find(':checkbox').each(function() {
-            if(this.checked) input.capabilities.push(this.value);
+            if(this.checked)
+                input.capabilities.push(this.value);
         });
 
         if(input.capabilities.length) input.capabilities = input.capabilities.join(',');
@@ -630,6 +643,8 @@ $(document).ready(function(){
 
     $('.addpos').click(function(){
             inputfield = $('#input-position').val();
+            console.log(inputfield);
+
         {% for usedPos in allpos %}
         var dbpos = '{{ usedPos.PosNames }}';
             if(inputfield == dbpos){

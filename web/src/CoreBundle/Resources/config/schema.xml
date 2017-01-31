@@ -67,6 +67,7 @@
         <column name="list_request_type_id" phpName="ListRequestTypeId" type="INTEGER"/>
         <column name="admin_id" phpName="AdminId" type="INTEGER"/>
         <column name="emp_time_id" phpName="EmpTimeId" type="INTEGER"/>
+
         <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="emp_acc_id" foreign="id"/>
         </foreign-key>
@@ -76,6 +77,8 @@
         <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc2" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="admin_id" foreign="id"/>
         </foreign-key>
+
+
         <index name="fk_emp_request_emp_acc1_idx">
           <index-column name="emp_acc_id"/>
         </index>
@@ -85,9 +88,26 @@
         <index name="fk_emp_request_list_request_type1_idx">
           <index-column name="list_request_type_id"/>
         </index>
+
         <vendor type="mysql">
           <parameter name="Engine" value="InnoDB"/>
         </vendor>
+    </table>
+
+    <table name="request_meeting_tags">
+
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="request_id" type="INTEGER"/>
+        <column name="status" type="INTEGER" />
+        <column name="emp_acc_id" type="INTEGER"/>
+
+        <foreign-key foreignTable="emp_request" name="fk_emp_requst_id1" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="request_id" foreign="id"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference local="emp_acc_id" foreign="id"/>
+        </foreign-key>
     </table>
 
     <table name="emp_profile" phpName="EmpProfile" idMethod="native">
@@ -106,6 +126,7 @@
         <column name="list_pos_id" phpName="ListPosPosId" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
          <column name="profile_status" phpName="ProfileStatus" type="INTEGER" required="true"/>
+
         <foreign-key foreignTable="emp_acc" name="fk_emp_profile_emp_acc" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="emp_acc_acc_id" foreign="id"/>
         </foreign-key>
@@ -133,6 +154,7 @@
         <column name="manhours" phpName="Manhours" type="FLOAT" required="true"/>
         <column name="overtime" phpName="Overtime" type="FLOAT" required="true"/>
         <column name="check_ip" phpName="CheckIp" type="INTEGER" required="true"/>
+
         <foreign-key foreignTable="emp_acc" name="fk_emp_time_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="emp_acc_acc_id" foreign="id"/>
         </foreign-key>

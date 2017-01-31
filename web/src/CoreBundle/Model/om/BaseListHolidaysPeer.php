@@ -353,7 +353,7 @@ abstract class BaseListHolidaysPeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -368,7 +368,7 @@ abstract class BaseListHolidaysPeer
       }
         ListHolidaysPeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to list_holidays
      * by a foreign key with ON DELETE CASCADE
@@ -411,7 +411,7 @@ abstract class BaseListHolidaysPeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -422,7 +422,7 @@ abstract class BaseListHolidaysPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = ListHolidaysPeer::getOMClass();
         // populate the object(s)
@@ -666,7 +666,7 @@ abstract class BaseListHolidaysPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             ListHolidaysPeer::clearRelatedInstancePool();
             $con->commit();

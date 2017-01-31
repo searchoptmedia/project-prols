@@ -62,6 +62,7 @@ class EmpRequestTableMap extends TableMap
         $this->addRelation('EmpAccRelatedByEmpAccId', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('emp_acc_id' => 'id', ), null, null);
         $this->addRelation('ListRequestType', 'CoreBundle\\Model\\ListRequestType', RelationMap::MANY_TO_ONE, array('list_request_type_id' => 'id', ), null, null);
         $this->addRelation('EmpAccRelatedByAdminId', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('admin_id' => 'id', ), null, null);
+        $this->addRelation('RequestMeetingTags', 'CoreBundle\\Model\\RequestMeetingTags', RelationMap::ONE_TO_MANY, array('id' => 'request_id', ), null, null, 'RequestMeetingTagss');
     } // buildRelations()
 
 } // EmpRequestTableMap

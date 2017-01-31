@@ -355,7 +355,7 @@ abstract class BaseEmpContactPeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -370,7 +370,7 @@ abstract class BaseEmpContactPeer
       }
         EmpContactPeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to emp_contact
      * by a foreign key with ON DELETE CASCADE
@@ -413,7 +413,7 @@ abstract class BaseEmpContactPeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -424,7 +424,7 @@ abstract class BaseEmpContactPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = EmpContactPeer::getOMClass();
         // populate the object(s)
@@ -890,7 +890,7 @@ abstract class BaseEmpContactPeer
         if ($con === null) {
             $con = Propel::getConnection(EmpContactPeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpContactPeer::LIST_CONT_TYPES_ID, ListContTypesPeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -941,7 +941,7 @@ abstract class BaseEmpContactPeer
         if ($con === null) {
             $con = Propel::getConnection(EmpContactPeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EmpContactPeer::EMP_PROFILE_ID, EmpProfilePeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -1010,7 +1010,7 @@ abstract class BaseEmpContactPeer
                 if ($key2 !== null) {
                     $obj2 = ListContTypesPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = ListContTypesPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1084,7 +1084,7 @@ abstract class BaseEmpContactPeer
                 if ($key2 !== null) {
                     $obj2 = EmpProfilePeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = EmpProfilePeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1299,7 +1299,7 @@ abstract class BaseEmpContactPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EmpContactPeer::clearRelatedInstancePool();
             $con->commit();

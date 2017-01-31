@@ -444,11 +444,23 @@ $(function() {
                 var now     = new Date();
                 var hour    = now.getHours();
                 var minutes = now.getMinutes();
+                var indicator = 'AM';
 
-                hour = hour < 10 ? '0'+hour : hour;
+
                 minutes = minutes < 10 ? '0'+minutes : minutes;
 
-                $(".plugin-clock").html(hour+"<span>:</span>"+minutes);
+                if(hour > 12)
+                {
+                    indicator ='PM';
+                    hour = hour - 12;
+                }
+                else if(hour == 0){
+                    hour = 12;
+                }
+                hour = hour < 10 ? '0'+hour : hour;
+
+
+                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + "" + indicator);
             }
             if($(".plugin-clock").length > 0){
 
