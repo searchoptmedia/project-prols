@@ -5,6 +5,7 @@ parameters:
     database_name: prols_live
     database_user: prolsliveadmin
     database_password: pr0L$L1v3@@
+    database_driver: pdo_mysql
 
 #development
 #    database_host: 205.186.138.226
