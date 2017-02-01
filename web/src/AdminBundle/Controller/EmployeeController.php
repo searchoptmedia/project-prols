@@ -58,7 +58,7 @@ class EmployeeController extends Controller
 	public function TimeInAction(Request $request)
 	{
 		date_default_timezone_set('Asia/Manila');
-		
+
 		//check session active
 		$user = $this->getUser();
 
@@ -76,7 +76,7 @@ class EmployeeController extends Controller
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$ip_add 		= ListIpPeer::getValidIP($matchedip);
 
-		//Compare last time in date with date today 	
+		//Compare last time in date with date today
 		if(!empty($timedata))
 		{
 			$emptimedate = $timedata->getDate();
@@ -160,7 +160,7 @@ class EmployeeController extends Controller
 			echo 1;
 			exit;
 		}
-		
+
 		$pass = $user->getPassword();
 		$datetimetoday 	= date('Y-m-d H:i:s');
 		$emp 			= $this->getUser()->getId();

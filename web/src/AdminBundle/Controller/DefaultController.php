@@ -83,14 +83,14 @@ class DefaultController extends Controller{
 			{
 				// echo 'WORKING 2';
 				$timename = false;
-			}				
+			}
 		}
 		else if(isset($datatime) && empty($datatime))
 		{
 			// echo 'WORKING 3';
 			$timename = true;
 		}
-		return $timename;    	
+		return $timename;
     }
 
     public function indexAction(Request $request)
@@ -213,7 +213,7 @@ class DefaultController extends Controller{
         ));
 
     }
-	
+
 	public function checkTimeInAction()
 	{
 		$user = $this->getUser();
@@ -441,7 +441,7 @@ class DefaultController extends Controller{
     			$retval = 3;
     			echo $retval;
     		}
-	    	
+
     	// }else{
     	// 	$retval = 0;
     	// 	echo $retval;
@@ -483,10 +483,10 @@ class DefaultController extends Controller{
 //		$datejoined = date_format($datejoined, 'd/m/y');
 		$profileid = $data->getId();
 		$deptid = $data->getListDeptDeptId();
-		
+
 		//employee contact information
-		
-		$datacontact = EmpContactPeer::getContact($profileid);		
+
+		$datacontact = EmpContactPeer::getContact($profileid);
 		$contact = '';
 		$conEmail = '';
 		$conMobile = '';
@@ -500,7 +500,7 @@ class DefaultController extends Controller{
 		{
 			for ($ct = 0; $ct < sizeof($datacontact); $ct++)
 			{
-    			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
+    			// $contactArr[$ct] = $datacontact[$ct]->getContact();
 				$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 				$contactvalue =  $datacontact[$ct]->getContact();
 				$contactid = $datacontact[$ct]->getId();
@@ -521,7 +521,7 @@ class DefaultController extends Controller{
 				}
 
     			$contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
-   			} 			
+   			}
 		}
 		else
 		{
@@ -556,7 +556,7 @@ class DefaultController extends Controller{
 			$posStatus = null;
 		}
 
-		$timename = self::timeInOut($id);    	
+		$timename = self::timeInOut($id);
 		$getDept = ListDeptPeer::getAllDept();
 
 		//check pending count
@@ -573,7 +573,7 @@ class DefaultController extends Controller{
     		if($checklate->format('H:i:s') > 12)
 			{
     		$late++;
-    		}	
+    		}
     	}
 
 		$timedata = EmpTimePeer::getTime($id);
@@ -703,7 +703,7 @@ class DefaultController extends Controller{
 		if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
-		}	
+		}
 		else
 		{
 			if(empty($capabilities) && (strcasecmp($role,'ADMIN')== 0))
@@ -790,7 +790,7 @@ class DefaultController extends Controller{
 			'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
 			'timetoday' => $timetoday,
         	));
-		}	
+		}
     }
     public function statusAcceptAction(Request $req, $id, $id2)
 	{
@@ -799,7 +799,7 @@ class DefaultController extends Controller{
 		{
 			$accept->setAdminId($id2);
 			$accept->setStatus('Accepted');
-			
+
 			$email = new EmailController();
 
 			$sendemail = $email->acceptRequestEmail($req, $this);
@@ -812,17 +812,17 @@ class DefaultController extends Controller{
 			{
 				$response = array('response' => 'not saved');
 			}
-			
+
 		}
 		else
 		{
 			$response = array('response' => 'not found');
 		}
-		
+
 		echo json_encode($response);
 		exit;
     }
-	
+
     public function profileUpdateAction(Request $request)
 	{
 		$user = $this->getUser();
@@ -948,11 +948,11 @@ class DefaultController extends Controller{
 			$requestcount = EmpRequestQuery::create()
 				->filterByStatus('Pending')
 				->find()->count();
-			
+
 			$AllUsers = EmpAccPeer::getAllUser();
 			$AllDepartments = ListDeptPeer::getAllDept();
 			$AllPositions = ListPosPeer::getAllPos();
-			
+
 			$getContact = EmpContactPeer::getAllContact();
 
 		return $this->render('AdminBundle:Default:manage.html.twig', array(
@@ -982,8 +982,8 @@ class DefaultController extends Controller{
 			'alldept' => $AllDepartments,
 			'allpos' => $AllPositions,
 			'getContact' => $getContact
-        	));       
-		} 	
+        	));
+		}
     }
 	public function timeLogsAction()
 	{
@@ -1089,7 +1089,7 @@ class DefaultController extends Controller{
 			));
 		}
 	}
-	
+
     public function addEmployeeAction(Request $request)
 	{
     	$user = $this->getUser();
@@ -1147,7 +1147,7 @@ class DefaultController extends Controller{
 				else
 				{
 		    		//add new acc
-			 		$addacc = new EmpAcc(); 
+			 		$addacc = new EmpAcc();
 			    	$addacc->setUsername($user);
 			    	$addacc->setPassword($pass);
 			    	$addacc->setRole('employee');
@@ -1197,14 +1197,14 @@ class DefaultController extends Controller{
 			exit;
 			}
     }
-	
+
 	public function requestMeetingAction(Request $req)
 	{
         //request meeting functionality
 		$email = new EmailController();
 
 		$sendemail = $email->requestTypeEmail($req, $this);
-        
+
 		$requestMeeting = new EmpRequest();
 		date_default_timezone_set('Asia/Manila');
     	$current_date = date('Y-m-d H:i:s');
@@ -1250,7 +1250,7 @@ class DefaultController extends Controller{
 			$tag_id[]  = $tag_profile->getId();
 
             $send =  $email->sendEmailMeetingRequest($req, $tag_record->getEmail(), $this, array("type" => 1));
-			
+
 
         }
 		if(!empty($requestId))
@@ -1337,7 +1337,7 @@ class DefaultController extends Controller{
         $capabilities = $user->getCapabilities();
     	if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
 		{
-			
+
 			return $this->redirect($this->generateUrl('admin_homepage'));
 		}
 		else
@@ -1355,9 +1355,9 @@ class DefaultController extends Controller{
 			{
 				$response = array('No input');
 			}
-			
+
 			echo json_encode($response);
-			exit;	
+			exit;
 		}
 	}
 
@@ -1377,13 +1377,13 @@ class DefaultController extends Controller{
 			$addDept = new ListDept();
 			$addDept->setDeptNames($id);
 			$addDept->save();
-			$response = array('Added successfully');	
+			$response = array('Added successfully');
 			}else{
 				$response = array('No input');
 			}
 			echo json_encode($response);
 			exit;
-		}	
+		}
 	}
 
 	public function notifAction()
@@ -1393,7 +1393,7 @@ class DefaultController extends Controller{
 		$page = 'View Request';
     	$role = $user->getRole();
     	$id = $user->getId();
-		$timename = self::timeInOut($id); 
+		$timename = self::timeInOut($id);
 
 //		$data = EmpLeaveQuery::create()
 //		->filterByStatus('Pending')
@@ -1697,8 +1697,8 @@ class DefaultController extends Controller{
 
 		$getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
-		
-		
+
+
 
 		return $this->render('AdminBundle:Default:empprofile.html.twig', array(
 			'name' => $name,
@@ -1752,7 +1752,7 @@ class DefaultController extends Controller{
 	{
     	$user = $this->getUser();
     	$role = $user->getRole();
-   
+
     	if((strcasecmp($role, 'employee') == 0))
 		{
 			return $this->redirect($this->generateUrl('admin_homepage'));
@@ -1816,14 +1816,14 @@ class DefaultController extends Controller{
 		// $data = EmpProfilePeer::getInformation($id);
 		// $name = $data->getFname(). " " .$data->getLname();
 		// $profileid = $data->getId();
-		
+
 		// //employee contact information
-		// $datacontact = EmpContactPeer::getContact($profileid);		
+		// $datacontact = EmpContactPeer::getContact($profileid);
 		// $conEmail = '';
 
 		// if(!is_null($datacontact)){
 		// 	for ($ct = 0; $ct < sizeof($datacontact); $ct++) {
-  //   			// $contactArr[$ct] = $datacontact[$ct]->getContact(); 
+  //   			// $contactArr[$ct] = $datacontact[$ct]->getContact();
 		// 		$contacttype =  ListContTypesPeer::getContactType($datacontact[$ct]->getListContTypesId())->getContactType();
 		// 		$contactvalue =  $datacontact[$ct]->getContact();
 		// 		if(strcasecmp($contacttype, 'email') == 0){
@@ -1846,7 +1846,7 @@ class DefaultController extends Controller{
 
     	echo 1;
     	exit;
-    		
+
   		// echo '<pre>';var_dump($overtime);exit;
     }
 
@@ -1895,7 +1895,7 @@ class DefaultController extends Controller{
 		$allRequest = EmpRequestPeer::getAllAcceptedRequest();
 		$datetoday = date('Y-m-d');
 		$timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
-		
+
 		$request = [];
 		foreach ($allRequest as $a){
 		$requesttype = $a->getListRequestTypeId();
