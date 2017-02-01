@@ -3703,6 +3703,16 @@ label {
 :-ms-input-placeholder {
     color: #d1d1d1
 }
+
+label {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: white;
+    padding: 7px;
+    border-radius: 5%
+}
+
 input:not([type]),
 input[type=text],
 input[type=password],
@@ -7265,14 +7275,7 @@ button.picker__close:focus {
 #modal-dept {
     height: 30%
 }
-label {
-    font-size: 14px;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: white;
-    padding: 7px;
-    border-radius: 5%
-}
+
 .notif-list {
     border: none
 }

@@ -168,31 +168,31 @@ class EmailController extends Controller
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
 
-        if(empty($req->request->get('typeleave'))){
+        if(empty($req->request->get('typeleave')))
+        {
             $requestlist = ListRequestTypePeer::retrieveByPK(4);
-        }else{
+        }else
+        {
             $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
-
         }
         $requesttype = $requestlist->getRequestType();
 
-        //$taggedemail = $req->request->get('taggedemail');
-
         $admins = EmpAccPeer::getAdminInfo();
         $adminemails = array();
+        $subject = "PROLS » " . $requesttype . " Request";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         foreach ($admins as $admin){
-            $adminemails[] = $admin->getEmail();
+            $to = array($admin->getEmail());
+
+            $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
+                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/requests'>View Request</a>" . "<br>";
+
+            $email = self::sendEmail($class, $subject, $from, $to,
+                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
         }
 
-        $subject = $requesttype . " Request";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($adminemails);
 
 
-        $inputMessage = "<strong>Hi admin!" . "<br><b></strong>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-            "<br><br>" . "Click the link below to view the pending request" . "<br>http://login.propelrr.com/requests";
-
-        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
         return $email ? 1: 0;
     }
@@ -255,7 +255,7 @@ class EmailController extends Controller
         $message->setFrom($from[0]);
         $message->setBody($content, 'text/html');
         $message->setTo($to[0]);
-    
+
         $response = $class->get('mailer')->send($message);
 
         return $response;
@@ -265,32 +265,32 @@ class EmailController extends Controller
     {
 
 
-            $taggedemail = $req->request->get('taggedemail');
-            $employee = EmpAccPeer::getUserInfo($email);
+        $taggedemail = $req->request->get('taggedemail');
+        $employee = EmpAccPeer::getUserInfo($email);
 
-            $employee_info = EmpProfilePeer::getInformation($employee->getId());
-            $employee_name = $employee_info->getFname() . " " . $employee_info->getLname();
-
-
-            $from_user = $class->getUser()->getId();
-
-            $arrlength = count($param);
-            $type = $param['type'];
+        $employee_info = EmpProfilePeer::getInformation($employee->getId());
+        $employee_name = $employee_info->getFname() . " " . $employee_info->getLname();
 
 
-        
-            $subject = "Request Meeting";
-            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-            $to      = array($email);
-            if($type == 1) {
-                $inputMessage = "Hi " . $employee_name . "!<br> You requested for  Meeting " . ".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
-                $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
-            }
-            if($type == 2){
-                $name = $param["names"];
-                $inputMessage = "Hi  " . $employee_name . "!<br> You requested for  Meeting with  ". $name .".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
-                $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
-            }
+        $from_user = $class->getUser()->getId();
+
+        $arrlength = count($param);
+        $type = $param['type'];
+
+
+
+        $subject = "Request Meeting";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($email);
+        if($type == 1) {
+            $inputMessage = "Hi " . $employee_name . "!<br> You requested for  Meeting " . ".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
+            $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+        }
+        if($type == 2){
+            $name = $param["names"];
+            $inputMessage = "Hi  " . $employee_name . "!<br> You requested for  Meeting with  ". $name .".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
+            $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+        }
         return $email ? 1: 0;
     }
 
