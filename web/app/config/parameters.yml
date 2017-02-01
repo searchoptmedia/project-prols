@@ -1,10 +1,10 @@
 # This file is auto-generated during the composer install
 parameters:
-    database_host: localhost
+    database_host: 205.186.138.226
     database_port: 3306
-    database_name: prols
-    database_user: root
-    database_password:
+    database_name: prols_staging
+    database_user: prolsstageadmin
+    database_password: pr0L$St@g1ng
     database_driver: pdo_mysql
     
     mailer_transport: smtp
