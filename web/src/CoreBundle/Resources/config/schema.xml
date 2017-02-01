@@ -203,10 +203,11 @@
         </vendor>
     </table>
 
-    <table name="list_holidays" phpName="ListHolidays" idMethod="native">
+    <table name="list_events" phpName="ListEvents" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="date" phpName="Date" type="TIMESTAMP" required="true"/>
         <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
+        <column name="desc" phpName="Description" type="LONGVARCHAR" size="1000" required="true"/>
         <column name="type" phpName="Type" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
           <parameter name="Engine" value="InnoDB"/>

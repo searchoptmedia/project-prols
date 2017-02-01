@@ -168,31 +168,31 @@ class EmailController extends Controller
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
 
-        if(empty($req->request->get('typeleave')))
-        {
+        if(empty($req->request->get('typeleave'))){
             $requestlist = ListRequestTypePeer::retrieveByPK(4);
-        }else
-        {
+        }else{
             $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
+
         }
         $requesttype = $requestlist->getRequestType();
 
+        //$taggedemail = $req->request->get('taggedemail');
+
         $admins = EmpAccPeer::getAdminInfo();
         $adminemails = array();
-        $subject = "PROLS » " . $requesttype . " Request";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         foreach ($admins as $admin){
-            $to = array($admin->getEmail());
-
-            $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/requests'>View Request</a>" . "<br>";
-
-            $email = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            $adminemails[] = $admin->getEmail();
         }
 
+        $subject = $requesttype . " Request";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to      = array($adminemails);
 
 
+        $inputMessage = "<strong>Hi admin!" . "<br><b></strong>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
+            "<br><br>" . "Click the link below to view the pending request" . "<br>http://login.propelrr.com/requests";
+
+        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
 
         return $email ? 1: 0;
     }
