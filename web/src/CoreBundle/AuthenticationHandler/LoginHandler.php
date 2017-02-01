@@ -34,6 +34,8 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
         
     	$response = new RedirectResponse($this->router->generate('error403'));
 //        print_r($token); exit;
+
+        echo '<pre>'; var_dump($request); exit;
         $session    = new Session();
 
         $user       = $token->getUser();
