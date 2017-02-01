@@ -1,22 +1,11 @@
-/* Select2 custom css */
-.select2-container .select2-search__field {
-    width: 100% !important;
-}
-
-/* Custom css */
-.formmeeting{
-    margin-top: 80px;
-    margin-bottom: 60px;
-}
-.reqmeeting-lbl{
-    margin-top: 30px;
-    margin-bottom: -10px;
-}
 .manageemployees-content{
     padding-bottom: 140px;
 }
 .emp-list tbody{
     cursor: default;
+}
+.select-emp-tag{
+    width:350px;
 }
 .select-wrapper input.select-dropdown{
     padding-left: 0px;
@@ -256,17 +245,5 @@ h5{
     .heading h3{
         font-size: 24px;
         padding-left: 15px;
-    }
-    .select2.select2-container.select2-container--default{
-        margin-bottom: 53px;
-    }
-    .btn-submitmeeting {
-        top: 0;
-    }
-    .top-nav-vl h3{
-        padding-left: 40px;
-    }
-    .top-nav-vl .btn-select1{
-        top: 11px;
     }
 }

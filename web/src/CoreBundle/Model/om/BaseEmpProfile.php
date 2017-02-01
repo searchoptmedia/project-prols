@@ -139,24 +139,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
     protected $profile_status;
 
     /**
-     * The value for the sss field.
-     * @var        string
-     */
-    protected $sss;
-
-    /**
-     * The value for the bir field.
-     * @var        string
-     */
-    protected $bir;
-
-    /**
-     * The value for the philhealth field.
-     * @var        string
-     */
-    protected $philhealth;
-
-    /**
      * @var        EmpAcc
      */
     protected $aEmpAcc;
@@ -424,39 +406,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
     {
 
         return $this->profile_status;
-    }
-
-    /**
-     * Get the [sss] column value.
-     * 
-     * @return string
-     */
-    public function getSss()
-    {
-
-        return $this->sss;
-    }
-
-    /**
-     * Get the [bir] column value.
-     * 
-     * @return string
-     */
-    public function getBir()
-    {
-
-        return $this->bir;
-    }
-
-    /**
-     * Get the [philhealth] column value.
-     * 
-     * @return string
-     */
-    public function getPhilhealth()
-    {
-
-        return $this->philhealth;
     }
 
     /**
@@ -791,69 +740,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
     } // setProfileStatus()
 
     /**
-     * Set the value of [sss] column.
-     * 
-     * @param  string $v new value
-     * @return EmpProfile The current object (for fluent API support)
-     */
-    public function setSss($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->sss !== $v) {
-            $this->sss = $v;
-            $this->modifiedColumns[] = EmpProfilePeer::SSS;
-        }
-
-
-        return $this;
-    } // setSss()
-
-    /**
-     * Set the value of [bir] column.
-     * 
-     * @param  string $v new value
-     * @return EmpProfile The current object (for fluent API support)
-     */
-    public function setBir($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->bir !== $v) {
-            $this->bir = $v;
-            $this->modifiedColumns[] = EmpProfilePeer::BIR;
-        }
-
-
-        return $this;
-    } // setBir()
-
-    /**
-     * Set the value of [philhealth] column.
-     * 
-     * @param  string $v new value
-     * @return EmpProfile The current object (for fluent API support)
-     */
-    public function setPhilhealth($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->philhealth !== $v) {
-            $this->philhealth = $v;
-            $this->modifiedColumns[] = EmpProfilePeer::PHILHEALTH;
-        }
-
-
-        return $this;
-    } // setPhilhealth()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -900,9 +786,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $this->list_pos_id = ($row[$startcol + 12] !== null) ? (int) $row[$startcol + 12] : null;
             $this->status = ($row[$startcol + 13] !== null) ? (string) $row[$startcol + 13] : null;
             $this->profile_status = ($row[$startcol + 14] !== null) ? (int) $row[$startcol + 14] : null;
-            $this->sss = ($row[$startcol + 15] !== null) ? (string) $row[$startcol + 15] : null;
-            $this->bir = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
-            $this->philhealth = ($row[$startcol + 17] !== null) ? (string) $row[$startcol + 17] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -912,7 +795,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 18; // 18 = EmpProfilePeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 15; // 15 = EmpProfilePeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpProfile object", $e);
@@ -1226,15 +1109,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpProfilePeer::PROFILE_STATUS)) {
             $modifiedColumns[':p' . $index++]  = '`profile_status`';
         }
-        if ($this->isColumnModified(EmpProfilePeer::SSS)) {
-            $modifiedColumns[':p' . $index++]  = '`sss`';
-        }
-        if ($this->isColumnModified(EmpProfilePeer::BIR)) {
-            $modifiedColumns[':p' . $index++]  = '`bir`';
-        }
-        if ($this->isColumnModified(EmpProfilePeer::PHILHEALTH)) {
-            $modifiedColumns[':p' . $index++]  = '`philhealth`';
-        }
 
         $sql = sprintf(
             'INSERT INTO `emp_profile` (%s) VALUES (%s)',
@@ -1290,15 +1164,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
                         break;
                     case '`profile_status`':						
                         $stmt->bindValue($identifier, $this->profile_status, PDO::PARAM_INT);
-                        break;
-                    case '`sss`':						
-                        $stmt->bindValue($identifier, $this->sss, PDO::PARAM_STR);
-                        break;
-                    case '`bir`':						
-                        $stmt->bindValue($identifier, $this->bir, PDO::PARAM_STR);
-                        break;
-                    case '`philhealth`':						
-                        $stmt->bindValue($identifier, $this->philhealth, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1511,15 +1376,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             case 14:
                 return $this->getProfileStatus();
                 break;
-            case 15:
-                return $this->getSss();
-                break;
-            case 16:
-                return $this->getBir();
-                break;
-            case 17:
-                return $this->getPhilhealth();
-                break;
             default:
                 return null;
                 break;
@@ -1564,9 +1420,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $keys[12] => $this->getListPosPosId(),
             $keys[13] => $this->getStatus(),
             $keys[14] => $this->getProfileStatus(),
-            $keys[15] => $this->getSss(),
-            $keys[16] => $this->getBir(),
-            $keys[17] => $this->getPhilhealth(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1665,15 +1518,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             case 14:
                 $this->setProfileStatus($value);
                 break;
-            case 15:
-                $this->setSss($value);
-                break;
-            case 16:
-                $this->setBir($value);
-                break;
-            case 17:
-                $this->setPhilhealth($value);
-                break;
         } // switch()
     }
 
@@ -1713,9 +1557,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if (array_key_exists($keys[12], $arr)) $this->setListPosPosId($arr[$keys[12]]);
         if (array_key_exists($keys[13], $arr)) $this->setStatus($arr[$keys[13]]);
         if (array_key_exists($keys[14], $arr)) $this->setProfileStatus($arr[$keys[14]]);
-        if (array_key_exists($keys[15], $arr)) $this->setSss($arr[$keys[15]]);
-        if (array_key_exists($keys[16], $arr)) $this->setBir($arr[$keys[16]]);
-        if (array_key_exists($keys[17], $arr)) $this->setPhilhealth($arr[$keys[17]]);
     }
 
     /**
@@ -1742,9 +1583,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpProfilePeer::LIST_POS_ID)) $criteria->add(EmpProfilePeer::LIST_POS_ID, $this->list_pos_id);
         if ($this->isColumnModified(EmpProfilePeer::STATUS)) $criteria->add(EmpProfilePeer::STATUS, $this->status);
         if ($this->isColumnModified(EmpProfilePeer::PROFILE_STATUS)) $criteria->add(EmpProfilePeer::PROFILE_STATUS, $this->profile_status);
-        if ($this->isColumnModified(EmpProfilePeer::SSS)) $criteria->add(EmpProfilePeer::SSS, $this->sss);
-        if ($this->isColumnModified(EmpProfilePeer::BIR)) $criteria->add(EmpProfilePeer::BIR, $this->bir);
-        if ($this->isColumnModified(EmpProfilePeer::PHILHEALTH)) $criteria->add(EmpProfilePeer::PHILHEALTH, $this->philhealth);
 
         return $criteria;
     }
@@ -1822,9 +1660,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         $copyObj->setListPosPosId($this->getListPosPosId());
         $copyObj->setStatus($this->getStatus());
         $copyObj->setProfileStatus($this->getProfileStatus());
-        $copyObj->setSss($this->getSss());
-        $copyObj->setBir($this->getBir());
-        $copyObj->setPhilhealth($this->getPhilhealth());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -2331,9 +2166,6 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         $this->list_pos_id = null;
         $this->status = null;
         $this->profile_status = null;
-        $this->sss = null;
-        $this->bir = null;
-        $this->philhealth = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;

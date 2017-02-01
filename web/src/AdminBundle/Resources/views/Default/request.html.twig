@@ -4,7 +4,7 @@
     {{ notif.notif_loader() }}
         <div class="col-md-12 green center-align accept-notif-container light-green darken-1 close-alert">
         <div class="request-success"><h5>Request Accepted!</h5></div>
-            </div>                 
+            </div>
 
             <div class="col-md-12 green center-align sendtoemail-notif-container light-green darken-1 close-alert">
                 <div class="sendtoemail-success"><h5>Email Sent!</h5></div>
@@ -12,7 +12,7 @@
 
         <div class="container-fluid">
         <div class="row">
-                                                                            
+
         <div class="page-content">
         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
         <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
@@ -25,7 +25,7 @@
                 <table class="bordered highlight emp-list">
                     <thead>
                           <tr>
-                              <th data-field="id">Name</th>
+                              <th data-field="id">Name
                               <th data-field="name">Status</th>
                               <th data-field="price">Category</th>
                               <th data-field="price">Start Date</th>
@@ -35,6 +35,7 @@
 
                     <!--ALL REQUEST-->
                     <tbody class="allrequest">
+
                     {% for request in allrequest %}
                         <tr class="modal-reason all" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
                             data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
@@ -55,49 +56,9 @@
                             <div class="modal-content">
                                 <h4>Request Info</h4>
                                 <p id="request-name"></p>
+                                <p id="request-name-tag"></p>
                                 <p id="leave-date-started"></p>
-                                <p style="font-size: 24px; margin-top: 10px; margin-bottom: -15px;">Reason:</p>
-                                <p id='leave-reason-texts'></p>
-                                <div class="rejects"><br>
-                                    <input class="reject-reason" placeholder="type your reason here...">
-                                    <a href="#!" class="modal-action waves-effect waves-light red btn-flat btn-sendtoemail" data-uid="{{ userid }}" style="color:white">Decline</a>
-                                    {#<a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>#}
-                                    <div class="chip required-field">required field!</div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
-                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
-                                   data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                            </div>
-                        </div>
 
-                    {% endfor %}
-                    </tbody>
-
-                    <!--VACATION LEAVE-->
-                    <tbody style="display: none" class="vacationleavecontent">
-                    {% for request in allrequest if request.listRequestTypeId == 2%}
-                        <tr class="modal-reason vacation" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
-                            data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
-                            data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
-                        ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
-                            data-request="{{request.listRequestType.requestType}}">
-                            <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
-                            <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
-                                {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
-                                {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
-                                {% endif %}</td>
-                            <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
-                            <td>{{ request.dateStarted|date('n/d/Y')}}</td>
-                            <td>{{ request.dateEnded|date('n/d/Y')}}</td>
-                        </tr>
-
-                        <div id="modal1" class="modal modal-fixed-footer">
-                            <div class="modal-content">
-                                <h4>Request Info</h4>
-                                <p id="request-name"></p>
-                                <p id="leave-date-started"></p>
                                 <p style="font-size: 24px; margin-top: 10px; margin-bottom: -15px;">Reason:</p>
                                 <p id='leave-reason-texts'></p>
                                 <div class="rejects"><br>
@@ -111,6 +72,7 @@
                                 <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
                                    data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
                                 <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
+
                             </div>
                         </div>
 
@@ -159,6 +121,47 @@
                     {% endfor %}
                     </tbody>
 
+                    <!--VACATION LEAVE-->
+                    <tbody style="display: none" class="vacationleavecontent">
+                    {% for request in allrequest if request.listRequestTypeId == 2%}
+                        <tr class="modal-reason vacation" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
+                            data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
+                            data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
+                        ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
+                            data-request="{{request.listRequestType.requestType}}">
+                            <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
+                            <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
+                                {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
+                                {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
+                                {% endif %}</td>
+                            <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
+                            <td>{{ request.dateStarted|date('n/d/Y')}}</td>
+                            <td>{{ request.dateEnded|date('n/d/Y')}}</td>
+                        </tr>
+
+                        <div id="modal1" class="modal modal-fixed-footer">
+                            <div class="modal-content">
+                                <h4>Request Info</h4>
+                                <p id="request-name"></p>
+                                <p id="leave-date-started"></p>
+                                <p style="font-size: 24px; margin-top: 10px; margin-bottom: -15px;">Reason:</p>
+                                <p id='leave-reason-texts'></p>
+                                <div class="rejects"><br>
+                                    <input class="reject-reason" placeholder="type your reason here...">
+                                    <a href="#!" class="modal-action waves-effect waves-light red btn-flat btn-sendtoemail" data-uid="{{ userid }}" style="color:white">Decline</a>
+                                    {#<a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>#}
+                                    <div class="chip required-field">required field!</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
+                                   data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
+                                <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                    </tbody>
                     <!--DIFF IP-->
                     <tbody style="display: none" class="diffipcontent">
                     {% for request in allrequest if request.listRequestTypeId == 3%}
@@ -201,9 +204,9 @@
                     </tbody>
 
                     <!--MEETING REQUESTS-->
-                    <tbody style="display: none" class="meetingtable">
+                    <tbody style="display: none" class="meetingcontent">
                     {% for request in allrequest if request.listRequestTypeId == 4%}
-                        <tr class="modal-reason request-diff-ip" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
+                        <tr class="modal-reason request-meeting" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
                             data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
                             data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
                         ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
@@ -239,68 +242,41 @@
                             </div>
                         </div>
                     {% endfor %}
-                    </tbody>
+                    <div>
 
-                    <!--EMERGENCY REQUESTS-->
-                    <tbody style="display: none" class="emergencyrequest">
-                    {% for request in allrequest if request.listRequestTypeId == 5%}
-                        <tr class="modal-reason request-diff-ip" href="#modal1" data-empid="{{ request.empAccId }}" data-reason="{{ request.request }}"
-                            data-id="{{ request.id }}" data-status="{{ request.status }}" data-start="{{ request.dateStarted | date('M d Y')}}"
-                            data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
-                        ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
-                            data-request="{{request.listRequestType.requestType}}">
-                            <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
-                            <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
-                                {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
-                                {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
-                                {% endif %}</td>
-                            <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
-                            <td>{{ request.dateStarted|date('n/d/Y')}}</td>
-                            <td>{{ request.dateEnded|date('n/d/Y')}}</td>
-                        </tr>
+                    </div>
 
-                        <div id="modal1" class="modal modal-fixed-footer">
-                            <div class="modal-content">
-                                <h4>Request Info</h4>
-                                <p id="request-name"></p>
-                                <p id="leave-date-started"></p>
-                                <p style="font-size: 24px; margin-top: 10px; margin-bottom: -15px;">Reason:</p>
-                                <p id='leave-reason-texts'></p>
-                                <div class="rejects"><br>
-                                    <input class="reject-reason" placeholder="type your reason here...">
-                                    <a href="#!" class="modal-action waves-effect waves-light red btn-flat btn-sendtoemail" data-uid="{{ userid }}" style="color:white">Decline</a>
-                                    {#<a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat btn-reasoncancel">Cancel</a>#}
-                                    <div class="chip required-field">required field!</div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <a href="#!" class="modal-action waves-effect waves-light green btn-flat btn-accept"
-                                   data-lbl="{{ request.id }}" data-uid="{{ userid }}">Accept</a>
-                                <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
-                            </div>
-                        </div>
-                    {% endfor %}
                     </tbody>
                 </table>
         </div>
         </div>
 
+
         <!-- Dropdown Structure -->
+
             <ul id='dropdown2' class='dropdown-content dd1'>
+                {% if user.role == 'ADMIN' %}
                 <li><a href="#!" class="allbtn">All</a></li>
                 <li class="divider"></li>
                 <li><a href="#!" class="vacleavebtn">Vacation Leave</a></li>
                 <li class="divider"></li>
                 <li><a href="#!" class="sickleavebtn">Sick Leave</a></li>
                 <li class="divider"></li>
-                <li><a href="#!" class="emergencybtn">Emergency Leave</a></li>
-                <li class="divider"></li>
-                <li><a href="#!" class="meetingbtn">Meeting</a></li>
-                <li class="divider"></li>
-                <li><a href="#!" class="diffipbtn">Out of Office</a></li>
+                {#Meeting leave button #}
+                <li><a href="#!" class="meetingleavebtn">Meeting</a></li>
+                <li><a href="#!" class="diffipbtn">IP Address</a></li>
+                {% else %}
+                <li><a href="#!" class="meetingleavebtn">Meeting</a></li>
+                {% endif %}
             </ul>
             <!-- End of DS -->
+
+
+
+
+
     </div>
+
     </div>
 
 
@@ -310,22 +286,21 @@
 <script type="text/javascript">
     $(document).ready(function(){
 
+        console.log('ok')
 
         $('.allbtn').click(function(){
             $('.allrequest').show();
             $('.sickleavecontent').hide();
             $('.vacationleavecontent').hide();
             $('.diffipcontent').hide();
-            $('.meetingtable').hide();
-            $('.emergencyrequest').hide();
+            $('.meetingcontent').hide();
         });
         $('.vacleavebtn').click(function(){
             $('.allrequest').hide();
             $('.sickleavecontent').hide();
             $('.vacationleavecontent').show();
             $('.diffipcontent').hide();
-            $('.meetingtable').hide();
-            $('.emergencyrequest').hide();
+            $('.meetingcontent').hide();
         });
 
         $('.sickleavebtn').click(function(){
@@ -333,33 +308,21 @@
             $('.vacationleavecontent').hide();
             $('.sickleavecontent').show();
             $('.diffipcontent').hide();
-            $('.meetingtable').hide();
-            $('.emergencyrequest').hide();
+            $('.meetingcontent').hide();
         });
-
+        $('.meetingleavebtn').click(function() {
+            $('.allrequest').hide();
+            $('.vacationleavecontent').hide();
+            $('.sickleavecontent').hide();
+            $('.diffipcontent').hide();
+            $('.meetingcontent').show();
+        });
         $('.diffipbtn').click(function(){
             $('.diffipcontent').show();
             $('.allrequest').hide();
             $('.vacationleavecontent').hide();
             $('.sickleavecontent').hide();
-            $('.meetingtable').hide();
-            $('.emergencyrequest').hide();
-        });
-        $('.meetingbtn').click(function(){
-            $('.diffipcontent').hide();
-            $('.allrequest').hide();
-            $('.vacationleavecontent').hide();
-            $('.sickleavecontent').hide();
-            $('.meetingtable').show();
-            $('.emergencyrequest').hide();
-        });
-        $('.emergencybtn').click(function(){
-            $('.diffipcontent').hide();
-            $('.allrequest').hide();
-            $('.vacationleavecontent').hide();
-            $('.sickleavecontent').hide();
-            $('.meetingtable').hide();
-            $('.emergencyrequest').show();
+            $('.meetingcontent').hide();
         });
 
         var adminId, leaveId, status, empId, label, datestart, dateend, reqname, reqtype, requestname, reason, statlabel;
@@ -368,7 +331,7 @@
         $('.sick').click(onClickRequest);
         $('.vacation').click(onClickRequest);
         $('.request-diff-ip').click(onClickRequest);
-
+        $('.request-meeting').click(onClickRequest);
         function onClickRequest(){
             status      = $(this).data('status');
             leaveId     = $(this).data('id');
@@ -379,10 +342,9 @@
             reqname     = $(this).data('name');
             reqtype     = $(this).data('type');
             requestname = $(this).data('request');
-            reason      = $(this).data('reason');
-            reason      = reason.replace(/\r?\n/g, '<br />');
-
+            reason = $(this).data('reason');
             $('#request-name').html('<b>Name: </b>' + reqname);
+            $('#request-name-tag').html('<b>Tagged Person: </b>');
             $('#leave-reason-texts').html(reason);
             $('#leave-date-started').html('<b>Start date: </b>' + datestart + ' - '+ '<b>End date: </b>' + dateend);
             $('#modal1').openModal();
@@ -399,9 +361,13 @@
 
         var $badge = $(this).find('.reqcount');
         var count;
+
+
+        //accept meeting
         $('.btn-accept').click(function(){
+                console.log("test");
             adminId = $(this).data('uid');
-            count   = Number($badge.text());
+            count = Number($badge.text());
             empId   = $('.modal-reason').data('empid');
             $('.loader-notif').show();
             $('.loader-notif').css({'top' : '0px'});
@@ -417,6 +383,7 @@
                  }, 5000);
                     }, "json").done(function(data){
                     if(data.response == 'success'){
+                        console.log(data);
                         $(label).html('Accepted');
                         $(statlabel).html('Accepted');
                         $(label).attr('class', 'lbl-pending green');
@@ -438,7 +405,7 @@
         adminId = $(this).data('uid');
         content = $('.reject-reason').val();
         empId   = $('.modal-reason').data('empid');
-        count   = Number($badge.text());
+        count = Number($badge.text());
             if(content == ''){
                 $('.required-field').show();
                 $('.reject-reason').css({'border-color' : 'red'});
@@ -476,6 +443,7 @@
                     $('.btn-sendtoemail').show();
                     $('.btn-reasoncancel').show();
                     $('.modal-footer').show();
+
                 }
             });
         });

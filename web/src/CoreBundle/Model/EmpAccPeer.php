@@ -43,6 +43,7 @@ class EmpAccPeer extends BaseEmpAccPeer{
 
 		return $result;
 	}
+	
 
 	public static function getUserInfo($email, Criteria $c = null)
 	{

@@ -51,6 +51,7 @@ class EmpAccTableMap extends TableMap
         $this->addColumn('email', 'Email', 'VARCHAR', true, 45, null);
         $this->addColumn('role', 'Role', 'VARCHAR', true, 45, null);
         $this->addColumn('key', 'Key', 'VARCHAR', false, 255, null);
+        $this->addColumn('capabilities', 'Capabilities', 'VARCHAR', false, 20, null);
         // validators
     } // initialize()
 
@@ -61,6 +62,7 @@ class EmpAccTableMap extends TableMap
     {
         $this->addRelation('EmpRequestRelatedByEmpAccId', 'CoreBundle\\Model\\EmpRequest', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_id', ), null, null, 'EmpRequestsRelatedByEmpAccId');
         $this->addRelation('EmpRequestRelatedByAdminId', 'CoreBundle\\Model\\EmpRequest', RelationMap::ONE_TO_MANY, array('id' => 'admin_id', ), null, null, 'EmpRequestsRelatedByAdminId');
+        $this->addRelation('RequestMeetingTags', 'CoreBundle\\Model\\RequestMeetingTags', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_id', ), null, null, 'RequestMeetingTagss');
         $this->addRelation('EmpProfile', 'CoreBundle\\Model\\EmpProfile', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpProfiles');
         $this->addRelation('EmpTime', 'CoreBundle\\Model\\EmpTime', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpTimes');
         $this->addRelation('EmpTimeReject', 'CoreBundle\\Model\\EmpTimeReject', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpTimeRejects');

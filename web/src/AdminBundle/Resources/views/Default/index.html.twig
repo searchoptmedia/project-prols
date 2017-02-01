@@ -1,53 +1,4 @@
-{% import 'AdminBundle:Default:notification.html.twig' as notif %}
-{% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
-{% set userbdaynames = userbdaynames|default([]) %}
-<!doctype html>
-<html class="no-js" lang="">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
-{% block title %}<title>Propelrr Log-in System| Home</title>{% endblock %}
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="{{ asset('prols2/css/select2.min.css') }}" rel="stylesheet" />
-<link href="{{ asset('prols2/css/pikaday.css') }}" rel="stylesheet" />
-<link rel="stylesheet" href="{{asset('prols2/css/fullcalendar/fullcalendar.css')}}" media="all"/>
-<link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
-<link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
-<link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
-</head>
-
-<body>
-{{ notif.notif_loader() }}
-{{ notif.request_leave_notif }}
-{{ notif.request_meeting_notif }}
-{{ notif.time_in_time_out_notif }}
-<section id="main-container">
-    <section id="main-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-
-            <div class="nav-right z-depth-1">
-                <div class="company-logo"><img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%";></div>
-                <div class="rightpanel">
-                    <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
-                        <div class="widget-subtitle plugin-date">Loading...</div>
-                    </div>
-                    <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
-                    <br>
-                    <div class="chip timechip" style="display: none">
-                        Timed-in at {{currenttimein}}
-                    </div>
-                </div>
-                <div class="clr"></div>
-            {% block nav %}
-                    {% if role == 'ADMIN' %}
-                        {{ sidenav.admin_navbar(requestcount) }}
-                    {% else %}
-                        {{ sidenav.emp_navbar() }}
-                    {% endif %}
-            {% endblock %}
-            </div>
+{% extends 'AdminBundle::base.html.twig' %}
 
 {% block body %}
         <div class="page-content">
@@ -74,33 +25,33 @@
                 <h4 class="agenda-date">Daily Agenda</h4>
                 <div class="agenda-list">
                     <ul class="collection agenda-list">
+
                         <li class="collection-item avatar" id="li-append"><i class="material-icons circle">perm_identity</i><span id="head-title"></span> <p id="daterange"></p></li>
+
                     </ul>
                 </div>
 
                 <div class="agenda-buttons">
-                    {#<a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>#}
+                    <a class="waves-effect waves-light btn orange btn-reqmeeting " style="display: none;">Request Meeting</a>
                     <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
                 </div>
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
+                    <div class="reqmeeting-emp-tag" id="">
+                        <br/><br/>
+                      <br/><br/>
+                        <select class="select-emp-tag" multiple="multiple">
+                            {% for acc in allacc %}
+                            <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                            {% endfor %}
+                        </select>
 
-                    <div class="row formmeeting">
-                        <div class="col-md-6 reqmeeting-lbl">
-                            <input name="meet-start-date" readonly placeholder="Start Date" class="meet-start-date" id="datepicker3">
-                        </div>
-                        <div class="col-md-6 reqmeeting-emp-tag">
-                            <select class="select-emp-tag materialize" multiple="multiple">
-                                {% for acc in allacc %}
-                                    <option value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
                     </div>
                     <div class="input-field">
-                        <textarea id="meeting" class="materialize-textarea" placeholder="Input meeting details here..."></textarea>
+                        <input id="meeting" placeholder="Type your message here...">
                     </div>
+                    <a class="waves-effect waves-light btn amber btn-submitmeeting">Submit</a>
                     <div class="chip required-field">
                         required field!
                     </div>
@@ -113,551 +64,296 @@
                 <div class="form-reqleave">
                     <div class="input-field" style="padding-top: 30px;">
                         <div class="row">
-                            {#<select class="col-md-6" name="leavetype" id="leavetype">#}
-                                {#<option value="" disabled selected>Choose Type of Leave</option>#}
-                                {#<option value="1">Sick Leave</option>#}
-                                {#<option value="2">Vacation Leave</option>#}
-                                {#<option value="5">Emergency Leave</option>#}
-                            {#</select>#}
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 reqleave-lbl">
-                                <p class="reqleave-p">From: </p>
-                                <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
+                            <div class = "form-container">
+                                <div class="multi_reqleaveform" style = "margin-top: 10px;">
+                                    <div class="req_inner">
+                                        <div class="col-md-6 reqleave-lbl">
+                                            <span class="reqleave-p">From</span>
+                                            <input type = "text" name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">
+                                        </div>
+                                        <div class="col-md-6 reqleave-lbl">
+                                            <span class="reqleave-p">To</span>
+                                            <input type = "text" name="end-date" readonly placeholder="End Date" class="end-date datepicker"  id="end_date" >
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason..." required></textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 reqleave-lbl">
-                                <p class="reqleave-p">To: </p>
-                                <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
-                            </div>
-                            <div class="col-md-12">
-                                <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...."></textarea>
-                            </div>
+                            <a class="btn-floating btn-large waves-effect waves-light red" id="add-request-form" style = "float:right; margin-right: 10px; display: none;"><i class="material-icons">add</i></a>
                         </div>
                     </div>
 
-                    <div class="chip required-field">
-                        required field!
-                    </div>
                     <div class="chip sent">
                         sent!
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
+                <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id = "btn-close">Close</a>
                 <a class="waves-effect waves-light btn amber btn-submitleave" style="margin-right:5px;">Submit</a>
-                <a class="waves-effect waves-light btn amber btn-submitmeeting" style="margin-right:5px;">Submit</a>
-
-
             </div>
         </div>
         <!-----------------------END OF MODAL -------------------------->
-    </div>
-</div>
-{% endblock %}
-        {{  include ('AdminBundle:Default:modal.html.twig') }}
-    </section>
-</section>
-
-
-{% block scripts %}
-    <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
-    <script src="{{asset('prols2/js/html5.js')}}"></script>
-    <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
-    <script src="{{asset('prols2/js/materialize.js')}}"></script>
-    <script src="{{asset('prols2/js/script.js')}}"></script>
-    <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
 {% endblock %}
 
 {% block customjs %}
+
     <script>
-        var picker;
-        var picker2;
-        var picker3;
-        picker  = new Pikaday({field: document.getElementById('datepicker') });
-        picker2 = new Pikaday({field: document.getElementById('datepicker2') });
-        picker3 = new Pikaday({field: document.getElementById('datepicker3') });
-            $('.meet-start-date').val('');
-            $('.start-date').val('');
-            $('.end-date').val('');
-            picker.destroy();
-            picker2.destroy();
-                picker  = new Pikaday({field: document.getElementById('datepicker'), onSelect: function(){
-                    picker2.hide();
-                    $('.end-date').val('');
-                        if(picker.getDate != ''){
-                            picker2.destroy();
-                            picker2 = new Pikaday({field: document.getElementById('datepicker2'), onSelect: function(){
-                                picker2.setEndRange(picker2.getDate());
-                                picker.setStartRange(picker.getDate());
-                                picker.setEndRange(picker2.getDate());
-                            } });
-                            picker.setStartRange(picker.getDate());
-                            picker.setEndRange(picker2.getDate());
-                            picker2.setStartRange(picker.getDate());
-                            picker2.show();
-                            picker2.setMinDate(picker.getDate());
-                        }
-                    }
-                });
-                picker.setMinDate(new Date());
-                picker3.setMinDate(new Date());
+        //request meeting function
+        var typeleave = '';
 
-    </script>
-{% endblock %}
+        $('.btn-submitmeeting').click(function(){
+            var reqmeetmessage =  $('#meeting').val();
+            var tagged = [];
+            var taggedemail = $('.select-emp-tag').select2("val");
 
-<script type="text/javascript">
+            console.log(taggedemail);
 
-    //------------------------LEFT SIDEBAR JS-----------------------------------
-    {% set currentPath     = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
-    {% set indexPath       = path('admin_homepage') %}
-    {% set profilePath     = path('profile_page') %}
-    {% set managePath      = path('manage_employee') %}
-    {% set timeLogPath     = path('time_logs_page') %}
-    {% set viewRequestPath = path('view_request') %}
-
-    {% if currentPath == indexPath %}
-    $('.index-page').addClass("active");
-    {% elseif currentPath == profilePath %}
-    $('.profile-page').addClass("active");
-    {% elseif currentPath == managePath or currentPath == timeLogPath %}
-    $('.manage-page').addClass("active");
-    {% elseif currentPath == viewRequestPath %}
-    $('.view-request-page').addClass("active");
-    {% endif %}
-    //-------------------------------------------------------------------------
-
-    var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
-    var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
-
-    function timeOutInit() {
-        //--------------12 AM ALERT MODAL-------------------------
-        var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
-        var displayTime = 30;
-        var display     = document.querySelector('#time');
-
-        function breakTime() {
-            /* Set Alert Hour in 24hr Notation */
-            var alertHour = 0;
-            /* Set Alert Minute */
-            var alertMinute = 0;
-            /* Set Alert Minute */
-            var alertSec = 0;
-            /* Set time for alert timeout */
-            var theDate = new Date();
-
-            //if 12am
-            if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
-                    && Math.abs(theDate.getSeconds()) == alertSec)) {
-                this.focus();
-                clearTimeout(alertInt);
-                alert('Good Morning!');
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-            //if 1am onwards
-            } else if(dayNow == 'false') {
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-            //else run loop
-            } else {
-                alertInt = setTimeout(breakTime, 50);
-            }
-        }
-
-        function checkTimeout() {
-            if(isTimeout == 'false') {
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-            }
-            console.log('isTimeout? '+isTimeout);
-        }
-
-        function checkIf_AutoTimeOut() {
-            var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
-            var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
-
-            $d = new Date(timeOutDate);
-            var options = {
-                year: "numeric", month: "short",
-                day: "numeric", hour: "2-digit", minute: "2-digit"
-            };
-            $d = $d.toLocaleTimeString("en-us", options);
-            if(isAutoTimeOut == 'true') {
-                $('.auto-timeout-notice').show();
-                $('.auto-timeout-time-message').html($d);
-                $('.time-in-container').hide();
-                toggleTimeWidget('hide');
-            }
-        }
-
-        $('.forgot-timeout-btn').click(function () {
-            $('.forgot-timeout-modal').hide();
-            timer = 0;
-            checker = true;
-            isTimeout = '{{ app.session.get('timeout', 'true') }}'
-        });
-
-        //----------------BUTTON-TIMER--------------------
-        var checker = false;
-        var timer, seconds, timerInt = null;
-
-        function startTimer(duration, display) {
-            timer = duration, seconds;
-            timerInt = setInterval(function () {
-                //minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                //minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
-
-                if (--timer < 0) timer = 0;
-
-                if (seconds == 0 && checker == false) {
-                    checker = true;
-
-                    display.textContent = '';
-                    $('.forgot-timeout-modal').hide();
-                    manage_time_newday('timeout');
-                }
-                console.log('timer')
-            }, 1000);
-        }
-
-        function manage_time_newday(type) {
-            var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
-            if(type == 'working') {
-                url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
+            if(reqmeetmessage == ''){
+                $('#meeting').css({'border-color' : 'red    '});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                $('.required-field').show();
+                return;
             }
 
-            $.getJSON( url,
-                    function( data ) {
-                        if(type == 'working') toggleTimeWidget('show');
-                        else  toggleTimeWidget('hide');
-                    })
-                    .fail( function() {
-                        $('.modal-fail-ajax-container').show();
-                    });
-        }
+            $('.loader-notif').show();
+            $('.loader-notif').css({'top' : '0px'});
+            $('.btn-submitmeeting').hide();
 
-        $('.btn-keep-working').bind('click', function() {
-            manage_time_newday('working');
-        });
-
-        $('.btn-timeout-newday').bind('click', function() {
-            clearInterval(timerInt);
-
-            $('#time-out-button').attr('data-forgot', '1');
-
-            $('.timeout-cancel').bind('click', function() {
-                clearInterval(timerInt);
-                display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
+            $.post("{{ path('request_meeting') }}",
+                {
+                    reqmeetmessage:reqmeetmessage,
+                    taggedemail:taggedemail },
+                function(data){
+                    console.log(data);
+                    $('#meeting').val('');
+                    $('.required-field').hide();
+                    $('#daily_agenda').closeModal();
+                    $('.request-meeting-notif').css({'top':'0px'});
+                    setTimeout(function(){
+                        $('.request-meeting-notif').css({'top' : '-55px'});
+                    }, 5000);
+                }).always(function(data){
+                console.log(data);
+                $('.loader-notif').hide();
+                $('.loader-notif').css({'top' : '-55px'});
+                $('.btn-submitmeeting').show();
             });
         });
-        $('.btn-forgot-timeout-show-timein').bind('click', function() {
-            $('.auto-timeout-notice').hide();
-            toggleTimeInModal('show');
+
+        $('.btn-ip-cancel').click(function(e){
+            e.preventDefault();
+            $('.diff-ip-container').hide();
         });
-        checkIf_AutoTimeOut();
-    }
-    window.onload = function () {
-        timeOutInit();
-    };
-</script>
+        $('.btn-ip-yes').click(function(e){
+            e.preventDefault();
+            $('.diff-ip-reason').show();
+        });
 
-<script>
-    function toggleTimeWidget(act) {
-        if(act == 'show') {
-            $('.timed-in').show();
-            $('.btn-timeout').show();
-            $('.timechip').show();
-        } else {
-            $('.timed-in').hide();
-            $('.btn-timeout').hide();
-            $('.timechip').hide();
-        }
-    }
+        $('.modal-trigger').leanModal();
 
-    function toggleTimeInModal(act) {
-        if(act == 'show') {
-            $('.time-in-container').show();
-            $('.btn-timeout').hide();
-        }
-    }
-
-    initWidget = function() {
-        if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
-            toggleTimeWidget('show');
-
-        } else if(dayNow == '' && isTimeout == '') {
-
-            toggleTimeInModal('show');
+        function showBirthday() {
+            var bdaynames = [];
+            {% for names in userbdaynames %}
+            bdaynames.push("{{ names }}");
+            {% endfor %}
+            console.log(bdaynames);
+            if(bdaynames.length) {
+                $('.modal-birthday-notify-container').show();
+            }
+            $('.btn-bdayclose').click( function() {
+                $('.modal-birthday-notify-container').hide();
+            });
         }
 
-        if('{{ isTimeoutAlready }}' == 'true'){
-            toggleTimeWidget('hide');
-        }
-    }
-    initWidget();
+    </script>
 
+    <script> // SCRIPT FOR MULTIPLE DATES REQUEST LEAVE
+        var unique_id = 0;
 
-    $('.select-emp-tag').select2({
-        placeholder: 'Input name here',
-        width: '100%'
-    });
-    $('#leavetype').material_select();
-    $('.caret').hide();
+        $(document).ready(function(){
+            $("#add-request-form").click(function (){
+                cloneRequestLeaveFields();
+            });
 
-    {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
+            $("#btn-close").click(function() {
+                removeClonedFields();
+            });
+        });
 
-    {#}).always(function(data) {#}
-        {#console.log(data)#}
-        {#var res = parseInt(data);#}
-        {#if(res == 1) {#}
-            {#console.log('ok')#}
-            {#$('.time-in-container').hide();#}
-            {#$('.btn-timeout').show();#}
-            {#$('.timechip').show();#}
-        {#}else{#}
-            {#$('.time-in-container').show();#}
-            {#$('.btn-timeout').hide();#}
-        {#}#}
-    {#});#}
+        function cloneRequestLeaveFields(){
+            unique_id++;
+            var form_container = document.createElement("div");                         // <div class = "multi_reqleaveform">
+            form_container.className = "multi_reqleaveform newForm";
 
-var pass = ''
+            var container = document.createElement("div");                              // <div class = "req_inner"> -> Container
+            container.className = "req_inner";
 
-$('#time-in-button').click(function(){
-    var message = $('#diffip-input-reason').val(), error = false,
-    user_ip =  $('#time-in-button').data('ip'),
-    is_message = undefined, action = $(this).data('action'), pass;
-    if(user_ip == 0){
-        message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
-        if(message == ''){
-            $('#diffip-input-reason').css({'border-color': '#f44336'});
-            error = true;
-        }
-        is_message = true;
-        if(error){
-            return false;
-        }
-    }
-    $('#time-in-button').hide();
-    $('.loader-notif').show();
-    $('.loader-notif').css({'top' : '0px'});
-    $('.forgot-timeout-modal').hide();
-    var timetoday = "{{ timetoday }}";
-    $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
-        console.log(data);
-        toggleTimeWidget('show');
-        $('.time-in-container').css({'display' : 'none'});
-        $('.timein-notif-container').css({'top':'0px'});
-        $('.timed-in').css({'display' : 'block'});
-        $('.btn-timeout').show();
-        $('.diff-ip-container').hide();
-        $('.timechip').html("Timed-in at " + timetoday);
-        showBirthday();
-        setTimeout(function(){
-            $('.timein-notif-container').css({'top' : '-55px'});
-        }, 5000);
-    }).always(function(data){
-        console.log(data);
-        $('.loader-notif').hide();
-        $('.loader-notif').css({'top' : '-55px'});
-    });
-});
+            var from_cont = document.createElement("div");                              // <div class = "col-md-6..."> for FROM
+            from_cont.className = "col-md-6 reqleave-lbl";
 
-$('#time-out-button').click(function(){
-    var pass = $('#confirmpw-timeout').val();
-    var isFromForgot = parseInt($(this).data('forgot') || 0);
+            var from_lbl = document.createElement("span").textContent = "From";         // <span> FROM </span> just label
+            from_lbl.className = "reqleave-p";
 
-    //check if password is empty
-    if(pass == ''){
-        $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-        return;
-    }
+            var from_input = document.createElement("input");                           // <input> start date
+            from_input.setAttribute("name", "start-date" + unique_id);
+            from_input.setAttribute("placeholder", "Start Date");
+            from_input.setAttribute("id", "start_date" + unique_id);
+            from_input.setAttribute("readonly", "true");
+            from_input.setAttribute("required", "true");
+            from_input.className = "start-date datepicker";
 
-    $('.loader-notif').show();
-    $('.loader-notif').css({'top' : '0px'});
-    $('#time-out-button').hide();
-    $('.timeout-cancel').hide();
-    $.post("{{ path('time_out') }}" + pass, function(data){
-        toggleTimeWidget('hide');
-            //validate password
-        if(data == true) {
-            $('#time-out-button').show();
-            $('.timeout-cancel').show();
-            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
-            $('#errormessage').show();
-            return;
+            var to_cont = document.createElement("div");                                // to container
+            to_cont.className = "col-md-6 reqleave-lbl";
+
+            var to_lbl = document.createElement("span").textContent = "To";             // To label (span class)
+            to_lbl.className = "reqleave-p";
+
+            var to_input = document.createElement("input");                             // <input> end date
+            to_input.setAttribute("name", "end-date" + unique_id);
+            to_input.setAttribute("placeholder", "End Date");
+            to_input.setAttribute("id", "end_date" + unique_id);
+            to_input.setAttribute("readonly", "true");
+            to_input.setAttribute("required", "true");
+            to_input.className = "end-date datepicker";
+
+            var reason_cont = document.createElement("div");                            // <div class = "col-md-12"> for REASON
+            reason_cont.className = "col-md-12";
+
+            var reason = document.createElement("textarea");                            // <textarea> -> REASON
+            reason.className = "materialize-textarea";
+            reason.setAttribute("id", "reason-leave-sbt" + unique_id);
+            reason.setAttribute("placeholder", "Reason...");
+            reason.setAttribute("required", "true");
+
+            form_container.append(container);
+            form_container.append(reason_cont);
+            reason_cont.append(reason);
+            container.append(from_cont);
+            from_cont.append(from_lbl);
+            from_cont.append(from_input);
+            container.append(to_cont);
+            to_cont.append(to_lbl);
+            to_cont.append(to_input);
+            $(".form-container").append(form_container);
+            pickDay(unique_id);
         }
 
-        //time out success
-        $('.timeout-container').css({'display' : 'none'});
-        $('.timeout').css({'display' : 'none'});
-        $('.timeout-notif-container').css({'top':'0px'});
-        //                            $('.timed-in').css({'display' : 'none'});
-        $('.timed-out').css({'display' : 'block'});
-        $('.btn-timeout').css({'display' : 'none'});
-        $('.timechip').hide();
+        // request leave
+        $('.btn-submitleave').click(function(){
+            // validate first
+            var validate = checkFields();
+            if(validate == true) // true == there are errors
+                return;
+            // else continue
 
-        setTimeout(function(){
-            $('.timeout-notif-container').css({'top' : '-55px'});
-        }, 5000);
+            $('.loader-notif').show();
+            $('.loader-notif').css({'top' : '0px'});
+            $('.btn-submitleave').hide();
 
-        if(isFromForgot) window.location = '/logout';
+            var obj = {};
+            typeleave = 2;
 
-    }).always(function(data){
-        console.log(data);
-        $('.loader-notif').hide();
-        $('.loader-notif').css({'top' : '-55px'});
-    }).fail(function(data){
-        console.log(data);
-        $('.time-in-container').hide();
-        $('.timeout-container').hide();
-        $('.modal-logout-notify-container').show();
-        //$('.modal-session-content').show();
-    });
+            var leavestartdate  = $('#start_date').val();
+            var leaveenddate    = $('#end_date').val();
+            var reasonleave = $('#reason-leave-sbt').val();
 
-});
+            // push to array
+            obj["start_date0"] = leavestartdate;
+            obj["end_date0"] = leaveenddate;
+            obj["reasonleave0"] = reasonleave;
 
-$('.btn-submitmeeting').click(function(){
-    var reqmeetmessage =  $('#meeting').val();
-    var taggedemail = $('.select-emp-tag').val();
-    var reqmeetdate = $('.meet-start-date').val();
-    if(reqmeetdate == '' || reqmeetmessage == '' || taggedemail == null)
-    {
-        if(taggedemail == null){
-            $('.select2-container--default .select2-selection--multiple').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('.select2-container--default .select2-selection--multiple').css({'border-color': 'gray'})
-            }, 1000);
+            for (var i = 1; i <= unique_id; i++) {
+                obj["start_date" + i] = $("#start_date" + i).val();
+                obj["end_date" + i] = $("#end_date" + i).val();
+                obj["reasonleave" + i] = $("#reason-leave-sbt" + i).val();
+            }
+
+            obj["unique_id"] = unique_id;
+
+            $.post(
+                "{{path('request_leave')}}",
+                {
+                    typeleave: typeleave,
+                    obj: JSON.stringify(obj)
+                },
+                function(data){
+                    console.log(data);
+                    removeClonedFields();
+                    $('.required-field').hide();
+                    // $('.sent').show();
+                    $('#daily_agenda').closeModal();
+                    $('.request-leave-notif').css({'top':'0px'});
+                    setTimeout(function(){
+                        $('.request-leave-notif').css({'top' : '-55px'});
+                    }, 5000);
+                }, "json"
+            ).always(function(data){
+                $('.loader-notif').hide();
+                $('.loader-notif').css({'top' : '-55px'});
+                $('.btn-submitleave').show();
+            });
+        });
+
+        function checkFields() {      // Checking if there are any inputs on the required fields
+            var hasRequired = 0;
+            var start_date, end_date, reason;
+
+            for(var i = 0; i <= unique_id; i++) {
+                if (i != 0){
+                    start_date = $('#start_date' + i);
+                    end_date = $('#end_date' + i);
+                    reason = $('#reason-leave-sbt' +  i);
+                } else {
+                    start_date = $('#start_date');
+                    end_date = $('#end_date');
+                    reason = $('#reason-leave-sbt');
+                }
+
+                if(start_date.val() == '') {
+                    start_date.css({'border-color': 'red'});
+                    setTimeout(function(){
+                        start_date.css({'border-color': 'gray'})
+                    }, 1000);
+
+                    hasRequired++;
+                }
+
+                if(end_date.val() == '') {
+                    end_date.css({'border-color': 'red'});
+                    setTimeout(function(){
+                        end_date.css({'border-color': 'gray'})
+                    }, 1000);
+
+                    hasRequired++;
+                }
+
+                if(reason.val() == '') {
+                    reason.css({'border-color': 'red'});
+                    setTimeout(function(){
+                        reason.css({'border-color': 'gray'})
+                    }, 1000);
+
+                    hasRequired++;
+                }
+            }
+
+            if(hasRequired > 0)
+                return true;
+            else return false;
         }
-        if(reqmeetmessage == ''){
-            $('#meeting').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('#meeting').css({'border-color': 'gray'})
-            }, 1000);
-            $('.required-field').show();
+
+        function removeClonedFields() {         // basically removes all the cloned fields
+            $('#start_date').val('');
+            $('#end_date').val('');
+            $('#reason-leave-sbt').val('');
+            $('.newForm').remove();
         }
-        if(reqmeetdate == ''){
-            $('.meet-start-date').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('.meet-start-date').css({'border-color': 'gray'})
-            }, 1000);
-            $('.required-field').show();
-        }
-        return;
-    }
+    </script>
 
-    $('.loader-notif').show();
-    $('.loader-notif').css({'top' : '0px'});
-    $('.btn-submitmeeting').hide();
-    $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail, reqmeetdate:reqmeetdate}, function(data){
-       console.log(data);
-        $('#meeting').val('');
-        $('.required-field').hide();
-        $('#daily_agenda').closeModal();
-        $('.request-meeting-notif').css({'top':'0px'});
-        setTimeout(function(){
-            $('.request-meeting-notif').css({'top' : '-55px'});
-        }, 5000);
-    }).always(function(data){
-        console.log(data);
-        $('.loader-notif').hide();
-        $('.loader-notif').css({'top' : '-55px'});
-        $('.btn-submitmeeting').show();
-    });
-});
-    var typeleave = '';
-$('.btn-submitleave').click(function(){
-
-    var leavestartdate  = $('.start-date').val();
-    var leaveenddate    = $('.end-date').val();
-    var reasonleave     = $('#reason-leave-sbt').val();
-    typeleave = 2;
-    if(leavestartdate == '' || leaveenddate == '' || reasonleave == ''){
-        if(leavestartdate == ''){
-            $('.start-date').css({'border-color': 'red'});
-            setTimeout(function(){
-                $('.start-date').css({'border-color': 'gray'})
-            }, 1000);
-        }
-        if(leaveenddate == ''){
-            $('.end-date').css({'border-color': 'red'});
-            setTimeout(function(){
-                $('.end-date').css({'border-color': 'gray'})
-            }, 1000);
-        }
-        if(reasonleave == ''){
-            $('#reason-leave-sbt').css({'border-color': 'red'});
-            setTimeout(function(){
-                $('#reason-leave-sbt').css({'border-color': 'gray'})
-            }, 1000);
-        }
-        $('.sent').hide();
-        $('.required-field').show();
-        return;
-    }
-
-    $('.loader-notif').show();
-    $('.loader-notif').css({'top' : '0px'});
-    $('.btn-submitleave').hide();
-    $.post("{{ path('request_leave') }}", {leavestartdate:leavestartdate, leaveenddate:leaveenddate,
-        reasonleave:reasonleave, typeleave:typeleave}, function(data){
-        console.log(data);
-        $('.start-date').val('');
-        $('.end-date').val('');
-        $('#reason-leave-sbt').val('');
-        $('#leavetype').val('');
-
-        $('.required-field').hide();
-//        $('.sent').show();
-        $('#daily_agenda').closeModal();
-        $('.request-leave-notif').css({'top':'0px'});
-        setTimeout(function(){
-            $('.request-leave-notif').css({'top' : '-55px'});
-        }, 5000);
-    }).always(function(data){
-        console.log(data);
-        $('.loader-notif').hide();
-        $('.loader-notif').css({'top' : '-55px'});
-        $('.btn-submitleave').show();
-    });
-});
-
-$('.btn-ip-cancel').click(function(e){
-    e.preventDefault();
-    $('.diff-ip-container').hide();
-});
-$('.btn-ip-yes').click(function(e){
-    e.preventDefault();
-    $('.diff-ip-reason').show();
-});
-
-$('.modal-trigger').leanModal();
-
-function showBirthday() {
-    var bdaynames = [];
-    {% for names in userbdaynames %}
-        bdaynames.push("{{ names }}");
-    {% endfor %}
-    console.log(bdaynames);
-    if(bdaynames.length) {
-        $('.modal-birthday-notify-container').show();
-    }
-    $('.btn-bdayclose').click( function() {
-    $('.modal-birthday-notify-container').hide();
-    });
-}
-
-</script>
-</body>
-</html>
+{% endblock %}

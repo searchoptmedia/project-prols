@@ -25,7 +25,7 @@ class  InitController extends Controller
         if($serverAdd == "127.0.0.1")
             $env = 'local';
         else $env = 'live';
-
+        
         return $env;
     }
 
@@ -51,7 +51,7 @@ class  InitController extends Controller
      * @param string
      * @return int
      */
-    static function checkIP($userip)
+    static public function checkIP($userip)
     {
         $ip_add = ListIpPeer::getValidIP($userip);
 
