@@ -1,4 +1,4 @@
-{% extends 'AdminBundle:Default:index.html.twig' %}
+{% extends 'AdminBundle::base.html.twig' %}
 {% block title %}<title>Propelrr Log-in System| Manage</title>{% endblock %}
 {% block body %}
     {{ notif.add_notif }}
@@ -93,7 +93,6 @@
                                                     </button></td>
                                                 {% endif %}
                                                 </tr>
-
                                     {% endif %}
                                 {% endfor %}
                                 </tbody>
@@ -234,7 +233,7 @@
 
                 </div>
             </form>
-</div>
+        </div>
             {% set capabilities = app.user.capabilities|split(',') %}
             {% if 1 in capabilities %}
         <div id="modal-pos" class="modal modal-fixed-footer">
@@ -303,6 +302,8 @@
                     </form>
                 </div>
             </div>
+            </div>
+        </div>
     </section>
 </section>
 {% endblock %}

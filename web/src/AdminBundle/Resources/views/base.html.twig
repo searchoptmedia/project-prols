@@ -1,7 +1,7 @@
 {% import 'AdminBundle:Default:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
 {% set userbdaynames = userbdaynames|default([]) %}
-<!doctype html>
+<!DOCTYPE HTML>
 <html class="no-js" lang="">
 <head>
     <meta charset="utf-8">
@@ -15,167 +15,69 @@
     <link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
     <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
     <link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
+    <link rel="stylesheet" href="{{ asset('css/event-style.css') }}" media="all"/>
     <style>
         label.black {
             color: #555 !important;
         }
+        .select-emp-tag{
+            width: 500px;
+        }
     </style>
+    <style>
+        #btn-reqleave {
+            height: auto;
+            width: auto;
+            border: none;
+            border-radius: 1px;
+
+        }
+    </style>
+    {% block css %}{% endblock %}
 </head>
-<style>
-    #btn-reqleave {
-        height: auto;
-        width: auto;
-        border: none;
-        border-radius: 1px;
 
-    }
-</style>
 <body>
-{{ notif.notif_loader() }}
-{{ notif.request_leave_notif }}
-{{ notif.request_meeting_notif }}
-{{ notif.time_in_time_out_notif }}
-<section id="main-container">
-    <section id="main-wrapper">
-        <div class="container-fluid">
-            <div class="row">
+    {{ notif.notif_loader() }}
+    {{ notif.request_leave_notif }}
+    {{ notif.request_meeting_notif }}
+    {{ notif.time_in_time_out_notif }}
 
-                <div class="nav-right z-depth-1">
-                    <div class="company-logo"><img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%";></div>
-                    <div class="rightpanel">
-                        <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
-                            <div class="widget-subtitle plugin-date">Loading...</div>
+    <section id="main-container">
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="nav-right z-depth-1">
+                        <div class="company-logo">
+                            <img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%";>
+                            <h4 style="font-size: 23px;">{{ app.user.username|upper }}</h4>
                         </div>
-                        <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
-                        <br>
-                        <div class="chip timechip" style="display: none">
-                            Timed-in at {{ currenttimein }}
+                        <div class="rightpanel">
+                            <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+                                <div class="widget-subtitle plugin-date">Loading...</div>
+                            </div>
+                            <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
+                            <br>
+                            <div class="chip timechip" style="display: none">
+                                Timed-in at {{ currenttimein }}
+                            </div>
                         </div>
+                        <div class="clr"></div>
+                        {% block nav %}
+                            {% if user.role == 'ADMIN' %}
+                                {{ sidenav.admin_navbar(requestcount) }}
+                            {% else %}
+                                {{ sidenav.emp_navbar() }}
+                            {% endif %}
+                        {% endblock %}
                     </div>
-                    <div class="clr"></div>
-                    {% block nav %}
-                        {% if role == 'ADMIN' %}
-                            {{ sidenav.admin_navbar(requestcount) }}
-                        {% else %}
-                            {{ sidenav.emp_navbar() }}
-                        {% endif %}
-                    {% endblock %}
+
+                    {% block body %} {% endblock %}
                 </div>
-
-                {% block body %}
-                <div class="page-content">
-                    <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                        <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                        <h3 class="center-align"><div class="widget-subtitle plugin-date">Loading...</div></h3>
-                    </div>
-                    <div class="col-md-12 content">
-                        <!-- <div class="row"> -->
-                        <div class="col-md-12">
-                            <div id="alert_holder"></div>
-                            <div class="calendar">
-                                <div id="calendar"></div>
-                            </div>
-                        </div>
-                        <!-- </div> -->
-                    </div>
-                </div>
-
-                <!-----------------------DAILY AGENDA MODAL -------------------------->
-                <div id="daily_agenda" class="modal modal-fixed-footer">
-
-                    <div class="modal-content">
-                        <h4 class="agenda-date">Daily Agenda</h4>
-                        <div class="agenda-list">
-                            <ul class="collection agenda-list">
-
-                                <li class="collection-item avatar" id="li-append"><i class="material-icons circle">perm_identity</i><span id="head-title"></span> <p id="daterange"></p></li>
-
-                            </ul>
-                        </div>
-
-                        <div class="agenda-buttons">
-                            <a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
-                            <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
-                        </div>
-
-                        <!------------REQUEST MEETING FORM------------->
-                        <div class="form-reqmeeting">
-                            <div class="reqmeeting-emp-tag" id="">
-                                <br/><br/>
-                                <br/><br/>
-                                <select class="select-emp-tag" multiple="multiple">
-                                    {% for acc in allacc %}
-                                        <option name="select2[]" value="{{ acc.email }}">{{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
-                                    {% endfor %}
-
-                                </select>
-
-                            </div>
-                            <div class="input-field">
-                                <input id="meeting" placeholder="Type your message here...">
-                            </div>
-                            <a class="waves-effect waves-light btn amber btn-submitmeeting">Submit</a>
-                            <div class="chip required-field">
-                                required field!
-                            </div>
-                            <div class="chip sent">
-                                sent!
-                            </div>
-                        </div>
-
-                        <!------------REQUEST LEAVE FORM------------->
-                        <div class="form-reqleave">
-                            <div class="input-field" style="padding-top: 30px;">
-
-                                <div class="row">
-                                    <div class="multi_reqleaveform">
-                                        <div class="req_inner">
-                                            <div class="col-md-6 reqleave-lbl">
-                                                <p class="reqleave-p">From: </p>
-                                                <input name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">
-                                            </div>
-                                            <div class="col-md-6 reqleave-lbl">
-                                                <p class="reqleave-p">To: </p>
-                                                <input name="end-date" readonly placeholder="End Date" class="end-date datepicker" id="end_date">
-
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason...."></textarea>
-                                        <a class="btn-floating btn-large waves-effect waves-light red" id="add-request-form"><i class="material-icons">add</i></a>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="chip required-field">
-                                required field!
-                            </div>
-                            <div class="chip sent">
-                                sent!
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-
-                        <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
-                        <a class="waves-effect waves-light btn amber btn-submitleave" style="margin-right:5px;">Submit</a>
-
-                    </div>
-                </div>
-                <!-----------------------END OF MODAL -------------------------->
             </div>
-        </div>
-        {% endblock %}
-        {{  include ('AdminBundle:Default:modal.html.twig') }}
+            {{  include ('AdminBundle:Default:modal.html.twig') }}
+        </section>
     </section>
-</section>
 
-
-{% block scripts %}
     <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
     <script src="{{asset('prols2/js/html5.js')}}"></script>
@@ -188,141 +90,138 @@
     <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
     <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
-
-    //
     <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('prols2/js/computeDuration.js') }}"></script>
-{% endblock %}
+    {% block scripts %}{% endblock %}
 
+    <script type="text/javascript">
+        //------------------------LEFT SIDEBAR JS-----------------------------------
+        {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
+        {% set indexPath =  path('admin_homepage') %}
+        {% set profilePath = path('profile_page') %}
+        {% set managePath = path('manage_employee') %}
+        {% set manageEventPath = path('manage_events') %}
+        {% set timeLogPath = path('time_logs_page') %}
+        {% set viewRequestPath = path('view_request') %}
 
+        {% if currentPath == indexPath %}
+        $('.index-page').addClass("active");
+        {% elseif currentPath == profilePath %}
+        $('.profile-page').addClass("active");
+        {% elseif currentPath == managePath or currentPath == timeLogPath %}
+        $('.manage-page').addClass("active");
+        {% elseif currentPath == manageEventPath %}
+        $('.manage-events-page').addClass("active");
+        {% elseif currentPath == viewRequestPath %}
+        $('.view-request-page').addClass("active");
+        {% endif %}
+        //-------------------------------------------------------------------------
 
-<script type="text/javascript">
+        var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
+        var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
 
-    //------------------------LEFT SIDEBAR JS-----------------------------------
-    {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
-    {% set indexPath =  path('admin_homepage') %}
-    {% set profilePath = path('profile_page') %}
-    {% set managePath = path('manage_employee') %}
-    {% set timeLogPath = path('time_logs_page') %}
-    {% set viewRequestPath = path('view_request') %}
+        function timeOutInit() {
+            //--------------12 AM ALERT MODAL-------------------------
+            var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
+            var displayTime = 30;
+            var display     = document.querySelector('#time');
 
-    {% if currentPath == indexPath %}
-    $('.index-page').addClass("active");
-    {% elseif currentPath == profilePath %}
-    $('.profile-page').addClass("active");
-    {% elseif currentPath == managePath or currentPath == timeLogPath %}
-    $('.manage-page').addClass("active");
-    {% elseif currentPath == viewRequestPath %}
-    $('.view-request-page').addClass("active");
-    {% endif %}
-    //-------------------------------------------------------------------------
+            function breakTime() {
+                /* Set Alert Hour in 24hr Notation */
+                var alertHour = 0;
+                /* Set Alert Minute */
+                var alertMinute = 0;
+                /* Set Alert Minute */
+                var alertSec = 0;
+                /* Set time for alert timeout */
+                var theDate = new Date();
 
-    var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
-    var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
-
-    function timeOutInit() {
-        //--------------12 AM ALERT MODAL-------------------------
-        var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
-        var displayTime = 30;
-        var display     = document.querySelector('#time');
-
-        function breakTime() {
-            /* Set Alert Hour in 24hr Notation */
-            var alertHour = 0;
-            /* Set Alert Minute */
-            var alertMinute = 0;
-            /* Set Alert Minute */
-            var alertSec = 0;
-            /* Set time for alert timeout */
-            var theDate = new Date();
-
-            //if 12am
-            if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
+                //if 12am
+                if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
                     && Math.abs(theDate.getSeconds()) == alertSec)) {
-                this.focus();
-                clearTimeout(alertInt);
-                alert('Good Morning!');
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-                //if 1am onwards
-            } else if(dayNow == 'false') {
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-                //else run loop
-            } else {
-                alertInt = setTimeout(breakTime, 50);
-            }
-        }
-
-        function checkTimeout() {
-            if(isTimeout == 'false')
-            {
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
-            }
-            console.log('isTimeout? '+isTimeout);
-        }
-
-        function checkIf_AutoTimeOut() {
-            var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
-            var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
-
-            $d = new Date(timeOutDate);
-            var options = {
-                year: "numeric", month: "short",
-                day: "numeric", hour: "2-digit", minute: "2-digit"
-            };
-            $d = $d.toLocaleTimeString("en-us", options);
-            if(isAutoTimeOut == 'true')
-            {
-                $('.auto-timeout-notice').show();
-                $('.auto-timeout-time-message').html($d);
-                $('.time-in-container').hide();
-                toggleTimeWidget('hide');
-            }
-        }
-
-        $('.forgot-timeout-btn').click(function () {
-            $('.forgot-timeout-modal').hide();
-            timer = 0;
-            checker = true;
-            isTimeout = '{{ app.session.get('timeout', 'true') }}'
-        });
-
-        //----------------BUTTON-TIMER--------------------
-        var checker = false;
-        var timer, seconds, timerInt = null;
-
-        function startTimer(duration, display) {
-            timer = duration, seconds;
-            timerInt = setInterval(function () {
-                //minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                //minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
-
-                if (--timer < 0) timer = 0;
-
-                if (seconds == 0 && checker == false) {
-                    checker = true;
-
-                    display.textContent = '';
-                    $('.forgot-timeout-modal').hide();
-                    manage_time_newday('timeout');
+                    this.focus();
+                    clearTimeout(alertInt);
+                    alert('Good Morning!');
+                    $('.forgot-timeout-modal').show();
+                    startTimer(displayTime, display);
+                    //if 1am onwards
+                } else if(dayNow == 'false') {
+                    $('.forgot-timeout-modal').show();
+                    startTimer(displayTime, display);
+                    //else run loop
+                } else {
+                    alertInt = setTimeout(breakTime, 50);
                 }
-                console.log('timer')
-            }, 1000);
-        }
-
-        function manage_time_newday(type) {
-            var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
-            if(type == 'working') {
-                url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
             }
 
-            $.getJSON( url,
+            function checkTimeout() {
+                if(isTimeout == 'false')
+                {
+                    $('.forgot-timeout-modal').show();
+                    startTimer(displayTime, display);
+                }
+                console.log('isTimeout? '+isTimeout);
+            }
+
+            function checkIf_AutoTimeOut() {
+                var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
+                var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
+
+                $d = new Date(timeOutDate);
+                var options = {
+                    year: "numeric", month: "short",
+                    day: "numeric", hour: "2-digit", minute: "2-digit"
+                };
+                $d = $d.toLocaleTimeString("en-us", options);
+                if(isAutoTimeOut == 'true')
+                {
+                    $('.auto-timeout-notice').show();
+                    $('.auto-timeout-time-message').html($d);
+                    $('.time-in-container').hide();
+                    toggleTimeWidget('hide');
+                }
+            }
+
+            $('.forgot-timeout-btn').click(function () {
+                $('.forgot-timeout-modal').hide();
+                timer = 0;
+                checker = true;
+                isTimeout = '{{ app.session.get('timeout', 'true') }}'
+            });
+
+            //----------------BUTTON-TIMER--------------------
+            var checker = false;
+            var timer, seconds, timerInt = null;
+
+            function startTimer(duration, display) {
+                timer = duration, seconds;
+                timerInt = setInterval(function () {
+                    //minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    //minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
+
+                    if (--timer < 0) timer = 0;
+
+                    if (seconds == 0 && checker == false) {
+                        checker = true;
+
+                        display.textContent = '';
+                        $('.forgot-timeout-modal').hide();
+                        manage_time_newday('timeout');
+                    }
+                    console.log('timer')
+                }, 1000);
+            }
+
+            function manage_time_newday(type) {
+                var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
+                if(type == 'working') {
+                    url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
+                }
+
+                $.getJSON( url,
                     function( data ) {
                         if(type == 'working') toggleTimeWidget('show');
                         else  toggleTimeWidget('hide');
@@ -330,364 +229,195 @@
                     .fail( function() {
                         $('.modal-fail-ajax-container').show();
                     });
-        }
+            }
 
-        $('.btn-keep-working').bind('click', function() {
-            manage_time_newday('working');
-        });
-
-        $('.btn-timeout-newday').bind('click', function() {
-            clearInterval(timerInt);
-
-            $('#time-out-button').attr('data-forgot', '1');
-
-            $('.timeout-cancel').bind('click', function() {
-                clearInterval(timerInt);
-                display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
-                $('.forgot-timeout-modal').show();
-                startTimer(displayTime, display);
+            $('.btn-keep-working').bind('click', function() {
+                manage_time_newday('working');
             });
+
+            $('.btn-timeout-newday').bind('click', function() {
+                clearInterval(timerInt);
+
+                $('#time-out-button').attr('data-forgot', '1');
+
+                $('.timeout-cancel').bind('click', function() {
+                    clearInterval(timerInt);
+                    display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
+                    $('.forgot-timeout-modal').show();
+                    startTimer(displayTime, display);
+                });
+            });
+            $('.btn-forgot-timeout-show-timein').bind('click', function() {
+                $('.auto-timeout-notice').hide();
+                toggleTimeInModal('show');
+            });
+            //checkIf_AutoTimeOut();
+        }
+        window.onload = function () {
+            timeOutInit();
+        };
+    </script>
+
+    <script>
+        function toggleTimeWidget(act) {
+            if(act == 'show') {
+                $('.timed-in').show();
+                $('.btn-timeout').show();
+                $('.timechip').show();
+            } else {
+                $('.timed-in').hide();
+                $('.btn-timeout').hide();
+                $('.timechip').hide();
+            }
+        }
+
+        function toggleTimeInModal(act) {
+            if(act == 'show') {
+                $('.time-in-container').show();
+                $('.btn-timeout').hide();
+            }
+        }
+
+        initWidget = function() {
+            if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
+                toggleTimeWidget('show');
+
+            } else if(dayNow == '' && isTimeout == '') {
+
+                toggleTimeInModal('show');
+            }
+
+            if('{{ isTimeoutAlready }}' == 'true'){
+                toggleTimeWidget('hide');
+            }
+        }
+        initWidget();
+
+
+        $('.select-emp-tag').select2({
+            placeholder: 'Type name here',
         });
-        $('.btn-forgot-timeout-show-timein').bind('click', function() {
-            $('.auto-timeout-notice').hide();
-            toggleTimeInModal('show');
-        });
-        checkIf_AutoTimeOut();
-    }
-    window.onload = function () {
-        timeOutInit();
-    };
-</script>
+        $('#leavetype').material_select();
+        $('.caret').hide();
+        {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
 
-<script>
-    function toggleTimeWidget(act) {
-        if(act == 'show') {
-            $('.timed-in').show();
-            $('.btn-timeout').show();
-            $('.timechip').show();
-        } else {
-            $('.timed-in').hide();
-            $('.btn-timeout').hide();
-            $('.timechip').hide();
-        }
-    }
+        {#}).always(function(data) {#}
+        {#console.log(data)#}
+        {#var res = parseInt(data);#}
+        {#if(res == 1) {#}
+        {#console.log('ok')#}
+        {#$('.time-in-container').hide();#}
+        {#$('.btn-timeout').show();#}
+        {#$('.timechip').show();#}
+        {#}else{#}
+        {#$('.time-in-container').show();#}
+        {#$('.btn-timeout').hide();#}
+        {#}#}
+        {#});#}
 
-    function toggleTimeInModal(act) {
-        if(act == 'show') {
-            $('.time-in-container').show();
-            $('.btn-timeout').hide();
-        }
-    }
+        var pass = '';
 
-    initWidget = function() {
-        if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
-            toggleTimeWidget('show');
-
-        } else if(dayNow == '' && isTimeout == '') {
-
-            toggleTimeInModal('show');
-        }
-
-        if('{{ isTimeoutAlready }}' == 'true'){
-            toggleTimeWidget('hide');
-        }
-    }
-    initWidget();
-
-
-    $('.select-emp-tag').select2({
-        placeholder: 'Type name here',
-    });
-    $('#leavetype').material_select();
-    $('.caret').hide();
-    {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
-
-    {#}).always(function(data) {#}
-    {#console.log(data)#}
-    {#var res = parseInt(data);#}
-    {#if(res == 1) {#}
-    {#console.log('ok')#}
-    {#$('.time-in-container').hide();#}
-    {#$('.btn-timeout').show();#}
-    {#$('.timechip').show();#}
-    {#}else{#}
-    {#$('.time-in-container').show();#}
-    {#$('.btn-timeout').hide();#}
-    {#}#}
-    {#});#}
-
-    var pass = '';
-
-    $('#time-in-button').click(function(){
-        var message = $('#diffip-input-reason').val(), error = false,
+        $('#time-in-button').click(function(){
+            var message = $('#diffip-input-reason').val(), error = false,
                 user_ip =  $('#time-in-button').data('ip'),
                 is_message = undefined, action = $(this).data('action'), pass;
-        if(user_ip == 0){
-            message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
-            if(message == ''){
-                $('#diffip-input-reason').css({'border-color': '#f44336'});
-                error = true;
+            if(user_ip == 0){
+                message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
+                if(message == ''){
+                    $('#diffip-input-reason').css({'border-color': '#f44336'});
+                    error = true;
+                }
+                is_message = true;
+                if(error){
+                    return false;
+                }
             }
-            is_message = true;
-            if(error){
-                return false;
-            }
-        }
-        $('#time-in-button').hide();
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
-        $('.forgot-timeout-modal').hide();
-        var timetoday = "{{ timetoday }}";
-        $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
-            console.log(data);
-            toggleTimeWidget('show');
-            $('.time-in-container').css({'display' : 'none'});
-            $('.timein-notif-container').css({'top':'0px'});
-            $('.timed-in').css({'display' : 'block'});
-            $('.btn-timeout').show();
-            $('.diff-ip-container').hide();
-            $('.timechip').html("Timed-in at " + timetoday);
-            showBirthday();
-            setTimeout(function(){
-                $('.timein-notif-container').css({'top' : '-55px'});
-            }, 5000);
-        }).always(function(data){
-            console.log(data);
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
+            $('#time-in-button').hide();
+            $('.loader-notif').show();
+            $('.loader-notif').css({'top' : '0px'});
+            $('.forgot-timeout-modal').hide();
+            var timetoday = "{{ timetoday }}";
+            $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
+                console.log(data);
+                toggleTimeWidget('show');
+                $('.time-in-container').css({'display' : 'none'});
+                $('.timein-notif-container').css({'top':'0px'});
+                $('.timed-in').css({'display' : 'block'});
+                $('.btn-timeout').show();
+                $('.diff-ip-container').hide();
+                $('.timechip').html("Timed-in at " + timetoday);
+                showBirthday();
+                setTimeout(function(){
+                    $('.timein-notif-container').css({'top' : '-55px'});
+                }, 5000);
+            }).always(function(data){
+                console.log(data);
+                $('.loader-notif').hide();
+                $('.loader-notif').css({'top' : '-55px'});
+            }).fail( function() {
+                $('.error-notif-container').css({'top':'0px'});
+                setTimeout(function(){
+                    $('.timein-notif-container').css({'top' : '-55px'});
+                }, 5000);
+            });
         });
-    });
 
-    $('#time-out-button').click(function(){
-        var pass = $('#confirmpw-timeout').val();
-        var isFromForgot = parseInt($(this).data('forgot') || 0);
+        $('#time-out-button').click(function(){
+            var pass = $('#confirmpw-timeout').val();
+            var isFromForgot = parseInt($(this).data('forgot') || 0);
 
-        //check if password is empty
-        if(pass == ''){
-            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
-            return;
-        }
-
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
-        $('#time-out-button').hide();
-        $('.timeout-cancel').hide();
-        $.post("{{ path('time_out') }}" + pass, function(data){
-            toggleTimeWidget('hide');
-            //validate password
-            if(data == true) {
-                $('#time-out-button').show();
-                $('.timeout-cancel').show();
-                $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
-                $('#errormessage').show();
+            //check if password is empty
+            if(pass == ''){
+                $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
                 return;
             }
 
-            //time out success
-            $('.timeout-container').css({'display' : 'none'});
-            $('.timeout').css({'display' : 'none'});
-            $('.timeout-notif-container').css({'top':'0px'});
-            //                            $('.timed-in').css({'display' : 'none'});
-            $('.timed-out').css({'display' : 'block'});
-            $('.btn-timeout').css({'display' : 'none'});
-            $('.timechip').hide();
+            $('.loader-notif').show();
+            $('.loader-notif').css({'top' : '0px'});
+            $('#time-out-button').hide();
+            $('.timeout-cancel').hide();
+            $.post("{{ path('time_out') }}" + pass, function(data){
+                toggleTimeWidget('hide');
+                //validate password
+                if(data == true) {
+                    $('#time-out-button').show();
+                    $('.timeout-cancel').show();
+                    $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
+                    $('#errormessage').show();
+                    return;
+                }
 
-            setTimeout(function(){
-                $('.timeout-notif-container').css({'top' : '-55px'});
-            }, 5000);
+                //time out success
+                $('.timeout-container').css({'display' : 'none'});
+                $('.timeout').css({'display' : 'none'});
+                $('.timeout-notif-container').css({'top':'0px'});
+    //                                    $('.timed-in').css({'display' : 'none'});
+                $('.timed-out').css({'display' : 'block'});
+                $('.btn-timeout').css({'display' : 'none'});
+                $('.timechip').hide();
 
-            if(isFromForgot) window.location = '/logout';
-
-        }).always(function(data){
-            console.log(data);
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
-        }).fail(function(data){
-            console.log(data);
-            $('.time-in-container').hide();
-            $('.timeout-container').hide();
-            $('.modal-logout-notify-container').show();
-            //                      $('.modal-session-content').show();
-        });
-
-    });
-    //request meeting function
-    $('.btn-submitmeeting').click(function(){
-        var reqmeetmessage =  $('#meeting').val();
-        var taggedemail = $('.select-emp-tag').select2("val");
-        console.log(taggedemail);
-        if(reqmeetmessage == ''){
-            $('#meeting').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('#meeting').css({'border-color': 'gray'})
-            }, 1000);
-            $('.required-field').show();
-            return;
-        }
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
-        $('.btn-submitmeeting').hide();
-        $.post("{{ path('request_meeting') }}", {reqmeetmessage:reqmeetmessage, taggedemail:taggedemail}, function(data){
-            console.log(data);
-            $('#meeting').val('');
-            $('.required-field').hide();
-            $('#daily_agenda').closeModal();
-            $('.request-meeting-notif').css({'top':'0px'});
-            setTimeout(function(){
-                $('.request-meeting-notif').css({'top' : '-55px'});
-            }, 5000);
-        }).always(function(data){
-            console.log(data);
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
-            $('.btn-submitmeeting').show();
-        });
-    });
-    var typeleave = '';
-
-
-    //leave
-    $('.btn-submitleave').click(function(){
-
-        var leavestartdate  = $('.start-date').val();
-        var leaveenddate    = $('.end-date').val();
-        var reasonleave = $('#reason-leave-sbt').val();
-        typeleave = 2;
-        if(leavestartdate == '' || leaveenddate == '' || reasonleave == ''){
-            if(leavestartdate == ''){
-                $('.start-date').css({'border-color': 'red'});
                 setTimeout(function(){
-                    $('.start-date').css({'border-color': 'gray'})
-                }, 1000);
-            }
-            if(leaveenddate == ''){
-                $('.end-date').css({'border-color': 'red'});
-                setTimeout(function(){
-                    $('.end-date').css({'border-color': 'gray'})
-                }, 1000);
-            }
-            if(reasonleave == ''){
-                $('#reason-leave-sbt').css({'border-color': 'red'});
-                setTimeout(function(){
-                    $('#reason-leave-sbt').css({'border-color': 'gray'})
-                }, 1000);
-            }
-            $('.sent').hide();
-            $('.required-field').show();
-            return;
-        }
+                    $('.timeout-notif-container').css({'top' : '-55px'});
+                }, 5000);
 
-        $('.loader-notif').show();
-        $('.loader-notif').css({'top' : '0px'});
-        $('.btn-submitleave').hide();
-        $.post("{{ path('request_leave') }}", {leavestartdate:leavestartdate, leaveenddate:leaveenddate,
-            reasonleave:reasonleave, typeleave:typeleave}, function(data){
-            console.log(data);
-            $('.start-date').val('');
-            $('.end-date').val('');
-            $('#reason-leave-sbt').val('');
-            $('#leavetype').val('');
+                if(isFromForgot) window.location = '/logout';
 
-            $('.required-field').hide();
-//        $('.sent').show();
-            $('#daily_agenda').closeModal();
-            $('.request-leave-notif').css({'top':'0px'});
-            setTimeout(function(){
-                $('.request-leave-notif').css({'top' : '-55px'});
-            }, 5000);
-        }).always(function(data){
-            console.log(data);
-            $('.loader-notif').hide();
-            $('.loader-notif').css({'top' : '-55px'});
-            $('.btn-submitleave').show();
+            }).always(function(data){
+                console.log(data);
+                $('.loader-notif').hide();
+                $('.loader-notif').css({'top' : '-55px'});
+            }).fail(function(data){
+                console.log(data);
+                $('.time-in-container').hide();
+                $('.timeout-container').hide();
+                $('.modal-logout-notify-container').show();
+                //                      $('.modal-session-content').show();
+            });
+
         });
-    });
+    </script>
 
-    $('.btn-ip-cancel').click(function(e){
-        e.preventDefault();
-        $('.diff-ip-container').hide();
-    });
-    $('.btn-ip-yes').click(function(e){
-        e.preventDefault();
-        $('.diff-ip-reason').show();
-    });
-
-    $('.modal-trigger').leanModal();
-
-    function showBirthday() {
-        var bdaynames = [];
-        {% for names in userbdaynames %}
-        bdaynames.push("{{ names }}");
-        {% endfor %}
-        console.log(bdaynames);
-        if(bdaynames.length) {
-            $('.modal-birthday-notify-container').show();
-        }
-        $('.btn-bdayclose').click( function() {
-            $('.modal-birthday-notify-container').hide();
-        });
-    }
-
-</script>
-<script>
-
-
-
-    $(document).ready(function(){
-        var unique_id = 0;
-        $(document).on("click","#add-request-form",function (e) {
-            var parent = $('.multi_reqleaveform');
-            var req_dates = parent.find('.req_inner').eq(0).clone(true);
-            var length = parent.find('.req_inner').length + 1;
-            req_dates.find('#start_date').attr('id', req_dates.find('#start_date').attr('id') + length);
-            req_dates.find('#end_end').attr('id', req_dates.find('#end_date').attr('id') + length);
-            parent.append(req_dates);
-        });
-
-    });
-
-
-    //        $(".multi_reqleaveform").on('click','#')
-    //            $('body').on('focus',"#start_date", function(){
-    //            $(this).datepicker();
-    //        });
-    //    $('.btn-submitleave').click(function() {
-    //        $(document).ready(function () {
-    //            var start_date = $('#start-date').serialize();
-    //            console.log(start_date);
-    //        });
-    //    });
-
-
-</script>
-
-<script>
-    //    $(document).ready(function(){
-    //
-    //        var today = new Date();
-    //        var dd = today.getDate();
-    //        var mm = today.getMonth()+1; //January is 0!
-    //
-    //        var yyyy = today.getFullYear();
-    //        if(dd<10){
-    //            dd='0'+dd;
-    //        }
-    //        if(mm<10){
-    //            mm='0'+mm;
-    //        }
-    //        var today = dd+'/'+mm+'/'+yyyy;
-    //        console.log(today);
-    //    });
-
-    $(document).ready(function(){
-
-    });
-
-    //get compute Time Duration
-
-</script>
-
-{% block customjs %}{% endblock %}
+    {% block customjs %}{% endblock %}
 
 </body>
 </html>

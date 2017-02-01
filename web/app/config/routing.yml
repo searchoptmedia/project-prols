@@ -39,6 +39,14 @@ manage_employee:
     path: /manage
     defaults: { _controller: AdminBundle:Default:manage }
 
+manage_events:
+    path: /manageevent
+    defaults: { _controller: AdminBundle:EventManager:Manage }
+
+add_event:
+    path: /manageevent/add
+    defaults: { _controller: AdminBundle:EventManager:add }
+
 add_employee:
     path: /addemp
     defaults: { _controller: AdminBundle:Default:addEmployee }
