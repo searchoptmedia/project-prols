@@ -280,6 +280,10 @@
                                     <!-- To view the request, <a href="#">Click Here! &raquo;</a> -->
                                     {{ link_before_message is defined ? link_before_message : 'To view the request, ' }} {{ "<a href='"~(link is defined ? link:'http://login.propelrr.com/requests')~"'>"~(link_text is defined ? link_text : 'Click Here! &raquo;')~"</a>" }}
                                 </p><!-- /Callout Panel -->
+                            <p class="callout">
+                                <!-- To view the request, <a href="#">Click Here! &raquo;</a> -->
+                                {{ link_before_message is defined ? link_before_message : 'To view the request, ' }} {{ "<a href='"~(link is defined ? link:'http://login.propelrr.com/requests')~"'>"~(link_text is defined ? link_text : 'Click Here! &raquo;')~"</a>" }}
+                            </p><!-- /Callout Panel -->
                             {% endif %}
 
                             <!-- social & contact -->
