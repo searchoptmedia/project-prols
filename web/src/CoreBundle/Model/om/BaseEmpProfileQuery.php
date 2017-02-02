@@ -36,9 +36,6 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery orderByListPosPosId($order = Criteria::ASC) Order by the list_pos_id column
  * @method EmpProfileQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method EmpProfileQuery orderByProfileStatus($order = Criteria::ASC) Order by the profile_status column
- * @method EmpProfileQuery orderBySss($order = Criteria::ASC) Order by the sss column
- * @method EmpProfileQuery orderByBir($order = Criteria::ASC) Order by the bir column
- * @method EmpProfileQuery orderByPhilhealth($order = Criteria::ASC) Order by the philhealth column
  *
  * @method EmpProfileQuery groupById() Group by the id column
  * @method EmpProfileQuery groupByEmpAccAccId() Group by the emp_acc_acc_id column
@@ -55,9 +52,6 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery groupByListPosPosId() Group by the list_pos_id column
  * @method EmpProfileQuery groupByStatus() Group by the status column
  * @method EmpProfileQuery groupByProfileStatus() Group by the profile_status column
- * @method EmpProfileQuery groupBySss() Group by the sss column
- * @method EmpProfileQuery groupByBir() Group by the bir column
- * @method EmpProfileQuery groupByPhilhealth() Group by the philhealth column
  *
  * @method EmpProfileQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpProfileQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -96,9 +90,6 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfile findOneByListPosPosId(int $list_pos_id) Return the first EmpProfile filtered by the list_pos_id column
  * @method EmpProfile findOneByStatus(string $status) Return the first EmpProfile filtered by the status column
  * @method EmpProfile findOneByProfileStatus(int $profile_status) Return the first EmpProfile filtered by the profile_status column
- * @method EmpProfile findOneBySss(string $sss) Return the first EmpProfile filtered by the sss column
- * @method EmpProfile findOneByBir(string $bir) Return the first EmpProfile filtered by the bir column
- * @method EmpProfile findOneByPhilhealth(string $philhealth) Return the first EmpProfile filtered by the philhealth column
  *
  * @method array findById(int $id) Return EmpProfile objects filtered by the id column
  * @method array findByEmpAccAccId(int $emp_acc_acc_id) Return EmpProfile objects filtered by the emp_acc_acc_id column
@@ -115,9 +106,6 @@ use CoreBundle\Model\ListPos;
  * @method array findByListPosPosId(int $list_pos_id) Return EmpProfile objects filtered by the list_pos_id column
  * @method array findByStatus(string $status) Return EmpProfile objects filtered by the status column
  * @method array findByProfileStatus(int $profile_status) Return EmpProfile objects filtered by the profile_status column
- * @method array findBySss(string $sss) Return EmpProfile objects filtered by the sss column
- * @method array findByBir(string $bir) Return EmpProfile objects filtered by the bir column
- * @method array findByPhilhealth(string $philhealth) Return EmpProfile objects filtered by the philhealth column
  */
 abstract class BaseEmpProfileQuery extends ModelCriteria
 {
@@ -223,7 +211,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status`, `profile_status`, `sss`, `bir`, `philhealth` FROM `emp_profile` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status`, `profile_status` FROM `emp_profile` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -844,93 +832,6 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpProfilePeer::PROFILE_STATUS, $profileStatus, $comparison);
-    }
-
-    /**
-     * Filter the query on the sss column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterBySss('fooValue');   // WHERE sss = 'fooValue'
-     * $query->filterBySss('%fooValue%'); // WHERE sss LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $sss The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return EmpProfileQuery The current query, for fluid interface
-     */
-    public function filterBySss($sss = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($sss)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $sss)) {
-                $sss = str_replace('*', '%', $sss);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(EmpProfilePeer::SSS, $sss, $comparison);
-    }
-
-    /**
-     * Filter the query on the bir column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByBir('fooValue');   // WHERE bir = 'fooValue'
-     * $query->filterByBir('%fooValue%'); // WHERE bir LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $bir The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return EmpProfileQuery The current query, for fluid interface
-     */
-    public function filterByBir($bir = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($bir)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $bir)) {
-                $bir = str_replace('*', '%', $bir);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(EmpProfilePeer::BIR, $bir, $comparison);
-    }
-
-    /**
-     * Filter the query on the philhealth column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByPhilhealth('fooValue');   // WHERE philhealth = 'fooValue'
-     * $query->filterByPhilhealth('%fooValue%'); // WHERE philhealth LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $philhealth The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return EmpProfileQuery The current query, for fluid interface
-     */
-    public function filterByPhilhealth($philhealth = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($philhealth)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $philhealth)) {
-                $philhealth = str_replace('*', '%', $philhealth);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(EmpProfilePeer::PHILHEALTH, $philhealth, $comparison);
     }
 
     /**

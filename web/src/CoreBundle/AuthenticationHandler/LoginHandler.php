@@ -23,7 +23,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 {
 	protected $router;
     protected $security;
-    
+
     public function __construct(Router $router, SecurityContext $security)
     {
         $this->router = $router;
@@ -31,9 +31,9 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token){
-
+        
     	$response = new RedirectResponse($this->router->generate('error403'));
-
+//        print_r($token); exit;
         $session    = new Session();
 
         $user       = $token->getUser();
@@ -52,10 +52,13 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
             }
         }
 
-        if ($token->getUser() instanceof EmpAcc){
-            if($empStatus == 0){
+        if ($token->getUser() instanceof EmpAcc)
+        {
+            if($empStatus == 0)
+            {
                 //get date today
-                if(!empty($timedata)){
+                if(!empty($timedata))
+                {
                     $date       = date('Y/m/d H:i:s');
                     $timein     = $timedata->getTimeIn();
                     $dateTimeIn = $timein->format('Y/m/d H:i:s');
@@ -67,9 +70,11 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                     $hours = $interval->format('%h') + ($interval->format('%d') * 24);
 
                     //check if not time out
-                    if(empty($timedata->getTimeOut())) {
+                    if(empty($timedata->getTimeOut()))
+                    {
                         //if not yet timeout and currently within max hours(16)
-                        if($hours <= 16) {
+                        if($hours <= 16)
+                        {
                             //check if another day
                             $session->set('timeout', 'false');
 
@@ -77,12 +82,14 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                             else $session->set('isSameDay', 'true');
                         }
                         //if more than 16 hours not timeout
-                        else  {
+                        else
+                        {
                             //auto-time out the employee by 12am the of last time in +1day at 12am
                             $timedout = $timein->modify('+1 day')->format('Y/m/d 00:00:00');
                             $timedata->setTimeOut($timedout);
 
-                            if ($timedata->save()) {
+                            if ($timedata->save())
+                            {
                                 $timeOutQry = array('timeout_qry' => 'true', 'timeout_date' => $timedout);
                                 $session->set('timeout', 'true');
                                 $session->set('isSameDay', '');
@@ -94,21 +101,21 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                 $refererUrl = $this->router->generate('admin_homepage', !empty($timeOutQry) ? $timeOutQry : array());
                 $response = new RedirectResponse($refererUrl);
             }else{
-                $response = array("Account Inactive");
+                $response = array("Invalid Account");
                 echo json_encode($response);
                 exit;
-            }  
+            }
         }
         return $response;
     }
     	// if (isset($token)) {
     	// 	if (($request->request->get('_username') === 'superadmin' && $request->request->get('_password') === 'sominc123')) {
     	// 		$refererUrl = $request->getSession()->get('_security.secured_area.target_path');
-                
+
      //            if ($refererUrl != null) {
      //                $refererUrl = $this->router->generate('admin_homepage');
      //            }
-                
+
     	// 	} else {
      //            echo $request->request->get('_username');
 
@@ -119,9 +126,9 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 
      //                // $level = $user->getRole();
      //                // if(strcasecmp($level, 'admin') == 0){
-     //                    $refererUrl = $this->router->generate('admin_homepage');    
+     //                    $refererUrl = $this->router->generate('admin_homepage');
      //                // }else if (strcasecmp($level, 'employee') == 0){
-     //                //     $refererUrl = $this->router->generate('main_homepage');                            
+     //                //     $refererUrl = $this->router->generate('main_homepage');
      //                // }
      //        	}
      //        }

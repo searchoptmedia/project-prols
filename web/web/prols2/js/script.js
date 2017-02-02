@@ -24,8 +24,7 @@ $(document).ready(function(){
 
     $('.btn-confirm-timeout').click(function(e){
         e.preventDefault();
-
-
+        
         $('#mb-timeout').removeClass('open');
         $('.btn-time').removeClass('time-out').find('.xn-text').html('Time In');
     });

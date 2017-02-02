@@ -77,3 +77,7 @@ admin_employee_list_report:
 admin_edit_employee_profile:
     path: /admin/edit/empprofile
     defaults: { _controller:AdminBundle:Default:adminEditProfile }
+
+manage_events:
+    path: /manageevent
+    defaults: { _controller: AdminBundle:EventManager:Manage }

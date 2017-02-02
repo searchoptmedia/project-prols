@@ -26,6 +26,8 @@ use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimeQuery;
 use CoreBundle\Model\EmpTimeReject;
 use CoreBundle\Model\EmpTimeRejectQuery;
+use CoreBundle\Model\RequestMeetingTags;
+use CoreBundle\Model\RequestMeetingTagsQuery;
 
 abstract class BaseEmpAcc extends BaseObject implements Persistent
 {
@@ -103,6 +105,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $key;
 
     /**
+     * The value for the capabilities field.
+     * @var        string
+     */
+    protected $capabilities;
+
+    /**
      * @var        PropelObjectCollection|EmpRequest[] Collection to store aggregation of EmpRequest objects.
      */
     protected $collEmpRequestsRelatedByEmpAccId;
@@ -113,6 +121,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      */
     protected $collEmpRequestsRelatedByAdminId;
     protected $collEmpRequestsRelatedByAdminIdPartial;
+
+    /**
+     * @var        PropelObjectCollection|RequestMeetingTags[] Collection to store aggregation of RequestMeetingTags objects.
+     */
+    protected $collRequestMeetingTagss;
+    protected $collRequestMeetingTagssPartial;
 
     /**
      * @var        PropelObjectCollection|EmpProfile[] Collection to store aggregation of EmpProfile objects.
@@ -163,6 +177,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $empRequestsRelatedByAdminIdScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $requestMeetingTagssScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -308,6 +328,17 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     {
 
         return $this->key;
+    }
+
+    /**
+     * Get the [capabilities] column value.
+     * 
+     * @return string
+     */
+    public function getCapabilities()
+    {
+
+        return $this->capabilities;
     }
 
     /**
@@ -502,6 +533,27 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     } // setKey()
 
     /**
+     * Set the value of [capabilities] column.
+     * 
+     * @param  string $v new value
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setCapabilities($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->capabilities !== $v) {
+            $this->capabilities = $v;
+            $this->modifiedColumns[] = EmpAccPeer::CAPABILITIES;
+        }
+
+
+        return $this;
+    } // setCapabilities()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -542,6 +594,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->email = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
             $this->role = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
             $this->key = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
+            $this->capabilities = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -551,7 +604,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 9; // 9 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpAcc object", $e);
@@ -616,6 +669,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpRequestsRelatedByEmpAccId = null;
 
             $this->collEmpRequestsRelatedByAdminId = null;
+
+            $this->collRequestMeetingTagss = null;
 
             $this->collEmpProfiles = null;
 
@@ -783,6 +838,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 }
             }
 
+            if ($this->requestMeetingTagssScheduledForDeletion !== null) {
+                if (!$this->requestMeetingTagssScheduledForDeletion->isEmpty()) {
+                    foreach ($this->requestMeetingTagssScheduledForDeletion as $requestMeetingTags) {
+                        // need to save related object because we set the relation to null
+                        $requestMeetingTags->save($con);
+                    }
+                    $this->requestMeetingTagssScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collRequestMeetingTagss !== null) {
+                foreach ($this->collRequestMeetingTagss as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->empProfilesScheduledForDeletion !== null) {
                 if (!$this->empProfilesScheduledForDeletion->isEmpty()) {
                     EmpProfileQuery::create()
@@ -888,6 +961,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::KEY)) {
             $modifiedColumns[':p' . $index++]  = '`key`';
         }
+        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) {
+            $modifiedColumns[':p' . $index++]  = '`capabilities`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `emp_acc` (%s) VALUES (%s)',
@@ -925,6 +1001,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                         break;
                     case '`key`':						
                         $stmt->bindValue($identifier, $this->key, PDO::PARAM_STR);
+                        break;
+                    case '`capabilities`':						
+                        $stmt->bindValue($identifier, $this->capabilities, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1041,6 +1120,14 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     }
                 }
 
+                if ($this->collRequestMeetingTagss !== null) {
+                    foreach ($this->collRequestMeetingTagss as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
                 if ($this->collEmpProfiles !== null) {
                     foreach ($this->collEmpProfiles as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
@@ -1127,6 +1214,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             case 8:
                 return $this->getKey();
                 break;
+            case 9:
+                return $this->getCapabilities();
+                break;
             default:
                 return null;
                 break;
@@ -1165,6 +1255,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $keys[6] => $this->getEmail(),
             $keys[7] => $this->getRole(),
             $keys[8] => $this->getKey(),
+            $keys[9] => $this->getCapabilities(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1177,6 +1268,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             if (null !== $this->collEmpRequestsRelatedByAdminId) {
                 $result['EmpRequestsRelatedByAdminId'] = $this->collEmpRequestsRelatedByAdminId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collRequestMeetingTagss) {
+                $result['RequestMeetingTagss'] = $this->collRequestMeetingTagss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collEmpProfiles) {
                 $result['EmpProfiles'] = $this->collEmpProfiles->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1248,6 +1342,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             case 8:
                 $this->setKey($value);
                 break;
+            case 9:
+                $this->setCapabilities($value);
+                break;
         } // switch()
     }
 
@@ -1281,6 +1378,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setEmail($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setRole($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setKey($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setCapabilities($arr[$keys[9]]);
     }
 
     /**
@@ -1301,6 +1399,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::EMAIL)) $criteria->add(EmpAccPeer::EMAIL, $this->email);
         if ($this->isColumnModified(EmpAccPeer::ROLE)) $criteria->add(EmpAccPeer::ROLE, $this->role);
         if ($this->isColumnModified(EmpAccPeer::KEY)) $criteria->add(EmpAccPeer::KEY, $this->key);
+        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) $criteria->add(EmpAccPeer::CAPABILITIES, $this->capabilities);
 
         return $criteria;
     }
@@ -1372,6 +1471,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $copyObj->setEmail($this->getEmail());
         $copyObj->setRole($this->getRole());
         $copyObj->setKey($this->getKey());
+        $copyObj->setCapabilities($this->getCapabilities());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1389,6 +1489,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             foreach ($this->getEmpRequestsRelatedByAdminId() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addEmpRequestRelatedByAdminId($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getRequestMeetingTagss() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addRequestMeetingTags($relObj->copy($deepCopy));
                 }
             }
 
@@ -1476,6 +1582,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
         if ('EmpRequestRelatedByAdminId' == $relationName) {
             $this->initEmpRequestsRelatedByAdminId();
+        }
+        if ('RequestMeetingTags' == $relationName) {
+            $this->initRequestMeetingTagss();
         }
         if ('EmpProfile' == $relationName) {
             $this->initEmpProfiles();
@@ -1986,6 +2095,256 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $query->joinWith('ListRequestType', $join_behavior);
 
         return $this->getEmpRequestsRelatedByAdminId($query, $con);
+    }
+
+    /**
+     * Clears out the collRequestMeetingTagss collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addRequestMeetingTagss()
+     */
+    public function clearRequestMeetingTagss()
+    {
+        $this->collRequestMeetingTagss = null; // important to set this to null since that means it is uninitialized
+        $this->collRequestMeetingTagssPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collRequestMeetingTagss collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialRequestMeetingTagss($v = true)
+    {
+        $this->collRequestMeetingTagssPartial = $v;
+    }
+
+    /**
+     * Initializes the collRequestMeetingTagss collection.
+     *
+     * By default this just sets the collRequestMeetingTagss collection to an empty array (like clearcollRequestMeetingTagss());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initRequestMeetingTagss($overrideExisting = true)
+    {
+        if (null !== $this->collRequestMeetingTagss && !$overrideExisting) {
+            return;
+        }
+        $this->collRequestMeetingTagss = new PropelObjectCollection();
+        $this->collRequestMeetingTagss->setModel('RequestMeetingTags');
+    }
+
+    /**
+     * Gets an array of RequestMeetingTags objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|RequestMeetingTags[] List of RequestMeetingTags objects
+     * @throws PropelException
+     */
+    public function getRequestMeetingTagss($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collRequestMeetingTagssPartial && !$this->isNew();
+        if (null === $this->collRequestMeetingTagss || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collRequestMeetingTagss) {
+                // return empty collection
+                $this->initRequestMeetingTagss();
+            } else {
+                $collRequestMeetingTagss = RequestMeetingTagsQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collRequestMeetingTagssPartial && count($collRequestMeetingTagss)) {
+                      $this->initRequestMeetingTagss(false);
+
+                      foreach ($collRequestMeetingTagss as $obj) {
+                        if (false == $this->collRequestMeetingTagss->contains($obj)) {
+                          $this->collRequestMeetingTagss->append($obj);
+                        }
+                      }
+
+                      $this->collRequestMeetingTagssPartial = true;
+                    }
+
+                    $collRequestMeetingTagss->getInternalIterator()->rewind();
+
+                    return $collRequestMeetingTagss;
+                }
+
+                if ($partial && $this->collRequestMeetingTagss) {
+                    foreach ($this->collRequestMeetingTagss as $obj) {
+                        if ($obj->isNew()) {
+                            $collRequestMeetingTagss[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collRequestMeetingTagss = $collRequestMeetingTagss;
+                $this->collRequestMeetingTagssPartial = false;
+            }
+        }
+
+        return $this->collRequestMeetingTagss;
+    }
+
+    /**
+     * Sets a collection of RequestMeetingTags objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $requestMeetingTagss A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setRequestMeetingTagss(PropelCollection $requestMeetingTagss, PropelPDO $con = null)
+    {
+        $requestMeetingTagssToDelete = $this->getRequestMeetingTagss(new Criteria(), $con)->diff($requestMeetingTagss);
+
+
+        $this->requestMeetingTagssScheduledForDeletion = $requestMeetingTagssToDelete;
+
+        foreach ($requestMeetingTagssToDelete as $requestMeetingTagsRemoved) {
+            $requestMeetingTagsRemoved->setEmpAcc(null);
+        }
+
+        $this->collRequestMeetingTagss = null;
+        foreach ($requestMeetingTagss as $requestMeetingTags) {
+            $this->addRequestMeetingTags($requestMeetingTags);
+        }
+
+        $this->collRequestMeetingTagss = $requestMeetingTagss;
+        $this->collRequestMeetingTagssPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related RequestMeetingTags objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related RequestMeetingTags objects.
+     * @throws PropelException
+     */
+    public function countRequestMeetingTagss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collRequestMeetingTagssPartial && !$this->isNew();
+        if (null === $this->collRequestMeetingTagss || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collRequestMeetingTagss) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getRequestMeetingTagss());
+            }
+            $query = RequestMeetingTagsQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collRequestMeetingTagss);
+    }
+
+    /**
+     * Method called to associate a RequestMeetingTags object to this object
+     * through the RequestMeetingTags foreign key attribute.
+     *
+     * @param    RequestMeetingTags $l RequestMeetingTags
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addRequestMeetingTags(RequestMeetingTags $l)
+    {
+        if ($this->collRequestMeetingTagss === null) {
+            $this->initRequestMeetingTagss();
+            $this->collRequestMeetingTagssPartial = true;
+        }
+
+        if (!in_array($l, $this->collRequestMeetingTagss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddRequestMeetingTags($l);
+
+            if ($this->requestMeetingTagssScheduledForDeletion and $this->requestMeetingTagssScheduledForDeletion->contains($l)) {
+                $this->requestMeetingTagssScheduledForDeletion->remove($this->requestMeetingTagssScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	RequestMeetingTags $requestMeetingTags The requestMeetingTags object to add.
+     */
+    protected function doAddRequestMeetingTags($requestMeetingTags)
+    {
+        $this->collRequestMeetingTagss[]= $requestMeetingTags;
+        $requestMeetingTags->setEmpAcc($this);
+    }
+
+    /**
+     * @param	RequestMeetingTags $requestMeetingTags The requestMeetingTags object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeRequestMeetingTags($requestMeetingTags)
+    {
+        if ($this->getRequestMeetingTagss()->contains($requestMeetingTags)) {
+            $this->collRequestMeetingTagss->remove($this->collRequestMeetingTagss->search($requestMeetingTags));
+            if (null === $this->requestMeetingTagssScheduledForDeletion) {
+                $this->requestMeetingTagssScheduledForDeletion = clone $this->collRequestMeetingTagss;
+                $this->requestMeetingTagssScheduledForDeletion->clear();
+            }
+            $this->requestMeetingTagssScheduledForDeletion[]= $requestMeetingTags;
+            $requestMeetingTags->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related RequestMeetingTagss from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|RequestMeetingTags[] List of RequestMeetingTags objects
+     */
+    public function getRequestMeetingTagssJoinEmpRequest($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = RequestMeetingTagsQuery::create(null, $criteria);
+        $query->joinWith('EmpRequest', $join_behavior);
+
+        return $this->getRequestMeetingTagss($query, $con);
     }
 
     /**
@@ -2727,6 +3086,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $this->email = null;
         $this->role = null;
         $this->key = null;
+        $this->capabilities = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -2759,6 +3119,11 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collRequestMeetingTagss) {
+                foreach ($this->collRequestMeetingTagss as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collEmpProfiles) {
                 foreach ($this->collEmpProfiles as $o) {
                     $o->clearAllReferences($deep);
@@ -2786,6 +3151,10 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpRequestsRelatedByAdminId->clearIterator();
         }
         $this->collEmpRequestsRelatedByAdminId = null;
+        if ($this->collRequestMeetingTagss instanceof PropelCollection) {
+            $this->collRequestMeetingTagss->clearIterator();
+        }
+        $this->collRequestMeetingTagss = null;
         if ($this->collEmpProfiles instanceof PropelCollection) {
             $this->collEmpProfiles->clearIterator();
         }

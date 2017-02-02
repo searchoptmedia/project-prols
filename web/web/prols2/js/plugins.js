@@ -128,8 +128,10 @@ $(function() {
         }// END Tagsinput
 
         //iCheckbox and iRadion - custom elements
-        var feiCheckbox = function(){
-            if($(".icheckbox").length > 0){
+        var feiCheckbox = function()
+        {
+            if($(".icheckbox").length > 0)
+            {
                  $(".icheckbox,.iradio").iCheck({checkboxClass: 'icheckbox_minimal-grey',radioClass: 'iradio_minimal-grey'});
             }
         }
@@ -442,11 +444,23 @@ $(function() {
                 var now     = new Date();
                 var hour    = now.getHours();
                 var minutes = now.getMinutes();
+                var indicator = 'AM';
 
-                hour = hour < 10 ? '0'+hour : hour;
+
                 minutes = minutes < 10 ? '0'+minutes : minutes;
 
-                $(".plugin-clock").html(hour+"<span>:</span>"+minutes);
+                if(hour > 12)
+                {
+                    indicator ='PM';
+                    hour = hour - 12;
+                }
+                else if(hour == 0){
+                    hour = 12;
+                }
+                hour = hour < 10 ? '0'+hour : hour;
+
+
+                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + "" + indicator);
             }
             if($(".plugin-clock").length > 0){
 
@@ -485,6 +499,8 @@ $(function() {
         }
     }();
 
+
+    //full calendar js
     var fullCalendar = function(){
 
         var calendar = function(){
@@ -506,7 +522,6 @@ $(function() {
 
                 }
 
-
                 var date = new Date();
                 var d = date.getDate();
                 var m = date.getMonth();
@@ -517,15 +532,15 @@ $(function() {
                 var calendar = $('#calendar').fullCalendar({
                     events:
                         {
-                            url: "/addevent/acceptrequest"
+                            url: '/addevent/acceptrequest',
                         },
 
                     eventClick: function(calEvent){
-
+                        
                     },
 
                     dayClick: function(date){
-                        // console.log(moment(date).format('MM-DD-YYYY'));
+                     console.log(moment(date).format('MM-DD-YYYY'));
                         $('.agenda-list ul').remove();
                         $(".agenda-list").append('<ul class="collection agenda-list"></ul>');
 
@@ -533,6 +548,10 @@ $(function() {
                             if (moment(date).format('MM-DD-YYYY') == moment(event.start).format('MM-DD-YYYY')){
                                 $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.requesttype +'</span><p>'+ event.empname +'</p></li>');
                             }
+                            if (moment(date).format('MM-DD-YYYY') == moment(event._end).format('MM-DD-YYYY')){
+
+                            }
+
                         });
 
                         $('#daily_agenda').openModal();
@@ -544,7 +563,8 @@ $(function() {
                         $('.form-reqleave').hide();
                         $('.form-reqmeeting').hide();
                         $('.btn-submitleave').hide();
-                        $('.btn-submitmeeting').hide();
+                        
+                        
                     },
 
                     header: {
@@ -553,9 +573,10 @@ $(function() {
                         right: 'month,agendaWeek,agendaDay'
                     },
                     editable: true,
-                    // eventSources: [ "/addevent/acceptrequest","/addevent/timedin"],
+                    eventSources: {url: "assets/ajax_fullcalendar.php"},
                     droppable: true,
                     selectable: true,
+                    
                     selectHelper: true,
                     fixedWeekCount: false,
                     // aspectRatio: 2,

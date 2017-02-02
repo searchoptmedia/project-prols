@@ -1,5 +1,17 @@
-{% extends 'AdminBundle:Default:index.html.twig' %}
+{% extends 'AdminBundle::base.html.twig' %}
 {% block title %}<title>Propelrr Log-in System| Manage</title>{% endblock %}
+{% block css %}
+<style>
+    .select2-container--default .select2-selection--single {
+        background-color: #fff;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        padding: 10px 10px;
+        height: 50px;
+    }
+</style>
+
+{% endblock %}
 {% block body %}
     <section id="main-container">
         <section id="main-wrapper">
@@ -30,18 +42,16 @@
 
                                     <tbody>
                                     {% for time in getTime %}
-                                        {% if time.EmpAcc.getEmpProfiles[0].getProfileStatus == 0 %}
                                     <tr>
 
                                     <td>{{ time.EmpAcc.getEmpProfiles[0].getEmployeeNumber}}</td>
-                                    <td>{{ time.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ time.EmpAcc.getEmpProfiles[0].lname}}</td>
+                                    <td>{{ time.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ time.EmpAcc.getEmpProfiles[0].lname }}</td>
                                     <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                     <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
                                     <td>{{ time.Date | date('M d Y')}}</td>
                                     <td>{{ time.Manhours }}</td>
                                     <td>{{ time.Overtime }}</td>
                                     </tr>
-                                        {% endif %}
                                     {% endfor %}
                                     </tbody>
                                 </table>
@@ -158,9 +168,7 @@
                                     <select id="empnames" class="input-name" style="width: 230px; margin-top: 50px;">
                                         <option value="" disabled selected>Type name here..</option>
                                         {% for user in getAllProfile %}
-                                            {% if user.profileStatus == 0 %}
                                             <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
-                                            {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>

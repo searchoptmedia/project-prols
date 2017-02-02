@@ -1,9 +1,9 @@
-{% extends 'AdminBundle:Default:index.html.twig' %}
+{% extends 'AdminBundle::base.html.twig' %}
 {% block title %}
     <title>Propelrr Log-in System| Profile</title>
 {% endblock %}
 {% block body %}
-    {{ notif.update_profile_notif }}
+    {{ notif.update_profile_notif() }}
     {{ notif.notif_loader() }}
     <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert notification-modal">
         <div class="timein-success"><h5>Password Changed!</h5></div>
@@ -14,6 +14,8 @@
 
             <div class="emp-photo">
                 <div class="profile-image center-align">
+
+
                     <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                 </div>
             </div>
@@ -57,9 +59,9 @@
                             </div>
                             <div class="col-lg-4 col-md-6">
                                 <div class="empinfo-right">
-                                    <p><span class="p-lbl">SSS</span><span class="p-dta">{{ propelrr.sss }}</span></p>
-                                    <p><span class="p-lbl">BIR</span><span class="p-dta">{{ propelrr.bir }}</span></p>
-                                    <p><span class="p-lbl">Philhealth</span><span class="p-dta">{{ propelrr.philhealth }}</span></p>
+                                    <p><span class="p-lbl">SSS</span><span class="p-dta"></span></p>
+                                    <p><span class="p-lbl">BIR</span><span class="p-dta"></span></p>
+                                    <p><span class="p-lbl">Philhealth</span><span class="p-dta"></span></p>
                                 </div>
                             </div>
                         </div>
@@ -82,7 +84,7 @@
                             {#<option value="2"> Monthly Performance Chart</option>#}
                         {#</select>#}
                     {#</div>#}
-
+                    <div id="a"></div>
                     <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
                         <thead>
                             <tr>
@@ -94,14 +96,18 @@
                             </tr>
                         </thead>
                         <tbody>
+
                         {% for time in getAllTime %}
-                            <tr>
+
+                            <tr {% if( time.TimeOut is empty) %} class="active" data-time-in="{{ time.TimeIn | date('m/d/Y h:i A')  }}" {% endif %}>
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td>{{ time.Manhours }}</td>
+                                <td {% if( time.TimeOut is empty) %}id="duration-time"{% endif %}>{{ time.Manhours }}</td>
                                 <td>{{ time.Overtime }}</td>
+
                             </tr>
+
                         {% endfor %}
                         </tbody>
                     </table>
@@ -427,8 +433,53 @@
                     $('.month-perf-table').show();
                 }
             });
+
+            /**
+             * Created by admin on 1/19/2017.
+             */
+            function computeTime(){
+                //time out
+                var getTimeIn = $('.time-logs-table').find('tbody').find('tr').data('time-in');
+                var d = new Date(getTimeIn);
+                var past_hour = d.getHours();
+                var past_minutes = d.getMinutes();
+
+//                    var duration = past_hour + ':' + past_minutes;
+
+                //Date Today
+                var date = new Date();
+                var present_hour = date.getHours();
+                var present_minute = date.getMinutes();
+
+                //compute for duration
+
+                var duration_hours = present_hour - past_hour;
+                var duration_min =  present_minute - past_minutes;
+                var num_of_hours = 'hr';
+                if(duration_hours > 1)
+                {
+                    num_of_hours = 'hrs';
+                    var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
+                }
+                var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
+                console.log(total_duration);
+                if(!total_duration)
+                {
+                    total_duration = 0;
+                }
+
+                $("#duration-time").html(total_duration);
+            }
+            computeTime();
         });
     </script>
+
+
+
+
 {% endblock %}
+
+
+
 
 

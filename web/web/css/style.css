@@ -67,7 +67,7 @@ body{
 
 .align-glyph{
 	top: 2px;
-	float: right;s
+	float: right;
 }
 
 .alert-message-timeout{
@@ -81,7 +81,7 @@ body{
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -105,7 +105,7 @@ body{
 
  	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -127,7 +127,7 @@ body{
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -142,7 +142,7 @@ body{
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -445,7 +445,7 @@ div.datepicker {
 
 .login-container .login-box .login-logo {
     background-image: url("../img/propelrrlogo.png");
-    background-size: 175px 175px;body{
+    background-size: 175px 175px;
 	font-size: 14px;
 }
 
@@ -514,7 +514,7 @@ div.datepicker {
 
 .align-glyph{
 	top: 2px;
-	float: right;s
+	float: right;
 }
 
 .alert-message-timeout{
@@ -528,7 +528,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -552,7 +552,7 @@ div.datepicker {
 
  	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -573,7 +573,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -588,7 +588,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -892,7 +892,7 @@ div.datepicker {
 
 .login-container .login-box .login-logo {
     background-image: url("../img/propelrrlogo.png");
-    background-size: 175px 175px;body{
+    background-size: 175px 175px;
 	font-size: 14px;
 }
 
@@ -961,7 +961,7 @@ div.datepicker {
 
 .align-glyph{
 	top: 2px;
-	float: right;s
+	float: right;
 }
 
 .alert-message-timeout{
@@ -975,7 +975,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -999,7 +999,7 @@ div.datepicker {
 
  	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -1020,7 +1020,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -1035,7 +1035,7 @@ div.datepicker {
 
 	-webkit-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
  	-moz-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
- 	-o- transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
+ 	-o-transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);;
   	transition: all 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
@@ -1341,3 +1341,4 @@ div.datepicker {
     background-image: url("../img/propelrrlogo.png");
     background-size: 175px 175px;
 }
+
