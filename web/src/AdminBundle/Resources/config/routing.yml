@@ -1,50 +1,62 @@
 admin_homepage:
     path:     /
-    defaults: { _controller: AdminBundle:Default:index }
+    defaults: { _controller: AdminBundle:Admin:index }
 
 admin_time_in:
     path:     /admin/time_in/{id}/{passw}
-    defaults: { _controller: AdminBundle:Default:timeIn }
+    defaults: { _controller: AdminBundle:Admin:timeIn }
 
 admin_time_in_no_params:
     path:     /admin/time_in/
-    defaults: { _controller: AdminBundle:Default:timeIn }
+    defaults: { _controller: AdminBundle:Admin:timeIn}
 
-request_email:
-    path:     /send/request/email/{value}
-    defaults: { _controller: AdminBundle:Default:sendRequest }
+request_access_accepted:
+    path: /requestaccepted
+    defaults: { _controller: AdminBundle:Admin:acceptRequest }
 
-request_email_no_params:
-    path:     /send/request/email/
-    defaults: { _controller: AdminBundle:Default:sendRequest }
-
-request_meeting:
-    path:     /request/meeting/
-    defaults: { _controller: AdminBundle:Default:requestMeeting }
-
-request_leave:
-    path:     /request/leave
-    defaults: { _controller: AdminBundle:Default:requestLeave }
-
-status_accept_with_params:
-    path:    /status/accept/{id}/{id2}
-    defaults: { _controller: AdminBundle:Default:statusAccept }
-    
-status_accept:
-    path:    /status/accept/
-    defaults: { _controller: AdminBundle:Default:statusAccept }
+admin_edit_employee_profile:
+    path:     /admin/edit/empprofile
+    defaults: { _controller: AdminBundle:Admin:adminEditProfile }
 
 status_declined:
     path:    /declined
-    defaults: { _controller: AdminBundle:Default:declinedRequest }
+    defaults: { _controller: AdminBundle:Admin:declinedRequest }
 
-check_time:
-    path: /checktime
-    defaults: { _controller: AdminBundle:Default:checkTime }
+request_access:
+    path: /requestaccess
+    defaults: {_controller: AdminBundle:Admin:requestAccess }
 
-admin_employee_report:
-    path: /employee/report
-    defaults: { _controller: AdminBundle:EmployeeReport:generateReport }
+
+
+request_meeting:
+    path:     /request/meeting/
+    defaults: { _controller: AdminBundle:RequestType:requestMeeting }
+
+request_leave:
+    path:     /request/leave
+    defaults: { _controller: AdminBundle:RequestType:requestLeave }
+
+status_accept_with_params:
+    path:    /status/accept/{id}/{id2}
+    defaults: { _controller: AdminBundle:RequestType:statusAccept }
+
+status_accept:
+    path:    /status/accept/
+    defaults: { _controller: AdminBundle:RequestType:statusAccept }
+
+view_request:
+    path: /requests
+    defaults: { _controller: AdminBundle:RequestType:request }
+
+add_event_accepted_request:
+    path: /addevent/acceptrequest
+    defaults: { _controller:AdminBundle:RequestType:addRequestCalendar }
+
+notif_page:
+    path: /notif
+    defaults: { _controller: AdminBundle:RequestType:notif }
+
+
 
 time_in:
     path: /timein
@@ -58,10 +70,6 @@ time_out_w_params:
     path: /timeout/{passw}
     defaults: { _controller: AdminBundle:Employee:TimeOut }
 
-time_logs_page:
-    path: /timelogs
-    defaults: { _controller: AdminBundle:Default:timeLogs}
-
 auto_time_out:
     path: /autotimeout
     defaults: { _controller: AdminBundle:Employee:AutoTimeOut }
@@ -70,14 +78,102 @@ admin_manage_working_time_new_day:
     path: /admin/timein/{type}
     defaults: { _controller: AdminBundle:Employee:ManageTimeOnNewDay }
 
+time_logs_page:
+    path: /timelogs
+    defaults: { _controller: AdminBundle:Employee:timeLogs}
+
+export:
+    path: /export
+    defaults: {_controller: AdminBundle:Employee:export }
+
+emp_page_w_params:
+    path: /emp/{id}
+    defaults: { _controller: AdminBundle:Employee:employeeProfile }
+
+emp_page:
+    path: /emp/
+    defaults: { _controller: AdminBundle:Employee:employeeProfile }
+
+profile_page:
+    path: /profile
+    defaults: { _controller: AdminBundle:Employee:profile }
+
+manage_employee:
+    path: /manage
+    defaults: { _controller: AdminBundle:Employee:manage }
+
+add_employee:
+    path: /addemp
+    defaults: { _controller: AdminBundle:Employee:addEmployee }
+
+add_position:
+    path: /addpos/
+    defaults: { _controller: AdminBundle:Employee:addPosition }
+
+add_position_w_params:
+    path: /addpos/{id}
+    defaults: { _controller: AdminBundle:Employee:addPosition }
+
+add_department:
+    path: /adddept/
+    defaults: { _controller: AdminBundle:Employee:addDepartment }
+
+add_department_w_params:
+    path: /adddept/{id}
+    defaults: { _controller: AdminBundle:Employee:addDepartment }
+
+emp_delete:
+    path: /delete/
+    defaults: { _controller: AdminBundle:Employee:empDelete }
+
+emp_delete_w_params:
+    path: /delete/{id}
+    defaults: { _controller: AdminBundle:Employee:empDelete }
+
+update_profile:
+    path: /update
+    defaults: { _controller: AdminBundle:Employee:profileUpdate }
+
+change_pass:
+    path: /changepass
+    defaults: {_controller: AdminBundle:Employee:changePassword }
+
+check_timein:
+    path: /check_timein
+    defaults: {_controller: AdminBundle:Employee:checkTimeIn }
+
+
+
+admin_employee_report:
+    path: /employee/report
+    defaults: { _controller: AdminBundle:EmployeeReport:generateReport }
+
 admin_employee_list_report:
     path: /emplist/report
     defaults: { _controller:AdminBundle:EmployeeReport:generateEmployeeReport }
 
-admin_edit_employee_profile:
-    path: /admin/edit/empprofile
-    defaults: { _controller:AdminBundle:Default:adminEditProfile }
+
 
 manage_events:
     path: /manageevent
     defaults: { _controller: AdminBundle:EventManager:Manage }
+
+add_event:
+    path: /manageevent/add
+    defaults: { _controller: AdminBundle:EventManager:add }
+
+notify_event:
+    path: /manageevent/notify
+    defaults: { _controller: AdminBundle:EventManager:notify }
+
+edit_event:
+    path: /manageevent/edit
+    defaults: { _controller: AdminBundle:EventManager:edit }
+
+delete_event:
+    path: /manageevent/delete
+    defaults: { _controller: AdminBundle:EventManager:delete }
+
+send_email:
+    path: /sendemail/
+    defaults: {_controller: AdminBundle:Admin:sendEmail }

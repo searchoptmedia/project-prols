@@ -1,4 +1,4 @@
-{% import 'AdminBundle:Default:notification.html.twig' as notif %}
+{% import 'AdminBundle:Templates:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
 {% set userbdaynames = userbdaynames|default([]) %}
 
@@ -42,6 +42,10 @@
     {{ notif.request_leave_notif }}
     {{ notif.request_meeting_notif }}
     {{ notif.time_in_time_out_notif }}
+    {{ notif.add_event_notif }}
+    {{ notif.edit_event_notif }}
+    {{ notif.notify_event_notif }}
+    {{ notif.delete_event_notif }}
 
     <section id="main-container">
         <section id="main-wrapper">
@@ -75,7 +79,7 @@
                     {% block body %} {% endblock %}
                 </div>
             </div>
-            {{  include ('AdminBundle:Default:modal.html.twig') }}
+            {{  include ('AdminBundle:Templates:modal.html.twig') }}
         </section>
     </section>
 

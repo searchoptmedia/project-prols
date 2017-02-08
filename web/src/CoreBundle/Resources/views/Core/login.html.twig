@@ -1,4 +1,4 @@
-{% import 'AdminBundle:Default:notification.html.twig' as notif %}
+{% import 'AdminBundle:Templates:notification.html.twig' as notif %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -172,7 +172,10 @@
 
             loader.show();
             loader.css({'top' : '-105px'});
-            $.post("{{ path('request_access') }}", {email: email, message: message}, function (data) {
+            $.post("{{ path('request_access') }}", {
+                email: email,
+                message: message
+            }, function (data) {
                 console.log(data)
 
             }).always(function (data) {
