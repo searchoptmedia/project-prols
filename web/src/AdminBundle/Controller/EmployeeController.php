@@ -763,7 +763,9 @@ class EmployeeController extends Controller
             $posStatus = null;
         }
 
-        $timename = AdminController::timeInOut($id);
+        $admincontroller = new AdminController();
+
+        $timename = $admincontroller->timeInOut($id);
         $getDept = ListDeptPeer::getAllDept();
 
         //check pending count
@@ -907,7 +909,8 @@ class EmployeeController extends Controller
         $capabilities = $user->getCapabilities();
 
         $id = $user->getId();
-        $timename = AdminController::timeInOut($id);
+        $admincontroller = new AdminController();
+        $timename = $admincontroller->timeInOut($id);
 
         if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
         {

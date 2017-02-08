@@ -207,10 +207,12 @@ class EmailController extends Controller
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($employeeemail);
 
-        $inputMessage = "Hi ". $empname . "!<br> Your account was successfully created.<br><br> Username: <b>" . $empusername . "</b>
+        $inputMessage = "<h2>Hi " .$empname. "</h2>
+         Your account was successfully created.<br><br> Username: <b>" . $empusername . "</b>
         <br>Password: <b>" . $emppassword . "</b><br>You can change your password in your profile page once you log in.<br><br>
         <a href='http://login.propelrr.com/'>Login Here</a>";
-        $email = self::sendEmail($class, $subject, $from, $to, $inputMessage);
+        $email = self::sendEmail($class, $subject, $from, $to,
+            $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
 
         return $email ? 1: 0;
     }

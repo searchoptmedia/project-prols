@@ -5,9 +5,10 @@
 
 var i = 0;
 function pickDay(i) {
-    console.log('pikass');
+    console.log('pikaday');
     var picker;
     var picker2;
+
     picker = new Pikaday({field: document.querySelector('#start_date'+i)});
     picker2 = new Pikaday({field: document.querySelector('#end_date'+i)});
     //$('.start-date').val('');

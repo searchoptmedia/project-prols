@@ -25,7 +25,9 @@
                 <table class="bordered highlight emp-list">
                     <thead>
                           <tr>
-                              <th data-field="id">Name
+
+                              <th data-field="id">Meeting Title</th>
+                              <th data-field="meeting-title">Name</th>
                               <th data-field="name">Status</th>
                               <th data-field="price">Category</th>
                               <th data-field="price">Start Date</th>
@@ -42,6 +44,7 @@
                             data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
                             ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
                             data-request="{{request.listRequestType.requestType}}">
+                            <td>{{ request.meetingTitle }}</td>
                             <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
                             <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
                                 {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
@@ -77,6 +80,7 @@
                         </div>
 
                     {% endfor %}
+
                     </tbody>
 
                     <!--SICK LEAVE-->
@@ -211,6 +215,7 @@
                             data-end="{{ request.dateEnded | date('M d Y')}}" data-name="{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~
                         ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}" data-type="{{ request.listRequestTypeId }}"
                             data-request="{{request.listRequestType.requestType}}">
+                            <td>{{ request.meetingTitle }}</td>
                             <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
                             <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
                                 {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
@@ -285,8 +290,9 @@
 {% block customjs %}
 <script type="text/javascript">
     $(document).ready(function(){
-
-        console.log('ok')
+        $('.allrequest').hide();
+        $('.meetingcontent').show();
+        console.log('ok');
 
         $('.allbtn').click(function(){
             $('.allrequest').show();

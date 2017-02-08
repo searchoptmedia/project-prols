@@ -29,6 +29,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequestQuery orderByListRequestTypeId($order = Criteria::ASC) Order by the list_request_type_id column
  * @method EmpRequestQuery orderByAdminId($order = Criteria::ASC) Order by the admin_id column
  * @method EmpRequestQuery orderByEmpTimeId($order = Criteria::ASC) Order by the emp_time_id column
+ * @method EmpRequestQuery orderByMeetingTitle($order = Criteria::ASC) Order by the meeting_title column
  *
  * @method EmpRequestQuery groupById() Group by the id column
  * @method EmpRequestQuery groupByRequest() Group by the request column
@@ -39,6 +40,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequestQuery groupByListRequestTypeId() Group by the list_request_type_id column
  * @method EmpRequestQuery groupByAdminId() Group by the admin_id column
  * @method EmpRequestQuery groupByEmpTimeId() Group by the emp_time_id column
+ * @method EmpRequestQuery groupByMeetingTitle() Group by the meeting_title column
  *
  * @method EmpRequestQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpRequestQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -71,6 +73,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequest findOneByListRequestTypeId(int $list_request_type_id) Return the first EmpRequest filtered by the list_request_type_id column
  * @method EmpRequest findOneByAdminId(int $admin_id) Return the first EmpRequest filtered by the admin_id column
  * @method EmpRequest findOneByEmpTimeId(int $emp_time_id) Return the first EmpRequest filtered by the emp_time_id column
+ * @method EmpRequest findOneByMeetingTitle(string $meeting_title) Return the first EmpRequest filtered by the meeting_title column
  *
  * @method array findById(int $id) Return EmpRequest objects filtered by the id column
  * @method array findByRequest(string $request) Return EmpRequest objects filtered by the request column
@@ -81,6 +84,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method array findByListRequestTypeId(int $list_request_type_id) Return EmpRequest objects filtered by the list_request_type_id column
  * @method array findByAdminId(int $admin_id) Return EmpRequest objects filtered by the admin_id column
  * @method array findByEmpTimeId(int $emp_time_id) Return EmpRequest objects filtered by the emp_time_id column
+ * @method array findByMeetingTitle(string $meeting_title) Return EmpRequest objects filtered by the meeting_title column
  */
 abstract class BaseEmpRequestQuery extends ModelCriteria
 {
@@ -186,7 +190,7 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id` FROM `emp_request` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id`, `meeting_title` FROM `emp_request` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -633,6 +637,35 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpRequestPeer::EMP_TIME_ID, $empTimeId, $comparison);
+    }
+
+    /**
+     * Filter the query on the meeting_title column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMeetingTitle('fooValue');   // WHERE meeting_title = 'fooValue'
+     * $query->filterByMeetingTitle('%fooValue%'); // WHERE meeting_title LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $meetingTitle The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpRequestQuery The current query, for fluid interface
+     */
+    public function filterByMeetingTitle($meetingTitle = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($meetingTitle)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $meetingTitle)) {
+                $meetingTitle = str_replace('*', '%', $meetingTitle);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpRequestPeer::MEETING_TITLE, $meetingTitle, $comparison);
     }
 
     /**
