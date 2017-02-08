@@ -32,6 +32,7 @@
                               <th data-field="price">Category</th>
                               <th data-field="price">Start Date</th>
                               <th data-field="price">End Date</th>
+                              <th>Action</th>
                           </tr>
                     </thead>
 
@@ -77,6 +78,7 @@
                                 <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
 
                             </div>
+
                         </div>
 
                     {% endfor %}
@@ -224,6 +226,7 @@
                             <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
                             <td>{{ request.dateStarted|date('n/d/Y')}}</td>
                             <td>{{ request.dateEnded|date('n/d/Y')}}</td>
+
                         </tr>
 
                         <div id="modal1" class="modal modal-fixed-footer">
@@ -246,6 +249,7 @@
                                 <a class="modal-action modal-close waves-effect waves-light grey btn-flat btn-decline">Cancel</a>
                             </div>
                         </div>
+
                     {% endfor %}
                     <div>
 
