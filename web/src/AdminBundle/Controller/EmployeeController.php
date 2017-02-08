@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfilePeer;
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpContactPeer;
 use CoreBundle\Model\EmpContact;
 use CoreBundle\Model\ListContTypesPeer;
@@ -762,9 +763,7 @@ class EmployeeController extends Controller
             $deptnames = null;
             $posStatus = null;
         }
-
         $admincontroller = new AdminController();
-
         $timename = $admincontroller->timeInOut($id);
         $getDept = ListDeptPeer::getAllDept();
 
@@ -902,6 +901,8 @@ class EmployeeController extends Controller
 
     public function manageAction(Request $request)
     {
+        $item_per_page = 10;
+
         $user = $this->getUser();
         $name = $user->getUsername();
         $page = 'View Request';
@@ -909,22 +910,27 @@ class EmployeeController extends Controller
         $capabilities = $user->getCapabilities();
 
         $id = $user->getId();
-        $admincontroller = new AdminController();
-        $timename = $admincontroller->timeInOut($id);
+        $adminController = new AdminController();
 
-        if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
+        $timename = $adminController->timeInOut($id);
+
+        if((strcasecmp($role, 'employee') == 0))
         {
             return $this->redirect($this->generateUrl('admin_homepage'));
         }
         else
         {
-            $getEmployee = EmpProfilePeer::getAllProfile();
-            $getPos = ListPosPeer::getAllPos();
-            $getDept = ListDeptPeer::getAllDept();
-            $timedata = EmpTimePeer::getTime($id);
-            $currenttimein = 0;
-            $currenttimeout = 0;
-            $timeflag = 0;
+
+
+
+            $getEmployee     = EmpProfilePeer::getAllProfile();
+
+            $getPos          = ListPosPeer::getAllPos();
+            $getDept         = ListDeptPeer::getAllDept();
+            $timedata        = EmpTimePeer::getTime($id);
+            $currenttimein   = 0;
+            $currenttimeout  = 0;
+            $timeflag        = 0;
 
             //get last timed in
             for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
@@ -962,7 +968,15 @@ class EmployeeController extends Controller
             $is_ip  = InitController::checkIP($userip);
 
             $getTime = EmpTimePeer::getAllTime();
+
+            $countAllEmpData = EmpProfileQuery::create()
+                ->count();
+
+            $total_page = ceil($countAllEmpData/$item_per_page); //divide
+        
             $getAllProfile = EmpProfilePeer::getAllProfile();
+
+
             $et = EmpTimePeer::getEmpLastTimein($id);
             if(!empty($et))
             {

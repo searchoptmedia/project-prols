@@ -38,13 +38,14 @@
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
+                    <div class="">
+                        <br/>
+                        <p>Meeting Title</p>
+                        <input type="text" name="meeting-title"/>
+                    </div>
                     <div class="reqmeeting-emp-tag" id="">
-                        <br/><br/>
-                      <br/>
-                        <div class="input-field">
-                            <label>Meeting Title</label>
-                            <input type="text" name="meeting-title" id="meeting-title"/>
-                        </div>
+                        <br/>
+                      <p>Tag Employee:</p>
                         <select class="select-emp-tag" multiple="multiple">
                             {% for acc in allacc %}
                             <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
@@ -52,27 +53,16 @@
                         </select>
 
                     </div>
-                    <label>DATE</label>
-
-                     <div class="form-date-meeting">
-
-                         <input type = "text" name="date-meeting" readonly placeholder="Start Date" class="datepicker" id="date_meeting">
-
-
-                     </div>
-                    <div class="form-time-meeting">
-                        <div class="input-field col s12">
-                            <p>From:</p>
-                            <input type="time" name="time-start" id="time-start"/>
-                        </div>
-
-                        <div class="input-field col s12">
-                            <p>To:</p>
-                            <input type="time" name="time-end" id="time-end"/>
-                        </div>
+                    <div class="Date-time-meeting">
+                        <p>Date:</p>
+                        <input type="text" placeholder="Date" class="datepicker" id="meeting_date"/>
+                        <p>From:</p>
+                        <input type="time" class="from-time" id="time-from"/>
+                        <p>To:</p>
+                        <input type="time" class="from-time" id="time-to"/>
                     </div>
-                    <div class="text-area-meeting">
-
+                    <div class="input-field">
+                        <input id="meeting" placeholder="Type your message here...">
                     </div>
                     <a class="waves-effect waves-light btn amber btn-submitmeeting">Submit</a>
                     <div class="chip required-field">
@@ -89,7 +79,6 @@
                         <div class="row">
                             <div class = "form-container">
                                 <div class="multi_reqleaveform" style = "margin-top: 10px;">
-
                                     <div class="req_inner">
                                         <div class="col-md-6 reqleave-lbl">
                                             <span class="reqleave-p">From</span>
@@ -128,57 +117,40 @@
     <script>
 
         var typeleave = '';
-
         $(document).ready(function(){
-            var dateMeeting = new Pikaday({ field: document.getElementById('date_meeting')
-
+            var dateMeeting = new Pikaday({ field: document.getElementById('meeting_date')
             });
-
-
             //set current Date Today
             var dateToday = new Date();
             var fullYear = dateToday.getFullYear();
             var monthToday = dateToday.getMonth()+1;
             var dayToday = dateToday.getDate();
-
             if(dayToday<10) {
                 dayToday='0'+dayToday;
             }
             if(monthToday<10) {
-               monthToday = '0'+monthToday;
+                monthToday = '0'+monthToday;
             }
-
             var appendDate = fullYear+"-"+monthToday+"-"+dayToday;
-
-
-            $('#date_meeting').val(appendDate);
-
+            $('.datepicker').val(appendDate);
             dateMeeting.setMinDate(new Date());
-
         });
-
         $('.close-modal-agenda').click(function(){
-
         });
-
         $('.btn-submitmeeting').click(function(){
-
             var reqmeetingTitle = $('#meeting-title').val();
             var reqmeetmessage =  $('#meeting').val();
             var tagged = [];
             var taggedemail = $('.select-emp-tag').select2("val");
-            var meetingDate = $('#date_meeting').val(); //get the value of created datepicker
-            var meeting_time_from = $('#time-start').val(); //get the value of time From
-            var meeting_time_to = $('#time-end').val(); //get the value of time to
 
-
-
-
-
+            var meetingDate = $('#meeting_date').val(); //get the value of created datepicker
+            var meeting_time_from = $('#time-from').val(); //get the value of time From
+            var meeting_time_to = $('#time-to').val(); //get the value of time to
 
 
             var meeting_from = meetingDate + " " + meeting_time_from;
             var meeting_to   = meetingDate + " " + meeting_time_to;
+
             var meeting_from_unix = new Date(meeting_from).getTime();
             var meeting_to_unix = new Date(meeting_to).getTime();
             console.log(meeting_from_unix);
@@ -186,9 +158,6 @@
 
             var from_meeting = meeting_from_unix;
             var to_meeting   = meeting_to_unix;
-
-
-
 
             if(reqmeetingTitle == ''){
                 $('#meeting-title').css({'border-color' : 'red'});
@@ -215,7 +184,7 @@
                 return;
             }
             if(!meeting_time_from){
-                $('#time-start').css({'border-color' : 'red'});
+                $('#time-from').css({'border-color' : 'red'});
                 setTimeout(function(){
                     $('#meeting').css({'border-color': 'gray'})
                 }, 1000);
@@ -223,54 +192,49 @@
                 return;
             }
             if(!meeting_time_to){
-                $('#time-end').css({'border-color' : 'red'});
+                $('#time-to').css({'border-color' : 'red'});
                 setTimeout(function(){
                     $('#meeting').css({'border-color': 'gray'})
                 }, 1000);
                 $('.required-field').show();
                 return;
             }
-           if(from_meeting > to_meeting)
+            if(from_meeting > to_meeting)
             {
-                $('#time-start').css({'border-color' : 'red'});
+                $('#time-from').css({'border-color' : 'red'});
                 setTimeout(function(){
                     $('#meeting').css({'border-color': 'gray'})
                 }, 1000);
-
                 return;
             }
-
             $('.loader-notif').show();
             $('.loader-notif').css({'top' : '0px'});
             $('.btn-submitmeeting').hide();
-
             $.post("{{ path('request_meeting') }}",
-                {
-                    meetingTitle:reqmeetingTitle,
-                    reqmeetmessage:reqmeetmessage,
-                    taggedemail:taggedemail,
-                    meetingDate:meetingDate,
-                    meetingTimeFrom:meeting_from,
-                    meetingTimeTo:meeting_to
-
-                },
-                function(data){
-                    console.log(data);
-                    $('#meeting').val('');
-                    $('.required-field').hide();
-                    $('#daily_agenda').closeModal();
-                    $('.request-meeting-notif').css({'top':'0px'});
-                    setTimeout(function(){
-                        $('.request-meeting-notif').css({'top' : '-55px'});
-                    }, 5000);
-                }).always(function(data){
+                    {
+                        meetingTitle:reqmeetingTitle,
+                        reqmeetmessage:reqmeetmessage,
+                        taggedemail:taggedemail,
+                        meetingDate:meetingDate,
+                        meetingTimeFrom:meeting_from,
+                        meetingTimeTo:meeting_to
+                    },
+                    function(data){
+                        console.log(data);
+                        $('#meeting').val('');
+                        $('.required-field').hide();
+                        $('#daily_agenda').closeModal();
+                        $('.request-meeting-notif').css({'top':'0px'});
+                        setTimeout(function(){
+                            $('.request-meeting-notif').css({'top' : '-55px'});
+                        }, 5000);
+                    }).always(function(data){
                 console.log(data);
                 $('.loader-notif').hide();
                 $('.loader-notif').css({'top' : '-55px'});
                 $('.btn-submitmeeting').show();
             });
         });
-
         $('.btn-ip-cancel').click(function(e){
             e.preventDefault();
             $('.diff-ip-container').hide();
@@ -279,9 +243,7 @@
             e.preventDefault();
             $('.diff-ip-reason').show();
         });
-
         $('.modal-trigger').leanModal();
-
         function showBirthday() {
             var bdaynames = [];
             {% for names in userbdaynames %}
@@ -296,11 +258,10 @@
             });
         }
 
+
     </script>
 
     <script> // SCRIPT FOR MULTIPLE DATES REQUEST LEAVE
-
-
         var unique_id = 0;
 
         $(document).ready(function(){
@@ -355,7 +316,7 @@
             var reason = document.createElement("textarea");                            // <textarea> -> REASON
             reason.className = "materialize-textarea";
             reason.setAttribute("id", "reason-leave-sbt" + unique_id);
-            reason.setAttribute("placeholder", "Re1ason...");
+            reason.setAttribute("placeholder", "Reason...");
             reason.setAttribute("required", "true");
 
             form_container.append(container);

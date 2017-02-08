@@ -43,7 +43,6 @@ class RequestTypeController extends Controller
                 $getRequestListType = ListRequestTypeQuery::create()
                     ->filterByRequestType(4)
                     ->find();
-
                 if($getRequestListType)
                 {
                     $getEmployeeRequest = EmpRequestQuery::create()
@@ -53,10 +52,6 @@ class RequestTypeController extends Controller
                         ->find();
 
                 }
-
-
-
-
             }
 
             $timedata = EmpTimePeer::getTime($id);
@@ -148,14 +143,24 @@ class RequestTypeController extends Controller
         $user = $this->getUser();
         $user_id = $user->getId();
         $current_date = date('Y-m-d H:i:s');
+        $meetingTitle = $req->request->get('meetingTitle');
         $taggedemail = $req->request->get('taggedemail');
         $taggedMessage = $req->request->get('reqmeetmessage');
+        $meetingDate = $req->request->get('meetingDate');
+        $meetingTimeFrom = $req->request->get('meetingTimeFrom');
+        $meetingTimeTo = $req->request->get('meetingTimeTo');
+
+
+
 
         $empRequest = new EmpRequest();
+        $empRequest->setMeetingTitle($meetingTitle);
         $empRequest->setRequest($taggedMessage);
         $empRequest->setStatus('Pending');
         $empRequest->setEmpAccId($user_id);
         $empRequest->setListRequestTypeId(4);
+        $empRequest->setDateStarted($meetingTimeFrom);
+        $empRequest->setDateEnded($meetingTimeTo);
         $empRequest->save();
 
         $request_id = $empRequest->getId();
@@ -348,8 +353,8 @@ class RequestTypeController extends Controller
             }
             array_push($request, $event);
         }
-
-        $request = EventManagerController::showEventsAction($request);
+        $eventManager =  new EventManagerController();
+        $request = $eventManager->showEventsAction($request);
 
         echo json_encode($request);
         exit;
