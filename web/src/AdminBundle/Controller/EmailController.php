@@ -11,8 +11,6 @@ namespace AdminBundle\Controller;
 
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpProfilePeer;
-use CoreBundle\Model\EmpRequest;
-use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\ListRequestTypePeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -121,6 +119,7 @@ class EmailController extends Controller
         }
         return $email ? 1: 0;
     }
+
     public function RequestMeetingEmail($req, $class)
     {
         $user = $class->getUser();
@@ -146,6 +145,7 @@ class EmailController extends Controller
 
         return $email ? 1: 0;
     }
+
     //notify user that he/she request for meeting
     public function notifyEmployeeRequest($req, $class)
     {
@@ -157,11 +157,11 @@ class EmailController extends Controller
 
 
     }
+
     public function requestTypeEmail($req, $class)
     {
         $user = $class->getUser();
         $id   = $user->getId();
-
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
@@ -190,17 +190,9 @@ class EmailController extends Controller
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
         }
 
-
-
-
         return $email ? 1: 0;
     }
-//    public function requestEmployeeTagEmail($req, $class)
-//    {
-//        $empinfo = EmpProfilePeer::getInformation($id);
-//        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
-//
-//    }
+
     public function addEmployeeEmail($req, $class){
         $user = $class->getUser();
         $id   = $user->getId();
@@ -260,10 +252,9 @@ class EmailController extends Controller
         return $response;
 
     }
+
     public function sendEmailMeetingRequest($req, $email, $class, $param = array())
     {
-
-
         $taggedemail = $req->request->get('taggedemail');
         $employee = EmpAccPeer::getUserInfo($email);
 
@@ -275,8 +266,6 @@ class EmailController extends Controller
 
         $arrlength = count($param);
         $type = $param['type'];
-
-
 
         $subject = "Request Meeting";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
@@ -293,7 +282,38 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
+    public function notifyEventEmail($req, $class) {
+        $user = $class->getUser();
+        $id   = $user->getId();
+        $adminprofile = EmpProfilePeer::getInformation($id);
+        $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
 
+        $date = $req->request->get('event_date');
+        $name = $req->request->get('event_name');
+        $desc = $req->request->get('event_desc');
+        $type = $req->request->get('event_type');
+
+        $users = EmpAccPeer::getAllUser();
+
+        foreach($users as $user) {
+            $empinfo = EmpProfilePeer::getInformation($user->getId());
+            $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
+            $subject = "PROLS » Event Notification";
+            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+            $to = array($user->getEmail());
+            $inputMessage = "<h2>Hi <b>". $empname ."</b>!" . "</h2> <b>". $adminname ."</b> created a/an <b>". $type ."</b> event. " .
+                            "Here are the following details regarding the said event: <br><br><hr><br>" .
+                            "<b>Event Date: </b>". $date . "<br>" .
+                            "<b>Event Name: </b>". $name . "<br>" .
+                            "<b>Event Description: </b> ". $desc . "<br>";
+
+            $email = self::sendEmail($class, $subject, $from, $to,
+                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+        }
+
+        return $email ? 1: 0;
+    }
 }
 
 ?>
