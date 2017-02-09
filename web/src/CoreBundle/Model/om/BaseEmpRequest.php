@@ -101,6 +101,12 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
     protected $emp_time_id;
 
     /**
+     * The value for the meeting_title field.
+     * @var        string
+     */
+    protected $meeting_title;
+
+    /**
      * @var        EmpAcc
      */
     protected $aEmpAccRelatedByEmpAccId;
@@ -302,6 +308,17 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
     {
 
         return $this->emp_time_id;
+    }
+
+    /**
+     * Get the [meeting_title] column value.
+     * 
+     * @return string
+     */
+    public function getMeetingTitle()
+    {
+
+        return $this->meeting_title;
     }
 
     /**
@@ -510,6 +527,27 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
     } // setEmpTimeId()
 
     /**
+     * Set the value of [meeting_title] column.
+     * 
+     * @param  string $v new value
+     * @return EmpRequest The current object (for fluent API support)
+     */
+    public function setMeetingTitle($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->meeting_title !== $v) {
+            $this->meeting_title = $v;
+            $this->modifiedColumns[] = EmpRequestPeer::MEETING_TITLE;
+        }
+
+
+        return $this;
+    } // setMeetingTitle()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -550,6 +588,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
             $this->list_request_type_id = ($row[$startcol + 6] !== null) ? (int) $row[$startcol + 6] : null;
             $this->admin_id = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
             $this->emp_time_id = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+            $this->meeting_title = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -559,7 +598,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 9; // 9 = EmpRequestPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = EmpRequestPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpRequest object", $e);
@@ -856,6 +895,9 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpRequestPeer::EMP_TIME_ID)) {
             $modifiedColumns[':p' . $index++]  = '`emp_time_id`';
         }
+        if ($this->isColumnModified(EmpRequestPeer::MEETING_TITLE)) {
+            $modifiedColumns[':p' . $index++]  = '`meeting_title`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `emp_request` (%s) VALUES (%s)',
@@ -893,6 +935,9 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
                         break;
                     case '`emp_time_id`':						
                         $stmt->bindValue($identifier, $this->emp_time_id, PDO::PARAM_INT);
+                        break;
+                    case '`meeting_title`':						
+                        $stmt->bindValue($identifier, $this->meeting_title, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1087,6 +1132,9 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
             case 8:
                 return $this->getEmpTimeId();
                 break;
+            case 9:
+                return $this->getMeetingTitle();
+                break;
             default:
                 return null;
                 break;
@@ -1125,6 +1173,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
             $keys[6] => $this->getListRequestTypeId(),
             $keys[7] => $this->getAdminId(),
             $keys[8] => $this->getEmpTimeId(),
+            $keys[9] => $this->getMeetingTitle(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1205,6 +1254,9 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
             case 8:
                 $this->setEmpTimeId($value);
                 break;
+            case 9:
+                $this->setMeetingTitle($value);
+                break;
         } // switch()
     }
 
@@ -1238,6 +1290,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setListRequestTypeId($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setAdminId($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setEmpTimeId($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setMeetingTitle($arr[$keys[9]]);
     }
 
     /**
@@ -1258,6 +1311,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpRequestPeer::LIST_REQUEST_TYPE_ID)) $criteria->add(EmpRequestPeer::LIST_REQUEST_TYPE_ID, $this->list_request_type_id);
         if ($this->isColumnModified(EmpRequestPeer::ADMIN_ID)) $criteria->add(EmpRequestPeer::ADMIN_ID, $this->admin_id);
         if ($this->isColumnModified(EmpRequestPeer::EMP_TIME_ID)) $criteria->add(EmpRequestPeer::EMP_TIME_ID, $this->emp_time_id);
+        if ($this->isColumnModified(EmpRequestPeer::MEETING_TITLE)) $criteria->add(EmpRequestPeer::MEETING_TITLE, $this->meeting_title);
 
         return $criteria;
     }
@@ -1329,6 +1383,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
         $copyObj->setListRequestTypeId($this->getListRequestTypeId());
         $copyObj->setAdminId($this->getAdminId());
         $copyObj->setEmpTimeId($this->getEmpTimeId());
+        $copyObj->setMeetingTitle($this->getMeetingTitle());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1829,6 +1884,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
         $this->list_request_type_id = null;
         $this->admin_id = null;
         $this->emp_time_id = null;
+        $this->meeting_title = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;

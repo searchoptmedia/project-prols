@@ -25,13 +25,14 @@
                                     <th>Department</th>
                                     <th>Position</th>
                                     <th>Status</th>
+                                    <th>Capability</th>
                                     <th></th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 {% for emp in getEmployee %}
-                                    {% if emp.getProfileStatus == 0 and emp.EmpAcc.getRole == 'employee' %}
+
                                         <tr class="empProfile">
 
                                             <td>{{emp.getEmployeeNumber}}</td>
@@ -41,6 +42,7 @@
                                             <td>{{ emp.status }}</td>
                                             {% set capabilities = app.user.capabilities|split('') %}
                                             {% if user.role == 'ADMIN' %}
+                                                <td>{{ emp.EmpAcc.getcapabilities }}</td>
                                             <td style="float: right;"><button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
 
 
@@ -93,11 +95,21 @@
                                                     </button></td>
                                                 {% endif %}
                                                 </tr>
-                                    {% endif %}
+
                                 {% endfor %}
                                 </tbody>
                             </table>
                         </div>
+                        <ul class="pagination">
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                            <li class="active"><a href="#!">1</a></li>
+                            <li class="waves-effect"><a href="#!">2</a></li>
+                            <li class="waves-effect"><a href="#!">3</a></li>
+                            <li class="waves-effect"><a href="#!">4</a></li>
+                            <li class="waves-effect"><a href="#!">5</a></li>
+                            <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                        </ul>
+
                     </div>
                 </div>
 

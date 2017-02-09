@@ -32,21 +32,34 @@
                 </div>
 
                 <div class="agenda-buttons">
-                    <a class="waves-effect waves-light btn orange btn-reqmeeting " style="display: none;">Request Meeting</a>
+                    <a class="waves-effect waves-light btn orange btn-reqmeeting">Request Meeting</a>
                     <a class="waves-effect waves-light btn orange btn-reqleave">Request Leave</a>
                 </div>
 
                 <!------------REQUEST MEETING FORM------------->
                 <div class="form-reqmeeting">
+                    <div class="">
+                        <br/>
+                        <p>Meeting Title</p>
+                        <input type="text" name="meeting-title"/>
+                    </div>
                     <div class="reqmeeting-emp-tag" id="">
-                        <br/><br/>
-                      <br/><br/>
+                        <br/>
+                      <p>Tag Employee:</p>
                         <select class="select-emp-tag" multiple="multiple">
                             {% for acc in allacc %}
                             <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
                             {% endfor %}
                         </select>
 
+                    </div>
+                    <div class="Date-time-meeting">
+                        <p>Date:</p>
+                        <input type="text" placeholder="Date" class="datepicker" id="meeting_date"/>
+                        <p>From:</p>
+                        <input type="time" class="from-time" id="time-from"/>
+                        <p>To:</p>
+                        <input type="time" class="from-time" id="time-to"/>
                     </div>
                     <div class="input-field">
                         <input id="meeting" placeholder="Type your message here...">
@@ -102,50 +115,126 @@
 {% block customjs %}
 
     <script>
-        //request meeting function
-        var typeleave = '';
 
+        var typeleave = '';
+        $(document).ready(function(){
+            var dateMeeting = new Pikaday({ field: document.getElementById('meeting_date')
+            });
+            //set current Date Today
+            var dateToday = new Date();
+            var fullYear = dateToday.getFullYear();
+            var monthToday = dateToday.getMonth()+1;
+            var dayToday = dateToday.getDate();
+            if(dayToday<10) {
+                dayToday='0'+dayToday;
+            }
+            if(monthToday<10) {
+                monthToday = '0'+monthToday;
+            }
+            var appendDate = fullYear+"-"+monthToday+"-"+dayToday;
+            $('.datepicker').val(appendDate);
+            dateMeeting.setMinDate(new Date());
+        });
+        $('.close-modal-agenda').click(function(){
+        });
         $('.btn-submitmeeting').click(function(){
+            var reqmeetingTitle = $('#meeting-title').val();
             var reqmeetmessage =  $('#meeting').val();
             var tagged = [];
             var taggedemail = $('.select-emp-tag').select2("val");
 
-            console.log(taggedemail);
+            var meetingDate = $('#meeting_date').val(); //get the value of created datepicker
+            var meeting_time_from = $('#time-from').val(); //get the value of time From
+            var meeting_time_to = $('#time-to').val(); //get the value of time to
 
-            if(reqmeetmessage == ''){
-                $('#meeting').css({'border-color' : 'red    '});
+
+            var meeting_from = meetingDate + " " + meeting_time_from;
+            var meeting_to   = meetingDate + " " + meeting_time_to;
+
+            var meeting_from_unix = new Date(meeting_from).getTime();
+            var meeting_to_unix = new Date(meeting_to).getTime();
+            console.log(meeting_from_unix);
+            console.log(meeting_to_unix);
+
+            var from_meeting = meeting_from_unix;
+            var to_meeting   = meeting_to_unix;
+
+            if(reqmeetingTitle == ''){
+                $('#meeting-title').css({'border-color' : 'red'});
                 setTimeout(function(){
                     $('#meeting').css({'border-color': 'gray'})
                 }, 1000);
                 $('.required-field').show();
                 return;
             }
-
+            if(!taggedemail){
+                $('.select-emp-tag').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                $('.required-field').show();
+                return;
+            }
+            if(reqmeetmessage == ''){
+                $('#meeting').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                $('.required-field').show();
+                return;
+            }
+            if(!meeting_time_from){
+                $('#time-from').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                $('.required-field').show();
+                return;
+            }
+            if(!meeting_time_to){
+                $('#time-to').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                $('.required-field').show();
+                return;
+            }
+            if(from_meeting > to_meeting)
+            {
+                $('#time-from').css({'border-color' : 'red'});
+                setTimeout(function(){
+                    $('#meeting').css({'border-color': 'gray'})
+                }, 1000);
+                return;
+            }
             $('.loader-notif').show();
             $('.loader-notif').css({'top' : '0px'});
             $('.btn-submitmeeting').hide();
-
             $.post("{{ path('request_meeting') }}",
-                {
-                    reqmeetmessage:reqmeetmessage,
-                    taggedemail:taggedemail },
-                function(data){
-                    console.log(data);
-                    $('#meeting').val('');
-                    $('.required-field').hide();
-                    $('#daily_agenda').closeModal();
-                    $('.request-meeting-notif').css({'top':'0px'});
-                    setTimeout(function(){
-                        $('.request-meeting-notif').css({'top' : '-55px'});
-                    }, 5000);
-                }).always(function(data){
+                    {
+                        meetingTitle:reqmeetingTitle,
+                        reqmeetmessage:reqmeetmessage,
+                        taggedemail:taggedemail,
+                        meetingDate:meetingDate,
+                        meetingTimeFrom:meeting_from,
+                        meetingTimeTo:meeting_to
+                    },
+                    function(data){
+                        console.log(data);
+                        $('#meeting').val('');
+                        $('.required-field').hide();
+                        $('#daily_agenda').closeModal();
+                        $('.request-meeting-notif').css({'top':'0px'});
+                        setTimeout(function(){
+                            $('.request-meeting-notif').css({'top' : '-55px'});
+                        }, 5000);
+                    }).always(function(data){
                 console.log(data);
                 $('.loader-notif').hide();
                 $('.loader-notif').css({'top' : '-55px'});
                 $('.btn-submitmeeting').show();
             });
         });
-
         $('.btn-ip-cancel').click(function(e){
             e.preventDefault();
             $('.diff-ip-container').hide();
@@ -154,9 +243,7 @@
             e.preventDefault();
             $('.diff-ip-reason').show();
         });
-
         $('.modal-trigger').leanModal();
-
         function showBirthday() {
             var bdaynames = [];
             {% for names in userbdaynames %}
@@ -170,6 +257,7 @@
                 $('.modal-birthday-notify-container').hide();
             });
         }
+
 
     </script>
 

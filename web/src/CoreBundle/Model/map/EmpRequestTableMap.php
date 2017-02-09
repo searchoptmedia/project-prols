@@ -51,6 +51,7 @@ class EmpRequestTableMap extends TableMap
         $this->addForeignKey('list_request_type_id', 'ListRequestTypeId', 'INTEGER', 'list_request_type', 'id', false, null, null);
         $this->addForeignKey('admin_id', 'AdminId', 'INTEGER', 'emp_acc', 'id', false, null, null);
         $this->addColumn('emp_time_id', 'EmpTimeId', 'INTEGER', false, null, null);
+        $this->addColumn('meeting_title', 'MeetingTitle', 'VARCHAR', false, 100, null);
         // validators
     } // initialize()
 

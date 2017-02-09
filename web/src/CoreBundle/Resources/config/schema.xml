@@ -67,7 +67,7 @@
         <column name="list_request_type_id" phpName="ListRequestTypeId" type="INTEGER"/>
         <column name="admin_id" phpName="AdminId" type="INTEGER"/>
         <column name="emp_time_id" phpName="EmpTimeId" type="INTEGER"/>
-
+        <column name="meeting_title" type="VARCHAR" size="100"/>
         <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="emp_acc_id" foreign="id"/>
         </foreign-key>

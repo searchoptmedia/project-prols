@@ -23,7 +23,8 @@ class EventManagerController extends Controller
         $user = $this->getUser();
         $page = 'Manage Events';
         $id = $user->getId();
-        $timename = AdminController::timeInOut($id);
+        $admincontroller = new AdminController();
+        $timename = $admincontroller->timeInOut($id);
 
         $getEvents = ListEventsPeer::getAllEvents();
         $timedata = EmpTimePeer::getTime($id);

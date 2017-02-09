@@ -30,7 +30,7 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         return $_self ? $_self : null;
     }
-
+    
     public static function getAllAcceptedRequest(Criteria $c = null)
     {
         if(is_null($c)){

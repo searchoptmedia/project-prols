@@ -24,11 +24,12 @@
         {% if app.user.capabilities|length!='' %}
         <a href="{{ path('manage_employee') }}" class="collection-item manage-page">
             <i class="material-icons nav-icon">list</i> Manage Employees</a>
-        <a href="{{ path('view_request') }}" class="collection-item view-request-page" style="display:none">
+        {% endif %}
+        <a href="{{ path('view_request') }}" class="collection-item view-request-page">
             <i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}
                 <span class="new badge reqcount">
                 {{ requestcount }}</span></a>
-        {% endif %}
+
         {% endif %}
         <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
 

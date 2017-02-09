@@ -50,13 +50,11 @@ view_request:
 
 add_event_accepted_request:
     path: /addevent/acceptrequest
-    defaults: { _controller:AdminBundle:RequestType:addRequestCalendar }
+    defaults: { _controller: AdminBundle:RequestType:addRequestCalendar }
 
 notif_page:
     path: /notif
     defaults: { _controller: AdminBundle:RequestType:notif }
-
-
 
 time_in:
     path: /timein
