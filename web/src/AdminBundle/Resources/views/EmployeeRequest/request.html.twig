@@ -47,9 +47,9 @@
                             data-request="{{request.listRequestType.requestType}}">
                             <td>{{ request.meetingTitle }}</td>
                             <td>{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname}}</td>
-                            <td>{% if request.status == 'Pending' %}<label class="lbl-pending grey">{{request.status}}</label>
-                                {% elseif request.status == 'Accepted' %}<label class="lbl-pending green">{{request.status}}</label>
-                                {% elseif request.status == 'Declined' %}<label class="lbl-pending red">{{request.status}}</label>
+                            <td>{% if request.status == 'Pending' %}<button class="btn lbl-pending grey" style = "width: 130px;">{{request.status}}</button>
+                                {% elseif request.status == 'Accepted' %}<button class="btn lbl-pending green" style = "width: 130px;">{{request.status}}</button>
+                                {% elseif request.status == 'Declined' %}<button class="btn lbl-pending red" style = "width: 130px;">{{request.status}}</button>
                                 {% endif %}</td>
                             <td class="req-category"><strong>{{request.listRequestType.requestType|upper}}</strong></td>
                             <td>{{ request.dateStarted|date('n/d/Y')}}</td>
@@ -279,11 +279,6 @@
                 {% endif %}
             </ul>
             <!-- End of DS -->
-
-
-
-
-
     </div>
 
     </div>
@@ -453,7 +448,6 @@
                     $('.btn-sendtoemail').show();
                     $('.btn-reasoncancel').show();
                     $('.modal-footer').show();
-
                 }
             });
         });
