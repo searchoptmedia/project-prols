@@ -30,31 +30,31 @@ request_access:
 
 request_meeting:
     path:     /request/meeting/
-    defaults: { _controller: AdminBundle:RequestType:requestMeeting }
+    defaults: { _controller: AdminBundle:EmployeeRequest:requestMeeting }
 
 request_leave:
     path:     /request/leave
-    defaults: { _controller: AdminBundle:RequestType:requestLeave }
+    defaults: { _controller: AdminBundle:EmployeeRequest:requestLeave }
 
 status_accept_with_params:
     path:    /status/accept/{id}/{id2}
-    defaults: { _controller: AdminBundle:RequestType:statusAccept }
+    defaults: { _controller: AdminBundle:EmployeeRequest:statusAccept }
 
 status_accept:
     path:    /status/accept/
-    defaults: { _controller: AdminBundle:RequestType:statusAccept }
+    defaults: { _controller: AdminBundle:EmployeeRequest:statusAccept }
 
 view_request:
     path: /requests
-    defaults: { _controller: AdminBundle:RequestType:request }
+    defaults: { _controller: AdminBundle:EmployeeRequest:request }
 
 add_event_accepted_request:
     path: /addevent/acceptrequest
-    defaults: { _controller: AdminBundle:RequestType:addRequestCalendar }
+    defaults: { _controller: AdminBundle:EmployeeRequest:addRequestCalendar }
 
 notif_page:
     path: /notif
-    defaults: { _controller: AdminBundle:RequestType:notif }
+    defaults: { _controller: AdminBundle:EmployeeRequest:notif }
 
 time_in:
     path: /timein

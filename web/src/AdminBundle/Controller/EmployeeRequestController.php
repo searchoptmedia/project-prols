@@ -19,7 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use CoreBundle\Model\ListEventsPeer;
 
-class RequestTypeController extends Controller
+class EmployeeRequestController extends Controller
 {
     public function requestAction()
     {
@@ -39,8 +39,8 @@ class RequestTypeController extends Controller
             {
                 $getEmployeeRequest = EmpRequestPeer::getAllRequest();
             }
-            else{
-                $getRequestListType = ListRequestTypeQuery::create()
+            else {
+                /*$getRequestListType = ListRequestTypeQuery::create()
                     ->filterByRequestType(4)
                     ->find();
                 if($getRequestListType)
@@ -50,8 +50,11 @@ class RequestTypeController extends Controller
                         ->filterByEmpAccId($id)
                         ->endUse()
                         ->find();
+                }*/
 
-                }
+                $getEmployeeRequest = EmpRequestQuery::create()
+                    ->filterByEmpAccId($id)
+                    ->find();
             }
 
             $timedata = EmpTimePeer::getTime($id);
@@ -109,7 +112,7 @@ class RequestTypeController extends Controller
                 ->find()->count();
 
 
-            return $this->render('AdminBundle:RequestType:request.html.twig', array(
+            return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
                 'name' => $name,
                 'page' => $page,
                 'user' => $user,
