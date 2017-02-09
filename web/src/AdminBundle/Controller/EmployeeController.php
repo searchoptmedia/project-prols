@@ -17,6 +17,7 @@ use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use CoreBundle\Model\ListPos;
 use CoreBundle\Model\ListDept;
+use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpRequest;
