@@ -93,7 +93,7 @@ emp_page:
     defaults: { _controller: AdminBundle:Employee:employeeProfile }
 
 profile_page:
-    path: /profile
+    path: /profile/records/
     defaults: { _controller: AdminBundle:Employee:profile }
 
 manage_employee:

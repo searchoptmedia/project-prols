@@ -794,9 +794,7 @@ class EmployeeController extends Controller
 
             $checktimein = $timedata[$ctr]->getTimeIn();
             $checktimeout = $timedata[$ctr]->getTimeOut();
-//				$date_due = new DateTime();
-//				$hours_diff = date_diff($checktimein,$date_due);
-            //duration diff format
+
             if(!is_null($checktimein) && is_null($checktimeout))
             {
                 $currenttimein = $checktimein->format('h:i A');
@@ -894,7 +892,7 @@ class EmployeeController extends Controller
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'getAllTime' => $getAllTimeData,
             'timetoday' => $timetoday,
-//			'duration' => $hours_diff
+
         ));
 
     }
@@ -920,11 +918,7 @@ class EmployeeController extends Controller
         }
         else
         {
-
-
-
             $getEmployee     = EmpProfilePeer::getAllProfile();
-
             $getPos          = ListPosPeer::getAllPos();
             $getDept         = ListDeptPeer::getAllDept();
             $timedata        = EmpTimePeer::getTime($id);
