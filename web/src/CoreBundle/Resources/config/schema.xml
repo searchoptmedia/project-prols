@@ -60,7 +60,7 @@
     <table name="emp_request" phpName="EmpRequest" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="request" phpName="Request" type="VARCHAR" size="100"/>
-        <column name="status" phpName="Status" type="VARCHAR" size="45"/>
+        <column name="status" phpName="Status" type="INTEGER"/>
         <column name="date_started" phpName="DateStarted" type="TIMESTAMP"/>
         <column name="date_ended" phpName="DateEnded" type="TIMESTAMP"/>
         <column name="emp_acc_id" phpName="EmpAccId" type="INTEGER"/>
