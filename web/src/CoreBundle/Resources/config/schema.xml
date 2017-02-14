@@ -136,11 +136,22 @@
         <foreign-key foreignTable="list_pos" name="fk_emp_profile_list_pos1" onDelete="RESTRICT" onUpdate="RESTRICT">
           <reference local="list_pos_id" foreign="id"/>
         </foreign-key>
+        <foreign-key foreignTable="emp_status_type">
+            <reference local="status" foreign="id"/>
+        </foreign-key>
         <index name="fk_emp_profile_emp_acc_idx">
           <index-column name="emp_acc_acc_id"/>
         </index>
         <vendor type="mysql">
           <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="emp_status_type" phpName="EmpStatusType" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -208,16 +219,27 @@
         <column name="date" phpName="Date" type="TIMESTAMP" required="true"/>
         <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
         <column name="desc" phpName="Description" type="LONGVARCHAR" size="1000" required="true"/>
-        <column name="type" phpName="Type" type="VARCHAR" size="45" required="true"/>
+        <column name="type" phpName="Type" type="INTEGER" required="true"/>
+        <foreign-key foreignTable="list_events_type">
+            <reference local="type" foreign="id"/>
+        </foreign-key>
         <vendor type="mysql">
           <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="list_events_type" phpName="ListEventsType" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
     <table name="list_ip" phpName="ListIp" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="allowed_ip" phpName="AllowedIp" type="VARCHAR" size="45" required="true"/>
-        <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <vendor type="mysql">
           <parameter name="Engine" value="InnoDB"/>
         </vendor>
