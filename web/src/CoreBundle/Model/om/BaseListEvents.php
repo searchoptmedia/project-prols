@@ -16,6 +16,8 @@ use \PropelPDO;
 use CoreBundle\Model\ListEvents;
 use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListEventsQuery;
+use CoreBundle\Model\ListEventsType;
+use CoreBundle\Model\ListEventsTypeQuery;
 
 abstract class BaseListEvents extends BaseObject implements Persistent
 {
@@ -64,9 +66,14 @@ abstract class BaseListEvents extends BaseObject implements Persistent
 
     /**
      * The value for the type field.
-     * @var        string
+     * @var        int
      */
     protected $type;
+
+    /**
+     * @var        ListEventsType
+     */
+    protected $aListEventsType;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -164,7 +171,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     /**
      * Get the [type] column value.
      * 
-     * @return string
+     * @return int
      */
     public function getType()
     {
@@ -261,18 +268,22 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     /**
      * Set the value of [type] column.
      * 
-     * @param  string $v new value
+     * @param  int $v new value
      * @return ListEvents The current object (for fluent API support)
      */
     public function setType($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
         if ($this->type !== $v) {
             $this->type = $v;
             $this->modifiedColumns[] = ListEventsPeer::TYPE;
+        }
+
+        if ($this->aListEventsType !== null && $this->aListEventsType->getId() !== $v) {
+            $this->aListEventsType = null;
         }
 
 
@@ -315,7 +326,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $this->date = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
             $this->name = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
             $this->desc = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-            $this->type = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+            $this->type = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -348,6 +359,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     public function ensureConsistency()
     {
 
+        if ($this->aListEventsType !== null && $this->type !== $this->aListEventsType->getId()) {
+            $this->aListEventsType = null;
+        }
     } // ensureConsistency
 
     /**
@@ -387,6 +401,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aListEventsType = null;
         } // if (deep)
     }
 
@@ -500,6 +515,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aListEventsType !== null) {
+                if ($this->aListEventsType->isModified() || $this->aListEventsType->isNew()) {
+                    $affectedRows += $this->aListEventsType->save($con);
+                }
+                $this->setListEventsType($this->aListEventsType);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -576,7 +603,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                         $stmt->bindValue($identifier, $this->desc, PDO::PARAM_STR);
                         break;
                     case '`type`':						
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
+                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -672,6 +699,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $failureMap = array();
 
 
+            // We call the validate method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aListEventsType !== null) {
+                if (!$this->aListEventsType->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aListEventsType->getValidationFailures());
+                }
+            }
+
+
             if (($retval = ListEventsPeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
             }
@@ -744,10 +783,11 @@ abstract class BaseListEvents extends BaseObject implements Persistent
      *                    Defaults to BasePeer::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to true.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
         if (isset($alreadyDumpedObjects['ListEvents'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
@@ -766,6 +806,11 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $result[$key] = $virtualColumn;
         }
         
+        if ($includeForeignObjects) {
+            if (null !== $this->aListEventsType) {
+                $result['ListEventsType'] = $this->aListEventsType->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -926,6 +971,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $copyObj->setName($this->getName());
         $copyObj->setDescription($this->getDescription());
         $copyObj->setType($this->getType());
+
+        if ($deepCopy && !$this->startCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+            // store object hash to prevent cycle
+            $this->startCopy = true;
+
+            //unflag object copy
+            $this->startCopy = false;
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -973,6 +1030,58 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
+     * Declares an association between this object and a ListEventsType object.
+     *
+     * @param                  ListEventsType $v
+     * @return ListEvents The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setListEventsType(ListEventsType $v = null)
+    {
+        if ($v === null) {
+            $this->setType(NULL);
+        } else {
+            $this->setType($v->getId());
+        }
+
+        $this->aListEventsType = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ListEventsType object, it will not be re-added.
+        if ($v !== null) {
+            $v->addListEvents($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ListEventsType object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return ListEventsType The associated ListEventsType object.
+     * @throws PropelException
+     */
+    public function getListEventsType(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aListEventsType === null && ($this->type !== null) && $doQuery) {
+            $this->aListEventsType = ListEventsTypeQuery::create()->findPk($this->type, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aListEventsType->addListEventss($this);
+             */
+        }
+
+        return $this->aListEventsType;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -1004,10 +1113,14 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->aListEventsType instanceof Persistent) {
+              $this->aListEventsType->clearAllReferences($deep);
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        $this->aListEventsType = null;
     }
 
     /**

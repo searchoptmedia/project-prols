@@ -32,13 +32,13 @@ abstract class BaseEmpProfilePeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\EmpProfileTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 15;
+    const NUM_COLUMNS = 14;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 15;
+    const NUM_HYDRATE_COLUMNS = 14;
 
     /** the column name for the id field */
     const ID = 'emp_profile.id';
@@ -82,9 +82,6 @@ abstract class BaseEmpProfilePeer
     /** the column name for the status field */
     const STATUS = 'emp_profile.status';
 
-    /** the column name for the profile_status field */
-    const PROFILE_STATUS = 'emp_profile.profile_status';
-
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -104,12 +101,12 @@ abstract class BaseEmpProfilePeer
      * e.g. EmpProfilePeer::$fieldNames[EmpProfilePeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'EmpAccAccId', 'Fname', 'Lname', 'Mname', 'Bday', 'Address', 'Gender', 'ImgPath', 'DateJoined', 'EmployeeNumber', 'ListDeptDeptId', 'ListPosPosId', 'Status', 'ProfileStatus', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'empAccAccId', 'fname', 'lname', 'mname', 'bday', 'address', 'gender', 'imgPath', 'dateJoined', 'employeeNumber', 'listDeptDeptId', 'listPosPosId', 'status', 'profileStatus', ),
-        BasePeer::TYPE_COLNAME => array (EmpProfilePeer::ID, EmpProfilePeer::EMP_ACC_ACC_ID, EmpProfilePeer::FNAME, EmpProfilePeer::LNAME, EmpProfilePeer::MNAME, EmpProfilePeer::BDAY, EmpProfilePeer::ADDRESS, EmpProfilePeer::GENDER, EmpProfilePeer::IMG_PATH, EmpProfilePeer::DATE_JOINED, EmpProfilePeer::EMP_NUM, EmpProfilePeer::LIST_DEPT_ID, EmpProfilePeer::LIST_POS_ID, EmpProfilePeer::STATUS, EmpProfilePeer::PROFILE_STATUS, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'EMP_ACC_ACC_ID', 'FNAME', 'LNAME', 'MNAME', 'BDAY', 'ADDRESS', 'GENDER', 'IMG_PATH', 'DATE_JOINED', 'EMP_NUM', 'LIST_DEPT_ID', 'LIST_POS_ID', 'STATUS', 'PROFILE_STATUS', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'emp_acc_acc_id', 'fname', 'lname', 'mname', 'bday', 'address', 'gender', 'img_path', 'date_joined', 'emp_num', 'list_dept_id', 'list_pos_id', 'status', 'profile_status', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'EmpAccAccId', 'Fname', 'Lname', 'Mname', 'Bday', 'Address', 'Gender', 'ImgPath', 'DateJoined', 'EmployeeNumber', 'ListDeptDeptId', 'ListPosPosId', 'Status', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'empAccAccId', 'fname', 'lname', 'mname', 'bday', 'address', 'gender', 'imgPath', 'dateJoined', 'employeeNumber', 'listDeptDeptId', 'listPosPosId', 'status', ),
+        BasePeer::TYPE_COLNAME => array (EmpProfilePeer::ID, EmpProfilePeer::EMP_ACC_ACC_ID, EmpProfilePeer::FNAME, EmpProfilePeer::LNAME, EmpProfilePeer::MNAME, EmpProfilePeer::BDAY, EmpProfilePeer::ADDRESS, EmpProfilePeer::GENDER, EmpProfilePeer::IMG_PATH, EmpProfilePeer::DATE_JOINED, EmpProfilePeer::EMP_NUM, EmpProfilePeer::LIST_DEPT_ID, EmpProfilePeer::LIST_POS_ID, EmpProfilePeer::STATUS, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'EMP_ACC_ACC_ID', 'FNAME', 'LNAME', 'MNAME', 'BDAY', 'ADDRESS', 'GENDER', 'IMG_PATH', 'DATE_JOINED', 'EMP_NUM', 'LIST_DEPT_ID', 'LIST_POS_ID', 'STATUS', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'emp_acc_acc_id', 'fname', 'lname', 'mname', 'bday', 'address', 'gender', 'img_path', 'date_joined', 'emp_num', 'list_dept_id', 'list_pos_id', 'status', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -119,12 +116,12 @@ abstract class BaseEmpProfilePeer
      * e.g. EmpProfilePeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'EmpAccAccId' => 1, 'Fname' => 2, 'Lname' => 3, 'Mname' => 4, 'Bday' => 5, 'Address' => 6, 'Gender' => 7, 'ImgPath' => 8, 'DateJoined' => 9, 'EmployeeNumber' => 10, 'ListDeptDeptId' => 11, 'ListPosPosId' => 12, 'Status' => 13, 'ProfileStatus' => 14, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'empAccAccId' => 1, 'fname' => 2, 'lname' => 3, 'mname' => 4, 'bday' => 5, 'address' => 6, 'gender' => 7, 'imgPath' => 8, 'dateJoined' => 9, 'employeeNumber' => 10, 'listDeptDeptId' => 11, 'listPosPosId' => 12, 'status' => 13, 'profileStatus' => 14, ),
-        BasePeer::TYPE_COLNAME => array (EmpProfilePeer::ID => 0, EmpProfilePeer::EMP_ACC_ACC_ID => 1, EmpProfilePeer::FNAME => 2, EmpProfilePeer::LNAME => 3, EmpProfilePeer::MNAME => 4, EmpProfilePeer::BDAY => 5, EmpProfilePeer::ADDRESS => 6, EmpProfilePeer::GENDER => 7, EmpProfilePeer::IMG_PATH => 8, EmpProfilePeer::DATE_JOINED => 9, EmpProfilePeer::EMP_NUM => 10, EmpProfilePeer::LIST_DEPT_ID => 11, EmpProfilePeer::LIST_POS_ID => 12, EmpProfilePeer::STATUS => 13, EmpProfilePeer::PROFILE_STATUS => 14, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'EMP_ACC_ACC_ID' => 1, 'FNAME' => 2, 'LNAME' => 3, 'MNAME' => 4, 'BDAY' => 5, 'ADDRESS' => 6, 'GENDER' => 7, 'IMG_PATH' => 8, 'DATE_JOINED' => 9, 'EMP_NUM' => 10, 'LIST_DEPT_ID' => 11, 'LIST_POS_ID' => 12, 'STATUS' => 13, 'PROFILE_STATUS' => 14, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'emp_acc_acc_id' => 1, 'fname' => 2, 'lname' => 3, 'mname' => 4, 'bday' => 5, 'address' => 6, 'gender' => 7, 'img_path' => 8, 'date_joined' => 9, 'emp_num' => 10, 'list_dept_id' => 11, 'list_pos_id' => 12, 'status' => 13, 'profile_status' => 14, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'EmpAccAccId' => 1, 'Fname' => 2, 'Lname' => 3, 'Mname' => 4, 'Bday' => 5, 'Address' => 6, 'Gender' => 7, 'ImgPath' => 8, 'DateJoined' => 9, 'EmployeeNumber' => 10, 'ListDeptDeptId' => 11, 'ListPosPosId' => 12, 'Status' => 13, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'empAccAccId' => 1, 'fname' => 2, 'lname' => 3, 'mname' => 4, 'bday' => 5, 'address' => 6, 'gender' => 7, 'imgPath' => 8, 'dateJoined' => 9, 'employeeNumber' => 10, 'listDeptDeptId' => 11, 'listPosPosId' => 12, 'status' => 13, ),
+        BasePeer::TYPE_COLNAME => array (EmpProfilePeer::ID => 0, EmpProfilePeer::EMP_ACC_ACC_ID => 1, EmpProfilePeer::FNAME => 2, EmpProfilePeer::LNAME => 3, EmpProfilePeer::MNAME => 4, EmpProfilePeer::BDAY => 5, EmpProfilePeer::ADDRESS => 6, EmpProfilePeer::GENDER => 7, EmpProfilePeer::IMG_PATH => 8, EmpProfilePeer::DATE_JOINED => 9, EmpProfilePeer::EMP_NUM => 10, EmpProfilePeer::LIST_DEPT_ID => 11, EmpProfilePeer::LIST_POS_ID => 12, EmpProfilePeer::STATUS => 13, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'EMP_ACC_ACC_ID' => 1, 'FNAME' => 2, 'LNAME' => 3, 'MNAME' => 4, 'BDAY' => 5, 'ADDRESS' => 6, 'GENDER' => 7, 'IMG_PATH' => 8, 'DATE_JOINED' => 9, 'EMP_NUM' => 10, 'LIST_DEPT_ID' => 11, 'LIST_POS_ID' => 12, 'STATUS' => 13, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'emp_acc_acc_id' => 1, 'fname' => 2, 'lname' => 3, 'mname' => 4, 'bday' => 5, 'address' => 6, 'gender' => 7, 'img_path' => 8, 'date_joined' => 9, 'emp_num' => 10, 'list_dept_id' => 11, 'list_pos_id' => 12, 'status' => 13, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, )
     );
 
     /**
@@ -212,7 +209,6 @@ abstract class BaseEmpProfilePeer
             $criteria->addSelectColumn(EmpProfilePeer::LIST_DEPT_ID);
             $criteria->addSelectColumn(EmpProfilePeer::LIST_POS_ID);
             $criteria->addSelectColumn(EmpProfilePeer::STATUS);
-            $criteria->addSelectColumn(EmpProfilePeer::PROFILE_STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.emp_acc_acc_id');
@@ -228,7 +224,6 @@ abstract class BaseEmpProfilePeer
             $criteria->addSelectColumn($alias . '.list_dept_id');
             $criteria->addSelectColumn($alias . '.list_pos_id');
             $criteria->addSelectColumn($alias . '.status');
-            $criteria->addSelectColumn($alias . '.profile_status');
         }
     }
 

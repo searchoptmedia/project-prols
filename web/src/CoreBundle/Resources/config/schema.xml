@@ -7,13 +7,14 @@
         <column name="password" phpName="Password" type="VARCHAR" size="45" required="true"/>
         <column name="timestamp" phpName="Timestamp" type="TIMESTAMP" required="true"/>
         <column name="ip_add" phpName="IpAdd" type="VARCHAR" size="45" required="true"/>
-        <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <column name="email" phpName="Email" type="VARCHAR" size="45" required="true"/>
         <column name="role" phpName="Role" type="VARCHAR" size="45" required="true"/>
         <column name="key" phpName="Key" type="VARCHAR" size="255" />
-        <column name="capabilities" phpName="Capabilities" type="VARCHAR" size="20" />
+        <column name="created_by" phpName="CreatedBy" type="INTEGER" required="true"/>
+        <column name="last_updated_by" phpName="LastUpdatedBy" type="INTEGER" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -23,19 +24,19 @@
         <column name="emp_profile_id" phpName="EmpProfileId" type="INTEGER" required="true"/>
         <column name="list_cont_types_id" phpName="ListContTypesId" type="INTEGER" required="true"/>
         <foreign-key foreignTable="emp_profile" name="fk_emp_contact_emp_profile1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="emp_profile_id" foreign="id"/>
+            <reference local="emp_profile_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="list_cont_types" name="fk_emp_contact_list_cont_types1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="list_cont_types_id" foreign="id"/>
+            <reference local="list_cont_types_id" foreign="id"/>
         </foreign-key>
         <index name="fk_emp_contact_emp_profile1_idx">
-          <index-column name="emp_profile_id"/>
+            <index-column name="emp_profile_id"/>
         </index>
         <index name="fk_emp_contact_list_cont_types1_idx">
-          <index-column name="list_cont_types_id"/>
+            <index-column name="list_cont_types_id"/>
         </index>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -51,28 +52,26 @@
         <column name="emp_time_id" phpName="EmpTimeId" type="INTEGER"/>
         <column name="meeting_title" type="VARCHAR" size="100"/>
         <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="emp_acc_id" foreign="id"/>
+            <reference local="emp_acc_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="list_request_type" name="fk_emp_request_list_request_type1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="list_request_type_id" foreign="id"/>
+            <reference local="list_request_type_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc2" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="admin_id" foreign="id"/>
+            <reference local="admin_id" foreign="id"/>
         </foreign-key>
-
-
         <index name="fk_emp_request_emp_acc1_idx">
-          <index-column name="emp_acc_id"/>
+            <index-column name="emp_acc_id"/>
         </index>
         <index name="fk_emp_request_emp_acc2_idx">
-          <index-column name="admin_id"/>
+            <index-column name="admin_id"/>
         </index>
         <index name="fk_emp_request_list_request_type1_idx">
-          <index-column name="list_request_type_id"/>
+            <index-column name="list_request_type_id"/>
         </index>
 
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -100,37 +99,25 @@
         <column name="bday" phpName="Bday" type="TIMESTAMP" required="true"/>
         <column name="address" phpName="Address" type="VARCHAR" size="45" required="true"/>
         <column name="gender" phpName="Gender" type="VARCHAR" size="10" required="true"/>
-        <column name="img_path" phpName="ImgPath" type="VARCHAR" size="45" required="true"/>
+        <column name="img_path" phpName="ImgPath" type="VARCHAR" size="50" required="true"/>
         <column name="date_joined" phpName="DateJoined" type="TIMESTAMP" required="true"/>
         <column name="emp_num" phpName="EmployeeNumber" type="VARCHAR" size="45" required="true"/>
         <column name="list_dept_id" phpName="ListDeptDeptId" type="INTEGER" required="true"/>
         <column name="list_pos_id" phpName="ListPosPosId" type="INTEGER" required="true"/>
-        <column name="status" phpName="Status" type="VARCHAR" size="45" required="true"/>
-         <column name="profile_status" phpName="ProfileStatus" type="INTEGER" required="true"/>
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
 
         <foreign-key foreignTable="emp_acc" name="fk_emp_profile_emp_acc" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="emp_acc_acc_id" foreign="id"/>
+            <reference local="emp_acc_acc_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="list_dept" name="fk_emp_profile_list_dept1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="list_dept_id" foreign="id"/>
+            <reference local="list_dept_id" foreign="id"/>
         </foreign-key>
         <foreign-key foreignTable="list_pos" name="fk_emp_profile_list_pos1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="list_pos_id" foreign="id"/>
-        </foreign-key>
-        <foreign-key foreignTable="emp_status_type">
-            <reference local="status" foreign="id"/>
+            <reference local="list_pos_id" foreign="id"/>
         </foreign-key>
         <index name="fk_emp_profile_emp_acc_idx">
-          <index-column name="emp_acc_acc_id"/>
+            <index-column name="emp_acc_acc_id"/>
         </index>
-        <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
-        </vendor>
-    </table>
-
-    <table name="emp_status_type" phpName="EmpStatusType" idMethod="native">
-        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
             <parameter name="Engine" value="InnoDB"/>
         </vendor>
@@ -146,36 +133,15 @@
         <column name="manhours" phpName="Manhours" type="FLOAT" required="true"/>
         <column name="overtime" phpName="Overtime" type="FLOAT" required="true"/>
         <column name="check_ip" phpName="CheckIp" type="INTEGER" required="true"/>
-
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <foreign-key foreignTable="emp_acc" name="fk_emp_time_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="emp_acc_acc_id" foreign="id"/>
+            <reference local="emp_acc_acc_id" foreign="id"/>
         </foreign-key>
         <index name="fk_emp_time_emp_acc1_idx">
-          <index-column name="emp_acc_acc_id"/>
+            <index-column name="emp_acc_acc_id"/>
         </index>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
-        </vendor>
-    </table>
-
-    <table name="emp_time_reject" phpName="EmpTimeReject" idMethod="native">
-        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="time_in" phpName="TimeIn" type="TIMESTAMP"/>
-        <column name="time_out" phpName="TimeOut" type="TIMESTAMP"/>
-        <column name="ip_add" phpName="IpAdd" type="VARCHAR" size="45"/>
-        <column name="date" phpName="Date" type="TIMESTAMP"/>
-        <column name="emp_acc_acc_id" phpName="EmpAccAccId" type="INTEGER"/>
-        <column name="manhours" phpName="Manhours" type="FLOAT"/>
-        <column name="overtime" phpName="Overtime" type="FLOAT"/>
-        <column name="check_ip" phpName="CheckIp" type="INTEGER"/>
-        <foreign-key foreignTable="emp_acc" name="fk_emp_time_reject_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
-          <reference local="emp_acc_acc_id" foreign="id"/>
-        </foreign-key>
-        <index name="fk_emp_time_reject_emp_acc1_idx">
-          <index-column name="emp_acc_acc_id"/>
-        </index>
-        <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -183,7 +149,7 @@
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="contact_type" phpName="ContactType" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -191,7 +157,7 @@
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="dept_names" phpName="DeptNames" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -205,7 +171,7 @@
             <reference local="type" foreign="id"/>
         </foreign-key>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -222,7 +188,7 @@
         <column name="allowed_ip" phpName="AllowedIp" type="VARCHAR" size="45" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -230,7 +196,7 @@
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="request_type" phpName="RequestType" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
 
@@ -238,7 +204,33 @@
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="pos_names" phpName="PosNames" type="VARCHAR" size="45" required="true"/>
         <vendor type="mysql">
-          <parameter name="Engine" value="InnoDB"/>
+            <parameter name="Engine" value="InnoDB"/>
         </vendor>
     </table>
+
+    <table name="emp_capabilities" phpName="EmpCapabilities" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="empid" phpName="EmpId" type="INTEGER"/>
+        <column name="capid" phpName="CapId" type="INTEGER"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="capabilities_list" phpName="CapabilitiesList" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="capability" phpName="Capability" type="VARCHAR" size="45" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="emp_status_type" phpName="EmpStatusType" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
 </database>

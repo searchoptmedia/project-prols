@@ -51,6 +51,7 @@ class EmpTimeTableMap extends TableMap
         $this->addColumn('manhours', 'Manhours', 'FLOAT', true, null, null);
         $this->addColumn('overtime', 'Overtime', 'FLOAT', true, null, null);
         $this->addColumn('check_ip', 'CheckIp', 'INTEGER', true, null, null);
+        $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
         // validators
     } // initialize()
 
@@ -60,7 +61,6 @@ class EmpTimeTableMap extends TableMap
     public function buildRelations()
     {
         $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('emp_acc_acc_id' => 'id', ), null, null);
-        $this->addRelation('EmpApproval', 'CoreBundle\\Model\\EmpApproval', RelationMap::ONE_TO_MANY, array('id' => 'emp_time_id', ), null, null, 'EmpApprovals');
     } // buildRelations()
 
 } // EmpTimeTableMap
