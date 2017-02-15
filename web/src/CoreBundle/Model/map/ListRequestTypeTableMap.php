@@ -43,7 +43,7 @@ class ListRequestTypeTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('request_type', 'EmployeeRequest', 'VARCHAR', true, 45, null);
+        $this->addColumn('request_type', 'RequestType', 'VARCHAR', true, 45, null);
         // validators
     } // initialize()
 

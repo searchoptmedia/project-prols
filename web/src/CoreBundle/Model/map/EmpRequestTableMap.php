@@ -44,7 +44,7 @@ class EmpRequestTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('request', 'Request', 'VARCHAR', false, 100, null);
-        $this->addColumn('status', 'Status', 'VARCHAR', false, 45, null);
+        $this->addColumn('status', 'Status', 'INTEGER', false, null, null);
         $this->addColumn('date_started', 'DateStarted', 'TIMESTAMP', false, null, null);
         $this->addColumn('date_ended', 'DateEnded', 'TIMESTAMP', false, null, null);
         $this->addForeignKey('emp_acc_id', 'EmpAccId', 'INTEGER', 'emp_acc', 'id', false, null, null);

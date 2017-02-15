@@ -36,13 +36,9 @@ request_leave:
     path:     /request/leave
     defaults: { _controller: AdminBundle:EmployeeRequest:requestLeave }
 
-status_accept_with_params:
-    path:    /status/accept/{id}/{id2}
-    defaults: { _controller: AdminBundle:EmployeeRequest:statusAccept }
-
-status_accept:
-    path:    /status/accept/
-    defaults: { _controller: AdminBundle:EmployeeRequest:statusAccept }
+change_status:
+    path:    /status/change/
+    defaults: { _controller: AdminBundle:EmployeeRequest:statusChange }
 
 view_request:
     path: /requests
@@ -55,6 +51,15 @@ add_event_accepted_request:
 notif_page:
     path: /notif
     defaults: { _controller: AdminBundle:EmployeeRequest:notif }
+
+edit_request:
+    path: /request/edit
+    defaults: { _controller: AdminBundle:EmployeeRequest:editRequest }
+
+delete_request:
+    path: /request/delete
+    defaults: { _controller: AdminBundle:EmployeeRequest:deleteRequest }
+
 
 time_in:
     path: /timein

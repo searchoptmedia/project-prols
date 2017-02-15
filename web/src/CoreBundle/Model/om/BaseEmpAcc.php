@@ -24,8 +24,6 @@ use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimeQuery;
-use CoreBundle\Model\EmpTimeReject;
-use CoreBundle\Model\EmpTimeRejectQuery;
 use CoreBundle\Model\RequestMeetingTags;
 use CoreBundle\Model\RequestMeetingTagsQuery;
 
@@ -82,7 +80,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * The value for the status field.
-     * @var        string
+     * @var        int
      */
     protected $status;
 
@@ -105,10 +103,16 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $key;
 
     /**
-     * The value for the capabilities field.
-     * @var        string
+     * The value for the created_by field.
+     * @var        int
      */
-    protected $capabilities;
+    protected $created_by;
+
+    /**
+     * The value for the last_updated_by field.
+     * @var        int
+     */
+    protected $last_updated_by;
 
     /**
      * @var        PropelObjectCollection|EmpRequest[] Collection to store aggregation of EmpRequest objects.
@@ -139,12 +143,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      */
     protected $collEmpTimes;
     protected $collEmpTimesPartial;
-
-    /**
-     * @var        PropelObjectCollection|EmpTimeReject[] Collection to store aggregation of EmpTimeReject objects.
-     */
-    protected $collEmpTimeRejects;
-    protected $collEmpTimeRejectsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -195,12 +193,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $empTimesScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var		PropelObjectCollection
-     */
-    protected $empTimeRejectsScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -289,7 +281,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     /**
      * Get the [status] column value.
      * 
-     * @return string
+     * @return int
      */
     public function getStatus()
     {
@@ -331,14 +323,25 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
-     * Get the [capabilities] column value.
+     * Get the [created_by] column value.
      * 
-     * @return string
+     * @return int
      */
-    public function getCapabilities()
+    public function getCreatedBy()
     {
 
-        return $this->capabilities;
+        return $this->created_by;
+    }
+
+    /**
+     * Get the [last_updated_by] column value.
+     * 
+     * @return int
+     */
+    public function getLastUpdatedBy()
+    {
+
+        return $this->last_updated_by;
     }
 
     /**
@@ -451,13 +454,13 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     /**
      * Set the value of [status] column.
      * 
-     * @param  string $v new value
+     * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
     public function setStatus($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
         if ($this->status !== $v) {
@@ -533,25 +536,46 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     } // setKey()
 
     /**
-     * Set the value of [capabilities] column.
+     * Set the value of [created_by] column.
      * 
-     * @param  string $v new value
+     * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
-    public function setCapabilities($v)
+    public function setCreatedBy($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
-        if ($this->capabilities !== $v) {
-            $this->capabilities = $v;
-            $this->modifiedColumns[] = EmpAccPeer::CAPABILITIES;
+        if ($this->created_by !== $v) {
+            $this->created_by = $v;
+            $this->modifiedColumns[] = EmpAccPeer::CREATED_BY;
         }
 
 
         return $this;
-    } // setCapabilities()
+    } // setCreatedBy()
+
+    /**
+     * Set the value of [last_updated_by] column.
+     * 
+     * @param  int $v new value
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setLastUpdatedBy($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->last_updated_by !== $v) {
+            $this->last_updated_by = $v;
+            $this->modifiedColumns[] = EmpAccPeer::LAST_UPDATED_BY;
+        }
+
+
+        return $this;
+    } // setLastUpdatedBy()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -590,11 +614,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->password = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
             $this->timestamp = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
             $this->ip_add = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
-            $this->status = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+            $this->status = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
             $this->email = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
             $this->role = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
             $this->key = ($row[$startcol + 8] !== null) ? (string) $row[$startcol + 8] : null;
-            $this->capabilities = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
+            $this->created_by = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
+            $this->last_updated_by = ($row[$startcol + 10] !== null) ? (int) $row[$startcol + 10] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -604,7 +629,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 10; // 10 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 11; // 11 = EmpAccPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpAcc object", $e);
@@ -675,8 +700,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpProfiles = null;
 
             $this->collEmpTimes = null;
-
-            $this->collEmpTimeRejects = null;
 
         } // if (deep)
     }
@@ -890,24 +913,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 }
             }
 
-            if ($this->empTimeRejectsScheduledForDeletion !== null) {
-                if (!$this->empTimeRejectsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->empTimeRejectsScheduledForDeletion as $empTimeReject) {
-                        // need to save related object because we set the relation to null
-                        $empTimeReject->save($con);
-                    }
-                    $this->empTimeRejectsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collEmpTimeRejects !== null) {
-                foreach ($this->collEmpTimeRejects as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             $this->alreadyInSave = false;
 
         }
@@ -961,8 +966,11 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::KEY)) {
             $modifiedColumns[':p' . $index++]  = '`key`';
         }
-        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) {
-            $modifiedColumns[':p' . $index++]  = '`capabilities`';
+        if ($this->isColumnModified(EmpAccPeer::CREATED_BY)) {
+            $modifiedColumns[':p' . $index++]  = '`created_by`';
+        }
+        if ($this->isColumnModified(EmpAccPeer::LAST_UPDATED_BY)) {
+            $modifiedColumns[':p' . $index++]  = '`last_updated_by`';
         }
 
         $sql = sprintf(
@@ -991,7 +999,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
                     case '`status`':						
-                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                     case '`email`':						
                         $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
@@ -1002,8 +1010,11 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     case '`key`':						
                         $stmt->bindValue($identifier, $this->key, PDO::PARAM_STR);
                         break;
-                    case '`capabilities`':						
-                        $stmt->bindValue($identifier, $this->capabilities, PDO::PARAM_STR);
+                    case '`created_by`':						
+                        $stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
+                        break;
+                    case '`last_updated_by`':						
+                        $stmt->bindValue($identifier, $this->last_updated_by, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -1144,14 +1155,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     }
                 }
 
-                if ($this->collEmpTimeRejects !== null) {
-                    foreach ($this->collEmpTimeRejects as $referrerFK) {
-                        if (!$referrerFK->validate($columns)) {
-                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-                        }
-                    }
-                }
-
 
             $this->alreadyInValidation = false;
         }
@@ -1215,7 +1218,10 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 return $this->getKey();
                 break;
             case 9:
-                return $this->getCapabilities();
+                return $this->getCreatedBy();
+                break;
+            case 10:
+                return $this->getLastUpdatedBy();
                 break;
             default:
                 return null;
@@ -1255,7 +1261,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $keys[6] => $this->getEmail(),
             $keys[7] => $this->getRole(),
             $keys[8] => $this->getKey(),
-            $keys[9] => $this->getCapabilities(),
+            $keys[9] => $this->getCreatedBy(),
+            $keys[10] => $this->getLastUpdatedBy(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1277,9 +1284,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             if (null !== $this->collEmpTimes) {
                 $result['EmpTimes'] = $this->collEmpTimes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collEmpTimeRejects) {
-                $result['EmpTimeRejects'] = $this->collEmpTimeRejects->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1343,7 +1347,10 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 $this->setKey($value);
                 break;
             case 9:
-                $this->setCapabilities($value);
+                $this->setCreatedBy($value);
+                break;
+            case 10:
+                $this->setLastUpdatedBy($value);
                 break;
         } // switch()
     }
@@ -1378,7 +1385,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setEmail($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setRole($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setKey($arr[$keys[8]]);
-        if (array_key_exists($keys[9], $arr)) $this->setCapabilities($arr[$keys[9]]);
+        if (array_key_exists($keys[9], $arr)) $this->setCreatedBy($arr[$keys[9]]);
+        if (array_key_exists($keys[10], $arr)) $this->setLastUpdatedBy($arr[$keys[10]]);
     }
 
     /**
@@ -1399,7 +1407,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpAccPeer::EMAIL)) $criteria->add(EmpAccPeer::EMAIL, $this->email);
         if ($this->isColumnModified(EmpAccPeer::ROLE)) $criteria->add(EmpAccPeer::ROLE, $this->role);
         if ($this->isColumnModified(EmpAccPeer::KEY)) $criteria->add(EmpAccPeer::KEY, $this->key);
-        if ($this->isColumnModified(EmpAccPeer::CAPABILITIES)) $criteria->add(EmpAccPeer::CAPABILITIES, $this->capabilities);
+        if ($this->isColumnModified(EmpAccPeer::CREATED_BY)) $criteria->add(EmpAccPeer::CREATED_BY, $this->created_by);
+        if ($this->isColumnModified(EmpAccPeer::LAST_UPDATED_BY)) $criteria->add(EmpAccPeer::LAST_UPDATED_BY, $this->last_updated_by);
 
         return $criteria;
     }
@@ -1471,7 +1480,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $copyObj->setEmail($this->getEmail());
         $copyObj->setRole($this->getRole());
         $copyObj->setKey($this->getKey());
-        $copyObj->setCapabilities($this->getCapabilities());
+        $copyObj->setCreatedBy($this->getCreatedBy());
+        $copyObj->setLastUpdatedBy($this->getLastUpdatedBy());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1507,12 +1517,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             foreach ($this->getEmpTimes() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addEmpTime($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getEmpTimeRejects() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addEmpTimeReject($relObj->copy($deepCopy));
                 }
             }
 
@@ -1591,9 +1595,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
         if ('EmpTime' == $relationName) {
             $this->initEmpTimes();
-        }
-        if ('EmpTimeReject' == $relationName) {
-            $this->initEmpTimeRejects();
         }
     }
 
@@ -2848,231 +2849,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
-     * Clears out the collEmpTimeRejects collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return EmpAcc The current object (for fluent API support)
-     * @see        addEmpTimeRejects()
-     */
-    public function clearEmpTimeRejects()
-    {
-        $this->collEmpTimeRejects = null; // important to set this to null since that means it is uninitialized
-        $this->collEmpTimeRejectsPartial = null;
-
-        return $this;
-    }
-
-    /**
-     * reset is the collEmpTimeRejects collection loaded partially
-     *
-     * @return void
-     */
-    public function resetPartialEmpTimeRejects($v = true)
-    {
-        $this->collEmpTimeRejectsPartial = $v;
-    }
-
-    /**
-     * Initializes the collEmpTimeRejects collection.
-     *
-     * By default this just sets the collEmpTimeRejects collection to an empty array (like clearcollEmpTimeRejects());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initEmpTimeRejects($overrideExisting = true)
-    {
-        if (null !== $this->collEmpTimeRejects && !$overrideExisting) {
-            return;
-        }
-        $this->collEmpTimeRejects = new PropelObjectCollection();
-        $this->collEmpTimeRejects->setModel('EmpTimeReject');
-    }
-
-    /**
-     * Gets an array of EmpTimeReject objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this EmpAcc is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param Criteria $criteria optional Criteria object to narrow the query
-     * @param PropelPDO $con optional connection object
-     * @return PropelObjectCollection|EmpTimeReject[] List of EmpTimeReject objects
-     * @throws PropelException
-     */
-    public function getEmpTimeRejects($criteria = null, PropelPDO $con = null)
-    {
-        $partial = $this->collEmpTimeRejectsPartial && !$this->isNew();
-        if (null === $this->collEmpTimeRejects || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collEmpTimeRejects) {
-                // return empty collection
-                $this->initEmpTimeRejects();
-            } else {
-                $collEmpTimeRejects = EmpTimeRejectQuery::create(null, $criteria)
-                    ->filterByEmpAcc($this)
-                    ->find($con);
-                if (null !== $criteria) {
-                    if (false !== $this->collEmpTimeRejectsPartial && count($collEmpTimeRejects)) {
-                      $this->initEmpTimeRejects(false);
-
-                      foreach ($collEmpTimeRejects as $obj) {
-                        if (false == $this->collEmpTimeRejects->contains($obj)) {
-                          $this->collEmpTimeRejects->append($obj);
-                        }
-                      }
-
-                      $this->collEmpTimeRejectsPartial = true;
-                    }
-
-                    $collEmpTimeRejects->getInternalIterator()->rewind();
-
-                    return $collEmpTimeRejects;
-                }
-
-                if ($partial && $this->collEmpTimeRejects) {
-                    foreach ($this->collEmpTimeRejects as $obj) {
-                        if ($obj->isNew()) {
-                            $collEmpTimeRejects[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collEmpTimeRejects = $collEmpTimeRejects;
-                $this->collEmpTimeRejectsPartial = false;
-            }
-        }
-
-        return $this->collEmpTimeRejects;
-    }
-
-    /**
-     * Sets a collection of EmpTimeReject objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param PropelCollection $empTimeRejects A Propel collection.
-     * @param PropelPDO $con Optional connection object
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function setEmpTimeRejects(PropelCollection $empTimeRejects, PropelPDO $con = null)
-    {
-        $empTimeRejectsToDelete = $this->getEmpTimeRejects(new Criteria(), $con)->diff($empTimeRejects);
-
-
-        $this->empTimeRejectsScheduledForDeletion = $empTimeRejectsToDelete;
-
-        foreach ($empTimeRejectsToDelete as $empTimeRejectRemoved) {
-            $empTimeRejectRemoved->setEmpAcc(null);
-        }
-
-        $this->collEmpTimeRejects = null;
-        foreach ($empTimeRejects as $empTimeReject) {
-            $this->addEmpTimeReject($empTimeReject);
-        }
-
-        $this->collEmpTimeRejects = $empTimeRejects;
-        $this->collEmpTimeRejectsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related EmpTimeReject objects.
-     *
-     * @param Criteria $criteria
-     * @param boolean $distinct
-     * @param PropelPDO $con
-     * @return int             Count of related EmpTimeReject objects.
-     * @throws PropelException
-     */
-    public function countEmpTimeRejects(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
-    {
-        $partial = $this->collEmpTimeRejectsPartial && !$this->isNew();
-        if (null === $this->collEmpTimeRejects || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collEmpTimeRejects) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getEmpTimeRejects());
-            }
-            $query = EmpTimeRejectQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByEmpAcc($this)
-                ->count($con);
-        }
-
-        return count($this->collEmpTimeRejects);
-    }
-
-    /**
-     * Method called to associate a EmpTimeReject object to this object
-     * through the EmpTimeReject foreign key attribute.
-     *
-     * @param    EmpTimeReject $l EmpTimeReject
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function addEmpTimeReject(EmpTimeReject $l)
-    {
-        if ($this->collEmpTimeRejects === null) {
-            $this->initEmpTimeRejects();
-            $this->collEmpTimeRejectsPartial = true;
-        }
-
-        if (!in_array($l, $this->collEmpTimeRejects->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddEmpTimeReject($l);
-
-            if ($this->empTimeRejectsScheduledForDeletion and $this->empTimeRejectsScheduledForDeletion->contains($l)) {
-                $this->empTimeRejectsScheduledForDeletion->remove($this->empTimeRejectsScheduledForDeletion->search($l));
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param	EmpTimeReject $empTimeReject The empTimeReject object to add.
-     */
-    protected function doAddEmpTimeReject($empTimeReject)
-    {
-        $this->collEmpTimeRejects[]= $empTimeReject;
-        $empTimeReject->setEmpAcc($this);
-    }
-
-    /**
-     * @param	EmpTimeReject $empTimeReject The empTimeReject object to remove.
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function removeEmpTimeReject($empTimeReject)
-    {
-        if ($this->getEmpTimeRejects()->contains($empTimeReject)) {
-            $this->collEmpTimeRejects->remove($this->collEmpTimeRejects->search($empTimeReject));
-            if (null === $this->empTimeRejectsScheduledForDeletion) {
-                $this->empTimeRejectsScheduledForDeletion = clone $this->collEmpTimeRejects;
-                $this->empTimeRejectsScheduledForDeletion->clear();
-            }
-            $this->empTimeRejectsScheduledForDeletion[]= $empTimeReject;
-            $empTimeReject->setEmpAcc(null);
-        }
-
-        return $this;
-    }
-
-    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -3086,7 +2862,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $this->email = null;
         $this->role = null;
         $this->key = null;
-        $this->capabilities = null;
+        $this->created_by = null;
+        $this->last_updated_by = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -3134,11 +2911,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collEmpTimeRejects) {
-                foreach ($this->collEmpTimeRejects as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
@@ -3163,10 +2935,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpTimes->clearIterator();
         }
         $this->collEmpTimes = null;
-        if ($this->collEmpTimeRejects instanceof PropelCollection) {
-            $this->collEmpTimeRejects->clearIterator();
-        }
-        $this->collEmpTimeRejects = null;
     }
 
     /**

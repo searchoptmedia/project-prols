@@ -1,6 +1,6 @@
 {% macro notif_loader() %}
 
-    <div class="col-md-12 gray center-align loader-notif light-gray darken-1 close-alert notification-modal">
+    <div class="col-md-12 gray center-align loader-notif light-gray darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success">
             <center>
                 <h5 style="display: inline-block;"> <div class="loading_dots">
@@ -17,75 +17,104 @@
 {% endmacro %}
 
 {% macro login_top_loader() %}
-    <div class="col-md-12 gray center-align top-login-loader light-gray darken-1 close-alert notification-modal">
+    <div class="col-md-12 gray center-align top-login-loader light-gray darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Loading...</h5></div>
     </div>
 {% endmacro %}
 
 {% macro email_sent_notif() %}
-    <div class="col-md-12 green center-align email-sent-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align email-sent-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Email Sent</h5></div>
     </div>
 {% endmacro %}
 
 {% macro request_leave_notif() %}
-    <div class="col-md-12 green center-align request-leave-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align request-leave-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Request Leave Sent</h5></div>
     </div>
 {% endmacro %}
 
 {% macro request_meeting_notif() %}
-    <div class="col-md-12 green center-align request-meeting-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align request-meeting-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Request Meeting Sent</h5></div>
     </div>
 {% endmacro %}
 
 {% macro update_profile_notif() %}
-    <div class="col-md-12 green center-align update-profile-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align update-profile-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Update Successful</h5></div>
     </div>
 {% endmacro %}
 
 {% macro time_in_time_out_notif() %}
-    <div class="col-md-12 green center-align timein-notif-container light-green darken-1 close-alert notification-modal" >
+    <div class="col-md-12 green center-align timein-notif-container light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Time-in Successful!</h5></div>
     </div>
 
-    <div class="col-md-12 green center-align timeout-notif-container light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align timeout-notif-container light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timeout-success"><h5>Time-out Successful!</h5></div>
     </div>
 
-    <div class="col-md-12 orange darken-1 center-align error-notif-container close-alert notification-modal top">
+    <div class="col-md-12 orange darken-1 center-align error-notif-container close-alert notification-modal top" style = "position: fixed;">
         <div class="timeout-success"><h5>Oops! Something went wrong, please <a href="" class="white-text"><u>reload</u></a>.</h5></div>
     </div>
 {% endmacro %}
 
 {% macro add_notif() %}
-    <div class="col-md-12 green center-align add-emp-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align add-emp-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success add-emp-success"><h5>Added Successfully</h5></div>
     </div>
 {% endmacro %}
 
 {% macro add_event_notif() %}
-    <div class="col-md-12 green center-align add-event-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align add-event-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Event Added Successfully</h5></div>
     </div>
 {% endmacro %}
 
 {% macro edit_event_notif() %}
-    <div class="col-md-12 green center-align edit-event-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align edit-event-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Event Edited Successfully</h5></div>
     </div>
 {% endmacro %}
 
 {% macro notify_event_notif() %}
-    <div class="col-md-12 green center-align notify-event-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align notify-event-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Event Notified Successfully</h5></div>
     </div>
 {% endmacro %}
 
 {% macro delete_event_notif() %}
-    <div class="col-md-12 green center-align delete-event-notif top-login-notification light-green darken-1 close-alert notification-modal">
+    <div class="col-md-12 green center-align delete-event-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
         <div class="timein-success"><h5>Event Deleted Successfully</h5></div>
     </div>
 {% endmacro %}
+
+{% macro accept_request_notif() %}
+    <div class="col-md-12 green center-align accept-request-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
+        <div class="request-success"><h5>Request Accepted</h5></div>
+    </div>
+
+    <div class="col-md-12 orange darken-1 center-align error-request-notif close-alert notification-modal top" style = "position: fixed;">
+        <div class="timeout-success"><h5>Oops! Something went wrong, please <a href='#' onclick='location.reload(true); return false;' class = "white-text"><u>reload</u></a>.</h5></div>
+    </div>
+{% endmacro %}
+
+{% macro decline_request_notif() %}
+    <div class="col-md-12 green center-align decline-request-notif top-login-notification red darken-1 close-alert notification-modal" style = "position: fixed;">
+        <div class="request-success"><h5>Request Declined</h5></div>
+    </div>
+{% endmacro %}
+
+{% macro edit_request_notif() %}
+    <div class="col-md-12 green center-align edit-request-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
+        <div class="timein-success"><h5>Request Edited Successfully</h5></div>
+    </div>
+{% endmacro %}
+
+{% macro delete_request_notif() %}
+    <div class="col-md-12 green center-align delete-request-notif top-login-notification light-green darken-1 close-alert notification-modal" style = "position: fixed;">
+        <div class="timein-success"><h5>Request Cancelled Successfully</h5></div>
+    </div>
+{% endmacro %}
+

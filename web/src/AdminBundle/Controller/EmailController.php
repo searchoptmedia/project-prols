@@ -53,42 +53,18 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
-    public function declinedRequestEmail($req, $class)
-    {
-        $user = $class->getUser();
-        $id   = $user->getId();
-        $emp = EmpAccPeer::retrieveByPK($req->request->get('empId'));
-        $empemail = $emp->getEmail();
-        $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
-        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
-        //admin profile information
-        $data = EmpProfilePeer::getInformation($id);
-        $name = $data->getFname(). " " .$data->getLname();
-
-        $subject = "PROLS » " . $req->request->get('requestname') . " " . 'Request Declined';
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($empemail);
-
-        $inputMessage = "<h3>Hi " . $empname . "!</h3>Your <b>" . $req->request->get('requestname') .
-            "</b> request was declined by <b>" .$name . "</b>.".
-            "<br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
-            "<br>Date ended: ". $req->request->get('dateend').
-            "<br><br><strong>Reason: </strong><br>" . $req->request->get('content');
-        $email = self::sendEmail($class, $subject, $from, $to,
-            $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
-
-        return $email ? 1: 0;
-    }
-
     public function acceptRequestEmail($req, $class)
     {
-        $param  = $req->request->all();
-        $empid  = $param['empId'];
-        $reqName =   $param['requestname'];
+        $empid  = $req->request->get('empId');
+        $reqName =   $req->request->get('requestname');
         $user   = $class->getUser();
         $id     = $user->getId();
 
         $employee = EmpAccPeer::retrieveByPK($empid);
+        $changed = $req->request->get('isChanged');
+        $note = $req->request->get('comment');
+        $status = $req->request->get('status');
+        $reason = $req->request->get('reason');
 
         if(! empty($employee))
         {
@@ -100,14 +76,21 @@ class EmailController extends Controller
             $data = EmpProfilePeer::getInformation($id);
             $name = $data->getFname(). " " .$data->getLname();
 
-            $subject = "PROLS » " . $req->request->get('requestname') . " " . " Request Accepted";
+            if ($changed == "CHANGED")
+                $subject = "PROLS » " . $req->request->get('requestname') . " " . " Request Changed";
+            else $subject = "PROLS » " . $req->request->get('requestname') . " " . " Request " . $status;
             $from    = array('no-reply@searchoptmedia.com', 'PROLS');
             $to      = array($empemail);
 
             $inputMessage = "<h2>Hi " . $empname . "!</h2><br><br>Your <b>" . $reqName .
-                "</b> request was accepted by <b>". $name .
-                "</b><br><br><b>Request Info: </b><br>Date started: " . $req->request->get('datestart') .
-                "<br>Date ended: ". $req->request->get('dateend');
+                "</b> request was <b>" . $status . "</b> by <b>". $name . "</b>.";
+
+            if ($note != '') {
+                $inputMessage .= "<br>He/She left you a note: ". $note;
+            }
+
+            $inputMessage .= "</b><br><br><b>Request Info: </b><br>". "Reason: " . $reason ."<br>Date started: " . $req->request->get('datestart') .
+                            "<br>Date ended: ". $req->request->get('dateend');
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
@@ -309,6 +292,36 @@ class EmailController extends Controller
                             "<b>Event Date: </b>". $date . "<br>" .
                             "<b>Event Name: </b>". $name . "<br>" .
                             "<b>Event Description: </b> ". $desc . "<br>";
+
+            $email = self::sendEmail($class, $subject, $from, $to,
+                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+        }
+
+        return $email ? 1: 0;
+    }
+
+    public function notifyRequestEmail($req, $class, $action) {
+        $user = $class->getUser();
+        $id   = $user->getId();
+
+        $empinfo = EmpProfilePeer::getInformation($id);
+        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
+        $category = $req->request->get('category');
+
+        $admins = EmpAccPeer::getAdminInfo();
+        $adminemails = array();
+        $subject = "PROLS » " . $action . " " . $category . " Request";
+        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        foreach ($admins as $admin){
+            $to = array($admin->getEmail());
+
+            if ($action == "UPDATED") {
+                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request." .
+                    "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/requests'>View Request</a>" . "<br>";
+            } else {
+                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request.";
+            }
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));

@@ -153,9 +153,6 @@ class EmployeeRequestController extends Controller
         $meetingTimeFrom = $req->request->get('meetingTimeFrom');
         $meetingTimeTo = $req->request->get('meetingTimeTo');
 
-
-
-
         $empRequest = new EmpRequest();
         $empRequest->setMeetingTitle($meetingTitle);
         $empRequest->setRequest($taggedMessage);
@@ -190,8 +187,6 @@ class EmployeeRequestController extends Controller
 
                 $send =  $email->sendEmailMeetingRequest($req, $emp->getEmail(), $this, array("type" => 1));
             }
-
-
         }
 
         $tagnames = implode("," ,$tag_names);
@@ -238,13 +233,14 @@ class EmployeeRequestController extends Controller
         exit;
     }
 
-    public function statusAcceptAction(Request $req, $id, $id2)
+    public function statusChangeAction(Request $req)
     {
-        $accept = EmpRequestPeer::retrieveByPk($id);
+        $response = array('error' => 'none');
+        $accept = EmpRequestPeer::retrieveByPk($req->request->get('reqid'));
         if(isset($accept) && !empty($accept))
         {
-            $accept->setAdminId($id2);
-            $accept->setStatus('Accepted');
+            $accept->setAdminId($req->request->get('adminid'));
+            $accept->setStatus($req->request->get('status'));
 
             $email = new EmailController();
 
@@ -252,17 +248,17 @@ class EmployeeRequestController extends Controller
 
             if($accept->save())
             {
-                $response = array('response' => 'success');
+                $response = array('result' => 'success');
             }
             else
             {
-                $response = array('response' => 'not saved');
+                $response = array('error' => 'not saved');
             }
 
         }
         else
         {
-            $response = array('response' => 'not found');
+            $response = array('error' => 'not found');
         }
 
         echo json_encode($response);
@@ -459,5 +455,69 @@ class EmployeeRequestController extends Controller
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'timetoday' => $timetoday,
         ));
+    }
+
+    public function editRequestAction(Request $req) {
+        $result = array('result' => 'error');
+        $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
+
+        if(!empty($request)) {
+            $request->setStatus($req->request->get('status'));
+            $request->setDateStarted($req->request->get('start_date'));
+            $request->setDateEnded($req->request->get('end_date'));
+            $request->setRequest($req->request->get('reason'));
+            $request->save();
+            $lastid = $request->getId();
+
+            if(!empty($lastid)) {
+                $result = array('result' => 'Success');
+                $email = new EmailController();
+                $sendemail = $email->notifyRequestEmail($req, $this, "UPDATED");
+
+                if($sendemail == 0) {
+                    //$this->deleteAction($req);
+                    $result = array('error' => 'Email not sent');
+                } else {
+                    $result = array('result' => 'ok');
+                }
+            } else {
+                $result = array('error' => 'Request update not successful');
+            }
+        } else {
+            $result = array('error' => 'Request not found');
+        }
+
+        echo json_encode($result);
+        exit;
+    }
+
+    public function deleteRequestAction(Request $req) {
+        $result = array('result' => 'error');
+        $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
+
+        if(!empty($request)) {
+            $request->delete();
+            $deleted = $request->isDeleted();
+
+            if($deleted) {
+                $result = array('result' => 'Success');
+                $email = new EmailController();
+                $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
+
+                if($sendemail == 0) {
+                    //$this->deleteRequestAction($req);
+                    $result = array('error' => 'Email not sent');
+                } else {
+                    $result = array('result' => 'ok');
+                }
+            } else {
+                $result = array('error' => 'Event update not successful');
+            }
+        } else {
+            $result = array('error' => 'Event not found');
+        }
+
+        echo json_encode($result);
+        exit;
     }
 }

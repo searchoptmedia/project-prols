@@ -10,15 +10,11 @@ use \Exception;
 use \PDO;
 use \Persistent;
 use \Propel;
-use \PropelCollection;
 use \PropelDateTime;
 use \PropelException;
-use \PropelObjectCollection;
 use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccQuery;
-use CoreBundle\Model\EmpApproval;
-use CoreBundle\Model\EmpApprovalQuery;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\EmpTimeQuery;
@@ -99,15 +95,15 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     protected $check_ip;
 
     /**
+     * The value for the status field.
+     * @var        int
+     */
+    protected $status;
+
+    /**
      * @var        EmpAcc
      */
     protected $aEmpAcc;
-
-    /**
-     * @var        PropelObjectCollection|EmpApproval[] Collection to store aggregation of EmpApproval objects.
-     */
-    protected $collEmpApprovals;
-    protected $collEmpApprovalsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -128,12 +124,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
      * @var        boolean
      */
     protected $alreadyInClearAllReferencesDeep = false;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var		PropelObjectCollection
-     */
-    protected $empApprovalsScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -319,6 +309,17 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     {
 
         return $this->check_ip;
+    }
+
+    /**
+     * Get the [status] column value.
+     * 
+     * @return int
+     */
+    public function getStatus()
+    {
+
+        return $this->status;
     }
 
     /**
@@ -521,6 +522,27 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     } // setCheckIp()
 
     /**
+     * Set the value of [status] column.
+     * 
+     * @param  int $v new value
+     * @return EmpTime The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[] = EmpTimePeer::STATUS;
+        }
+
+
+        return $this;
+    } // setStatus()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -561,6 +583,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $this->manhours = ($row[$startcol + 6] !== null) ? (double) $row[$startcol + 6] : null;
             $this->overtime = ($row[$startcol + 7] !== null) ? (double) $row[$startcol + 7] : null;
             $this->check_ip = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+            $this->status = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -570,7 +593,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 9; // 9 = EmpTimePeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = EmpTimePeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpTime object", $e);
@@ -636,8 +659,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if ($deep) {  // also de-associate any related objects?
 
             $this->aEmpAcc = null;
-            $this->collEmpApprovals = null;
-
         } // if (deep)
     }
 
@@ -774,23 +795,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
                 $this->resetModified();
             }
 
-            if ($this->empApprovalsScheduledForDeletion !== null) {
-                if (!$this->empApprovalsScheduledForDeletion->isEmpty()) {
-                    EmpApprovalQuery::create()
-                        ->filterByPrimaryKeys($this->empApprovalsScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->empApprovalsScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collEmpApprovals !== null) {
-                foreach ($this->collEmpApprovals as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             $this->alreadyInSave = false;
 
         }
@@ -844,6 +848,9 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpTimePeer::CHECK_IP)) {
             $modifiedColumns[':p' . $index++]  = '`check_ip`';
         }
+        if ($this->isColumnModified(EmpTimePeer::STATUS)) {
+            $modifiedColumns[':p' . $index++]  = '`status`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `emp_time` (%s) VALUES (%s)',
@@ -881,6 +888,9 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
                         break;
                     case '`check_ip`':						
                         $stmt->bindValue($identifier, $this->check_ip, PDO::PARAM_INT);
+                        break;
+                    case '`status`':						
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -993,14 +1003,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             }
 
 
-                if ($this->collEmpApprovals !== null) {
-                    foreach ($this->collEmpApprovals as $referrerFK) {
-                        if (!$referrerFK->validate($columns)) {
-                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-                        }
-                    }
-                }
-
 
             $this->alreadyInValidation = false;
         }
@@ -1063,6 +1065,9 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             case 8:
                 return $this->getCheckIp();
                 break;
+            case 9:
+                return $this->getStatus();
+                break;
             default:
                 return null;
                 break;
@@ -1101,6 +1106,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $keys[6] => $this->getManhours(),
             $keys[7] => $this->getOvertime(),
             $keys[8] => $this->getCheckIp(),
+            $keys[9] => $this->getStatus(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1110,9 +1116,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->collEmpApprovals) {
-                $result['EmpApprovals'] = $this->collEmpApprovals->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1175,6 +1178,9 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             case 8:
                 $this->setCheckIp($value);
                 break;
+            case 9:
+                $this->setStatus($value);
+                break;
         } // switch()
     }
 
@@ -1208,6 +1214,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if (array_key_exists($keys[6], $arr)) $this->setManhours($arr[$keys[6]]);
         if (array_key_exists($keys[7], $arr)) $this->setOvertime($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setCheckIp($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setStatus($arr[$keys[9]]);
     }
 
     /**
@@ -1228,6 +1235,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpTimePeer::MANHOURS)) $criteria->add(EmpTimePeer::MANHOURS, $this->manhours);
         if ($this->isColumnModified(EmpTimePeer::OVERTIME)) $criteria->add(EmpTimePeer::OVERTIME, $this->overtime);
         if ($this->isColumnModified(EmpTimePeer::CHECK_IP)) $criteria->add(EmpTimePeer::CHECK_IP, $this->check_ip);
+        if ($this->isColumnModified(EmpTimePeer::STATUS)) $criteria->add(EmpTimePeer::STATUS, $this->status);
 
         return $criteria;
     }
@@ -1299,6 +1307,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         $copyObj->setManhours($this->getManhours());
         $copyObj->setOvertime($this->getOvertime());
         $copyObj->setCheckIp($this->getCheckIp());
+        $copyObj->setStatus($this->getStatus());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1306,12 +1315,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $copyObj->setNew(false);
             // store object hash to prevent cycle
             $this->startCopy = true;
-
-            foreach ($this->getEmpApprovals() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addEmpApproval($relObj->copy($deepCopy));
-                }
-            }
 
             //unflag object copy
             $this->startCopy = false;
@@ -1415,247 +1418,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         return $this->aEmpAcc;
     }
 
-
-    /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
-     *
-     * @param string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('EmpApproval' == $relationName) {
-            $this->initEmpApprovals();
-        }
-    }
-
-    /**
-     * Clears out the collEmpApprovals collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return EmpTime The current object (for fluent API support)
-     * @see        addEmpApprovals()
-     */
-    public function clearEmpApprovals()
-    {
-        $this->collEmpApprovals = null; // important to set this to null since that means it is uninitialized
-        $this->collEmpApprovalsPartial = null;
-
-        return $this;
-    }
-
-    /**
-     * reset is the collEmpApprovals collection loaded partially
-     *
-     * @return void
-     */
-    public function resetPartialEmpApprovals($v = true)
-    {
-        $this->collEmpApprovalsPartial = $v;
-    }
-
-    /**
-     * Initializes the collEmpApprovals collection.
-     *
-     * By default this just sets the collEmpApprovals collection to an empty array (like clearcollEmpApprovals());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initEmpApprovals($overrideExisting = true)
-    {
-        if (null !== $this->collEmpApprovals && !$overrideExisting) {
-            return;
-        }
-        $this->collEmpApprovals = new PropelObjectCollection();
-        $this->collEmpApprovals->setModel('EmpApproval');
-    }
-
-    /**
-     * Gets an array of EmpApproval objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this EmpTime is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param Criteria $criteria optional Criteria object to narrow the query
-     * @param PropelPDO $con optional connection object
-     * @return PropelObjectCollection|EmpApproval[] List of EmpApproval objects
-     * @throws PropelException
-     */
-    public function getEmpApprovals($criteria = null, PropelPDO $con = null)
-    {
-        $partial = $this->collEmpApprovalsPartial && !$this->isNew();
-        if (null === $this->collEmpApprovals || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collEmpApprovals) {
-                // return empty collection
-                $this->initEmpApprovals();
-            } else {
-                $collEmpApprovals = EmpApprovalQuery::create(null, $criteria)
-                    ->filterByEmpTime($this)
-                    ->find($con);
-                if (null !== $criteria) {
-                    if (false !== $this->collEmpApprovalsPartial && count($collEmpApprovals)) {
-                      $this->initEmpApprovals(false);
-
-                      foreach ($collEmpApprovals as $obj) {
-                        if (false == $this->collEmpApprovals->contains($obj)) {
-                          $this->collEmpApprovals->append($obj);
-                        }
-                      }
-
-                      $this->collEmpApprovalsPartial = true;
-                    }
-
-                    $collEmpApprovals->getInternalIterator()->rewind();
-
-                    return $collEmpApprovals;
-                }
-
-                if ($partial && $this->collEmpApprovals) {
-                    foreach ($this->collEmpApprovals as $obj) {
-                        if ($obj->isNew()) {
-                            $collEmpApprovals[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collEmpApprovals = $collEmpApprovals;
-                $this->collEmpApprovalsPartial = false;
-            }
-        }
-
-        return $this->collEmpApprovals;
-    }
-
-    /**
-     * Sets a collection of EmpApproval objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param PropelCollection $empApprovals A Propel collection.
-     * @param PropelPDO $con Optional connection object
-     * @return EmpTime The current object (for fluent API support)
-     */
-    public function setEmpApprovals(PropelCollection $empApprovals, PropelPDO $con = null)
-    {
-        $empApprovalsToDelete = $this->getEmpApprovals(new Criteria(), $con)->diff($empApprovals);
-
-
-        $this->empApprovalsScheduledForDeletion = $empApprovalsToDelete;
-
-        foreach ($empApprovalsToDelete as $empApprovalRemoved) {
-            $empApprovalRemoved->setEmpTime(null);
-        }
-
-        $this->collEmpApprovals = null;
-        foreach ($empApprovals as $empApproval) {
-            $this->addEmpApproval($empApproval);
-        }
-
-        $this->collEmpApprovals = $empApprovals;
-        $this->collEmpApprovalsPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related EmpApproval objects.
-     *
-     * @param Criteria $criteria
-     * @param boolean $distinct
-     * @param PropelPDO $con
-     * @return int             Count of related EmpApproval objects.
-     * @throws PropelException
-     */
-    public function countEmpApprovals(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
-    {
-        $partial = $this->collEmpApprovalsPartial && !$this->isNew();
-        if (null === $this->collEmpApprovals || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collEmpApprovals) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getEmpApprovals());
-            }
-            $query = EmpApprovalQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByEmpTime($this)
-                ->count($con);
-        }
-
-        return count($this->collEmpApprovals);
-    }
-
-    /**
-     * Method called to associate a EmpApproval object to this object
-     * through the EmpApproval foreign key attribute.
-     *
-     * @param    EmpApproval $l EmpApproval
-     * @return EmpTime The current object (for fluent API support)
-     */
-    public function addEmpApproval(EmpApproval $l)
-    {
-        if ($this->collEmpApprovals === null) {
-            $this->initEmpApprovals();
-            $this->collEmpApprovalsPartial = true;
-        }
-
-        if (!in_array($l, $this->collEmpApprovals->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddEmpApproval($l);
-
-            if ($this->empApprovalsScheduledForDeletion and $this->empApprovalsScheduledForDeletion->contains($l)) {
-                $this->empApprovalsScheduledForDeletion->remove($this->empApprovalsScheduledForDeletion->search($l));
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param	EmpApproval $empApproval The empApproval object to add.
-     */
-    protected function doAddEmpApproval($empApproval)
-    {
-        $this->collEmpApprovals[]= $empApproval;
-        $empApproval->setEmpTime($this);
-    }
-
-    /**
-     * @param	EmpApproval $empApproval The empApproval object to remove.
-     * @return EmpTime The current object (for fluent API support)
-     */
-    public function removeEmpApproval($empApproval)
-    {
-        if ($this->getEmpApprovals()->contains($empApproval)) {
-            $this->collEmpApprovals->remove($this->collEmpApprovals->search($empApproval));
-            if (null === $this->empApprovalsScheduledForDeletion) {
-                $this->empApprovalsScheduledForDeletion = clone $this->collEmpApprovals;
-                $this->empApprovalsScheduledForDeletion->clear();
-            }
-            $this->empApprovalsScheduledForDeletion[]= clone $empApproval;
-            $empApproval->setEmpTime(null);
-        }
-
-        return $this;
-    }
-
     /**
      * Clears the current object and sets all attributes to their default values
      */
@@ -1670,6 +1432,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         $this->manhours = null;
         $this->overtime = null;
         $this->check_ip = null;
+        $this->status = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -1692,11 +1455,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
-            if ($this->collEmpApprovals) {
-                foreach ($this->collEmpApprovals as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
             if ($this->aEmpAcc instanceof Persistent) {
               $this->aEmpAcc->clearAllReferences($deep);
             }
@@ -1704,10 +1462,6 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
-        if ($this->collEmpApprovals instanceof PropelCollection) {
-            $this->collEmpApprovals->clearIterator();
-        }
-        $this->collEmpApprovals = null;
         $this->aEmpAcc = null;
     }
 

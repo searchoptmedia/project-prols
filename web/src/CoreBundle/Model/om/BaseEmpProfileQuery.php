@@ -35,7 +35,6 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery orderByListDeptDeptId($order = Criteria::ASC) Order by the list_dept_id column
  * @method EmpProfileQuery orderByListPosPosId($order = Criteria::ASC) Order by the list_pos_id column
  * @method EmpProfileQuery orderByStatus($order = Criteria::ASC) Order by the status column
- * @method EmpProfileQuery orderByProfileStatus($order = Criteria::ASC) Order by the profile_status column
  *
  * @method EmpProfileQuery groupById() Group by the id column
  * @method EmpProfileQuery groupByEmpAccAccId() Group by the emp_acc_acc_id column
@@ -51,7 +50,6 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery groupByListDeptDeptId() Group by the list_dept_id column
  * @method EmpProfileQuery groupByListPosPosId() Group by the list_pos_id column
  * @method EmpProfileQuery groupByStatus() Group by the status column
- * @method EmpProfileQuery groupByProfileStatus() Group by the profile_status column
  *
  * @method EmpProfileQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpProfileQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -88,8 +86,7 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfile findOneByEmployeeNumber(string $emp_num) Return the first EmpProfile filtered by the emp_num column
  * @method EmpProfile findOneByListDeptDeptId(int $list_dept_id) Return the first EmpProfile filtered by the list_dept_id column
  * @method EmpProfile findOneByListPosPosId(int $list_pos_id) Return the first EmpProfile filtered by the list_pos_id column
- * @method EmpProfile findOneByStatus(string $status) Return the first EmpProfile filtered by the status column
- * @method EmpProfile findOneByProfileStatus(int $profile_status) Return the first EmpProfile filtered by the profile_status column
+ * @method EmpProfile findOneByStatus(int $status) Return the first EmpProfile filtered by the status column
  *
  * @method array findById(int $id) Return EmpProfile objects filtered by the id column
  * @method array findByEmpAccAccId(int $emp_acc_acc_id) Return EmpProfile objects filtered by the emp_acc_acc_id column
@@ -104,8 +101,7 @@ use CoreBundle\Model\ListPos;
  * @method array findByEmployeeNumber(string $emp_num) Return EmpProfile objects filtered by the emp_num column
  * @method array findByListDeptDeptId(int $list_dept_id) Return EmpProfile objects filtered by the list_dept_id column
  * @method array findByListPosPosId(int $list_pos_id) Return EmpProfile objects filtered by the list_pos_id column
- * @method array findByStatus(string $status) Return EmpProfile objects filtered by the status column
- * @method array findByProfileStatus(int $profile_status) Return EmpProfile objects filtered by the profile_status column
+ * @method array findByStatus(int $status) Return EmpProfile objects filtered by the status column
  */
 abstract class BaseEmpProfileQuery extends ModelCriteria
 {
@@ -211,7 +207,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status`, `profile_status` FROM `emp_profile` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status` FROM `emp_profile` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -768,42 +764,13 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
-     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
      * </code>
      *
-     * @param     string $status The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return EmpProfileQuery The current query, for fluid interface
-     */
-    public function filterByStatus($status = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($status)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $status)) {
-                $status = str_replace('*', '%', $status);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(EmpProfilePeer::STATUS, $status, $comparison);
-    }
-
-    /**
-     * Filter the query on the profile_status column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByProfileStatus(1234); // WHERE profile_status = 1234
-     * $query->filterByProfileStatus(array(12, 34)); // WHERE profile_status IN (12, 34)
-     * $query->filterByProfileStatus(array('min' => 12)); // WHERE profile_status >= 12
-     * $query->filterByProfileStatus(array('max' => 12)); // WHERE profile_status <= 12
-     * </code>
-     *
-     * @param     mixed $profileStatus The value to use as filter.
+     * @param     mixed $status The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -811,16 +778,16 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      *
      * @return EmpProfileQuery The current query, for fluid interface
      */
-    public function filterByProfileStatus($profileStatus = null, $comparison = null)
+    public function filterByStatus($status = null, $comparison = null)
     {
-        if (is_array($profileStatus)) {
+        if (is_array($status)) {
             $useMinMax = false;
-            if (isset($profileStatus['min'])) {
-                $this->addUsingAlias(EmpProfilePeer::PROFILE_STATUS, $profileStatus['min'], Criteria::GREATER_EQUAL);
+            if (isset($status['min'])) {
+                $this->addUsingAlias(EmpProfilePeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($profileStatus['max'])) {
-                $this->addUsingAlias(EmpProfilePeer::PROFILE_STATUS, $profileStatus['max'], Criteria::LESS_EQUAL);
+            if (isset($status['max'])) {
+                $this->addUsingAlias(EmpProfilePeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -831,7 +798,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(EmpProfilePeer::PROFILE_STATUS, $profileStatus, $comparison);
+        return $this->addUsingAlias(EmpProfilePeer::STATUS, $status, $comparison);
     }
 
     /**

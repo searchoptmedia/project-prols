@@ -1,4 +1,4 @@
-{% extends 'AdminBundle::base.html.twig' %}
+    {% extends 'AdminBundle::base.html.twig' %}
 
 {% block body %}
         <div class="page-content">
@@ -132,7 +132,7 @@
                 monthToday = '0'+monthToday;
             }
             var appendDate = fullYear+"-"+monthToday+"-"+dayToday;
-            $('.datepicker').val(appendDate);
+            $('.p').val(appendDate);
             dateMeeting.setMinDate(new Date());
         });
         $('.close-modal-agenda').click(function(){

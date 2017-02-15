@@ -62,7 +62,7 @@ abstract class BaseListRequestTypePeer
      * e.g. ListRequestTypePeer::$fieldNames[ListRequestTypePeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'EmployeeRequest', ),
+        BasePeer::TYPE_PHPNAME => array ('Id', 'RequestType', ),
         BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'requestType', ),
         BasePeer::TYPE_COLNAME => array (ListRequestTypePeer::ID, ListRequestTypePeer::REQUEST_TYPE, ),
         BasePeer::TYPE_RAW_COLNAME => array ('ID', 'REQUEST_TYPE', ),
@@ -77,7 +77,7 @@ abstract class BaseListRequestTypePeer
      * e.g. ListRequestTypePeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'EmployeeRequest' => 1, ),
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'RequestType' => 1, ),
         BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'requestType' => 1, ),
         BasePeer::TYPE_COLNAME => array (ListRequestTypePeer::ID => 0, ListRequestTypePeer::REQUEST_TYPE => 1, ),
         BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'REQUEST_TYPE' => 1, ),

@@ -13,7 +13,6 @@ use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
-use CoreBundle\Model\EmpApproval;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\EmpTimeQuery;
@@ -28,6 +27,7 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTimeQuery orderByManhours($order = Criteria::ASC) Order by the manhours column
  * @method EmpTimeQuery orderByOvertime($order = Criteria::ASC) Order by the overtime column
  * @method EmpTimeQuery orderByCheckIp($order = Criteria::ASC) Order by the check_ip column
+ * @method EmpTimeQuery orderByStatus($order = Criteria::ASC) Order by the status column
  *
  * @method EmpTimeQuery groupById() Group by the id column
  * @method EmpTimeQuery groupByTimeIn() Group by the time_in column
@@ -38,6 +38,7 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTimeQuery groupByManhours() Group by the manhours column
  * @method EmpTimeQuery groupByOvertime() Group by the overtime column
  * @method EmpTimeQuery groupByCheckIp() Group by the check_ip column
+ * @method EmpTimeQuery groupByStatus() Group by the status column
  *
  * @method EmpTimeQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpTimeQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -46,10 +47,6 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTimeQuery leftJoinEmpAcc($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpAcc relation
  * @method EmpTimeQuery rightJoinEmpAcc($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpAcc relation
  * @method EmpTimeQuery innerJoinEmpAcc($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpAcc relation
- *
- * @method EmpTimeQuery leftJoinEmpApproval($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpApproval relation
- * @method EmpTimeQuery rightJoinEmpApproval($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpApproval relation
- * @method EmpTimeQuery innerJoinEmpApproval($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpApproval relation
  *
  * @method EmpTime findOne(PropelPDO $con = null) Return the first EmpTime matching the query
  * @method EmpTime findOneOrCreate(PropelPDO $con = null) Return the first EmpTime matching the query, or a new EmpTime object populated from the query conditions when no match is found
@@ -62,6 +59,7 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTime findOneByManhours(double $manhours) Return the first EmpTime filtered by the manhours column
  * @method EmpTime findOneByOvertime(double $overtime) Return the first EmpTime filtered by the overtime column
  * @method EmpTime findOneByCheckIp(int $check_ip) Return the first EmpTime filtered by the check_ip column
+ * @method EmpTime findOneByStatus(int $status) Return the first EmpTime filtered by the status column
  *
  * @method array findById(int $id) Return EmpTime objects filtered by the id column
  * @method array findByTimeIn(string $time_in) Return EmpTime objects filtered by the time_in column
@@ -72,6 +70,7 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method array findByManhours(double $manhours) Return EmpTime objects filtered by the manhours column
  * @method array findByOvertime(double $overtime) Return EmpTime objects filtered by the overtime column
  * @method array findByCheckIp(int $check_ip) Return EmpTime objects filtered by the check_ip column
+ * @method array findByStatus(int $status) Return EmpTime objects filtered by the status column
  */
 abstract class BaseEmpTimeQuery extends ModelCriteria
 {
@@ -177,7 +176,7 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `time_in`, `time_out`, `ip_add`, `date`, `emp_acc_acc_id`, `manhours`, `overtime`, `check_ip` FROM `emp_time` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `time_in`, `time_out`, `ip_add`, `date`, `emp_acc_acc_id`, `manhours`, `overtime`, `check_ip`, `status` FROM `emp_time` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -637,6 +636,48 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the status column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
+     * </code>
+     *
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpTimeQuery The current query, for fluid interface
+     */
+    public function filterByStatus($status = null, $comparison = null)
+    {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(EmpTimePeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(EmpTimePeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(EmpTimePeer::STATUS, $status, $comparison);
+    }
+
+    /**
      * Filter the query by a related EmpAcc object
      *
      * @param   EmpAcc|PropelObjectCollection $empAcc The related object(s) to use as filter
@@ -710,80 +751,6 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
         return $this
             ->joinEmpAcc($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpAcc', '\CoreBundle\Model\EmpAccQuery');
-    }
-
-    /**
-     * Filter the query by a related EmpApproval object
-     *
-     * @param   EmpApproval|PropelObjectCollection $empApproval  the related object to use as filter
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return                 EmpTimeQuery The current query, for fluid interface
-     * @throws PropelException - if the provided filter is invalid.
-     */
-    public function filterByEmpApproval($empApproval, $comparison = null)
-    {
-        if ($empApproval instanceof EmpApproval) {
-            return $this
-                ->addUsingAlias(EmpTimePeer::ID, $empApproval->getEmpTimeId(), $comparison);
-        } elseif ($empApproval instanceof PropelObjectCollection) {
-            return $this
-                ->useEmpApprovalQuery()
-                ->filterByPrimaryKeys($empApproval->getPrimaryKeys())
-                ->endUse();
-        } else {
-            throw new PropelException('filterByEmpApproval() only accepts arguments of type EmpApproval or PropelCollection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the EmpApproval relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return EmpTimeQuery The current query, for fluid interface
-     */
-    public function joinEmpApproval($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('EmpApproval');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'EmpApproval');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the EmpApproval relation EmpApproval object
-     *
-     * @see       useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return   \CoreBundle\Model\EmpApprovalQuery A secondary query class using the current class as primary query
-     */
-    public function useEmpApprovalQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-    {
-        return $this
-            ->joinEmpApproval($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'EmpApproval', '\CoreBundle\Model\EmpApprovalQuery');
     }
 
     /**

@@ -60,7 +60,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
 
     /**
      * The value for the status field.
-     * @var        string
+     * @var        int
      */
     protected $status;
 
@@ -178,7 +178,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
     /**
      * Get the [status] column value.
      * 
-     * @return string
+     * @return int
      */
     public function getStatus()
     {
@@ -366,13 +366,13 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
     /**
      * Set the value of [status] column.
      * 
-     * @param  string $v new value
+     * @param  int $v new value
      * @return EmpRequest The current object (for fluent API support)
      */
     public function setStatus($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
         if ($this->status !== $v) {
@@ -581,7 +581,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
 
             $this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
             $this->request = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-            $this->status = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+            $this->status = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
             $this->date_started = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
             $this->date_ended = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
             $this->emp_acc_id = ($row[$startcol + 5] !== null) ? (int) $row[$startcol + 5] : null;
@@ -916,7 +916,7 @@ abstract class BaseEmpRequest extends BaseObject implements Persistent
                         $stmt->bindValue($identifier, $this->request, PDO::PARAM_STR);
                         break;
                     case '`status`':						
-                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                     case '`date_started`':						
                         $stmt->bindValue($identifier, $this->date_started, PDO::PARAM_STR);
