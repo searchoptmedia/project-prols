@@ -33,13 +33,13 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
     public function onAuthenticationSuccess(Request $request, TokenInterface $token){
         
     	$response = new RedirectResponse($this->router->generate('error403'));
-//        print_r($token); exit;
         $session    = new Session();
 
         $user       = $token->getUser();
         $id         = $user->getId();
         $data       = EmpProfilePeer::getInformation($id);
-        $empStatus  = $data->getProfileStatus();
+        //$empStatus  = $data->getProfileStatus();
+        $empStatus = $user->getStatus();
         $timedata   = EmpTimePeer::getEmpLastTimein($id);
         $isTimeout  = false;
 
@@ -54,7 +54,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 
         if ($token->getUser() instanceof EmpAcc)
         {
-            if($empStatus == 0)
+            if($empStatus == 1)
             {
                 //get date today
                 if(!empty($timedata))
