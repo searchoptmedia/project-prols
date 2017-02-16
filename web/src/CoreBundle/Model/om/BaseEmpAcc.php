@@ -18,6 +18,8 @@ use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilities;
+use CoreBundle\Model\EmpCapabilitiesQuery;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequest;
@@ -145,6 +147,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $collEmpTimesPartial;
 
     /**
+     * @var        PropelObjectCollection|EmpCapabilities[] Collection to store aggregation of EmpCapabilities objects.
+     */
+    protected $collEmpCapabilitiess;
+    protected $collEmpCapabilitiessPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      * @var        boolean
@@ -193,6 +201,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $empTimesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $empCapabilitiessScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -701,6 +715,8 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
             $this->collEmpTimes = null;
 
+            $this->collEmpCapabilitiess = null;
+
         } // if (deep)
     }
 
@@ -907,6 +923,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
             if ($this->collEmpTimes !== null) {
                 foreach ($this->collEmpTimes as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->empCapabilitiessScheduledForDeletion !== null) {
+                if (!$this->empCapabilitiessScheduledForDeletion->isEmpty()) {
+                    foreach ($this->empCapabilitiessScheduledForDeletion as $empCapabilities) {
+                        // need to save related object because we set the relation to null
+                        $empCapabilities->save($con);
+                    }
+                    $this->empCapabilitiessScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEmpCapabilitiess !== null) {
+                foreach ($this->collEmpCapabilitiess as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1155,6 +1189,14 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     }
                 }
 
+                if ($this->collEmpCapabilitiess !== null) {
+                    foreach ($this->collEmpCapabilitiess as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
 
             $this->alreadyInValidation = false;
         }
@@ -1284,6 +1326,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             if (null !== $this->collEmpTimes) {
                 $result['EmpTimes'] = $this->collEmpTimes->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEmpCapabilitiess) {
+                $result['EmpCapabilitiess'] = $this->collEmpCapabilitiess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1520,6 +1565,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 }
             }
 
+            foreach ($this->getEmpCapabilitiess() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEmpCapabilities($relObj->copy($deepCopy));
+                }
+            }
+
             //unflag object copy
             $this->startCopy = false;
         } // if ($deepCopy)
@@ -1595,6 +1646,9 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
         if ('EmpTime' == $relationName) {
             $this->initEmpTimes();
+        }
+        if ('EmpCapabilities' == $relationName) {
+            $this->initEmpCapabilitiess();
         }
     }
 
@@ -2623,6 +2677,31 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         return $this->getEmpProfiles($query, $con);
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related EmpProfiles from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EmpProfile[] List of EmpProfile objects
+     */
+    public function getEmpProfilesJoinEmpStatusType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EmpProfileQuery::create(null, $criteria);
+        $query->joinWith('EmpStatusType', $join_behavior);
+
+        return $this->getEmpProfiles($query, $con);
+    }
+
     /**
      * Clears out the collEmpTimes collection
      *
@@ -2849,6 +2928,256 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
+     * Clears out the collEmpCapabilitiess collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addEmpCapabilitiess()
+     */
+    public function clearEmpCapabilitiess()
+    {
+        $this->collEmpCapabilitiess = null; // important to set this to null since that means it is uninitialized
+        $this->collEmpCapabilitiessPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEmpCapabilitiess collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEmpCapabilitiess($v = true)
+    {
+        $this->collEmpCapabilitiessPartial = $v;
+    }
+
+    /**
+     * Initializes the collEmpCapabilitiess collection.
+     *
+     * By default this just sets the collEmpCapabilitiess collection to an empty array (like clearcollEmpCapabilitiess());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEmpCapabilitiess($overrideExisting = true)
+    {
+        if (null !== $this->collEmpCapabilitiess && !$overrideExisting) {
+            return;
+        }
+        $this->collEmpCapabilitiess = new PropelObjectCollection();
+        $this->collEmpCapabilitiess->setModel('EmpCapabilities');
+    }
+
+    /**
+     * Gets an array of EmpCapabilities objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EmpCapabilities[] List of EmpCapabilities objects
+     * @throws PropelException
+     */
+    public function getEmpCapabilitiess($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpCapabilitiessPartial && !$this->isNew();
+        if (null === $this->collEmpCapabilitiess || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEmpCapabilitiess) {
+                // return empty collection
+                $this->initEmpCapabilitiess();
+            } else {
+                $collEmpCapabilitiess = EmpCapabilitiesQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEmpCapabilitiessPartial && count($collEmpCapabilitiess)) {
+                      $this->initEmpCapabilitiess(false);
+
+                      foreach ($collEmpCapabilitiess as $obj) {
+                        if (false == $this->collEmpCapabilitiess->contains($obj)) {
+                          $this->collEmpCapabilitiess->append($obj);
+                        }
+                      }
+
+                      $this->collEmpCapabilitiessPartial = true;
+                    }
+
+                    $collEmpCapabilitiess->getInternalIterator()->rewind();
+
+                    return $collEmpCapabilitiess;
+                }
+
+                if ($partial && $this->collEmpCapabilitiess) {
+                    foreach ($this->collEmpCapabilitiess as $obj) {
+                        if ($obj->isNew()) {
+                            $collEmpCapabilitiess[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEmpCapabilitiess = $collEmpCapabilitiess;
+                $this->collEmpCapabilitiessPartial = false;
+            }
+        }
+
+        return $this->collEmpCapabilitiess;
+    }
+
+    /**
+     * Sets a collection of EmpCapabilities objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $empCapabilitiess A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setEmpCapabilitiess(PropelCollection $empCapabilitiess, PropelPDO $con = null)
+    {
+        $empCapabilitiessToDelete = $this->getEmpCapabilitiess(new Criteria(), $con)->diff($empCapabilitiess);
+
+
+        $this->empCapabilitiessScheduledForDeletion = $empCapabilitiessToDelete;
+
+        foreach ($empCapabilitiessToDelete as $empCapabilitiesRemoved) {
+            $empCapabilitiesRemoved->setEmpAcc(null);
+        }
+
+        $this->collEmpCapabilitiess = null;
+        foreach ($empCapabilitiess as $empCapabilities) {
+            $this->addEmpCapabilities($empCapabilities);
+        }
+
+        $this->collEmpCapabilitiess = $empCapabilitiess;
+        $this->collEmpCapabilitiessPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EmpCapabilities objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EmpCapabilities objects.
+     * @throws PropelException
+     */
+    public function countEmpCapabilitiess(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpCapabilitiessPartial && !$this->isNew();
+        if (null === $this->collEmpCapabilitiess || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEmpCapabilitiess) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEmpCapabilitiess());
+            }
+            $query = EmpCapabilitiesQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collEmpCapabilitiess);
+    }
+
+    /**
+     * Method called to associate a EmpCapabilities object to this object
+     * through the EmpCapabilities foreign key attribute.
+     *
+     * @param    EmpCapabilities $l EmpCapabilities
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addEmpCapabilities(EmpCapabilities $l)
+    {
+        if ($this->collEmpCapabilitiess === null) {
+            $this->initEmpCapabilitiess();
+            $this->collEmpCapabilitiessPartial = true;
+        }
+
+        if (!in_array($l, $this->collEmpCapabilitiess->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEmpCapabilities($l);
+
+            if ($this->empCapabilitiessScheduledForDeletion and $this->empCapabilitiessScheduledForDeletion->contains($l)) {
+                $this->empCapabilitiessScheduledForDeletion->remove($this->empCapabilitiessScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EmpCapabilities $empCapabilities The empCapabilities object to add.
+     */
+    protected function doAddEmpCapabilities($empCapabilities)
+    {
+        $this->collEmpCapabilitiess[]= $empCapabilities;
+        $empCapabilities->setEmpAcc($this);
+    }
+
+    /**
+     * @param	EmpCapabilities $empCapabilities The empCapabilities object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeEmpCapabilities($empCapabilities)
+    {
+        if ($this->getEmpCapabilitiess()->contains($empCapabilities)) {
+            $this->collEmpCapabilitiess->remove($this->collEmpCapabilitiess->search($empCapabilities));
+            if (null === $this->empCapabilitiessScheduledForDeletion) {
+                $this->empCapabilitiessScheduledForDeletion = clone $this->collEmpCapabilitiess;
+                $this->empCapabilitiessScheduledForDeletion->clear();
+            }
+            $this->empCapabilitiessScheduledForDeletion[]= $empCapabilities;
+            $empCapabilities->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related EmpCapabilitiess from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EmpCapabilities[] List of EmpCapabilities objects
+     */
+    public function getEmpCapabilitiessJoinCapabilitiesList($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EmpCapabilitiesQuery::create(null, $criteria);
+        $query->joinWith('CapabilitiesList', $join_behavior);
+
+        return $this->getEmpCapabilitiess($query, $con);
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -2911,6 +3240,11 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collEmpCapabilitiess) {
+                foreach ($this->collEmpCapabilitiess as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
@@ -2935,6 +3269,10 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpTimes->clearIterator();
         }
         $this->collEmpTimes = null;
+        if ($this->collEmpCapabilitiess instanceof PropelCollection) {
+            $this->collEmpCapabilitiess->clearIterator();
+        }
+        $this->collEmpCapabilitiess = null;
     }
 
     /**

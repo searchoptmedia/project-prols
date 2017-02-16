@@ -22,6 +22,8 @@ use CoreBundle\Model\EmpContactQuery;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EmpStatusType;
+use CoreBundle\Model\EmpStatusTypeQuery;
 use CoreBundle\Model\ListDept;
 use CoreBundle\Model\ListDeptQuery;
 use CoreBundle\Model\ListPos;
@@ -133,6 +135,24 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
     protected $status;
 
     /**
+     * The value for the sss field.
+     * @var        string
+     */
+    protected $sss;
+
+    /**
+     * The value for the bir field.
+     * @var        string
+     */
+    protected $bir;
+
+    /**
+     * The value for the philhealth field.
+     * @var        string
+     */
+    protected $philhealth;
+
+    /**
      * @var        EmpAcc
      */
     protected $aEmpAcc;
@@ -146,6 +166,11 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
      * @var        ListPos
      */
     protected $aListPos;
+
+    /**
+     * @var        EmpStatusType
+     */
+    protected $aEmpStatusType;
 
     /**
      * @var        PropelObjectCollection|EmpContact[] Collection to store aggregation of EmpContact objects.
@@ -389,6 +414,39 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
     {
 
         return $this->status;
+    }
+
+    /**
+     * Get the [sss] column value.
+     * 
+     * @return string
+     */
+    public function getSss()
+    {
+
+        return $this->sss;
+    }
+
+    /**
+     * Get the [bir] column value.
+     * 
+     * @return string
+     */
+    public function getBir()
+    {
+
+        return $this->bir;
+    }
+
+    /**
+     * Get the [philhealth] column value.
+     * 
+     * @return string
+     */
+    public function getPhilhealth()
+    {
+
+        return $this->philhealth;
     }
 
     /**
@@ -697,9 +755,76 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $this->modifiedColumns[] = EmpProfilePeer::STATUS;
         }
 
+        if ($this->aEmpStatusType !== null && $this->aEmpStatusType->getId() !== $v) {
+            $this->aEmpStatusType = null;
+        }
+
 
         return $this;
     } // setStatus()
+
+    /**
+     * Set the value of [sss] column.
+     * 
+     * @param  string $v new value
+     * @return EmpProfile The current object (for fluent API support)
+     */
+    public function setSss($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->sss !== $v) {
+            $this->sss = $v;
+            $this->modifiedColumns[] = EmpProfilePeer::SSS;
+        }
+
+
+        return $this;
+    } // setSss()
+
+    /**
+     * Set the value of [bir] column.
+     * 
+     * @param  string $v new value
+     * @return EmpProfile The current object (for fluent API support)
+     */
+    public function setBir($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->bir !== $v) {
+            $this->bir = $v;
+            $this->modifiedColumns[] = EmpProfilePeer::BIR;
+        }
+
+
+        return $this;
+    } // setBir()
+
+    /**
+     * Set the value of [philhealth] column.
+     * 
+     * @param  string $v new value
+     * @return EmpProfile The current object (for fluent API support)
+     */
+    public function setPhilhealth($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->philhealth !== $v) {
+            $this->philhealth = $v;
+            $this->modifiedColumns[] = EmpProfilePeer::PHILHEALTH;
+        }
+
+
+        return $this;
+    } // setPhilhealth()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -747,6 +872,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $this->list_dept_id = ($row[$startcol + 11] !== null) ? (int) $row[$startcol + 11] : null;
             $this->list_pos_id = ($row[$startcol + 12] !== null) ? (int) $row[$startcol + 12] : null;
             $this->status = ($row[$startcol + 13] !== null) ? (int) $row[$startcol + 13] : null;
+            $this->sss = ($row[$startcol + 14] !== null) ? (string) $row[$startcol + 14] : null;
+            $this->bir = ($row[$startcol + 15] !== null) ? (string) $row[$startcol + 15] : null;
+            $this->philhealth = ($row[$startcol + 16] !== null) ? (string) $row[$startcol + 16] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -756,7 +884,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 14; // 14 = EmpProfilePeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 17; // 17 = EmpProfilePeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EmpProfile object", $e);
@@ -787,6 +915,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         }
         if ($this->aListPos !== null && $this->list_pos_id !== $this->aListPos->getId()) {
             $this->aListPos = null;
+        }
+        if ($this->aEmpStatusType !== null && $this->status !== $this->aEmpStatusType->getId()) {
+            $this->aEmpStatusType = null;
         }
     } // ensureConsistency
 
@@ -830,6 +961,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $this->aEmpAcc = null;
             $this->aListDept = null;
             $this->aListPos = null;
+            $this->aEmpStatusType = null;
             $this->collEmpContacts = null;
 
         } // if (deep)
@@ -971,6 +1103,13 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
                 $this->setListPos($this->aListPos);
             }
 
+            if ($this->aEmpStatusType !== null) {
+                if ($this->aEmpStatusType->isModified() || $this->aEmpStatusType->isNew()) {
+                    $affectedRows += $this->aEmpStatusType->save($con);
+                }
+                $this->setEmpStatusType($this->aEmpStatusType);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -1067,6 +1206,15 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpProfilePeer::STATUS)) {
             $modifiedColumns[':p' . $index++]  = '`status`';
         }
+        if ($this->isColumnModified(EmpProfilePeer::SSS)) {
+            $modifiedColumns[':p' . $index++]  = '`sss`';
+        }
+        if ($this->isColumnModified(EmpProfilePeer::BIR)) {
+            $modifiedColumns[':p' . $index++]  = '`bir`';
+        }
+        if ($this->isColumnModified(EmpProfilePeer::PHILHEALTH)) {
+            $modifiedColumns[':p' . $index++]  = '`philhealth`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `emp_profile` (%s) VALUES (%s)',
@@ -1119,6 +1267,15 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
                         break;
                     case '`status`':						
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
+                        break;
+                    case '`sss`':						
+                        $stmt->bindValue($identifier, $this->sss, PDO::PARAM_STR);
+                        break;
+                    case '`bir`':						
+                        $stmt->bindValue($identifier, $this->bir, PDO::PARAM_STR);
+                        break;
+                    case '`philhealth`':						
+                        $stmt->bindValue($identifier, $this->philhealth, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1237,6 +1394,12 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
                 }
             }
 
+            if ($this->aEmpStatusType !== null) {
+                if (!$this->aEmpStatusType->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aEmpStatusType->getValidationFailures());
+                }
+            }
+
 
             if (($retval = EmpProfilePeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
@@ -1328,6 +1491,15 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             case 13:
                 return $this->getStatus();
                 break;
+            case 14:
+                return $this->getSss();
+                break;
+            case 15:
+                return $this->getBir();
+                break;
+            case 16:
+                return $this->getPhilhealth();
+                break;
             default:
                 return null;
                 break;
@@ -1371,6 +1543,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $keys[11] => $this->getListDeptDeptId(),
             $keys[12] => $this->getListPosPosId(),
             $keys[13] => $this->getStatus(),
+            $keys[14] => $this->getSss(),
+            $keys[15] => $this->getBir(),
+            $keys[16] => $this->getPhilhealth(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1386,6 +1561,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             }
             if (null !== $this->aListPos) {
                 $result['ListPos'] = $this->aListPos->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aEmpStatusType) {
+                $result['EmpStatusType'] = $this->aEmpStatusType->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collEmpContacts) {
                 $result['EmpContacts'] = $this->collEmpContacts->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1466,6 +1644,15 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             case 13:
                 $this->setStatus($value);
                 break;
+            case 14:
+                $this->setSss($value);
+                break;
+            case 15:
+                $this->setBir($value);
+                break;
+            case 16:
+                $this->setPhilhealth($value);
+                break;
         } // switch()
     }
 
@@ -1504,6 +1691,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if (array_key_exists($keys[11], $arr)) $this->setListDeptDeptId($arr[$keys[11]]);
         if (array_key_exists($keys[12], $arr)) $this->setListPosPosId($arr[$keys[12]]);
         if (array_key_exists($keys[13], $arr)) $this->setStatus($arr[$keys[13]]);
+        if (array_key_exists($keys[14], $arr)) $this->setSss($arr[$keys[14]]);
+        if (array_key_exists($keys[15], $arr)) $this->setBir($arr[$keys[15]]);
+        if (array_key_exists($keys[16], $arr)) $this->setPhilhealth($arr[$keys[16]]);
     }
 
     /**
@@ -1529,6 +1719,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         if ($this->isColumnModified(EmpProfilePeer::LIST_DEPT_ID)) $criteria->add(EmpProfilePeer::LIST_DEPT_ID, $this->list_dept_id);
         if ($this->isColumnModified(EmpProfilePeer::LIST_POS_ID)) $criteria->add(EmpProfilePeer::LIST_POS_ID, $this->list_pos_id);
         if ($this->isColumnModified(EmpProfilePeer::STATUS)) $criteria->add(EmpProfilePeer::STATUS, $this->status);
+        if ($this->isColumnModified(EmpProfilePeer::SSS)) $criteria->add(EmpProfilePeer::SSS, $this->sss);
+        if ($this->isColumnModified(EmpProfilePeer::BIR)) $criteria->add(EmpProfilePeer::BIR, $this->bir);
+        if ($this->isColumnModified(EmpProfilePeer::PHILHEALTH)) $criteria->add(EmpProfilePeer::PHILHEALTH, $this->philhealth);
 
         return $criteria;
     }
@@ -1605,6 +1798,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         $copyObj->setListDeptDeptId($this->getListDeptDeptId());
         $copyObj->setListPosPosId($this->getListPosPosId());
         $copyObj->setStatus($this->getStatus());
+        $copyObj->setSss($this->getSss());
+        $copyObj->setBir($this->getBir());
+        $copyObj->setPhilhealth($this->getPhilhealth());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1823,6 +2019,58 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         }
 
         return $this->aListPos;
+    }
+
+    /**
+     * Declares an association between this object and a EmpStatusType object.
+     *
+     * @param                  EmpStatusType $v
+     * @return EmpProfile The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setEmpStatusType(EmpStatusType $v = null)
+    {
+        if ($v === null) {
+            $this->setStatus(NULL);
+        } else {
+            $this->setStatus($v->getId());
+        }
+
+        $this->aEmpStatusType = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the EmpStatusType object, it will not be re-added.
+        if ($v !== null) {
+            $v->addEmpProfile($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated EmpStatusType object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return EmpStatusType The associated EmpStatusType object.
+     * @throws PropelException
+     */
+    public function getEmpStatusType(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aEmpStatusType === null && ($this->status !== null) && $doQuery) {
+            $this->aEmpStatusType = EmpStatusTypeQuery::create()->findPk($this->status, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aEmpStatusType->addEmpProfiles($this);
+             */
+        }
+
+        return $this->aEmpStatusType;
     }
 
 
@@ -2110,6 +2358,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         $this->list_dept_id = null;
         $this->list_pos_id = null;
         $this->status = null;
+        $this->sss = null;
+        $this->bir = null;
+        $this->philhealth = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -2146,6 +2397,9 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             if ($this->aListPos instanceof Persistent) {
               $this->aListPos->clearAllReferences($deep);
             }
+            if ($this->aEmpStatusType instanceof Persistent) {
+              $this->aEmpStatusType->clearAllReferences($deep);
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
@@ -2157,6 +2411,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         $this->aEmpAcc = null;
         $this->aListDept = null;
         $this->aListPos = null;
+        $this->aEmpStatusType = null;
     }
 
     /**

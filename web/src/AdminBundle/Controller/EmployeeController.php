@@ -2,6 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\CapabilitiesListPeer;
+use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilitiesPeer;
+use CoreBundle\Model\EmpStatusTypePeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -681,14 +685,8 @@ class EmployeeController extends Controller
         $data2 = EmpProfilePeer::getInformation($id);
 
         $fname = $data->getFname();
-        $lname = $data->getLname();
-        $mname = $data->getMname();
-        $bday = $data->getBday();
-//		$bday = date_format($bday, 'd/m/y');
-        $address = $data->getAddress();
         $img = $data->getImgPath();
         $datejoined = $data->getDateJoined();
-//		$datejoined = date_format($datejoined, 'd/m/y');
         $profileid = $data->getId();
         $deptid = $data->getListDeptDeptId();
 
@@ -849,23 +847,14 @@ class EmployeeController extends Controller
         // add duration
         return $this->render('AdminBundle:Employee:profile.html.twig', array(
             'page' => $page,
-            'name' => $name,
-            'fname' => $fname,
-            'lname' => $lname,
-            'mname' => $mname,
-            'bday' => $bday,
-            'address' => $address,
             'img' => $img,
             'datejoined' => $datejoined,
-            'deptnames' => $deptnames,
-            'posStatus' => $posStatus,
             'user' => $user,
             'contactArr' => $contact,
             'conEmail' => $conEmail,
             'conMobile' => $conMobile,
             'conTele' => $conTele,
             'timename' => $timename,
-            'role' => $role,
             'user2' => $user2,
             'profileId' => $profileid,
             'contacttype' => $contacttype,
@@ -892,7 +881,6 @@ class EmployeeController extends Controller
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'getAllTime' => $getAllTimeData,
             'timetoday' => $timetoday,
-
         ));
 
     }
@@ -903,11 +891,12 @@ class EmployeeController extends Controller
 
         $user = $this->getUser();
         $name = $user->getUsername();
-        $page = 'View Request';
+        $page = 'Manage Employees';
         $role = $user->getRole();
-        $capabilities = $user->getCapabilities();
-
         $id = $user->getId();
+
+        $capabilities = EmpCapabilitiesPeer::getEmpCapabilities($id);
+
         $adminController = new AdminController();
 
         $timename = $adminController->timeInOut($id);
@@ -991,13 +980,13 @@ class EmployeeController extends Controller
             $AllUsers = EmpAccPeer::getAllUser();
             $AllDepartments = ListDeptPeer::getAllDept();
             $AllPositions = ListPosPeer::getAllPos();
-
+            $AllEmpStatus = EmpStatusTypePeer::getAllEmpStatus();
+            $AllCapabilities = CapabilitiesListPeer::getAllCapabilities();
             $getContact = EmpContactPeer::getAllContact();
 
             return $this->render('AdminBundle:Employee:manage.html.twig', array(
                 'name' => $name,
                 'page' => $page,
-                'role' => $role,
                 'user' => $user,
                 'timename' => $timename,
                 'getEmployee' => $getEmployee,
@@ -1020,7 +1009,10 @@ class EmployeeController extends Controller
                 'allusers' => $AllUsers,
                 'alldept' => $AllDepartments,
                 'allpos' => $AllPositions,
-                'getContact' => $getContact
+                'allstatus' => $AllEmpStatus,
+                'getContact' => $getContact,
+                'capabilities' => $capabilities,
+                'allcapabilities' => $AllCapabilities
             ));
         }
     }

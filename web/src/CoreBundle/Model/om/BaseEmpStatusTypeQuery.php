@@ -5,11 +5,14 @@ namespace CoreBundle\Model\om;
 use \Criteria;
 use \Exception;
 use \ModelCriteria;
+use \ModelJoin;
 use \PDO;
 use \Propel;
+use \PropelCollection;
 use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpStatusType;
 use CoreBundle\Model\EmpStatusTypePeer;
 use CoreBundle\Model\EmpStatusTypeQuery;
@@ -24,6 +27,10 @@ use CoreBundle\Model\EmpStatusTypeQuery;
  * @method EmpStatusTypeQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpStatusTypeQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method EmpStatusTypeQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method EmpStatusTypeQuery leftJoinEmpProfile($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpProfile relation
+ * @method EmpStatusTypeQuery rightJoinEmpProfile($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpProfile relation
+ * @method EmpStatusTypeQuery innerJoinEmpProfile($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpProfile relation
  *
  * @method EmpStatusType findOne(PropelPDO $con = null) Return the first EmpStatusType matching the query
  * @method EmpStatusType findOneOrCreate(PropelPDO $con = null) Return the first EmpStatusType matching the query, or a new EmpStatusType object populated from the query conditions when no match is found
@@ -295,6 +302,80 @@ abstract class BaseEmpStatusTypeQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpStatusTypePeer::NAME, $name, $comparison);
+    }
+
+    /**
+     * Filter the query by a related EmpProfile object
+     *
+     * @param   EmpProfile|PropelObjectCollection $empProfile  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpStatusTypeQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpProfile($empProfile, $comparison = null)
+    {
+        if ($empProfile instanceof EmpProfile) {
+            return $this
+                ->addUsingAlias(EmpStatusTypePeer::ID, $empProfile->getStatus(), $comparison);
+        } elseif ($empProfile instanceof PropelObjectCollection) {
+            return $this
+                ->useEmpProfileQuery()
+                ->filterByPrimaryKeys($empProfile->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEmpProfile() only accepts arguments of type EmpProfile or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpProfile relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpStatusTypeQuery The current query, for fluid interface
+     */
+    public function joinEmpProfile($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpProfile');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpProfile');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpProfile relation EmpProfile object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpProfileQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpProfileQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEmpProfile($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpProfile', '\CoreBundle\Model\EmpProfileQuery');
     }
 
     /**

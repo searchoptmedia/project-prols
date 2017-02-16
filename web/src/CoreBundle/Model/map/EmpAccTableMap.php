@@ -66,6 +66,7 @@ class EmpAccTableMap extends TableMap
         $this->addRelation('RequestMeetingTags', 'CoreBundle\\Model\\RequestMeetingTags', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_id', ), null, null, 'RequestMeetingTagss');
         $this->addRelation('EmpProfile', 'CoreBundle\\Model\\EmpProfile', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpProfiles');
         $this->addRelation('EmpTime', 'CoreBundle\\Model\\EmpTime', RelationMap::ONE_TO_MANY, array('id' => 'emp_acc_acc_id', ), null, null, 'EmpTimes');
+        $this->addRelation('EmpCapabilities', 'CoreBundle\\Model\\EmpCapabilities', RelationMap::ONE_TO_MANY, array('id' => 'empid', ), null, null, 'EmpCapabilitiess');
     } // buildRelations()
 
 } // EmpAccTableMap

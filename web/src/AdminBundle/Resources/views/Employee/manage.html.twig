@@ -1,153 +1,142 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}<title>Propelrr Log-in System| Manage</title>{% endblock %}
+{% block title %}
+    <title>Propelrr Log-in System| Manage Employees</title>
+{% endblock %}
+
 {% block body %}
-    {{ notif.add_notif }}
-    {{ notif.notif_loader }}
-<section id="main-container">
-    <section id="main-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="page-content">
-                    <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                        <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
-                        <div class="top-nav">
-                            <h3>Employee List</h3>
-                            {{ include ('AdminBundle:Employee:manageemployees.html.twig') }}
+    <section id="main-container">
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="page-content">
+                        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                            <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                            <div class="top-nav">
+                                <h3>Employee List</h3>
+                                {{ include ('AdminBundle:Employee:manageemployees.html.twig') }}
+                            </div>
+                        </div>
+                        <div class="col-md-12 content manageemployees-content" style="display: block;">
+                            <div class="row" style="margin-left:5px;">
+                                <table class="bordered highlight emp-list">
+                                    <thead>
+                                    <tr>
+                                        <th>Employee Number</th>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>Position</th>
+                                        <th>Status</th>
+                                        {% if user.role == 'ADMIN' %}
+                                        <th>Capability</th>
+                                        {% endif %}
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% for emp in getEmployee %}
+                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ user.id }}">
+                                            <td class = "number">{{emp.getEmployeeNumber}}</td>
+                                            <td class = "name">{{ emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname }}</td>
+                                            <td class = "dept">{{emp.getListDept().DeptNames}}</td>
+                                            <td class = "pos">{{emp.getListPos().PosNames}}</td>
+                                            <td class = "status">{{ emp.getEmpStatusType().name }}</td>
+                                            {% if user.role == 'ADMIN' %}
+                                                <td class = "capabilities">
+                                                    {% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}
+                                                    {{ cap.getCapabilitiesList().Capability }}<br>
+                                                    {% endfor %}
+                                                </td>
+                                            {% endif %}
+
+                                            <td>
+                                                {% if user.role == 'ADMIN' %}
+                                                <button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+                                                {% endif %}
+
+                                                {% for cap in capabilities %}
+                                                    {% if cap.Capid == 1  %}
+                                                        <button class="waves-effect waves-light btn orange btnEditEmployee"
+                                                                data-id=""
+                                                                data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                                data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                                data-empnum="{{ emp.getEmployeeNumber }}"
+                                                                data-department="{{emp.getListDept().id}}"
+                                                                data-position="{{emp.getListPos().id}}"
+                                                                data-status="{{ emp.getEmpStatusType().name }}"
+                                                                data-email="{{ emp.EmpAcc.getEmail }}"
+                                                                data-address="{{ emp.address }}"
+                                                                data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                                data-capabilities="{{ emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList }}"
+                                                                data-sss = "{{ emp.sss }}"
+                                                                data-bir = "{{ emp.bir }}"
+                                                                data-philhealth = "{{ emp.philhealth }}"
+                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                                    data-cellphone="{{ contact.contact }}"
+                                                                    data-cellphoneid="{{ contact.id }}"
+                                                                {% endfor %}
+                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                                    data-telephone="{{ contact.contact }}"
+                                                                    data-telphoneid="{{ contact.id }}"
+                                                                {% endfor %}
+                                                                data-empid="{{ emp.empAccAccId }}">Edit
+                                                        </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ul class="pagination">
+                                <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                                <li class="active"><a href="#!">1</a></li>
+                                <li class="waves-effect"><a href="#!">2</a></li>
+                                <li class="waves-effect"><a href="#!">3</a></li>
+                                <li class="waves-effect"><a href="#!">4</a></li>
+                                <li class="waves-effect"><a href="#!">5</a></li>
+                                <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                            </ul>
+
                         </div>
                     </div>
-                    <div class="col-md-12 content manageemployees-content" style="display: block;">
-                        <div class="row" style="margin-left:5px;">
-                            <table class="bordered highlight emp-list">
-                                <thead>
-                                <tr>
-                                    <th>Employee Number</th>
-                                    <th>Name</th>
-                                    <th>Department</th>
-                                    <th>Position</th>
-                                    <th>Status</th>
-                                    <th>Capability</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
 
-                                <tbody>
-                                {% for emp in getEmployee %}
+                    <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+                        <a class="btn-floating btn-large red">
+                            <i class="material-icons">add</i>
+                        </a>
 
-                                        <tr class="empProfile">
-
-                                            <td>{{emp.getEmployeeNumber}}</td>
-                                            <td>{{emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname}}</td>
-                                            <td>{{emp.getListDept().DeptNames}}</td>
-                                            <td>{{emp.getListPos().PosNames}}</td>
-                                            <td>{{ emp.status }}</td>
-                                            {% set capabilities = app.user.capabilities|split('') %}
-                                            {% if user.role == 'ADMIN' %}
-                                                <td>{{ emp.EmpAcc.getcapabilities }}</td>
-                                            <td style="float: right;"><button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
-
-
-                                                <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
-                                                        data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
-                                                        data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
-                                                        data-empnum="{{ emp.getEmployeeNumber }}"
-                                                        data-department="{{emp.getListDept().id}}"
-                                                        data-position="{{emp.getListPos().id}}"
-                                                        data-status="{{emp.getStatus}}"
-                                                        data-email="{{ emp.EmpAcc.getEmail }}"
-                                                        data-address="{{ emp.address }}"
-                                                        data-bday="{{emp.bday | date('Y-m-d')}}"
-                                                        data-capabilities="{{ emp.EmpAcc.getCapabilities }}"
-                                                        {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
-                                                            data-cellphone="{{ contact.contact }}"
-                                                            data-cellphoneid="{{ contact.id }}"
-                                                        {% endfor %}
-                                                        {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
-                                                            data-telephone="{{ contact.contact }}"
-                                                            data-telphoneid="{{ contact.id }}"
-                                                        {% endfor %}
-                                                        data-empid="{{ emp.empAccAccId }}">Edit
-
-                                                </button></td>
-                                            {% endif %}
-                                                {% if 1 in capabilities  %}
-                                                    <td style="float: right;">
-                                                    <button class="waves-effect waves-light btn orange btnEditEmployee" data-id=""
-                                                            data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
-                                                            data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
-                                                            data-empnum="{{ emp.getEmployeeNumber }}"
-                                                            data-department="{{emp.getListDept().id}}"
-                                                            data-position="{{emp.getListPos().id}}"
-                                                            data-status="{{emp.getStatus}}"
-                                                            data-email="{{ emp.EmpAcc.getEmail }}"
-                                                            data-address="{{ emp.address }}"
-                                                            data-bday="{{emp.bday | date('Y-m-d')}}"
-                                                            data-capabilities="{{ emp.EmpAcc.getCapabilities }}"
-                                                            {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
-                                                                data-cellphone="{{ contact.contact }}"
-                                                                data-cellphoneid="{{ contact.id }}"
-                                                            {% endfor %}
-                                                            {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
-                                                                data-telephone="{{ contact.contact }}"
-                                                                data-telphoneid="{{ contact.id }}"
-                                                            {% endfor %}
-                                                            data-empid="{{ emp.empAccAccId }}">Edit
-
-                                                    </button></td>
-                                                {% endif %}
-                                                </tr>
-
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        <ul class="pagination">
-                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                            <li class="active"><a href="#!">1</a></li>
-                            <li class="waves-effect"><a href="#!">2</a></li>
-                            <li class="waves-effect"><a href="#!">3</a></li>
-                            <li class="waves-effect"><a href="#!">4</a></li>
-                            <li class="waves-effect"><a href="#!">5</a></li>
-                            <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                        <ul class="add">
+                            {% for cap in capabilities %}
+                                {% if cap.Capid == 1 %}
+                                    <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
+                                {% endif %}
+                                {% if cap.capid == 2 %}
+                                    <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
+                                {% endif %}
+                                {% if cap.capid == 3 %}
+                                    <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
+                                {% endif %}
+                            {% endfor %}
                         </ul>
-
                     </div>
                 </div>
+            </div>
+        </section>
+    </section>
 
-        <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
-            <a class="btn-floating btn-large red">
-            <i class="material-icons">add</i>
-            </a>
-            {% set capabilities = app.user.capabilities|split('') %}
-
-                <ul class="add">
-                    {% if 1 in capabilities %}
-                    <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
-                    {% endif %}
-                    {% if 2 in capabilities %}
-                    <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
-                    {% endif %}
-                    {% if 3 in capabilities %}
-                    <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
-                    {% endif %}
-                    {% if role == 'ADMIN' %}
-                        <li><a class="modal-trigger modal-emp waves-effect waves-light orange btn-floating btn-emp" href="#modal-emp">employee</a></li>
-                        <li><a class="modal-trigger modal-pos waves-effect waves-light orange btn-floating btn-pos" href="#modal-pos">position</a></li>
-                        <li><a class="modal-trigger modal-dept waves-effect waves-light orange btn-floating btn-dept" href="#modal-dept">department</a></li>
-                    {% endif  %}
-                </ul>
-
-        </div>
-        <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
-            <form id="addemployeeform" method="post">
-            <div class="modal-content add-employee-modal" >
-                <h4>Employee</h4>
-                <input type="hidden" name="employee-id" value="">
-                <div class="row">
-                    {% if user.role == 'ADMIN' %}
-                    <div class="col-md-7 col-lg-8">
-                       {% else %}
-                        <div class="col-md-12 col-lg-12">
-                            {% endif %}
+    <!----------------------- EDIT EMPLOYEE MODAL -------------------------->
+    <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
+        <div class="modal-content add-employee-modal" >
+            <h4>Employee</h4>
+            <input type="hidden" name="employee-id"/>
+            <div class="row">
+                {% if user.role == 'ADMIN' %}
+                <div class="col-md-7 col-lg-8">
+                    {% else %}
+                    <div class="col-md-12 col-lg-12">
+                        {% endif %}
                         <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field"></p>
                         <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field"></p>
                         <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field"></p>
@@ -161,7 +150,7 @@
                             <select name="dept" id="dept" class="initialized emp-dept">
                                 <option value="" disabled selected>Select department</option>
                                 {% for dept in getDept %}
-                                <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
+                                    <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -172,7 +161,7 @@
                             <select name="pos"id="pos" class="initialized emp-positions">
                                 <option value="" disabled selected>Select position</option>
                                 {% for pos in getPos %}
-                                <option value="{{pos.Id}}">{{pos.PosNames}}</option>
+                                    <option value="{{pos.Id}}">{{pos.PosNames}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -182,12 +171,9 @@
                         <div class="select-wrapper"><span class="caret">?</span>
                             <select name="status"id="status" class="initialized emp-status">
                                 <option value="" disabled selected>Select status</option>
-                                <option value="Full-time">Full-time</option>
-                                <option value="Part-time">Part-time</option>
-                                <option value="Contractual">Contractual</option>
-                                <option value="Provisionary">Provisionary</option>
-                                <option value="Home-based">Home-based</option>
-                                <option value="Intern">Intern</option>
+                                {% for status in allstatus %}
+                                    <option value="{{status.Id}}">{{status.name}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <br>
@@ -196,32 +182,21 @@
                         <p>Cellphone #<input name="cellnum" placeholder="type here..." id="celnum" type="text" class="input-field"></p>
                         <p>Address<input name="address" placeholder="type here..." id="address" type="text" class="input-field"></p>
                         <p>Birthday<input name="bday" readonly placeholder="input here..." class="bday" id="datepicker"></p>
-                        <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                        <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                        <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                        <p>SSS<input name="sss" placeholder="type here..." id="sss" type="text" class="input-field"></p>
+                        <p>BIR<input name="bir" placeholder="type here..." id="bir" type="text" class="input-field"></p>
+                        <p>PhilHealth<input name="philhealth" placeholder="type here..." id="philhealth" type="text" class="input-field"></p>
                     </div>
                     {% if user.role == 'ADMIN' %}
-                    <div class="col-md-5 col-lg-4 div-capabilities-area">
-                        <big>User Capabilities</big>
+                        <div class="col-md-5 col-lg-4 div-capabilities-area">
+                            <big>User Capabilities</big>
 
-                        <p>
-                            <input type="checkbox" class="filled-in allow-edit-employee" id="filled-in-box-1" value="1" />
-                            <label for="filled-in-box-1" class="black-text">Add/Edit Employee</label>
-                        </p>
-
-
-                        <p>
-                            <input type="checkbox" class="filled-in allow-edit-position" id="filled-in-box-2" value="2" />
-                            <label for="filled-in-box-2" class="black-text">Add/Edit Position</label>
-                        </p>
-
-
-                        <p>
-                            <input type="checkbox" class="filled-in allow-edit-department" id="filled-in-box-3" value="3" />
-                            <label for="filled-in-box-3" class="black-text">Add/Edit Department</label>
-                        </p>
-
-                    </div>
+                            {% for allcap in allcapabilities %}
+                                <p>
+                                    <input type="checkbox" class="filled-in {{ allcap.id }}" id="filled-in-box-1" value="1" />
+                                    <label for="filled-in-box-1" class="black-text">{{ allcap.capability }}</label>
+                                </p>
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
             </div>
@@ -231,531 +206,109 @@
                     REQUIRED FIELD!
                 </div>
                 <div class="chip password-not-match" style="display: none;">
-                Password does not match
+                    Password does not match
                 </div>
                 <div class="chip username-used" style="display: none;">
-                Username already used
+                    Username already used
                 </div>
 
                 <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
 
                 <button type="submit" href="#!" class="waves-effect waves-light orange custombtn btn-flat addemp" style="margin-right:5px;">Add</button>
+            </div>
+        </div>
+    </div>
+    <!----------------------------- END -------------------------------->
 
-                </div>
-
-                </div>
-            </form>
+    <!----------------------- ADD POSITION MODAL -------------------------->
+    <div id="modal-pos-dept" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 id = "position_hdr">Position</h4>
+            <h4 id = "department_hdr">Department</h4>
+            <input id="input-pos-dept" type="text">
         </div>
 
-        <div id="modal-pos" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <h4>Position</h4>
-                <input placeholder="type position here..." id="input-position" type="text">
-                <div class="chip required-field">
-                    required field!
-                </div>
-                <div class="chip position-used" style="display: none;">
-                    Position already added
-                </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
+            <a class="waves-effect waves-light orange custombtn btn-flat" id = "add-pos" style="margin-right: 5px;">Add</a>
+            <a class="waves-effect waves-light orange custombtn btn-flat" id = "add-dept" style="margin-right: 5px;">Add</a>
+        </div>
+    </div>
+    <!----------------------------- END -------------------------------->
+
+    <!----------------------- EXPORT MODAL -------------------------->
+    <div id="exportchoice" class="modal">
+        <div class="modal-content">
+            <h4>Export</h4>
+
+            <p>Choose entity: </p>
+            <div class="radiobtn" style="margin-bottom: 20px;">
+                <input name="group1" type="radio" id="select-all" class="export-radio-input" data-type="all" checked/>
+                <label for="select-all" class="lbl-info radio-lbl">All Employees</label>
+
+                <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
+                <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
             </div>
 
+            <div class = "dept-container">
+                <select id = "listdept" class="browser-default departmentselect" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                    <option value="" disabled selected>Choose your department</option>
+                    {% for dept in getDept %}
+                        <option value="{{ dept.Id }}">{{dept.DeptNames}}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
-                <a href="#!" class="waves-effect waves-light orange custombtn btn-flat addpos" style="margin-right: 5px;">Add</a>
-
-            </div>
-
-        </div>
-
-
-
-        <div id="modal-dept" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <h4>Department</h4>
-                <input placeholder="type department here..." id="input-department" type="text" >
-                <div class="chip required-field">
-                    required field!
-                </div>
-                <div class="chip department-used" style="display: none;">
-                    Department already added
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
-                <a href="#!" class="waves-effect waves-light orange custombtn btn-flat adddept" style="margin-right: 5px;">Add</a>
+                <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
+                <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
             </div>
         </div>
-            <div id="exportchoice" class="modal">
-                <div class="modal-content">
-                    <h4>Export</h4>
-
-                    <p>Choose entity: </p>
-                    <form action="#">
-                        <div class="radiobtn" style="margin-bottom: 20px;">
-                        <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
-                        <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
-
-                        <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
-                        <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
-                        </div>
-                            <div class="department-option-sect" style="display: none;">
-                                <select id = "listdept" class="departmentselect" style="width: 230px;">
-                                    <option value="" disabled selected>Choose your department</option>
-                                    {% for dept in getDept %}
-                                        <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        <div class="modal-footer">
-                        <a href="#!" class="modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
-                        <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            </div>
-        </div>
-    </section>
-</section>
+    </div>
+    <!----------------------------- END -------------------------------->
 {% endblock %}
 
 {% block customjs %}
-<script type="text/javascript">
-$(document).ready(function(){
-    var picker = new Pikaday({field: $('#datepicker')[0] });
-    picker.setDate('1990-01-01');
-    $('select').material_select('destroy');
+    <script type = "text/javascript">
+        // Action Buttons
+        var deptExportContainer = $('.dept-container');
 
-    //init
-    bindClick();
+        // Modals
+        var exportModal = $('#exportchoice');
 
-    //bind all clicks
-    var empid, telid, cellid;
-    function bindClick() {
-        $('.btnEditEmployee').bind('click', function() {
-            var fname = $(this).data('fname'),
-                    lname = $(this).data('lname'),
-                    empnum = $(this).data('empnum'),
-                    department = $(this).data('department'),
-                    position = $(this).data('position'),
-                    status = $(this).data('status'),
-                    email = $(this).data('email'),
-                    address = $(this).data('address'),
-                    bday = $(this).data('bday'),
-                    telnum = $(this).data('telephone'),
-                    celnum = $(this).data('cellphone');
-                    empid = $(this).data('empid');
-                    telid = $(this).data('telphoneid');
-                    cellid = $(this).data('cellphoneid');
-                    capabilities = $(this).data('capabilities');
-            console.log(capabilities)
-//            $('[]').val(name);
-            $('[name=employee-id]').val("1");
-            $('#username').val('');
-            $('#password').val('');
-            $('#confirmpassword').val('');
-            $('[name=username]').attr("disabled", true);
-            $('[name=password]').attr("disabled", true);
-            $('[name=repassword]').attr("disabled", true);
-            $('[name=fname]').val(fname);
-            $('[name=lname]').val(lname);
-            $('[name=empnum]').val(empnum);
-            $('[name=email]').val(email);
-            $('[name=telnum]').val(telnum);
-            $('[name=cellnum]').val(celnum);
-            $('[name=address]').val(address);
-            $('[name=bday]').val(bday);
-            $('[name=dept]').find('option[value="' + department + '"]').prop("selected", false);
-            $('[name=dept]').find('option[value="' + department + '"]').prop("selected", true);
-            $('[name=pos]').find('option[value="' + position + '"]').prop("selected",false);
-            $('[name=pos]').find('option[value="' + position + '"]').prop("selected",true);
-            $('[name=status]').find('option:contains("' + status + '")').prop("selected",false);
-            $('[name=status]').find('option:contains("' + status + '")').prop("selected",true);
-            $('select').material_select();
-            $('#modal-emp').openModal();
-            $('.missing-input').hide();
-            $('.password-not-match').hide();
-            $('.username-used').hide();
-            $('.addemp').html('Update');
-            $('.add-emp-success').html('<h5>Update Successful</h5>');
+        // Forms
+        var deptListExportOption = $('.departmentselect');
 
-            $('.div-capabilities-area').find('input:checkbox').prop('checked', false);
-
-            if(capabilities.length) {
-                var c = capabilities.split(',');
-                for(i in c) {
-                    $('.div-capabilities-area').find('input[value='+c[i]+']').prop('checked', true);
-                }
-            } else if(capabilities > 0) {
-                $('.div-capabilities-area').find('input[value='+capabilities+']').prop('checked', true);
-            }
+        $(document).on("click", "#btn-export-modal", function () {
+            deptExportContainer.hide();
+            exportModal.openModal();
         });
 
-        $('.btn-emp').bind('click', function() {
-            $('[name=username]').attr("disabled", false);
-            $('[name=password]').attr("disabled", false);
-            $('[name=repassword]').attr("disabled", false);
-            $('[name=employee-id]').val('');
-            $('#username').val('');
-            $('#password').val('');
-            $('#confirmpassword').val('');
-            $('#empnum').val('');
-            $('#fname').val('');
-            $('#lname').val('');
-            $('#dept').val('');
-            $('#pos').val('');
-            $('#status').val('');
-            $('#companyemail').val('');
-            $('#address').val('');
-            $('.bday').val('');
-            $('#telnum').val('');
-            $('#celnum').val('');
-            $('.missing-input').hide();
-            $('.password-not-match').hide();
-            $('.username-used').hide();
-            $('.modal-footer').show();
-            $('#modal-emp').openModal();
-            $('.addemp').html('Add');
-            $('.add-emp-success').html('<h5>Added Successfully</h5>');
-
+        $(document).on("click", "#export-cancel", function () {
+            exportModal.closeModal();
         });
-        console.log($('[name=employee-id]').val())
 
-    }
-    $('.modal-export').click(function(){
-        $('select').material_select('destroy');
-    });
-    $('.click-to-toggle').click(function(){
-        $('select').material_select();
-    });
-    $('.departmentselect,.input-name').select2();
-
-    var inputfield = '';
-    var empId = '';
-    $('.btn-cancel-input').click(function(e){
-        e.preventDefault();
-            $('#input-department').val('');
-            $('#input-position').val('');
-            $('.input-field').closest('.profile-data').find('input[type=text]').val('');
-            $('.input-field').closest('.profile-data').find('input[type=text]').css({'border-bottom-color' : '#9e9e9e'})
+        $(document).on("click", "#select-dept", function () {
+            deptExportContainer.show();
         });
-        $("#upload-photo").change(function () {
-            var fileExtension = ['jpeg', 'jpg', 'png'];
-    });
 
+        $(document).on("click", "#select-all", function () {
+            deptExportContainer.hide();
+        });
 
-    $('.birth-date').pickadate({
-        selectMonths: true,
-        selectYears: 15
-    });
+        $(document).on("click", "#export-submit", function () {
+            var deptid = $('#listdept').val();
 
-    $('.btn-pos').click(function(){
-        $('#input-position').val('');
-        $('.required-field').hide();
-        $('.modal-footer').show();
-        $('.position-used').hide();
-
-    });
-
-    $('.btn-dept').click(function(){
-        $('#input-department').val('');
-        $('.required-field').hide();
-        $('.modal-footer').show();
-        $('.department-used').hide();
-    });
-
-    $('.btn-emp').click(function(){
-        $('#username').val('');
-        $('#password').val('');
-        $('#confirmpassword').val('');
-        $('#empnum').val('');
-        $('#fname').val('');
-        $('#lname').val('');
-        $('#dept').val('');
-        $('#pos').val('');
-        $('#status').val('');
-        $('#companyemail').val('');
-        $('#address').val('');
-        $('.bday').val('');
-        $('#telnum').val('');
-        $('#celnum').val('');
-        $('.missing-input').hide();
-        $('.password-not-match').hide();
-        $('.username-used').hide();
-        $('.modal-footer').show();
-    });
-
-
-    var usernameinput, passwordinput, conpasswordinput, empnumber, fnameinput, lnameinput, departmentinput, positioninput, statusinput,
-            emailinput, telnuminput, celnuminput, addressinput, bdayinput;
-
-    $('#addemployeeform').on('submit', function(){
-        usernameinput       = $('#username').val();
-        passwordinput       = $('#password').val();
-        conpasswordinput    = $('#confirmpassword').val();
-        empnumber           = $('#empnum').val();
-        fnameinput          = $('#fname').val();
-        lnameinput          = $('#lname').val();
-        departmentinput     = $('#dept').val();
-        positioninput       = $('#pos').val();
-        statusinput         = $('#status').val();
-        emailinput          = $('#companyemail').val();
-        addressinput        = $('#address').val();
-        bdayinput           = $('.bday').val();
-        telnuminput         = $('#telnum').val();
-        celnuminput         = $('#celnum').val();
-
-        {% for usedUsers in allusers %}
-        var dbuser = '{{ usedUsers.Username }}';
-        var dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
-        if($('[name=employee-id]').val() == 0) {
-
-            if (usernameinput == dbuser) {
-                $('.username-used').show();
-                $('.username-used').html('Username already used')
-                $('#username').css({'border-color': 'red'});
-                $('.missing-input').hide();
-                $('.password-not-match').hide();
-                document.getElementById("username").focus();
-                setTimeout(function () {
-                    $('#username').css({'border-color': '#9e9e9e'});
-                }, 1500);
-                return false;
-            }
-
-            if (empnumber != '') {
-                if (empnumber == dbempnum) {
-                    $('.username-used').show()
-                    $('.username-used').html('Employee Number already used')
-                    $('.missing-input').hide();
-                    $('.password-not-match').hide();
-                    $('#empnum').css({'border-color': 'red'});
-                    document.getElementById("empnum").focus();
-                    setTimeout(function () {
-                        $('#empnum').css({'border-color': '#9e9e9e'});
-                    }, 1500);
-                    return false;
+            if ($('#select-dept:checked').length){
+                if(deptid == null){
+                    deptListExportOption.css({'color' : 'red'});
+                    setTimeout(function(){
+                        deptListExportOption.css({'color' : 'black'});
+                    }, 500);
+                    return;
                 }
             }
-        }
-        {% endfor %}
-
-        if(passwordinput != conpasswordinput){
-            $('.password-not-match').show();
-            $('.missing-input').hide();
-            $('.username-used').hide();
-            $('#password').css({'border-color' : 'red'});
-            document.getElementById("confirmpassword").focus();
-            $('#confirmpassword').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('#password').css({'border-color' : '#9e9e9e'});
-                $('#confirmpassword').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return false;
-        }
-
-        if((usernameinput == '' || departmentinput == '' || passwordinput == '' || conpasswordinput == '' || empnumber == '' ||
-        fnameinput == '' || lnameinput == '' || departmentinput == null || positioninput == null || statusinput == null || emailinput == '' ||
-        addressinput == '' || bdayinput == '') && $('[name=employee-id]').val() == 0){
-            if(bdayinput == '') {
-                $('.bday').css({'border-color': 'red'});
-            }if(addressinput == ''){
-                $('#address').css({'border-color' : 'red'}).focus();
-            }if(emailinput == ''){
-                $('#companyemail').css({'border-color' : 'red'}).focus();
-            }if(statusinput == null){
-                $('.select-wrapper.emp-status input.select-dropdown').css({'border-color' : 'red'}).focus();
-            }if(positioninput == null){
-                $('.select-wrapper.emp-positions input.select-dropdown').css({'border-color' : 'red'}).focus();
-            }if(departmentinput == null) {
-                $('.select-wrapper.emp-dept input.select-dropdown').css({'border-color': 'red'}).focus();
-            }if(lnameinput == ''){
-                $('#lname').css({'border-color' : 'red'}).focus();
-            }if(fnameinput == ''){
-                $('#fname').css({'border-color' : 'red'}).focus();
-            }if(empnumber == ''){
-                $('#empnum').css({'border-color' : 'red'}).focus();
-            }if($('[name=employee-id]').val() == 0){
-                if(conpasswordinput == ''){
-                    $('#confirmpassword').css({'border-color' : 'red'}).focus();
-                }if(passwordinput == ''){
-                    $('#password').css({'border-color' : 'red'}).focus();
-                }if(usernameinput == ''){
-                    $('#username').css({'border-color' : 'red'}).focus();
-                }
-            }
-
-            setTimeout(function(){
-                $('#username').css({'border-color' : '#9e9e9e'});
-                $('#password').css({'border-color' : '#9e9e9e'});
-                $('#confirmpassword').css({'border-color' : '#9e9e9e'});
-                $('#empnum').css({'border-color' : '#9e9e9e'});
-                $('#fname').css({'border-color' : '#9e9e9e'});
-                $('#lname').css({'border-color' : '#9e9e9e'});
-                $('#companyemail').css({'border-color' : '#9e9e9e'});
-                $('#address').css({'border-color' : '#9e9e9e'});
-                $('.bday').css({'border-color' : '#9e9e9e'});
-                $('.select-wrapper.emp-dept input.select-dropdown').css({'border-color' : '#9e9e9e'});
-                $('.select-wrapper.emp-positions input.select-dropdown').css({'border-color' : '#9e9e9e'});
-                $('.select-wrapper.emp-status input.select-dropdown').css({'border-color' : '#9e9e9e'});
-            },1500);
-            $('.missing-input').show();
-            $('.password-not-match').hide();
-            $('.username-used').hide();
-            return false;
-        }
-
-        $('#modal-emp').closeModal();
-
-        console.log(cellid);
-        var input = {username:usernameinput, password:passwordinput, repassword:conpasswordinput, empnum:empnumber, fname:fnameinput,
-        lname:lnameinput, address:addressinput, bday:bdayinput, dept:departmentinput, pos:positioninput, status:statusinput, email:emailinput,
-        cellnum:celnuminput, telnum:telnuminput, empid:empid, telid:telid, cellid:cellid};
-
-        //update capabilities
-        input.capabilities = [];
-
-        $('.div-capabilities-area').find(':checkbox').each(function() {
-            if(this.checked)
-                input.capabilities.push(this.value);
+            exportModal.closeModal();
+            window.open("{{ path('admin_employee_list_report') }}?deptid=" + deptid, '_blank');
         });
-
-        if(input.capabilities.length) input.capabilities = input.capabilities.join(',');
-        else input.capabilities = '';
-
-        $('.loader-notif').show().css({'top' : '0px'});
-
-        if($('[name=employee-id]').val() != 1){
-            $.post('{{ path('add_employee') }}', input, function () {
-            }).always(function(data){
-                $('.loader-notif').hide().css({'top' : '-55px'});
-            }).done(function () {
-                $('.add-emp-notif').css({'top' : '0px'});
-                setTimeout(function(){
-                    $('.add-emp-notif').css({'top' : '-55px'});
-                    location.reload();
-                }, 2000);
-            });
-        }else{
-            $.post('{{ path('admin_edit_employee_profile') }}', input, function () {
-            }).always(function(data){
-                $('.loader-notif').hide().css({'top' : '-55px'});
-            }).done(function(){
-                $('.add-emp-notif').css({'top' : '0px'});
-                setTimeout(function(){
-                    $('.add-emp-notif').css({'top' : '-55px'});
-                    location.reload();
-                }, 2000);
-
-            });
-        }
-
-        return false;
-    });
-
-    $('.addpos').click(function(){
-            inputfield = $('#input-position').val();
-            console.log(inputfield);
-
-        {% for usedPos in allpos %}
-        var dbpos = '{{ usedPos.PosNames }}';
-            if(inputfield == dbpos){
-                $('.position-used').show();
-                $('.required-field').hide();
-
-                $('#input-position').css({'border-color' : 'red'});
-                setTimeout(function(){
-                    $('#input-position').css({'border-color' : '#9e9e9e'});
-                },1500);
-                return;
-            }
-        {% endfor %}
-        if(inputfield == ''){
-            $('.position-used').hide();
-            $('#input-position').css({'border-color' : 'red'});
-            $('.required-field').show();
-            setTimeout(function(){
-            $('#input-position').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return;
-        }
-        $('.loader-notif').show().css({'top' : '0px'});
-        $.get("{{ path('add_position') }}" + inputfield,  function(data){
-            console.log(data);
-            $('.required-field').hide();
-            $('#modal-pos').closeModal();
-            $('.modal-footer').hide();
-            $('.add-emp-notif').css({'top' : '0px'});
-            setTimeout(function(){
-                $('.add-emp-notif').css({'top' : '-55px'});
-            }, 2000);
-            }).always(function(data){
-            $('.loader-notif').hide().css({'top' : '-55px'});
-            });
-        });
-
-    $('.adddept').click(function(){
-        inputfield=$('#input-department').val();
-        {% for usedDept in alldept %}
-        var dbdept = '{{ usedDept.DeptNames }}';
-        if(inputfield == dbdept){
-            $('.department-used').show();
-            $('.required-field').hide();
-
-            $('#input-department').css({'border-color' : 'red'});
-            setTimeout(function(){
-                $('#input-department').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return;
-        }
-        {% endfor %}
-        if(inputfield == ''){
-            $('.department-used').hide();
-            $('#input-department').css({'border-color' : 'red'});
-            $('.required-field').show();
-            setTimeout(function(){
-                $('#input-department').css({'border-color' : '#9e9e9e'});
-            },1500);
-            return;
-        }
-        $('.loader-notif').show().css({'top' : '0px'});
-        $.get("{{ path('add_department') }}" + inputfield,  function(data){
-            console.log(data);
-            $('.required-field').hide();
-            $('.department-used').hide();
-            $('#modal-dept').closeModal();
-            $('.modal-footer').hide();
-            $('.add-emp-notif').css({'top' : '0px'});
-                setTimeout(function(){
-                    $('.add-emp-notif').css({'top' : '-55px'});
-                }, 2000);
-            }).always(function(data){
-            $('.loader-notif').hide().css({'top' : '-55px'});
-            });
-        });
-
-    $('.view-profile-btn').click(function(){
-        empId = $(this).data('empid');
-        window.location.href = '{{ path('emp_page')}}' + empId;
-    });
-
-    $('.export-submit-btn').click(function(){
-        var deptid = $('#listdept').val();
-
-        if ($('#select-dept:checked').length){
-            if(deptid == null){
-                $('#select2-listdept-container').css({'color' : 'red'});
-                setTimeout(function(){
-                    $('#select2-listdept-container').css({'color' : 'black'});
-                }, 500);
-               return;
-            }
-        }
-        $('#exportchoice').closeModal();
-        window.open("{{ path('admin_employee_list_report') }}?deptid=" + deptid, '_blank');
-    });
-
-});
-
-</script>
+    </script>
 {% endblock %}

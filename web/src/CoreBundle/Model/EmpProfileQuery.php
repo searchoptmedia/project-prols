@@ -6,4 +6,5 @@ use CoreBundle\Model\om\BaseEmpProfileQuery;
 
 class EmpProfileQuery extends BaseEmpProfileQuery
 {
+
 }

@@ -105,6 +105,9 @@
         <column name="list_dept_id" phpName="ListDeptDeptId" type="INTEGER" required="true"/>
         <column name="list_pos_id" phpName="ListPosPosId" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="sss" phpName="Sss" type="VARCHAR" size = "45"/>
+        <column name="bir" phpName="Bir" type="VARCHAR" size = "45"/>
+        <column name="philhealth" phpName="Philhealth" type="VARCHAR" size = "45"/>
 
         <foreign-key foreignTable="emp_acc" name="fk_emp_profile_emp_acc" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="emp_acc_acc_id" foreign="id"/>
@@ -114,6 +117,9 @@
         </foreign-key>
         <foreign-key foreignTable="list_pos" name="fk_emp_profile_list_pos1" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference local="list_pos_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="emp_status_type">
+            <reference local="status" foreign="id"/>
         </foreign-key>
         <index name="fk_emp_profile_emp_acc_idx">
             <index-column name="emp_acc_acc_id"/>
@@ -212,6 +218,18 @@
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="empid" phpName="EmpId" type="INTEGER"/>
         <column name="capid" phpName="CapId" type="INTEGER"/>
+        <foreign-key foreignTable="emp_acc">
+            <reference local="empid" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="capabilities_list">
+            <reference local="capid" foreign="id"/>
+        </foreign-key>
+        <index name="fk_emp_capabilities_emp_acc_idx">
+            <index-column name="empid"/>
+        </index>
+        <index name="fk_emp_capabilities_capabilities_list_idx">
+            <index-column name="capid"/>
+        </index>
         <vendor type="mysql">
             <parameter name="Engine" value="InnoDB"/>
         </vendor>

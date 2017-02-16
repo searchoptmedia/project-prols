@@ -11,6 +11,10 @@ use \Persistent;
 use \Propel;
 use \PropelException;
 use \PropelPDO;
+use CoreBundle\Model\CapabilitiesList;
+use CoreBundle\Model\CapabilitiesListQuery;
+use CoreBundle\Model\EmpAcc;
+use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpCapabilitiesPeer;
 use CoreBundle\Model\EmpCapabilitiesQuery;
@@ -53,6 +57,16 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
      * @var        int
      */
     protected $capid;
+
+    /**
+     * @var        EmpAcc
+     */
+    protected $aEmpAcc;
+
+    /**
+     * @var        CapabilitiesList
+     */
+    protected $aCapabilitiesList;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -145,6 +159,10 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
             $this->modifiedColumns[] = EmpCapabilitiesPeer::EMPID;
         }
 
+        if ($this->aEmpAcc !== null && $this->aEmpAcc->getId() !== $v) {
+            $this->aEmpAcc = null;
+        }
+
 
         return $this;
     } // setEmpId()
@@ -164,6 +182,10 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
         if ($this->capid !== $v) {
             $this->capid = $v;
             $this->modifiedColumns[] = EmpCapabilitiesPeer::CAPID;
+        }
+
+        if ($this->aCapabilitiesList !== null && $this->aCapabilitiesList->getId() !== $v) {
+            $this->aCapabilitiesList = null;
         }
 
 
@@ -237,6 +259,12 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
     public function ensureConsistency()
     {
 
+        if ($this->aEmpAcc !== null && $this->empid !== $this->aEmpAcc->getId()) {
+            $this->aEmpAcc = null;
+        }
+        if ($this->aCapabilitiesList !== null && $this->capid !== $this->aCapabilitiesList->getId()) {
+            $this->aCapabilitiesList = null;
+        }
     } // ensureConsistency
 
     /**
@@ -276,6 +304,8 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->aEmpAcc = null;
+            $this->aCapabilitiesList = null;
         } // if (deep)
     }
 
@@ -388,6 +418,25 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
         $affectedRows = 0; // initialize var to track total num of affected rows
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
+
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aEmpAcc !== null) {
+                if ($this->aEmpAcc->isModified() || $this->aEmpAcc->isNew()) {
+                    $affectedRows += $this->aEmpAcc->save($con);
+                }
+                $this->setEmpAcc($this->aEmpAcc);
+            }
+
+            if ($this->aCapabilitiesList !== null) {
+                if ($this->aCapabilitiesList->isModified() || $this->aCapabilitiesList->isNew()) {
+                    $affectedRows += $this->aCapabilitiesList->save($con);
+                }
+                $this->setCapabilitiesList($this->aCapabilitiesList);
+            }
 
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
@@ -549,6 +598,24 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
             $failureMap = array();
 
 
+            // We call the validate method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aEmpAcc !== null) {
+                if (!$this->aEmpAcc->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aEmpAcc->getValidationFailures());
+                }
+            }
+
+            if ($this->aCapabilitiesList !== null) {
+                if (!$this->aCapabilitiesList->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aCapabilitiesList->getValidationFailures());
+                }
+            }
+
+
             if (($retval = EmpCapabilitiesPeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
             }
@@ -615,10 +682,11 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
      *                    Defaults to BasePeer::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to true.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
         if (isset($alreadyDumpedObjects['EmpCapabilities'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
@@ -635,6 +703,14 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
             $result[$key] = $virtualColumn;
         }
         
+        if ($includeForeignObjects) {
+            if (null !== $this->aEmpAcc) {
+                $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aCapabilitiesList) {
+                $result['CapabilitiesList'] = $this->aCapabilitiesList->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+        }
 
         return $result;
     }
@@ -783,6 +859,18 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
     {
         $copyObj->setEmpId($this->getEmpId());
         $copyObj->setCapId($this->getCapId());
+
+        if ($deepCopy && !$this->startCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+            // store object hash to prevent cycle
+            $this->startCopy = true;
+
+            //unflag object copy
+            $this->startCopy = false;
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -830,6 +918,110 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
     }
 
     /**
+     * Declares an association between this object and a EmpAcc object.
+     *
+     * @param                  EmpAcc $v
+     * @return EmpCapabilities The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setEmpAcc(EmpAcc $v = null)
+    {
+        if ($v === null) {
+            $this->setEmpId(NULL);
+        } else {
+            $this->setEmpId($v->getId());
+        }
+
+        $this->aEmpAcc = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the EmpAcc object, it will not be re-added.
+        if ($v !== null) {
+            $v->addEmpCapabilities($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated EmpAcc object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return EmpAcc The associated EmpAcc object.
+     * @throws PropelException
+     */
+    public function getEmpAcc(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aEmpAcc === null && ($this->empid !== null) && $doQuery) {
+            $this->aEmpAcc = EmpAccQuery::create()->findPk($this->empid, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aEmpAcc->addEmpCapabilitiess($this);
+             */
+        }
+
+        return $this->aEmpAcc;
+    }
+
+    /**
+     * Declares an association between this object and a CapabilitiesList object.
+     *
+     * @param                  CapabilitiesList $v
+     * @return EmpCapabilities The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setCapabilitiesList(CapabilitiesList $v = null)
+    {
+        if ($v === null) {
+            $this->setCapId(NULL);
+        } else {
+            $this->setCapId($v->getId());
+        }
+
+        $this->aCapabilitiesList = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the CapabilitiesList object, it will not be re-added.
+        if ($v !== null) {
+            $v->addEmpCapabilities($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated CapabilitiesList object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return CapabilitiesList The associated CapabilitiesList object.
+     * @throws PropelException
+     */
+    public function getCapabilitiesList(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aCapabilitiesList === null && ($this->capid !== null) && $doQuery) {
+            $this->aCapabilitiesList = CapabilitiesListQuery::create()->findPk($this->capid, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aCapabilitiesList->addEmpCapabilitiess($this);
+             */
+        }
+
+        return $this->aCapabilitiesList;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -859,10 +1051,18 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->aEmpAcc instanceof Persistent) {
+              $this->aEmpAcc->clearAllReferences($deep);
+            }
+            if ($this->aCapabilitiesList instanceof Persistent) {
+              $this->aCapabilitiesList->clearAllReferences($deep);
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        $this->aEmpAcc = null;
+        $this->aCapabilitiesList = null;
     }
 
     /**
