@@ -54,12 +54,12 @@
                                     <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
                                     <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
                                     <td class = "status">
-                                        {% if request.status == 'Pending' %}
-                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">{{request.status}}</button>
-                                        {% elseif request.status == 'Accepted' %}
-                                            <button class="btn green" id = "accepted" style = "width: 130px;">{{request.status}}</button>
-                                        {% elseif request.status == 'Declined' %}
-                                            <button class="btn red" id = "declined" style = "width: 130px;">{{request.status}}</button>
+                                        {% if request.status == 2 %}
+                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                        {% elseif request.status == 3 %}
+                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                        {% elseif request.status == 4 %}
+                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -444,7 +444,7 @@
              isChanged = "CHANGED";
          else isChanged = "NOT CHANGED";
          changed = false;
-         changeStatus("Accepted", isChanged);
+         changeStatus(3, isChanged);
      });
 
      $(document).on("click", ".admin_decline", function () {
@@ -452,7 +452,7 @@
              isChanged = "CHANGED";
          else isChanged = "NOT CHANGED";
          changed = false;
-         changeStatus("Declined", isChanged);
+         changeStatus(4, isChanged);
      });
 
      function changeStatus(currStatus, isChanged) {
@@ -485,8 +485,8 @@
              if(data["result"]){
                  request_row = $('tr.request-row[data-id="' + reqid + '"]');
                  status_row = request_row.find("td.status button");
-                 if (currStatus == "Accepted") {
-                     status_row.html('Accepted');
+                 if (currStatus == 3) {
+                     status_row.html('Approved');
                      status_row.attr('class', 'btn green');
                      status_row.attr('id', 'accepted');
                      acceptBar.css({'top': '0px'});
@@ -525,7 +525,13 @@
          category = request_row.find("td.category").html();
          start_date = request_row.find("td.start-date").html();
          end_date = request_row.find("td.end-date").html();
+
          status = request_row.find("td.status button").html();
+         if(status == "Pending")
+             status = 2;
+         else if (status == "Approved")
+             status = 3;
+         else status = 4;
 
          if (role == "ADMIN") {
              initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid);
@@ -545,7 +551,7 @@
          admin_reason_modal.val(desc);
          admin_id_modal.val(adminid);
 
-         if (status == "Pending") {
+         if (status == 2) {
              admin_comment_modal.attr("disabled", false);
              decline.show();
              accept.show();
@@ -572,7 +578,7 @@
          statusModal.val(status);
          reason_modal.val(desc);
 
-         if (status == "Pending") {
+         if (status == 2) {
              editBtn.show();
              deleteBtn.show();
          } else {

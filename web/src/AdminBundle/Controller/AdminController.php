@@ -2,6 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilities;
+use CoreBundle\Model\EmpProfile;
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -347,38 +351,39 @@ class AdminController extends Controller
     public function adminEditProfileAction(Request $request)
     {
         $user = $this->getUser();
-        $empid = $request->request->get('empid');
-        $telId = $request->request->get('telid');
-        $mobileId = $request->request->get('cellid');
+        $id = $user->getId();
 
-        $empNum = $request->request->get('empnum');
-        $empFname = $request->request->get('fname');
-        $empLname = $request->request->get('lname');
-        $empAddress = $request->request->get('address');
-        $empBday = $request->request->get('bday');
-        $empDept = $request->request->get('dept');
-        $empPos = $request->request->get('pos');
-        $empStatus = $request->request->get('status');
-        $empEmail = $request->request->get('email');
-        $empTelNum = $request->request->get('telnum');
-        $empCelNum = $request->request->get('cellnum');
-        $empCapability = $request->request->get('capabilities');
+        $empid = $request->request->get('empid');
+        $telId = $request->request->get('telnumid');
+        $mobileId = $request->request->get('celnumid');
+        $empNum = $request->request->get('empnumber');
+        $empFname = $request->request->get('fnameinput');
+        $empLname = $request->request->get('lnameinput');
+        $empMname = $request->request->get('mnameinput');
+        $empAddress = $request->request->get('addressinput');
+        $empBday = $request->request->get('bdayinput');
+        $empDept = $request->request->get('departmentinput');
+        $empPos = $request->request->get('positioninput');
+        $empStatus = $request->request->get('statusinput');
+        $empEmail = $request->request->get('emailinput');
+        $empTelNum = $request->request->get('telnuminput');
+        $empCelNum = $request->request->get('celnuminput');
 
         $updateAcc = EmpAccPeer::getAcc($empid);
         $updateAcc->setEmail($empEmail);
-        $updateAcc->setCapabilities($empCapability);
+        $updateAcc->setLastUpdatedBy($id);
         $updateAcc->save();
 
         $updateprofile = EmpProfilePeer::getInformation($empid);
         $updateprofile->setFname($empFname);
         $updateprofile->setLname($empLname);
+        $updateprofile->setMname($empMname);
         $updateprofile->setEmployeeNumber($empNum);
         $updateprofile->setAddress($empAddress);
         $updateprofile->setBday($empBday);
         $updateprofile->setListDeptDeptId($empDept);
         $updateprofile->setListPosPosId($empPos);
         $updateprofile->setStatus($empStatus);
-        $updateprofile->setAddress($request->request->get('address'));
         $updateprofile->save();
 
         $profileId = $updateprofile->getId();
@@ -401,10 +406,25 @@ class AdminController extends Controller
             $newcel->setEmpProfileId($profileId);
             $newcel->setListContTypesId(2);
             $newcel->save();
-        }else{
+        }else {
             $updatecell->setContact($empCelNum);
             $updatecell->save();
         }
+
+        $profile = EmpAccQuery::create()->findPk($empid);
+        $capabilities = $profile->getEmpCapabilitiessJoinCapabilitiesList();
+        foreach ($capabilities as $cap) {
+            $cap->delete();
+        }
+
+        $capabilities = $request->request->get('capabilities');
+        foreach ($capabilities as $cap) {
+            $empcap = new EmpCapabilities();
+            $empcap->setEmpId($empid);
+            $empcap->setCapId($cap);
+            $empcap->save();
+        }
+
         $response = array('Update Successful' => 'success');
         $email = new EmailController();
         $sendemail = $email->adminEditEmployeeProfileEmail($request, $this);

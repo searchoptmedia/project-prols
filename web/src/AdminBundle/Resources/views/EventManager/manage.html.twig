@@ -40,7 +40,11 @@
                                         <tr data-id="{{ event.getId }}" class="event-tr">
                                             <td class="event-name">{{ event.getName }}</td>
                                             <td class="event-date">{{ event.getDate|date('n/d/Y') }}</td>
-                                            <td class="event-type">{{ event.getType }}</td>
+                                            {% if (event.type == 1) %}
+                                            <td class="event-type">Holiday</td>
+                                            {% else %}
+                                            <td class="event-type">Regular</td>
+                                            {% endif %}
                                             <td class="event-desc"
                                                 style="display: none;">{{ event.getDescription }}
                                             </td>
@@ -79,8 +83,8 @@
                         <div class="select-wrapper"><span class="caret">?</span>
                             <select name="event_type" id="event_type_modal" class="browser-default event-type">
                                 <option value="" disabled selected>Select Event Type</option>
-                                <option value="HOLIDAY">Holiday</option>
-                                <option value="REGULAR">Regular Event</option>
+                                <option value="1">Holiday</option>
+                                <option value="2">Regular Event</option>
                             </select>
                         </div>
                     </div>
@@ -218,6 +222,7 @@
         var add_edit_desc = $('#event_desc_modal');
         var add_edit_type = $('#event_type_modal');
         var add_edit_id = $('#event_id');
+        var picker = null;
 
         // view & delete
         var view_date = $('#view_event_date');
@@ -238,6 +243,15 @@
             add_btn_modal.css("display", "block");
             edit_btn_modal.css("display", "none");
             notify_option.css("display", "block");
+            picker = new Pikaday(
+                {
+                    field: document.getElementById('event_date_modal'),
+                    firstDay: 1,
+                    minDate: new Date(),
+                    maxDate: new Date(2020, 12, 31),
+                    yearRange: [2000, 2020],
+                    format: 'MM/DD/YYYY'
+                });
             add_edit_event_modal.openModal();
         });
 
@@ -283,7 +297,8 @@
                     event_date.html(date);
                     event_name.html(name);
                     event_desc.html(desc);
-                    event_type.html(type);
+                    if(type == 1) event_type.html("Holiday");
+                    else event_type.html("Regular");
                 } else if (data["error"]) {
                     // error
                     console.log(data["error"]);
@@ -312,13 +327,8 @@
             type = add_edit_type.val();
             desc = add_edit_desc.val();
 
-            if ($('#notify').is(":checked")) {
-                console.log("checked");
-                notify = 1;
-            } else {
-                console.log("unchecked");
-                notify = 0;
-            }
+            if ($('#notify').is(":checked")) notify = 1;
+            else notify = 0;
 
             $.post(
                 "{{ path('add_event') }}",
@@ -357,7 +367,9 @@
 
         function edit(type, date, name, desc, id) {
             add_edit_date.val(date);
-            add_edit_type.val(type);
+            if(type == "Holiday")
+               add_edit_type.val(1);
+            else add_edit_type.val(2);
             add_edit_name.val(name);
             add_edit_desc.val(desc);
             add_edit_id.val(id);
@@ -366,6 +378,15 @@
             add_btn_modal.css("display", "none");
             edit_btn_modal.css("display", "block");
             notify_option.css("display", "none");
+            picker = new Pikaday(
+            {
+                field: document.getElementById('event_date_modal'),
+                firstDay: 1,
+                minDate: new Date(),
+                maxDate: new Date(2020, 12, 31),
+                yearRange: [2000, 2020],
+                format: 'MM/DD/YYYY'
+            });
             add_edit_event_modal.openModal();
         }
 
@@ -533,7 +554,8 @@
 
             var td_type = document.createElement("td");
             td_type.className = "event-type";
-            td_type.textContent = type;
+            if(type == 1) td_type.textContent = "Holiday";
+            else td_type.textContent = "Regular";
 
             var td_desc = document.createElement("td");
             td_desc.className = "event-desc";
@@ -573,16 +595,6 @@
 
             $("tbody").append(row);
         }
-
-        var picker = new Pikaday(
-        {
-            field: document.getElementById('event_date_modal'),
-            firstDay: 1,
-            minDate: new Date(),
-            maxDate: new Date(2020, 12, 31),
-            yearRange: [2000, 2020],
-            format: 'MM/DD/YYYY'
-        });
 
         function showLoadingBar() {
             loadBar.show();

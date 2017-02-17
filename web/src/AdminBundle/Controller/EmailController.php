@@ -64,6 +64,8 @@ class EmailController extends Controller
         $changed = $req->request->get('isChanged');
         $note = $req->request->get('comment');
         $status = $req->request->get('status');
+        if($status == 3) $status = "Approved";
+        else $status = "Declined";
         $reason = $req->request->get('reason');
 
         if(! empty($employee))
@@ -180,10 +182,10 @@ class EmailController extends Controller
         $user = $class->getUser();
         $id   = $user->getId();
 
-        $employeeemail = $req->request->get('email');
-        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
-        $empusername = $req->request->get('username');
-        $emppassword = $req->request->get('password');
+        $employeeemail = $req->request->get('emailinput');
+        $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
+        $empusername = $req->request->get('usernameinput');
+        $emppassword = $req->request->get('passwordinput');
 
 
         $subject = "PROLS » Your Account Was Created";
@@ -207,10 +209,10 @@ class EmailController extends Controller
         $adminprofile = EmpProfilePeer::getInformation($id);
         $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
 
-        $employeeemail = $req->request->get('email');
-        $empname = $req->request->get('fname') . " " . $req->request->get('lname');
-        $empusername = $req->request->get('username');
-        $emppassword = $req->request->get('password');
+        $employeeemail = $req->request->get('emailinput');
+        $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
+        $empusername = $req->request->get('usernameinput');
+        $emppassword = $req->request->get('passwordinput');
 
 
         $subject = "PROLS Account Updated";
@@ -277,6 +279,9 @@ class EmailController extends Controller
         $name = $req->request->get('event_name');
         $desc = $req->request->get('event_desc');
         $type = $req->request->get('event_type');
+
+        if ($type == 1) $type = "Holiday";
+        else $type = "Regular";
 
         $users = EmpAccPeer::getAllUser();
 
