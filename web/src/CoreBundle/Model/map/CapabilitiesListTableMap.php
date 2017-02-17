@@ -52,6 +52,7 @@ class CapabilitiesListTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('EmpCapabilities', 'CoreBundle\\Model\\EmpCapabilities', RelationMap::ONE_TO_MANY, array('id' => 'capid', ), null, null, 'EmpCapabilitiess');
     } // buildRelations()
 
 } // CapabilitiesListTableMap

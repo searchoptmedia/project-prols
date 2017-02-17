@@ -1,9 +1,8 @@
 {% if user.role == 'ADMIN' %}
-<a href="{{ path('time_logs_page') }}" class="waves-effect waves-light btn amber btn-export" style="color: white;">
+<a href="{{ path('time_logs_page') }}" class="waves-effect waves-light btn amber" style="color: white;">
     View Time logs</a>
-<a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn amber btn-export" style="color: white;">
+<a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn amber" style="color: white;">
     View Employees</a>
-<a class="waves-effect waves-light btn orange btn-export modal-trigger modal-export" href="#exportchoice">
+<a class="waves-effect waves-light btn orange" id = "btn-export-modal">
     Export</a>
-{#<a href="{{ path('view_request') }}" class="waves-effect waves-light btn btn-export" style="color: white;">View Requests</a>#}
 {% endif %}

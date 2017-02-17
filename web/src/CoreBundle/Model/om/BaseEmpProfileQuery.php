@@ -17,6 +17,7 @@ use CoreBundle\Model\EmpContact;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EmpStatusType;
 use CoreBundle\Model\ListDept;
 use CoreBundle\Model\ListPos;
 
@@ -35,6 +36,9 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery orderByListDeptDeptId($order = Criteria::ASC) Order by the list_dept_id column
  * @method EmpProfileQuery orderByListPosPosId($order = Criteria::ASC) Order by the list_pos_id column
  * @method EmpProfileQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method EmpProfileQuery orderBySss($order = Criteria::ASC) Order by the sss column
+ * @method EmpProfileQuery orderByBir($order = Criteria::ASC) Order by the bir column
+ * @method EmpProfileQuery orderByPhilhealth($order = Criteria::ASC) Order by the philhealth column
  *
  * @method EmpProfileQuery groupById() Group by the id column
  * @method EmpProfileQuery groupByEmpAccAccId() Group by the emp_acc_acc_id column
@@ -50,6 +54,9 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery groupByListDeptDeptId() Group by the list_dept_id column
  * @method EmpProfileQuery groupByListPosPosId() Group by the list_pos_id column
  * @method EmpProfileQuery groupByStatus() Group by the status column
+ * @method EmpProfileQuery groupBySss() Group by the sss column
+ * @method EmpProfileQuery groupByBir() Group by the bir column
+ * @method EmpProfileQuery groupByPhilhealth() Group by the philhealth column
  *
  * @method EmpProfileQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpProfileQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -66,6 +73,10 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfileQuery leftJoinListPos($relationAlias = null) Adds a LEFT JOIN clause to the query using the ListPos relation
  * @method EmpProfileQuery rightJoinListPos($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ListPos relation
  * @method EmpProfileQuery innerJoinListPos($relationAlias = null) Adds a INNER JOIN clause to the query using the ListPos relation
+ *
+ * @method EmpProfileQuery leftJoinEmpStatusType($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpStatusType relation
+ * @method EmpProfileQuery rightJoinEmpStatusType($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpStatusType relation
+ * @method EmpProfileQuery innerJoinEmpStatusType($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpStatusType relation
  *
  * @method EmpProfileQuery leftJoinEmpContact($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpContact relation
  * @method EmpProfileQuery rightJoinEmpContact($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpContact relation
@@ -87,6 +98,9 @@ use CoreBundle\Model\ListPos;
  * @method EmpProfile findOneByListDeptDeptId(int $list_dept_id) Return the first EmpProfile filtered by the list_dept_id column
  * @method EmpProfile findOneByListPosPosId(int $list_pos_id) Return the first EmpProfile filtered by the list_pos_id column
  * @method EmpProfile findOneByStatus(int $status) Return the first EmpProfile filtered by the status column
+ * @method EmpProfile findOneBySss(string $sss) Return the first EmpProfile filtered by the sss column
+ * @method EmpProfile findOneByBir(string $bir) Return the first EmpProfile filtered by the bir column
+ * @method EmpProfile findOneByPhilhealth(string $philhealth) Return the first EmpProfile filtered by the philhealth column
  *
  * @method array findById(int $id) Return EmpProfile objects filtered by the id column
  * @method array findByEmpAccAccId(int $emp_acc_acc_id) Return EmpProfile objects filtered by the emp_acc_acc_id column
@@ -102,6 +116,9 @@ use CoreBundle\Model\ListPos;
  * @method array findByListDeptDeptId(int $list_dept_id) Return EmpProfile objects filtered by the list_dept_id column
  * @method array findByListPosPosId(int $list_pos_id) Return EmpProfile objects filtered by the list_pos_id column
  * @method array findByStatus(int $status) Return EmpProfile objects filtered by the status column
+ * @method array findBySss(string $sss) Return EmpProfile objects filtered by the sss column
+ * @method array findByBir(string $bir) Return EmpProfile objects filtered by the bir column
+ * @method array findByPhilhealth(string $philhealth) Return EmpProfile objects filtered by the philhealth column
  */
 abstract class BaseEmpProfileQuery extends ModelCriteria
 {
@@ -207,7 +224,7 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status` FROM `emp_profile` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `emp_acc_acc_id`, `fname`, `lname`, `mname`, `bday`, `address`, `gender`, `img_path`, `date_joined`, `emp_num`, `list_dept_id`, `list_pos_id`, `status`, `sss`, `bir`, `philhealth` FROM `emp_profile` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -770,6 +787,8 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
      * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
      * </code>
      *
+     * @see       filterByEmpStatusType()
+     *
      * @param     mixed $status The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
@@ -799,6 +818,93 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpProfilePeer::STATUS, $status, $comparison);
+    }
+
+    /**
+     * Filter the query on the sss column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySss('fooValue');   // WHERE sss = 'fooValue'
+     * $query->filterBySss('%fooValue%'); // WHERE sss LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $sss The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpProfileQuery The current query, for fluid interface
+     */
+    public function filterBySss($sss = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($sss)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $sss)) {
+                $sss = str_replace('*', '%', $sss);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpProfilePeer::SSS, $sss, $comparison);
+    }
+
+    /**
+     * Filter the query on the bir column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByBir('fooValue');   // WHERE bir = 'fooValue'
+     * $query->filterByBir('%fooValue%'); // WHERE bir LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $bir The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpProfileQuery The current query, for fluid interface
+     */
+    public function filterByBir($bir = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($bir)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $bir)) {
+                $bir = str_replace('*', '%', $bir);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpProfilePeer::BIR, $bir, $comparison);
+    }
+
+    /**
+     * Filter the query on the philhealth column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByPhilhealth('fooValue');   // WHERE philhealth = 'fooValue'
+     * $query->filterByPhilhealth('%fooValue%'); // WHERE philhealth LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $philhealth The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpProfileQuery The current query, for fluid interface
+     */
+    public function filterByPhilhealth($philhealth = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($philhealth)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $philhealth)) {
+                $philhealth = str_replace('*', '%', $philhealth);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpProfilePeer::PHILHEALTH, $philhealth, $comparison);
     }
 
     /**
@@ -1027,6 +1133,82 @@ abstract class BaseEmpProfileQuery extends ModelCriteria
         return $this
             ->joinListPos($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ListPos', '\CoreBundle\Model\ListPosQuery');
+    }
+
+    /**
+     * Filter the query by a related EmpStatusType object
+     *
+     * @param   EmpStatusType|PropelObjectCollection $empStatusType The related object(s) to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpProfileQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpStatusType($empStatusType, $comparison = null)
+    {
+        if ($empStatusType instanceof EmpStatusType) {
+            return $this
+                ->addUsingAlias(EmpProfilePeer::STATUS, $empStatusType->getId(), $comparison);
+        } elseif ($empStatusType instanceof PropelObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(EmpProfilePeer::STATUS, $empStatusType->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByEmpStatusType() only accepts arguments of type EmpStatusType or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpStatusType relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpProfileQuery The current query, for fluid interface
+     */
+    public function joinEmpStatusType($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpStatusType');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpStatusType');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpStatusType relation EmpStatusType object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpStatusTypeQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpStatusTypeQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEmpStatusType($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpStatusType', '\CoreBundle\Model\EmpStatusTypeQuery');
     }
 
     /**

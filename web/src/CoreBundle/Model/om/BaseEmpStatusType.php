@@ -9,8 +9,12 @@ use \Exception;
 use \PDO;
 use \Persistent;
 use \Propel;
+use \PropelCollection;
 use \PropelException;
+use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\EmpProfile;
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpStatusType;
 use CoreBundle\Model\EmpStatusTypePeer;
 use CoreBundle\Model\EmpStatusTypeQuery;
@@ -49,6 +53,12 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
     protected $name;
 
     /**
+     * @var        PropelObjectCollection|EmpProfile[] Collection to store aggregation of EmpProfile objects.
+     */
+    protected $collEmpProfiles;
+    protected $collEmpProfilesPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      * @var        boolean
@@ -67,6 +77,12 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
      * @var        boolean
      */
     protected $alreadyInClearAllReferencesDeep = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $empProfilesScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -237,6 +253,8 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collEmpProfiles = null;
+
         } // if (deep)
     }
 
@@ -359,6 +377,23 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->empProfilesScheduledForDeletion !== null) {
+                if (!$this->empProfilesScheduledForDeletion->isEmpty()) {
+                    EmpProfileQuery::create()
+                        ->filterByPrimaryKeys($this->empProfilesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->empProfilesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEmpProfiles !== null) {
+                foreach ($this->collEmpProfiles as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -509,6 +544,14 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
             }
 
 
+                if ($this->collEmpProfiles !== null) {
+                    foreach ($this->collEmpProfiles as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
 
             $this->alreadyInValidation = false;
         }
@@ -567,10 +610,11 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
      *                    Defaults to BasePeer::TYPE_PHPNAME.
      * @param     boolean $includeLazyLoadColumns (optional) Whether to include lazy loaded columns. Defaults to true.
      * @param     array $alreadyDumpedObjects List of objects to skip to avoid recursion
+     * @param     boolean $includeForeignObjects (optional) Whether to include hydrated related objects. Default to FALSE.
      *
      * @return array an associative array containing the field names (as keys) and field values
      */
-    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
         if (isset($alreadyDumpedObjects['EmpStatusType'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
@@ -586,6 +630,11 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
             $result[$key] = $virtualColumn;
         }
         
+        if ($includeForeignObjects) {
+            if (null !== $this->collEmpProfiles) {
+                $result['EmpProfiles'] = $this->collEmpProfiles->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+        }
 
         return $result;
     }
@@ -728,6 +777,24 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setName($this->getName());
+
+        if ($deepCopy && !$this->startCopy) {
+            // important: temporarily setNew(false) because this affects the behavior of
+            // the getter/setter methods for fkey referrer objects.
+            $copyObj->setNew(false);
+            // store object hash to prevent cycle
+            $this->startCopy = true;
+
+            foreach ($this->getEmpProfiles() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEmpProfile($relObj->copy($deepCopy));
+                }
+            }
+
+            //unflag object copy
+            $this->startCopy = false;
+        } // if ($deepCopy)
+
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -774,6 +841,322 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
         return self::$peer;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('EmpProfile' == $relationName) {
+            $this->initEmpProfiles();
+        }
+    }
+
+    /**
+     * Clears out the collEmpProfiles collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpStatusType The current object (for fluent API support)
+     * @see        addEmpProfiles()
+     */
+    public function clearEmpProfiles()
+    {
+        $this->collEmpProfiles = null; // important to set this to null since that means it is uninitialized
+        $this->collEmpProfilesPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEmpProfiles collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEmpProfiles($v = true)
+    {
+        $this->collEmpProfilesPartial = $v;
+    }
+
+    /**
+     * Initializes the collEmpProfiles collection.
+     *
+     * By default this just sets the collEmpProfiles collection to an empty array (like clearcollEmpProfiles());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEmpProfiles($overrideExisting = true)
+    {
+        if (null !== $this->collEmpProfiles && !$overrideExisting) {
+            return;
+        }
+        $this->collEmpProfiles = new PropelObjectCollection();
+        $this->collEmpProfiles->setModel('EmpProfile');
+    }
+
+    /**
+     * Gets an array of EmpProfile objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpStatusType is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EmpProfile[] List of EmpProfile objects
+     * @throws PropelException
+     */
+    public function getEmpProfiles($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpProfilesPartial && !$this->isNew();
+        if (null === $this->collEmpProfiles || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEmpProfiles) {
+                // return empty collection
+                $this->initEmpProfiles();
+            } else {
+                $collEmpProfiles = EmpProfileQuery::create(null, $criteria)
+                    ->filterByEmpStatusType($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEmpProfilesPartial && count($collEmpProfiles)) {
+                      $this->initEmpProfiles(false);
+
+                      foreach ($collEmpProfiles as $obj) {
+                        if (false == $this->collEmpProfiles->contains($obj)) {
+                          $this->collEmpProfiles->append($obj);
+                        }
+                      }
+
+                      $this->collEmpProfilesPartial = true;
+                    }
+
+                    $collEmpProfiles->getInternalIterator()->rewind();
+
+                    return $collEmpProfiles;
+                }
+
+                if ($partial && $this->collEmpProfiles) {
+                    foreach ($this->collEmpProfiles as $obj) {
+                        if ($obj->isNew()) {
+                            $collEmpProfiles[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEmpProfiles = $collEmpProfiles;
+                $this->collEmpProfilesPartial = false;
+            }
+        }
+
+        return $this->collEmpProfiles;
+    }
+
+    /**
+     * Sets a collection of EmpProfile objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $empProfiles A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpStatusType The current object (for fluent API support)
+     */
+    public function setEmpProfiles(PropelCollection $empProfiles, PropelPDO $con = null)
+    {
+        $empProfilesToDelete = $this->getEmpProfiles(new Criteria(), $con)->diff($empProfiles);
+
+
+        $this->empProfilesScheduledForDeletion = $empProfilesToDelete;
+
+        foreach ($empProfilesToDelete as $empProfileRemoved) {
+            $empProfileRemoved->setEmpStatusType(null);
+        }
+
+        $this->collEmpProfiles = null;
+        foreach ($empProfiles as $empProfile) {
+            $this->addEmpProfile($empProfile);
+        }
+
+        $this->collEmpProfiles = $empProfiles;
+        $this->collEmpProfilesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EmpProfile objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EmpProfile objects.
+     * @throws PropelException
+     */
+    public function countEmpProfiles(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEmpProfilesPartial && !$this->isNew();
+        if (null === $this->collEmpProfiles || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEmpProfiles) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEmpProfiles());
+            }
+            $query = EmpProfileQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpStatusType($this)
+                ->count($con);
+        }
+
+        return count($this->collEmpProfiles);
+    }
+
+    /**
+     * Method called to associate a EmpProfile object to this object
+     * through the EmpProfile foreign key attribute.
+     *
+     * @param    EmpProfile $l EmpProfile
+     * @return EmpStatusType The current object (for fluent API support)
+     */
+    public function addEmpProfile(EmpProfile $l)
+    {
+        if ($this->collEmpProfiles === null) {
+            $this->initEmpProfiles();
+            $this->collEmpProfilesPartial = true;
+        }
+
+        if (!in_array($l, $this->collEmpProfiles->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEmpProfile($l);
+
+            if ($this->empProfilesScheduledForDeletion and $this->empProfilesScheduledForDeletion->contains($l)) {
+                $this->empProfilesScheduledForDeletion->remove($this->empProfilesScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EmpProfile $empProfile The empProfile object to add.
+     */
+    protected function doAddEmpProfile($empProfile)
+    {
+        $this->collEmpProfiles[]= $empProfile;
+        $empProfile->setEmpStatusType($this);
+    }
+
+    /**
+     * @param	EmpProfile $empProfile The empProfile object to remove.
+     * @return EmpStatusType The current object (for fluent API support)
+     */
+    public function removeEmpProfile($empProfile)
+    {
+        if ($this->getEmpProfiles()->contains($empProfile)) {
+            $this->collEmpProfiles->remove($this->collEmpProfiles->search($empProfile));
+            if (null === $this->empProfilesScheduledForDeletion) {
+                $this->empProfilesScheduledForDeletion = clone $this->collEmpProfiles;
+                $this->empProfilesScheduledForDeletion->clear();
+            }
+            $this->empProfilesScheduledForDeletion[]= clone $empProfile;
+            $empProfile->setEmpStatusType(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpStatusType is new, it will return
+     * an empty collection; or if this EmpStatusType has previously
+     * been saved, it will retrieve related EmpProfiles from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpStatusType.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EmpProfile[] List of EmpProfile objects
+     */
+    public function getEmpProfilesJoinEmpAcc($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EmpProfileQuery::create(null, $criteria);
+        $query->joinWith('EmpAcc', $join_behavior);
+
+        return $this->getEmpProfiles($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpStatusType is new, it will return
+     * an empty collection; or if this EmpStatusType has previously
+     * been saved, it will retrieve related EmpProfiles from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpStatusType.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EmpProfile[] List of EmpProfile objects
+     */
+    public function getEmpProfilesJoinListDept($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EmpProfileQuery::create(null, $criteria);
+        $query->joinWith('ListDept', $join_behavior);
+
+        return $this->getEmpProfiles($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpStatusType is new, it will return
+     * an empty collection; or if this EmpStatusType has previously
+     * been saved, it will retrieve related EmpProfiles from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpStatusType.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EmpProfile[] List of EmpProfile objects
+     */
+    public function getEmpProfilesJoinListPos($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EmpProfileQuery::create(null, $criteria);
+        $query->joinWith('ListPos', $join_behavior);
+
+        return $this->getEmpProfiles($query, $con);
+    }
+
     /**
      * Clears the current object and sets all attributes to their default values
      */
@@ -803,10 +1186,19 @@ abstract class BaseEmpStatusType extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->collEmpProfiles) {
+                foreach ($this->collEmpProfiles as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        if ($this->collEmpProfiles instanceof PropelCollection) {
+            $this->collEmpProfiles->clearIterator();
+        }
+        $this->collEmpProfiles = null;
     }
 
     /**

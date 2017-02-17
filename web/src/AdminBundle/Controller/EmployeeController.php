@@ -2,6 +2,12 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\Model\CapabilitiesListPeer;
+use CoreBundle\Model\EmpAcc;
+use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilities;
+use CoreBundle\Model\EmpCapabilitiesPeer;
+use CoreBundle\Model\EmpStatusTypePeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -682,14 +688,8 @@ class EmployeeController extends Controller
         $data2 = EmpProfilePeer::getInformation($id);
 
         $fname = $data->getFname();
-        $lname = $data->getLname();
-        $mname = $data->getMname();
-        $bday = $data->getBday();
-//		$bday = date_format($bday, 'd/m/y');
-        $address = $data->getAddress();
         $img = $data->getImgPath();
         $datejoined = $data->getDateJoined();
-//		$datejoined = date_format($datejoined, 'd/m/y');
         $profileid = $data->getId();
         $deptid = $data->getListDeptDeptId();
 
@@ -850,23 +850,14 @@ class EmployeeController extends Controller
         // add duration
         return $this->render('AdminBundle:Employee:profile.html.twig', array(
             'page' => $page,
-            'name' => $name,
-            'fname' => $fname,
-            'lname' => $lname,
-            'mname' => $mname,
-            'bday' => $bday,
-            'address' => $address,
             'img' => $img,
             'datejoined' => $datejoined,
-            'deptnames' => $deptnames,
-            'posStatus' => $posStatus,
             'user' => $user,
             'contactArr' => $contact,
             'conEmail' => $conEmail,
             'conMobile' => $conMobile,
             'conTele' => $conTele,
             'timename' => $timename,
-            'role' => $role,
             'user2' => $user2,
             'profileId' => $profileid,
             'contacttype' => $contacttype,
@@ -893,7 +884,6 @@ class EmployeeController extends Controller
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'getAllTime' => $getAllTimeData,
             'timetoday' => $timetoday,
-
         ));
 
     }
@@ -904,288 +894,229 @@ class EmployeeController extends Controller
 
         $user = $this->getUser();
         $name = $user->getUsername();
-        $page = 'View Request';
+        $page = 'Manage Employees';
         $role = $user->getRole();
-        $capabilities = $user->getCapabilities();
-
         $id = $user->getId();
+
+        $capabilities = EmpCapabilitiesPeer::getEmpCapabilities($id);
+
         $adminController = new AdminController();
 
         $timename = $adminController->timeInOut($id);
 
-        if((strcasecmp($role, 'employee') == 0))
+        $getEmployee     = EmpProfilePeer::getAllProfile();
+        $getPos          = ListPosPeer::getAllPos();
+        $getDept         = ListDeptPeer::getAllDept();
+        $timedata        = EmpTimePeer::getTime($id);
+        $currenttimein   = 0;
+        $currenttimeout  = 0;
+        $timeflag        = 0;
+
+        //get last timed in
+        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
         {
-            return $this->redirect($this->generateUrl('admin_homepage'));
+            $checktimein = $timedata[$ctr]->getTimeIn();
+            $checktimeout = $timedata[$ctr]->getTimeOut();
+            if(!is_null($checktimein) && is_null($checktimeout))
+            {
+                $currenttimein = $checktimein->format('h:i A');
+            }else
+            {
+                $currenttimein = 0;
+                $currenttimeout = $checktimeout->format('h:i A');
+            }
         }
-        else
+        $checkipdata = null;
+        //check if already timed in today
+        if(!empty($timedata))
         {
-            $getEmployee     = EmpProfilePeer::getAllProfile();
-            $getPos          = ListPosPeer::getAllPos();
-            $getDept         = ListDeptPeer::getAllDept();
-            $timedata        = EmpTimePeer::getTime($id);
-            $currenttimein   = 0;
-            $currenttimeout  = 0;
-            $timeflag        = 0;
-
-            //get last timed in
-            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-            {
-                $checktimein = $timedata[$ctr]->getTimeIn();
-                $checktimeout = $timedata[$ctr]->getTimeOut();
-                if(!is_null($checktimein) && is_null($checktimeout))
-                {
-                    $currenttimein = $checktimein->format('h:i A');
-                }else
-                {
-                    $currenttimein = 0;
-                    $currenttimeout = $checktimeout->format('h:i A');
-                }
-            }
-            $checkipdata = null;
-            //check if already timed in today
-            if(!empty($timedata))
-            {
-                $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-                $datetoday = date('Y-m-d');
-                $emp_time = EmpTimePeer::getTime($id);
-                $currenttime = sizeof($emp_time) - 1;
-                $timein_data = $emp_time[$currenttime]->getTimeIn();
-                $timeout_data = $emp_time[$currenttime]->getTimeOut();
-                $checkipdata = $emp_time[$currenttime]->getCheckIp();
-                // echo $checkipdata;
-            }
-            $systime = date('H:i A');
-            $timetoday = date('h:i A');
-            $afternoon = date('H:i A', strtotime('12 pm'));
-
-            $userip = InitController::getUserIP($this);
-            $ip_add = ListIpPeer::getValidIP($userip);
-            $is_ip  = InitController::checkIP($userip);
-
-            $getTime = EmpTimePeer::getAllTime();
-
-            $countAllEmpData = EmpProfileQuery::create()
-                ->count();
-
-            $total_page = ceil($countAllEmpData/$item_per_page); //divide
-        
-            $getAllProfile = EmpProfilePeer::getAllProfile();
-
-
-            $et = EmpTimePeer::getEmpLastTimein($id);
-            if(!empty($et))
-            {
-                $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-                $emptimedate = $et->getDate();
-                if($emptimedate->format('Y-m-d') == $datetoday)
-                {
-                    $timeflag = 1;
-                }
-                if(! empty($et->getTimeOut()))
-                    $isTimeOut = 'true';
-            }
-
-            $requestcount = EmpRequestQuery::create()
-                ->filterByStatus('Pending')
-                ->find()->count();
-
-            $AllUsers = EmpAccPeer::getAllUser();
-            $AllDepartments = ListDeptPeer::getAllDept();
-            $AllPositions = ListPosPeer::getAllPos();
-
-            $getContact = EmpContactPeer::getAllContact();
-
-            return $this->render('AdminBundle:Employee:manage.html.twig', array(
-                'name' => $name,
-                'page' => $page,
-                'role' => $role,
-                'user' => $user,
-                'timename' => $timename,
-                'getEmployee' => $getEmployee,
-                'getPos' => $getPos,
-                'getDept' => $getDept,
-                'userip' => $userip,
-                'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-                'checkipdata' => $checkipdata,
-                'checkip' => $is_ip,
-                'currenttimein' => $currenttimein,
-                'timeflag' => $timeflag,
-                'systime' => $systime,
-                'afternoon' => $afternoon,
-                'getTime' => $getTime,
-                'getAllProfile' => $getAllProfile,
-                'requestcount' => $requestcount,
-                'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-                'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday,
-                'allusers' => $AllUsers,
-                'alldept' => $AllDepartments,
-                'allpos' => $AllPositions,
-                'getContact' => $getContact
-            ));
+            $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
+            $datetoday = date('Y-m-d');
+            $emp_time = EmpTimePeer::getTime($id);
+            $currenttime = sizeof($emp_time) - 1;
+            $timein_data = $emp_time[$currenttime]->getTimeIn();
+            $timeout_data = $emp_time[$currenttime]->getTimeOut();
+            $checkipdata = $emp_time[$currenttime]->getCheckIp();
+            // echo $checkipdata;
         }
+        $systime = date('H:i A');
+        $timetoday = date('h:i A');
+        $afternoon = date('H:i A', strtotime('12 pm'));
+
+        $userip = InitController::getUserIP($this);
+        $ip_add = ListIpPeer::getValidIP($userip);
+        $is_ip  = InitController::checkIP($userip);
+
+        $getTime = EmpTimePeer::getAllTime();
+
+        $countAllEmpData = EmpProfileQuery::create()
+            ->count();
+
+        $total_page = ceil($countAllEmpData/$item_per_page); //divide
+
+        $getAllProfile = EmpProfilePeer::getAllProfile();
+
+
+        $et = EmpTimePeer::getEmpLastTimein($id);
+        if(!empty($et))
+        {
+            $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
+            $emptimedate = $et->getDate();
+            if($emptimedate->format('Y-m-d') == $datetoday)
+            {
+                $timeflag = 1;
+            }
+            if(! empty($et->getTimeOut()))
+                $isTimeOut = 'true';
+        }
+
+        $requestcount = EmpRequestQuery::create()
+            ->filterByStatus('Pending')
+            ->find()->count();
+
+        $AllUsers = EmpAccPeer::getAllUser();
+        $AllDepartments = ListDeptPeer::getAllDept();
+        $AllPositions = ListPosPeer::getAllPos();
+        $AllEmpStatus = EmpStatusTypePeer::getAllEmpStatus();
+        $AllCapabilities = CapabilitiesListPeer::getAllCapabilities();
+        $getContact = EmpContactPeer::getAllContact();
+
+        return $this->render('AdminBundle:Employee:manage.html.twig', array(
+            'name' => $name,
+            'page' => $page,
+            'user' => $user,
+            'timename' => $timename,
+            'getEmployee' => $getEmployee,
+            'getPos' => $getPos,
+            'getDept' => $getDept,
+            'userip' => $userip,
+            'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
+            'checkipdata' => $checkipdata,
+            'checkip' => $is_ip,
+            'currenttimein' => $currenttimein,
+            'timeflag' => $timeflag,
+            'systime' => $systime,
+            'afternoon' => $afternoon,
+            'getTime' => $getTime,
+            'getAllProfile' => $getAllProfile,
+            'requestcount' => $requestcount,
+            'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
+            'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
+            'timetoday' => $timetoday,
+            'allusers' => $AllUsers,
+            'alldept' => $AllDepartments,
+            'allpos' => $AllPositions,
+            'allstatus' => $AllEmpStatus,
+            'getContact' => $getContact,
+            'capabilities' => $capabilities,
+            'allcapabilities' => $AllCapabilities
+        ));
     }
 
     public function addEmployeeAction(Request $request)
     {
+        $resp = array('error' => '');
+        date_default_timezone_set('Asia/Manila');
+        $datetimetoday = date('Y-m-d H:i:s');
+
         $user = $this->getUser();
-        $role = $user->getRole();
-        $capabilities = $user->getCapabilities();
-        // Check role
-        if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
-        {
-            return $this->redirect($this->generateUrl('admin_homepage'));
+        $id = $user->getId();
+        $empacc = new EmpAcc();
+        $empacc->setUsername($request->request->get('usernameinput'));
+        $empacc->setPassword($request->request->get('passwordinput'));
+        $empacc->setTimestamp($datetimetoday);
+        $empacc->setIpAdd(InitController::getUserIP($this));
+        $empacc->setStatus(1);
+        $empacc->setEmail($request->request->get('emailinput'));
+        $empacc->setRole("employee");
+        $empacc->setCreatedBy($id);
+        $empacc->setLastUpdatedBy($id);
+        $empacc->save();
+        $empid = $empacc->getId();
+
+        if($empid != '') {
+            $empprofile = new EmpProfile();
+            $empprofile->setEmpAccAccId($empid);
+            $empprofile->setFname($request->request->get('fnameinput'));
+            $empprofile->setMname($request->request->get('mnameinput'));
+            $empprofile->setLname($request->request->get('lnameinput'));
+            $empprofile->setBday($request->request->get('bdayinput'));
+            $empprofile->setAddress($request->request->get('addressinput'));
+            $empprofile->setGender($request->request->get('genderinput'));
+            $empprofile->setDateJoined($datetimetoday);
+            $empprofile->setEmployeeNumber($request->request->get('empnumber'));
+            $empprofile->setListDeptDeptId($request->request->get('departmentinput'));
+            $empprofile->setListPosPosId($request->request->get('positioninput'));
+            $empprofile->setStatus($request->request->get('statusinput'));
+            $empprofile->setSss($request->request->get('sssinput'));
+            $empprofile->setBir($request->request->get('birinput'));
+            $empprofile->setPhilhealth($request->request->get('philhealthinput'));
+            $empprofile->save();
+            $profileid = $empprofile->getId();
+
+            $cellcontact = new EmpContact();
+            $cellcontact->setEmpProfileId($profileid);
+            $cellcontact->setListContTypesId(2);
+            $cellcontact->setContact($request->request->get('celnuminput'));
+            $cellcontact->save();
+
+            $telcontact = new EmpContact();
+            $telcontact->setEmpProfileId($empid);
+            $telcontact->setListContTypesId(3);
+            $telcontact->setContact($request->request->get('telnuminput'));
+            $telcontact->save();
+
+            $capabilities = $request->request->get('capabilities');
+            foreach ($capabilities as $cap) {
+                $empcap = new EmpCapabilities();
+                $empcap->setEmpId($empid);
+                $empcap->setCapId($cap);
+                $empcap->save();
+            }
+
+            $resp = array('result' => 'successful');
+            $email = new EmailController();
+            $sendemail = $email->addEmployeeEmail($request, $this);
+
+            if($sendemail == 0) {
+                $resp = array('error' => 'error sending email');
+            }
         }
-        else
-        {
-            $pass = $request->request->get('password');
-            $repass = $request->request->get('repassword');
-            $user = $request->request->get('username');
-            $empNum = $request->request->get('empnum');
-            $empFname = $request->request->get('fname');
-            $empLname = $request->request->get('lname');
-            $empAddress = $request->request->get('address');
-            $empBday = $request->request->get('bday');
-            $empDept = $request->request->get('dept');
-            $empPos = $request->request->get('pos');
-            $empStatus = $request->request->get('status');
-            $empEmail = $request->request->get('email');
-            $empTelNum = $request->request->get('telnum');
-            $empCelNum = $request->request->get('cellnum');
-            $empCapability = $request->request->get('capabilities');
 
-            date_default_timezone_set('Asia/Manila');
-            $datetimetoday = date('Y-m-d H:i:s');
+        echo json_encode($resp);
+        exit;
+    }
 
-//			$AllUser = EmpAccPeer::getAllUser();
-//
-//			for ($ctr = 0; $ctr < sizeof($AllUser); $ctr++){
-//				$usedUsername = $AllUser[$ctr]->getUsername();
-//				if($usedUsername == $user){
-//					$response = array('Username already used');
-//					echo json_encode($response);
-//					exit;
-//				}
-//			}
+    public function addPositionAction(Request $req)
+    {
+        $inputName = $req->request->get('posname');
+        $addpos = new ListPos();
+        $addpos->setPosNames($inputName);
+        $addpos->save();
+        $saved = $addpos->getId();
 
-            //check if input is empty
-            if(!empty($empNum) && !empty($empFname) && !empty($empLname) && !empty($empAddress) && !empty($empBday)
-                && !empty($empDept) && !empty($empPos) && !empty($empPos) && !empty($empStatus) && !empty($user)
-                && !empty($pass) && !empty($repass))
-            {
-                //Check password and repassword
-                if($pass != $repass)
-                {
-                    $response = array('Password does not match');
-                    echo json_encode($response);
-                    exit;
-                }
-                else
-                {
-                    //add new acc
-                    $addacc = new EmpAcc();
-                    $addacc->setUsername($user);
-                    $addacc->setPassword($pass);
-                    $addacc->setRole('employee');
-                    $addacc->setEmail($empEmail);
-                    $addacc->setCapabilities($empCapability);
-                    $addacc->save();
-                    $newacc = $addacc->getId();
-
-                    //add new profile
-                    $addemp = new EmpProfile();
-                    $addemp->setEmpAccAccId($newacc);
-                    $addemp->setEmployeeNumber($empNum);
-                    $addemp->setFname($empFname);
-                    $addemp->setLname($empLname);
-                    $addemp->setAddress($empAddress);
-                    $addemp->setBday($empBday);
-//			    	$addemp->setDateJoined($current_date);
-                    $addemp->setListDeptDeptId($empDept);
-                    $addemp->setListPosPosId($empPos);
-                    $addemp->setStatus($empStatus);
-                    $addemp->save();
-                    $empid = $addemp->getId();
-
-                    $cellcontact = new EmpContact();
-                    $cellcontact->setEmpProfileId($empid);
-                    $cellcontact->setListContTypesId(2);
-                    $cellcontact->setContact($request->request->get('cellnum'));
-                    $cellcontact->save();
-
-                    $telcontact = new EmpContact();
-                    $telcontact->setEmpProfileId($empid);
-                    $telcontact->setListContTypesId(3);
-                    $telcontact->setContact($request->request->get('telnum'));
-                    $telcontact->save();
-
-                    $email = new EmailController();
-                    $sendemail = $email->addEmployeeEmail($request, $this);
-                    $response = array('Added Successfully');
-                }
-            }
-            else
-            {
-                $response = array('Missing Input');
-            }
-            $resp = array('response' => $response);
-            echo json_encode($resp);
+        if($saved == '') {
+            echo json_encode(array('error' => 'Not Saved'));
+            exit;
+        } else {
+            echo json_encode(array('result' => 'Saved', 'id' => $saved));
             exit;
         }
     }
 
-    public function addPositionAction($id)
+    public function addDepartmentAction(Request $req)
     {
-        $user = $this->getUser();
-        $role = $user->getRole();
-        $capabilities = $user->getCapabilities();
-        if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
-        {
+        $inputName = $req->request->get('deptname');
+        $addDept = new ListDept();
+        $addDept->setDeptNames($inputName);
+        $addDept->save();
+        $saved = $addDept->getId();
 
-            return $this->redirect($this->generateUrl('admin_homepage'));
-        }
-        else
-        {
-            $response = '';
-            if(isset($id) && !empty($id))
-            {
-                $addpos = new ListPos();
-                $addpos->setPosNames($id);
-                $addpos->save();
-                $response = array('Added successfully');
-
-            }
-            else
-            {
-                $response = array('No input');
-            }
-
-            echo json_encode($response);
+        if($saved == '') {
+            echo json_encode(array('error' => 'Not Saved'));
             exit;
-        }
-    }
-
-    public function addDepartmentAction($id)
-    {
-        $user = $this->getUser();
-        $role = $user->getRole();
-        $capabilities = $user->getCapabilities();
-        if(empty($capabilities) && (strcasecmp($role, 'employee') == 0))
-        {
-            return $this->redirect($this->generateUrl('admin_homepage'));
-        }
-        else
-        {
-            $response = '';
-            if(isset($id) && !empty($id)){
-                $addDept = new ListDept();
-                $addDept->setDeptNames($id);
-                $addDept->save();
-                $response = array('Added successfully');
-            }else{
-                $response = array('No input');
-            }
-            echo json_encode($response);
+        } else {
+            echo json_encode(array('result' => 'Saved', 'id' => $saved));
             exit;
         }
     }

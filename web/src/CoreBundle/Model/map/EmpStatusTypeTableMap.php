@@ -52,6 +52,7 @@ class EmpStatusTypeTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('EmpProfile', 'CoreBundle\\Model\\EmpProfile', RelationMap::ONE_TO_MANY, array('id' => 'status', ), null, null, 'EmpProfiles');
     } // buildRelations()
 
 } // EmpStatusTypeTableMap

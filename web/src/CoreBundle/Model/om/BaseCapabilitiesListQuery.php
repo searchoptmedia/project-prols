@@ -5,14 +5,17 @@ namespace CoreBundle\Model\om;
 use \Criteria;
 use \Exception;
 use \ModelCriteria;
+use \ModelJoin;
 use \PDO;
 use \Propel;
+use \PropelCollection;
 use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
 use CoreBundle\Model\CapabilitiesList;
 use CoreBundle\Model\CapabilitiesListPeer;
 use CoreBundle\Model\CapabilitiesListQuery;
+use CoreBundle\Model\EmpCapabilities;
 
 /**
  * @method CapabilitiesListQuery orderById($order = Criteria::ASC) Order by the id column
@@ -24,6 +27,10 @@ use CoreBundle\Model\CapabilitiesListQuery;
  * @method CapabilitiesListQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method CapabilitiesListQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method CapabilitiesListQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method CapabilitiesListQuery leftJoinEmpCapabilities($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpCapabilities relation
+ * @method CapabilitiesListQuery rightJoinEmpCapabilities($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpCapabilities relation
+ * @method CapabilitiesListQuery innerJoinEmpCapabilities($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpCapabilities relation
  *
  * @method CapabilitiesList findOne(PropelPDO $con = null) Return the first CapabilitiesList matching the query
  * @method CapabilitiesList findOneOrCreate(PropelPDO $con = null) Return the first CapabilitiesList matching the query, or a new CapabilitiesList object populated from the query conditions when no match is found
@@ -295,6 +302,80 @@ abstract class BaseCapabilitiesListQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(CapabilitiesListPeer::CAPABILITY, $capability, $comparison);
+    }
+
+    /**
+     * Filter the query by a related EmpCapabilities object
+     *
+     * @param   EmpCapabilities|PropelObjectCollection $empCapabilities  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 CapabilitiesListQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpCapabilities($empCapabilities, $comparison = null)
+    {
+        if ($empCapabilities instanceof EmpCapabilities) {
+            return $this
+                ->addUsingAlias(CapabilitiesListPeer::ID, $empCapabilities->getCapId(), $comparison);
+        } elseif ($empCapabilities instanceof PropelObjectCollection) {
+            return $this
+                ->useEmpCapabilitiesQuery()
+                ->filterByPrimaryKeys($empCapabilities->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEmpCapabilities() only accepts arguments of type EmpCapabilities or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpCapabilities relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return CapabilitiesListQuery The current query, for fluid interface
+     */
+    public function joinEmpCapabilities($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpCapabilities');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpCapabilities');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpCapabilities relation EmpCapabilities object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpCapabilitiesQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpCapabilitiesQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinEmpCapabilities($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpCapabilities', '\CoreBundle\Model\EmpCapabilitiesQuery');
     }
 
     /**

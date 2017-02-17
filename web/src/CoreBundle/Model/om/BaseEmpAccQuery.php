@@ -15,6 +15,7 @@ use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpTime;
@@ -68,6 +69,10 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery leftJoinEmpTime($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpTime relation
  * @method EmpAccQuery rightJoinEmpTime($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpTime relation
  * @method EmpAccQuery innerJoinEmpTime($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpTime relation
+ *
+ * @method EmpAccQuery leftJoinEmpCapabilities($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpCapabilities relation
+ * @method EmpAccQuery rightJoinEmpCapabilities($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpCapabilities relation
+ * @method EmpAccQuery innerJoinEmpCapabilities($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpCapabilities relation
  *
  * @method EmpAcc findOne(PropelPDO $con = null) Return the first EmpAcc matching the query
  * @method EmpAcc findOneOrCreate(PropelPDO $con = null) Return the first EmpAcc matching the query, or a new EmpAcc object populated from the query conditions when no match is found
@@ -1041,6 +1046,80 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         return $this
             ->joinEmpTime($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpTime', '\CoreBundle\Model\EmpTimeQuery');
+    }
+
+    /**
+     * Filter the query by a related EmpCapabilities object
+     *
+     * @param   EmpCapabilities|PropelObjectCollection $empCapabilities  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpCapabilities($empCapabilities, $comparison = null)
+    {
+        if ($empCapabilities instanceof EmpCapabilities) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $empCapabilities->getEmpId(), $comparison);
+        } elseif ($empCapabilities instanceof PropelObjectCollection) {
+            return $this
+                ->useEmpCapabilitiesQuery()
+                ->filterByPrimaryKeys($empCapabilities->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEmpCapabilities() only accepts arguments of type EmpCapabilities or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpCapabilities relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinEmpCapabilities($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpCapabilities');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpCapabilities');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpCapabilities relation EmpCapabilities object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpCapabilitiesQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpCapabilitiesQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinEmpCapabilities($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpCapabilities', '\CoreBundle\Model\EmpCapabilitiesQuery');
     }
 
     /**

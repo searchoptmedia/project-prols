@@ -43,8 +43,8 @@ class EmpCapabilitiesTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('empid', 'EmpId', 'INTEGER', false, null, null);
-        $this->addColumn('capid', 'CapId', 'INTEGER', false, null, null);
+        $this->addForeignKey('empid', 'EmpId', 'INTEGER', 'emp_acc', 'id', false, null, null);
+        $this->addForeignKey('capid', 'CapId', 'INTEGER', 'capabilities_list', 'id', false, null, null);
         // validators
     } // initialize()
 
@@ -53,6 +53,8 @@ class EmpCapabilitiesTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('empid' => 'id', ), null, null);
+        $this->addRelation('CapabilitiesList', 'CoreBundle\\Model\\CapabilitiesList', RelationMap::MANY_TO_ONE, array('capid' => 'id', ), null, null);
     } // buildRelations()
 
 } // EmpCapabilitiesTableMap

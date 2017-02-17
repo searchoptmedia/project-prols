@@ -28,7 +28,6 @@ class EmployeeRequestController extends Controller
         $page = 'View Request';
         $role = $user->getRole();
         $id = $user->getId();
-        $capabilities = $user->getCapabilities();
         $admincontroller = new AdminController();
         $timename = $admincontroller->timeInOut($id);
 
@@ -211,7 +210,7 @@ class EmployeeRequestController extends Controller
 
             $leaveinput = new EmpRequest();
             $leaveinput->setRequest($object["$reasonleave"]);
-            $leaveinput->setStatus('Pending');
+            $leaveinput->setStatus(2);
             $leaveinput->setDateStarted($object["$start"]);
             $leaveinput->setDateEnded($object["$end"]);
             $leaveinput->setEmpAccId($userid);
@@ -243,7 +242,6 @@ class EmployeeRequestController extends Controller
             $accept->setStatus($req->request->get('status'));
 
             $email = new EmailController();
-
             $sendemail = $email->acceptRequestEmail($req, $this);
 
             if($accept->save())
