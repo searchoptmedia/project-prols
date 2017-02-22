@@ -40,20 +40,9 @@
 
 <body>
     {{ notif.notif_loader() }}
-    {{ notif.request_leave_notif }}
-    {{ notif.request_meeting_notif }}
     {{ notif.time_in_time_out_notif }}
-    {{ notif.add_event_notif }}
-    {{ notif.edit_event_notif }}
-    {{ notif.notify_event_notif }}
-    {{ notif.delete_event_notif }}
-    {{ notif.accept_request_notif }}
-    {{ notif.email_sent_notif }}
-    {{ notif.edit_request_notif }}
-    {{ notif.delete_request_notif }}
-    {{ notif.accept_request_notif }}
-    {{ notif.decline_request_notif }}
-    {{ notif.add_notif }}
+    {{ notif.loader }}
+    {{ notif.login_top_loader }}
 
     <section id="main-container">
         <section id="main-wrapper">
@@ -105,6 +94,7 @@
     <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
     <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
     <script type="text/javascript" src="{{ asset('prols2/js/jquery.timepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/hazel-script.js') }}"></script>
     {#<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>#}
     {% block scripts %}{% endblock %}
 
@@ -134,6 +124,17 @@
         var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
         var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
 
+        //-------------------------------------------------------------------------
+        // Variables
+        var forgotTimeoutModal = $('.forgot-timeout-modal');
+        var autoTimeoutNotice = $('.auto-timeout-notice');
+        var autoTimeoutTimeMessage = $('.auto-timeout-time-message');
+        var timeInContainer = $('.time-in-container');
+        var timeOutContainer = $('.timeout-container');
+        var modalFailAjaxContainer = $('.modal-fail-ajax-container');
+        var btnKeepWorking = $('.btn-keep-working');
+        //-------------------------------------------------------------------------
+
         function timeOutInit() {
             //--------------12 AM ALERT MODAL-------------------------
             var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
@@ -156,11 +157,11 @@
                     this.focus();
                     clearTimeout(alertInt);
                     alert('Good Morning!');
-                    $('.forgot-timeout-modal').show();
+                    forgotTimeoutModal.show();
                     startTimer(displayTime, display);
                     //if 1am onwards
                 } else if(dayNow == 'false') {
-                    $('.forgot-timeout-modal').show();
+                    forgotTimeoutModal.show();
                     startTimer(displayTime, display);
                     //else run loop
                 } else {
@@ -171,7 +172,7 @@
             function checkTimeout() {
                 if(isTimeout == 'false')
                 {
-                    $('.forgot-timeout-modal').show();
+                    forgotTimeoutModal.show();
                     startTimer(displayTime, display);
                 }
                 console.log('isTimeout? '+isTimeout);
@@ -189,15 +190,15 @@
                 $d = $d.toLocaleTimeString("en-us", options);
                 if(isAutoTimeOut == 'true')
                 {
-                    $('.auto-timeout-notice').show();
-                    $('.auto-timeout-time-message').html($d);
-                    $('.time-in-container').hide();
+                    autoTimeoutNotice.show();
+                    autoTimeoutTimeMessage.html($d);
+                    timeInContainer.hide();
                     toggleTimeWidget('hide');
                 }
             }
 
             $('.forgot-timeout-btn').click(function () {
-                $('.forgot-timeout-modal').hide();
+                forgotTimeoutModal.hide();
                 timer = 0;
                 checker = true;
                 isTimeout = '{{ app.session.get('timeout', 'true') }}'
@@ -223,7 +224,7 @@
                         checker = true;
 
                         display.textContent = '';
-                        $('.forgot-timeout-modal').hide();
+                        forgotTimeoutModal.hide();
                         manage_time_newday('timeout');
                     }
                     console.log('timer')
@@ -242,11 +243,11 @@
                         else  toggleTimeWidget('hide');
                     })
                     .fail( function() {
-                        $('.modal-fail-ajax-container').show();
+                        modalFailAjaxContainer.show();
                     });
             }
 
-            $('.btn-keep-working').bind('click', function() {
+            btnKeepWorking.bind('click', function() {
                 manage_time_newday('working');
             });
 
@@ -258,19 +259,21 @@
                 $('.timeout-cancel').bind('click', function() {
                     clearInterval(timerInt);
                     display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
-                    $('.forgot-timeout-modal').show();
+                    forgotTimeoutModal.show();
                     startTimer(displayTime, display);
                 });
             });
             $('.btn-forgot-timeout-show-timein').bind('click', function() {
-                $('.auto-timeout-notice').hide();
+                autoTimeoutNotice.hide();
                 toggleTimeInModal('show');
             });
             //checkIf_AutoTimeOut();
         }
+
         window.onload = function () {
             timeOutInit();
         };
+
     </script>
 
     <script>
@@ -288,7 +291,7 @@
 
         function toggleTimeInModal(act) {
             if(act == 'show') {
-                $('.time-in-container').show();
+                timeInContainer.show();
                 $('.btn-timeout').hide();
             }
         }
@@ -348,14 +351,13 @@
                 }
             }
             $('#time-in-button').hide();
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
-            $('.forgot-timeout-modal').hide();
+            showLoadingBar();
+            forgotTimeoutModal.hide();
             var timetoday = "{{ timetoday }}";
             $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
                 console.log(data);
                 toggleTimeWidget('show');
-                $('.time-in-container').css({'display' : 'none'});
+                timeInContainer.css({'display' : 'none'});
                 $('.timein-notif-container').css({'top':'0px'});
                 $('.timed-in').css({'display' : 'block'});
                 $('.btn-timeout').show();
@@ -366,9 +368,7 @@
                     $('.timein-notif-container').css({'top' : '-55px'});
                 }, 5000);
             }).always(function(data){
-                console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
+                hideLoadingBar();
             }).fail( function() {
                 $('.error-notif-container').css({'top':'0px'});
                 setTimeout(function(){
@@ -387,8 +387,7 @@
                 return;
             }
 
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
+            showLoadingBar();
             $('#time-out-button').hide();
             $('.timeout-cancel').hide();
             $.post("{{ path('time_out') }}" + pass, function(data){
@@ -403,10 +402,9 @@
                 }
 
                 //time out success
-                $('.timeout-container').css({'display' : 'none'});
+                timeOutContainer.css({'display' : 'none'});
                 $('.timeout').css({'display' : 'none'});
                 $('.timeout-notif-container').css({'top':'0px'});
-    //                                    $('.timed-in').css({'display' : 'none'});
                 $('.timed-out').css({'display' : 'block'});
                 $('.btn-timeout').css({'display' : 'none'});
                 $('.timechip').hide();
@@ -418,18 +416,18 @@
                 if(isFromForgot) window.location = '/logout';
 
             }).always(function(data){
-                console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
+                hideLoadingBar();
             }).fail(function(data){
                 console.log(data);
-                $('.time-in-container').hide();
-                $('.timeout-container').hide();
+                timeInContainer.hide();
+                timeOutContainer.hide();
                 $('.modal-logout-notify-container').show();
                 //                      $('.modal-session-content').show();
             });
 
         });
+
+
     </script>
 
     {% block customjs %}{% endblock %}

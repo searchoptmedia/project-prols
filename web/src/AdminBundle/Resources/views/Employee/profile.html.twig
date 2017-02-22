@@ -3,11 +3,6 @@
     <title>Propelrr Log-in System| Profile</title>
 {% endblock %}
 {% block body %}
-    {{ notif.update_profile_notif() }}
-    {{ notif.notif_loader() }}
-    <div class="col-md-12 green center-align changepass-notif light-green darken-1 close-alert notification-modal">
-        <div class="timein-success"><h5>Password Changed!</h5></div>
-    </div>
     <div class="page-content">
         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
@@ -224,22 +219,17 @@
             </div>
         </div>
         <!---------------CHANGE PASS MODAL------------------>
-        <div id="modal-changepw" class="modal">
-            <form action="{{ path('change_pass') }}" id = "changepass" method="post">
+        <div id="modal-changepw" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h4>Change Password</h4>
-                <div class="chip" id="formchangedalert" style="display:none;">
-                    <strong>Password Changed!</strong>
-                </div>
-                    <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
-                    <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
-                    <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
+                <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
+                <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
+                <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
-                <button type="submit" href="#!" class=" modal-action waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
+                <button class="waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
             </div>
-            </form>
         </div>
     </div>
 </div>
@@ -248,6 +238,9 @@
 
 {% block customjs %}
     <script type="text/javascript">
+        // VARIABLES
+
+
         $(document).ready(function(){
             var profileId, telId, mobileId;
             var addresscontainer  = $("#addr").html();
@@ -327,14 +320,25 @@
                     }
                     telephoneinput  = $("#tel-p").val();
                     cellphoneinput  = $("#cel-p").val();
-                    $('.loader-notif').show();
-                    $('.loader-notif').css({'top' : '0px'});
-                    $.post("{{ path('update_profile') }}", {address:addressinput, telephone:telephoneinput, cellphone:cellphoneinput,
-                    telId:telId, mobileId:mobileId}, function(data){
+                    showLoadingBar();
+                    $.post("{{ path('update_profile') }}",
+                        {
+                            address:addressinput,
+                            telephone:telephoneinput,
+                            cellphone:cellphoneinput,
+                            telId:telId,
+                            mobileId:mobileId
+                        }, function(data){
+
+                    }, 'json').done(function(data){
+                        if (data["result"]) {
+                            showSuccessBar(data["result"]);
+                        } else if (data["error"]) {
+                            // error
+                            showErrorBar(data["error"]);
+                        }
                     }).always(function(data){
-                        console.log(data);
-                        $('.loader-notif').hide();
-                        $('.loader-notif').css({'top' : '-55px'});
+                        hideLoadingBar();
                     });
                     $('.btn-save-profile').css({'display' : 'none'});
                     $('.btn-cancel-profile').css({'display' : 'none'});
@@ -348,7 +352,6 @@
                     telcontainer  = $("#tel-p").val();
                     celcontainer  = $("#cel-p").val();
                     addresscontainer = $("#addrinput").val();
-                    console.log('update success');
                 } else {
                     e.preventDefault();
                 }
@@ -371,7 +374,7 @@
 
             $('.initialized').material_select();
 
-            $('#changepass').on('submit', function() {
+            $('.btn-changepw').on('click', function() {
                 $('#formchangedalert').hide();
                 var oldpass = $('#oldpw').val();
                 var newpass = $('#newpw').val();
@@ -392,44 +395,35 @@
                     return false;
                 }
 
-                var data = {oldpass:oldpass, newpass:newpass};
-                console.log(data);
-                $('.loader-notif').show();
-                $('.loader-notif').css({'top' : '0px'});
-                var jqxhr = $.post( "{{ path('change_pass') }}", data, function(data) {
-                    console.log(data);
-                }).done(function(data) {
-                            var data = eval('('+ data +')');
-                            if(data.error == true){
+                var data = {
+                    oldpass:oldpass,
+                    newpass:newpass
+                };
 
-                            }else{
-                                console.log(data);
-                                $('#oldpw').val('');
-                                $('#newpw').val('');
-                                $('#confirmpw').val('');
-                                $('.changepass-notif').css({'top' : '0px'});
-                                $('#modal-changepw').css({'display' : 'none'});
-                                $('.lean-overlay').css({'display' : 'none'});
-                                setTimeout(function(){
-                                    $('.changepass-notif').css({'top' : '-55px'});
-                                }, 3000);
-                            }
-                            $('#formchangedalert').text(data.response);
-                            $('#formchangedalert').show();
-                            console.log(data.response);
-                        }).fail(function(data) {
-                            console.log(data);
-                        }).always(function(data) {
-                            console.log(data);
-                            $('.loader-notif').hide();
-                            $('.loader-notif').css({'top' : '-55px'});
-                        });
-                return false;
+                showLoadingBar();
+                $.post(
+                    "{{ path('change_pass') }}",
+                    data,
+                    function(data) {
+                        $('#oldpw').val('');
+                        $('#newpw').val('');
+                        $('#confirmpw').val('');
+                    }, 'json').done(function(data) {
+                        console.log(data);
+                        if (data["result"]) {
+                            showSuccessBar(data["result"]);
+                        } else if (data["error"]) {
+                            showErrorBar(data["error"]);
+                        }
+                    }).always(function(data) {
+                        hideLoadingBar();
+                        $('#modal-changepw').closeModal();
+                    });
             });
+
+
             $('.modal-change').click(function(){
-                $('#modal-changepw').css({'display' : 'block'});
-                $('.lean-overlay').css({'display' : 'block'});
-                $('#formchangedalert').hide();
+                $('#modal-changepw').openModal();
             });
 
             $('.emptable').change(function(){

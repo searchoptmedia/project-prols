@@ -275,12 +275,6 @@
 
 {% block customjs %}
     <script type = "text/javascript">
-        // Notification Bars
-        var loadBar = $('.loader-notif');
-        var addBar = $('.add-emp-notif');
-        var editBar = $('.edit-emp-notif');
-        var errorBar = $('.error-notif-container');
-
         // Action Buttons
         var deptExportContainer = $('.dept-container');
         var addEmployeeModalBtn = $('#add-emp');
@@ -391,77 +385,56 @@
         });
 
         $(document).on("click", "#save-pos", function () {
-            var validate = checkAddPosDeptFields();
+            var validate = checkFields(elements = [nameInputAddPosDept]);
             if (validate == true) // true == there are errors
                 return;
-            showLoadingBar();
-            inputName = nameInputAddPosDept.val();
 
-            $.post(
-                "{{ path('add_position') }}",
-                {
-                    posname: inputName
-                },
-                function (data) {
-                    //
-                }, "json"
-            ).done(function (data) {
+            inputName = nameInputAddPosDept.val();
+            data = { posname: inputName };
+            callback = function (data) {
+                closeAddPosDeptModal();
+            };
+            done = function (data) {
                 if (data["result"]) {
-                    showAddBar();
+                    showSuccessBar(data["result"]);
                     addOption("Position", data["id"], inputName);
                 } else if (data["error"]) {
-                    // error
-                    showErrorBar();
+                    showErrorBar(data["error"]);
                 }
-            }).always(function (data) {
+            };
+            always = function (data) {
                 hideLoadingBar();
-                closeAddPosDeptModal();
-            });
+            };
+            post(savePositionBtn, "{{ path('add_position') }}", data, callback, done, always);
         });
 
         $(document).on("click", "#save-dept", function () {
-            var validate = checkAddPosDeptFields();
+            var validate = checkFields(elements = [nameInputAddPosDept]);
             if (validate == true) // true == there are errors
                 return;
-            showLoadingBar();
-            inputName = nameInputAddPosDept.val();
 
-            $.post(
-                "{{ path('add_department') }}",
-                {
-                    deptname: inputName
-                },
-                function (data) {
-                    //
-                }, "json"
-            ).done(function (data) {
+            inputName = nameInputAddPosDept.val();
+            data = { deptname: inputName };
+            callback = function (data) {
+                closeAddPosDeptModal();
+            };
+            done = function (data) {
                 if (data["result"]) {
-                    showAddBar();
+                    showSuccessBar(data["result"]);
                     addOption("Department", data["id"], inputName);
                 } else if (data["error"]) {
-                    // error
-                    showErrorBar();
+                    showErrorBar(data["error"]);
                 }
-            }).always(function (data) {
+            };
+            always = function (data) {
                 hideLoadingBar();
-                closeAddPosDeptModal();
-            });
+            };
+            post(saveDepartmentBtn, "{{ path('add_department') }}", data, callback, done, always);
         });
 
         function closeAddPosDeptModal() {
             nameInputAddPosDept.val('');
             addPosDeptModal.closeModal();
-        }
-
-        function checkAddPosDeptFields() {
-            if (nameInputAddPosDept.val() == '') {
-                nameInputAddPosDept.css({'border-color': 'red'});
-                setTimeout(function () {
-                    nameInputAddPosDept.css({'border-color': 'gray'})
-                }, 1000);
-                return true;
-            }
-            return false;
         }
 
         function addOption(type, id, name) {
@@ -564,48 +537,49 @@
 
             if(capabilities.length == 0) capabilities = '';
 
-            $.post(
-                "{{ path('admin_edit_employee_profile') }}",
-                {
-                    usernameinput:usernameinput,
-                    passwordinput:passwordinput,
-                    empnumber:empnumber,
-                    fnameinput:fnameinput,
-                    mnameinput:mnameinput,
-                    lnameinput:lnameinput,
-                    genderinput:genderinput,
-                    departmentinput:departmentinput,
-                    positioninput:positioninput,
-                    statusinput:statusinput,
-                    emailinput:emailinput,
-                    addressinput:addressinput,
-                    bdayinput:bdayinput,
-                    telnuminput:telnuminput,
-                    celnuminput:celnuminput,
-                    sssinput:sssinput,
-                    birinput:birinput,
-                    philhealthinput:philhealthinput,
-                    capabilities:capabilities,
-                    empid:empid,
-                    telnumid:telnumid,
-                    celnumid:celnumid
-                },
-                function (data) {
-                    //
-                }, "json"
-            ).done(function (data) {
-                if (data["result"]) {
-                    showEditBar();
-                    // add new row
-                } else if (data["error"]) {
-                    // error
-                    showErrorBar();
-                }
-            }).always(function (data) {
-                hideLoadingBar();
+            data = {
+                usernameinput:usernameinput,
+                passwordinput:passwordinput,
+                empnumber:empnumber,
+                fnameinput:fnameinput,
+                mnameinput:mnameinput,
+                lnameinput:lnameinput,
+                genderinput:genderinput,
+                departmentinput:departmentinput,
+                positioninput:positioninput,
+                statusinput:statusinput,
+                emailinput:emailinput,
+                addressinput:addressinput,
+                bdayinput:bdayinput,
+                telnuminput:telnuminput,
+                celnuminput:celnuminput,
+                sssinput:sssinput,
+                birinput:birinput,
+                philhealthinput:philhealthinput,
+                capabilities:capabilities,
+                empid:empid,
+                telnumid:telnumid,
+                celnumid:celnumid
+            };
+
+            callback = function (data) {
                 addEditEmpModal.closeModal();
-                location.reload();
-            });
+            };
+
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                    location.reload();
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function (data) {
+                hideLoadingBar();
+            };
+
+            post(saveEmployeeModalBtn, "{{ path('admin_edit_employee_profile') }}", data, callback, done, always);
         });
 
         $(document).on("click", "#add-emp", function () {
@@ -642,45 +616,48 @@
 
             if(capabilities.length == 0) capabilities = '';
 
-            $.post(
-                "{{ path('add_employee') }}",
-                {
-                    usernameinput:usernameinput,
-                    passwordinput:passwordinput,
-                    empnumber:empnumber,
-                    fnameinput:fnameinput,
-                    mnameinput:mnameinput,
-                    lnameinput:lnameinput,
-                    genderinput:genderinput,
-                    departmentinput:departmentinput,
-                    positioninput:positioninput,
-                    statusinput:statusinput,
-                    emailinput:emailinput,
-                    addressinput:addressinput,
-                    bdayinput:bdayinput,
-                    telnuminput:telnuminput,
-                    celnuminput:celnuminput,
-                    sssinput:sssinput,
-                    birinput:birinput,
-                    philhealthinput:philhealthinput,
-                    capabilities:capabilities
-                },
-                function (data) {
-                    //
-                }, "json"
-            ).done(function (data) {
+            data = {
+                usernameinput:usernameinput,
+                passwordinput:passwordinput,
+                empnumber:empnumber,
+                fnameinput:fnameinput,
+                mnameinput:mnameinput,
+                lnameinput:lnameinput,
+                genderinput:genderinput,
+                departmentinput:departmentinput,
+                positioninput:positioninput,
+                statusinput:statusinput,
+                emailinput:emailinput,
+                addressinput:addressinput,
+                bdayinput:bdayinput,
+                telnuminput:telnuminput,
+                celnuminput:celnuminput,
+                sssinput:sssinput,
+                birinput:birinput,
+                philhealthinput:philhealthinput,
+                capabilities:capabilities
+            };
+
+            callback = function (data) {
+                addEditEmpModal.closeModal();
+            };
+
+            done = function (data) {
                 if (data["result"]) {
-                    showAddBar();
+                    showSuccessBar(data["result"]);
+                    location.reload();
                     // add new row
                 } else if (data["error"]) {
                     // error
-                    showErrorBar();
+                    showErrorBar(data["error"]);
                 }
-            }).always(function (data) {
+            };
+
+            always = function (data) {
                 hideLoadingBar();
-                addEditEmpModal.closeModal();
-                location.reload();
-            });
+            };
+
+            post(addEmployeeModalBtn, "{{ path('add_employee') }}", data, callback, done, always);
         });
 
         function checkAddEmpFields() {
@@ -826,38 +803,5 @@
             passwordInput.attr("disabled", false);
             confirmPasswordInput.attr("disabled", false);
         }
-
-        // Show Notifications
-        function showLoadingBar() {
-            loadBar.show();
-            loadBar.css({'top': '0px'});
-        }
-
-        function hideLoadingBar() {
-            loadBar.hide();
-            loadBar.css({'top': '-55px'});
-        }
-
-        function showAddBar() {
-            addBar.css({'top': '0px'});
-            setTimeout(function () {
-                addBar.css({'top': '-55px'});
-            }, 2000);
-        }
-
-        function showEditBar() {
-            editBar.css({'top': '0px'});
-            setTimeout(function () {
-                editBar.css({'top': '-55px'});
-            }, 2000);
-        }
-
-        function showErrorBar() {
-            errorBar.css({'top': '0px'});
-            setTimeout(function () {
-                errorBar.css({'top': '-55px'});
-            }, 2000);
-        }
-
     </script>
 {% endblock %}

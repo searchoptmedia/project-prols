@@ -8,6 +8,7 @@ use CoreBundle\Model\RequestMeetingsTag;
 use CoreBundle\Model\RequestMeetingsTagPeer;
 use CoreBundle\Model\RequestMeetingsTagsPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
@@ -114,31 +115,77 @@ class EventManagerController extends Controller
         $event->setDescription($req->request->get('event_desc'));
         $event->setType($req->request->get('event_type'));
         $event->save();
+        $event_id = $event->getId();
 
-        if($notify == 1) {
-            $this->notifyAction($req);
-        } else {
-            echo json_encode(array('result' => 'ok'));
+        try {
+            if($notify == 1) {
+                $success = $this->notify($req);
+                if ($success) {
+                    // email successfully sent
+                    echo json_encode(array('result' => 'Event Successfully Added'));
+                    exit;
+                } else {
+                    // email not successfully sent
+                    echo json_encode(array('error' => 'Event not Successfully Added'));
+                    exit;
+                }
+            } else {
+                echo json_encode(array('result' => 'Event Successfully Added'));
+                exit;
+            }
+        } catch(Exception $e) {
+            //
+        } finally {
+            $deleted = $this->deleteById($event_id);
+            echo json_encode(array('error' => 'Server Error'));
             exit;
+        }
+    }
+
+    public function deleteById($id) {
+        $event = ListEventsQuery::create()->findPk($id);
+        if(!empty($event)) {
+            $event->delete();
+            $deleted = $event->isDeleted();
+            return $deleted;
+        } else {
+            return false;
         }
     }
 
     public function notifyAction(Request $req) {
-        $email = new EmailController();
-        $sendemail = $email->notifyEventEmail($req, $this);
-
-        if($sendemail == 0) {
-            $this->deleteAction($req);
-            echo json_encode(array('error' => 'Email not sent'));
-            exit;
-        } else {
-            echo json_encode(array('result' => 'ok'));
+        $success = $this->notify($req);
+        try {
+            if ($success) {
+                // email successfully sent
+                echo json_encode(array('result' => 'Event Successfully Notified'));
+                exit;
+            } else {
+                // email not successfully sent
+                echo json_encode(array('error' => 'Notification Error: Email not sent'));
+                exit;
+            }
+        } catch (Exception $e) {
+            //
+        } finally {
+            echo json_encode(array('error' => 'Server Error'));
             exit;
         }
     }
 
+    public function notify(Request $req) {
+        $email = new EmailController();
+        $sendemail = $email->notifyEventEmail($req, $this);
+
+        if($sendemail == 0) {
+            $delete = $this->delete($req);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function editAction(Request $req) {
-        $result = array('result' => 'error');
         $event = ListEventsQuery::create()->findPk($req->request->get('event_id'));
 
         if(!empty($event)) {
@@ -150,7 +197,7 @@ class EventManagerController extends Controller
             $lastid = $event->getId();
 
             if(!empty($lastid)) {
-                $result = array('result' => 'Success');
+                $result = array('result' => 'Event update successful');
             } else {
                 $result = array('error' => 'Event update not successful');
             }
@@ -162,22 +209,22 @@ class EventManagerController extends Controller
         exit;
     }
 
-    public function deleteAction(Request $req) {
-        $result = array('result' => 'error');
+    public function delete(Request $req) {
         $event = ListEventsQuery::create()->findPk($req->request->get('event_id'));
-
         if(!empty($event)) {
             $event->delete();
             $deleted = $event->isDeleted();
-
-            if($deleted) {
-                $result = array('result' => 'Success');
-            } else {
-                $result = array('error' => 'Event update not successful');
-            }
+            return $deleted;
         } else {
-            $result = array('error' => 'Event not found');
+            return false;
         }
+    }
+
+    public function deleteAction(Request $req) {
+        $deleted = $this->delete($req);
+        if($deleted)
+            $result = array('result' => 'Event Successfully Deleted');
+        else $result = array('error' => 'Event not Successfully Deleted');
 
         echo json_encode($result);
         exit;

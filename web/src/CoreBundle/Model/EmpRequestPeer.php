@@ -37,7 +37,7 @@ class EmpRequestPeer extends BaseEmpRequestPeer
             $c = new Criteria();
         }
 
-        $c->add(self::STATUS, 'Accepted', Criteria::EQUAL);
+        $c->add(self::STATUS, 3, Criteria::EQUAL);
         $c->addDescendingOrderByColumn(self::ID);
 
         $_self = self::doSelect($c);

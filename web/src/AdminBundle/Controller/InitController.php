@@ -10,6 +10,7 @@ namespace AdminBundle\Controller;
 
 use CoreBundle\Model\ListIpPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class  InitController extends Controller
 {
@@ -62,5 +63,4 @@ class  InitController extends Controller
 
         return $userip == $matchedip ? 1 : 0;
     }
-
 }

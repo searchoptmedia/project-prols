@@ -1014,76 +1014,118 @@ class EmployeeController extends Controller
 
     public function addEmployeeAction(Request $request)
     {
-        $resp = array('error' => '');
         date_default_timezone_set('Asia/Manila');
         $datetimetoday = date('Y-m-d H:i:s');
-
         $user = $this->getUser();
         $id = $user->getId();
-        $empacc = new EmpAcc();
-        $empacc->setUsername($request->request->get('usernameinput'));
-        $empacc->setPassword($request->request->get('passwordinput'));
-        $empacc->setTimestamp($datetimetoday);
-        $empacc->setIpAdd(InitController::getUserIP($this));
-        $empacc->setStatus(1);
-        $empacc->setEmail($request->request->get('emailinput'));
-        $empacc->setRole("employee");
-        $empacc->setCreatedBy($id);
-        $empacc->setLastUpdatedBy($id);
-        $empacc->save();
-        $empid = $empacc->getId();
 
-        if($empid != '') {
-            $empprofile = new EmpProfile();
-            $empprofile->setEmpAccAccId($empid);
-            $empprofile->setFname($request->request->get('fnameinput'));
-            $empprofile->setMname($request->request->get('mnameinput'));
-            $empprofile->setLname($request->request->get('lnameinput'));
-            $empprofile->setBday($request->request->get('bdayinput'));
-            $empprofile->setAddress($request->request->get('addressinput'));
-            $empprofile->setGender($request->request->get('genderinput'));
-            $empprofile->setDateJoined($datetimetoday);
-            $empprofile->setEmployeeNumber($request->request->get('empnumber'));
-            $empprofile->setListDeptDeptId($request->request->get('departmentinput'));
-            $empprofile->setListPosPosId($request->request->get('positioninput'));
-            $empprofile->setStatus($request->request->get('statusinput'));
-            $empprofile->setSss($request->request->get('sssinput'));
-            $empprofile->setBir($request->request->get('birinput'));
-            $empprofile->setPhilhealth($request->request->get('philhealthinput'));
-            $empprofile->save();
-            $profileid = $empprofile->getId();
+        $newUserEmail = $request->request->get('emailinput');
+        $newUser = EmpAccPeer::getUserInfo($newUserEmail);
+        if($newUser != null) {
+            $newUserStatus =$newUser->getStatus();
+            if($newUserStatus == -1) {
+                // send email
+                $email = new EmailController();
+                $sendemail = $email->addEmployeeEmail($request, $this);
+                if (!$sendemail) {
+                    echo json_encode(array('error' => 'Error Occurred. Please try again.'));
+                    exit;
+                }
+                else {
+                    $newUser->setStatus(1);
+                    $newUser->save();
+                    echo json_encode(array('result' => 'User has been successfully created'));
+                    exit;
+                }
+            } else {
+                // return user exists
+                echo json_encode(array('error' => 'User already exists'));
+                exit;
+            }
+        } else {
+            // create user
+            $empacc = new EmpAcc();
+            $empacc->setUsername($request->request->get('usernameinput'));
+            $empacc->setPassword($request->request->get('passwordinput'));
+            $empacc->setTimestamp($datetimetoday);
+            $empacc->setIpAdd(InitController::getUserIP($this));
+            $empacc->setStatus(-1);
+            $empacc->setEmail($request->request->get('emailinput'));
+            $empacc->setRole("employee");
+            $empacc->setCreatedBy($id);
+            $empacc->setLastUpdatedBy($id);
+            $empacc->save();
+            $empid = $empacc->getId();
 
-            $cellcontact = new EmpContact();
-            $cellcontact->setEmpProfileId($profileid);
-            $cellcontact->setListContTypesId(2);
-            $cellcontact->setContact($request->request->get('celnuminput'));
-            $cellcontact->save();
+            if($empid != '') {
+                $empprofile = new EmpProfile();
+                $empprofile->setEmpAccAccId($empid);
+                $empprofile->setFname($request->request->get('fnameinput'));
+                $empprofile->setMname($request->request->get('mnameinput'));
+                $empprofile->setLname($request->request->get('lnameinput'));
+                $empprofile->setBday($request->request->get('bdayinput'));
+                $empprofile->setAddress($request->request->get('addressinput'));
+                $empprofile->setGender($request->request->get('genderinput'));
+                $empprofile->setDateJoined($datetimetoday);
+                $empprofile->setEmployeeNumber($request->request->get('empnumber'));
+                $empprofile->setListDeptDeptId($request->request->get('departmentinput'));
+                $empprofile->setListPosPosId($request->request->get('positioninput'));
+                $empprofile->setStatus($request->request->get('statusinput'));
+                $empprofile->setSss($request->request->get('sssinput'));
+                $empprofile->setBir($request->request->get('birinput'));
+                $empprofile->setPhilhealth($request->request->get('philhealthinput'));
+                $empprofile->save();
+                $profileid = $empprofile->getId();
 
-            $telcontact = new EmpContact();
-            $telcontact->setEmpProfileId($empid);
-            $telcontact->setListContTypesId(3);
-            $telcontact->setContact($request->request->get('telnuminput'));
-            $telcontact->save();
+                $cellcontact = new EmpContact();
+                $cellcontact->setEmpProfileId($profileid);
+                $cellcontact->setListContTypesId(2);
+                $cellcontact->setContact($request->request->get('celnuminput'));
+                $cellcontact->save();
 
-            $capabilities = $request->request->get('capabilities');
-            foreach ($capabilities as $cap) {
-                $empcap = new EmpCapabilities();
-                $empcap->setEmpId($empid);
-                $empcap->setCapId($cap);
-                $empcap->save();
+                $telcontact = new EmpContact();
+                $telcontact->setEmpProfileId($empid);
+                $telcontact->setListContTypesId(3);
+                $telcontact->setContact($request->request->get('telnuminput'));
+                $telcontact->save();
+
+                $capabilities = $request->request->get('capabilities');
+                $capIds = array();
+                foreach ($capabilities as $cap) {
+                    $empcap = new EmpCapabilities();
+                    $empcap->setEmpId($empid);
+                    $empcap->setCapId($cap);
+                    $empcap->save();
+                    array_push($capIds, $empcap->getId());
+                }
             }
 
-            $resp = array('result' => 'successful');
             $email = new EmailController();
             $sendemail = $email->addEmployeeEmail($request, $this);
-
-            if($sendemail == 0) {
-                $resp = array('error' => 'error sending email');
+            if (!$sendemail) {
+                echo json_encode(array('error' => 'Error: Email cannot be sent.'));
+                exit;
+            }
+            else {
+                $newUser->setStatus(1);
+                echo json_encode(array('result' => 'User has been successfully created'));
+                exit;
             }
         }
+    }
 
-        echo json_encode($resp);
-        exit;
+    public function deleteEmployee($empAccid, $empProfileId, $capIds) {
+        $employee = EmpProfileQuery::create()->findPk($empProfileId);
+        $employee->delete();
+        $employee = EmpAccQuery::create()->findPk($empAccid);
+        $employee->delete();
+
+        foreach ($capIds as $capId) {
+            $capability = EmpRequestQuery::create()->findPk($capId);
+            if(!empty($capability)) {
+                $capability->delete();
+            }
+        }
     }
 
     public function addPositionAction(Request $req)
@@ -1095,10 +1137,10 @@ class EmployeeController extends Controller
         $saved = $addpos->getId();
 
         if($saved == '') {
-            echo json_encode(array('error' => 'Not Saved'));
+            echo json_encode(array('error' => 'Position Not Successfully Added'));
             exit;
         } else {
-            echo json_encode(array('result' => 'Saved', 'id' => $saved));
+            echo json_encode(array('result' => 'Position Successfully Added', 'id' => $saved));
             exit;
         }
     }
@@ -1112,10 +1154,10 @@ class EmployeeController extends Controller
         $saved = $addDept->getId();
 
         if($saved == '') {
-            echo json_encode(array('error' => 'Not Saved'));
+            echo json_encode(array('error' => 'Department not saved'));
             exit;
         } else {
-            echo json_encode(array('result' => 'Saved', 'id' => $saved));
+            echo json_encode(array('result' => 'Department Successfully Saved', 'id' => $saved));
             exit;
         }
     }
@@ -1181,35 +1223,33 @@ class EmployeeController extends Controller
             $updatecell->setContact($request->request->get('cellphone'));
             $updatecell->save();
         }
-        $response = array('Update Successful' => 'success');
+        $response = array('result' => 'Update Successful');
         echo json_encode($response);
         exit;
     }
 
     public function changePasswordAction(Request $request){
-        $response = '';
-        $error = '';
         $user = $this->getUser();
         $userid = $user->getId();
-        $getinfo = EmpAccPeer::retrieveByPk($userid);
+        $getinfo = EmpAccPeer::retrieveByPK($userid);
         if(!is_null($getinfo)){
             $oldpass = $getinfo->getPassword();
             $inputpass = $request->request->get('oldpass');
             $newpass = $request->request->get('newpass');
-            $confirmpass = $request->request->get('conpass');
             if($oldpass == $inputpass){
                 $getinfo->setPassword($newpass);
                 $getinfo->save();
                 $response = 'Password changed';
-                $error = false;
+                $resp = array('result' => $response);
             }else{
                 $response = 'Wrong Password';
-                $error = true;
+                $resp = array('error' => $response);
             }
-
+        } else {
+            $response = 'Error. User not found';
+            $resp = array('error' => $response);
         }
 
-        $resp = array('response' => $response, 'error' => $error);
         echo json_encode($resp);
         exit;
         //   	echo json_encode($response);

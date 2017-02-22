@@ -2,6 +2,7 @@
 
 namespace CoreBundle\AuthenticationHandler;
 
+use AdminBundle\Controller\InitController;
 use CoreBundle\Model\EmpTimePeer;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
@@ -18,6 +19,7 @@ use CoreBundle\Model\EmpProfilePeer;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class LoginHandler implements AuthenticationSuccessHandlerInterface
 {
@@ -38,7 +40,6 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
         $user       = $token->getUser();
         $id         = $user->getId();
         $data       = EmpProfilePeer::getInformation($id);
-        //$empStatus  = $data->getProfileStatus();
         $empStatus = $user->getStatus();
         $timedata   = EmpTimePeer::getEmpLastTimein($id);
         $isTimeout  = false;
@@ -100,9 +101,13 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 
                 $refererUrl = $this->router->generate('admin_homepage', !empty($timeOutQry) ? $timeOutQry : array());
                 $response = new RedirectResponse($refererUrl);
-            }else{
-                $response = array("Invalid Account");
-                echo json_encode($response);
+            } else {
+//                $session->clear();
+//                $init = new InitController();
+//                $refererUrl = $this->router->generate('login', array('status' => '-1'));
+//                $response = new RedirectResponse($refererUrl);
+//                $this->redirect($this->generateUrl('logout'));
+                echo json_encode(array('error' => 'INVALID ACCOUNT'));
                 exit;
             }
         }

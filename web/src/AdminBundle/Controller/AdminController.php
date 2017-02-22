@@ -8,6 +8,7 @@ use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 
 use CoreBundle\Model\EmpProfilePeer;
@@ -353,6 +354,10 @@ class AdminController extends Controller
         $user = $this->getUser();
         $id = $user->getId();
 
+        $response = array('result' => 'Profile Update Successful');
+        $email = new EmailController();
+        $sendemail = $email->adminEditEmployeeProfileEmail($request, $this);
+
         $empid = $request->request->get('empid');
         $telId = $request->request->get('telnumid');
         $mobileId = $request->request->get('celnumid');
@@ -418,18 +423,23 @@ class AdminController extends Controller
         }
 
         $capabilities = $request->request->get('capabilities');
-        foreach ($capabilities as $cap) {
-            $empcap = new EmpCapabilities();
-            $empcap->setEmpId($empid);
-            $empcap->setCapId($cap);
-            $empcap->save();
+        if($capabilities != '') {
+            foreach ($capabilities as $cap) {
+                $empcap = new EmpCapabilities();
+                $empcap->setEmpId($empid);
+                $empcap->setCapId($cap);
+                $empcap->save();
+            }
         }
 
-        $response = array('Update Successful' => 'success');
-        $email = new EmailController();
-        $sendemail = $email->adminEditEmployeeProfileEmail($request, $this);
         echo json_encode($response);
         exit;
+
+//        $response = array('Update Successful' => 'success');
+//        $email = new EmailController();
+//        $sendemail = $email->adminEditEmployeeProfileEmail($request, $this);
+//        echo json_encode($response);
+//        exit;
     }
 
     public function timeInOut($id)

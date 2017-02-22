@@ -16,6 +16,7 @@ use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use CoreBundle\Model\EmpAccPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use CoreBundle\Model\ListEventsPeer;
 
@@ -202,6 +203,7 @@ class EmployeeRequestController extends Controller
         $object = json_decode($obj, true);                          // decode json
         $typeleave = $req->request->get('typeleave');
         $userid = $this->getUser()->getId();
+        $reqIds = array();
 
         for ($i = 0; $i <= $object["unique_id"]; $i++) {            // loop for saving all dates
             $start = "start_date" . $i;
@@ -216,20 +218,49 @@ class EmployeeRequestController extends Controller
             $leaveinput->setEmpAccId($userid);
             $leaveinput->setListRequestTypeId($typeleave);
             $leaveinput->save();
+            array_push($reqIds, $leaveinput->getId());
         }
 
-        $email = new EmailController();
-        $sendemail = $email->requestTypeEmail($req, $this);
-        if (!$sendemail)
-        {
-            $emailresp = 'No email sent';
+        try {
+            $email = new EmailController();
+            $sendemail = $email->requestTypeEmail($req, $this);
+            if (!$sendemail) {
+                $this->deleteRequestLeave($reqIds);
+                echo json_encode(array('error' => 'Email not successfully sent'));
+                exit;
+            }
+            else {
+                echo json_encode(array('result' => 'Request for Leave has been successfully sent'));
+                exit;
+            }
+        } catch (Exception $e){
+            echo $e->getMessage();
+        } finally {
+            $this->deleteRequestLeave($reqIds);
+            echo json_encode(array('error' => 'Server Error'));
+            exit;
         }
-        else
-        {
-            $emailresp = 'Email Sent';
+
+//        $email = new EmailController();
+//        $sendemail = $email->requestTypeEmail($req, $this);
+//        if (!$sendemail) {
+//            $this->deleteRequestLeave($reqIds);
+//            echo json_encode(array('error' => 'Email not successfully sent'));
+//            exit;
+//        }
+//        else {
+//            echo json_encode(array('result' => 'Request for Leave has been successfully sent'));
+//            exit;
+//        }
+    }
+
+    public function deleteRequestLeave($reqIds) {
+        foreach ($reqIds as $reqId) {
+            $request = EmpRequestQuery::create()->findPk($reqId);
+            if(!empty($request)) {
+                $request->delete();
+            }
         }
-        echo json_encode(array('result' => 'ok', 'email' => $emailresp));
-        exit;
     }
 
     public function statusChangeAction(Request $req)
