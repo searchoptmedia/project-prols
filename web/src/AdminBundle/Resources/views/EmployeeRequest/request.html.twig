@@ -207,7 +207,6 @@
 
 {% block customjs %}
  <script type="text/javascript">
-     var loadBar = $('.loader-notif');
      var rows = document.getElementById("requests").rows;
      var view_modal = $('#view_request_modal');
      var delete_modal = $('#delete_event_modal');
@@ -222,9 +221,6 @@
      var deleteBtn = $("#delete");
      var saveBtn = $("#save_modal");
      var picker = null, picker2 = null;
-     var editBar = $(".edit-request-notif");
-     var deleteBar = $(".delete-request-notif");
-     var acceptBar = $('.accept-request-notif');
      var declineBar = $('.decline-request-notif');
      var statusModal = $("#status_modal");
      var role, count;
@@ -244,7 +240,6 @@
      var consider = $(".admin_consider");
      var admin_id_modal = $("#admin_id");
      var badge = $('span.reqcount');
-     var errorBar = $(".error-request-notif");
      var changed = false;
 
      $(document).on("click", "#allbtn", function () {
@@ -300,31 +295,31 @@
      });
 
      $(document).on("click", "#save_modal", function () {
-         var validate = checkFields();
+         var validate = checkFields(elements = [reason_modal]);
          if (validate == true) // true == there are errors
              return;
-         showLoadingBar();
 
          var requestId = reqid.val();
          var startDate = start_modal.val();
          var endDate = end_modal.val();
-         $.post(
-             "{{ path('edit_request') }}",
-             {
-                 emp_id: empid.val(),
-                 req_id: requestId,
-                 start_date: startDate,
-                 end_date: endDate,
-                 category: category_modal.text(),
-                 status: statusModal.val(),
-                 reason: reason_modal.val()
-             },
-             function (data) {
-                 picker.destroy();
-                 picker2.destroy();
-                 view_modal.closeModal();
-             }, "json"
-         ).done(function (data) {
+
+         data = {
+             emp_id: empid.val(),
+             req_id: requestId,
+             start_date: startDate,
+             end_date: endDate,
+             category: category_modal.text(),
+             status: statusModal.val(),
+             reason: reason_modal.val()
+         };
+
+         callback = function (data) {
+             picker.destroy();
+             picker2.destroy();
+             view_modal.closeModal();
+         };
+
+         done = function (data) {
              if (data["result"]) {
                  row = $('tr.request-row[data-id="' + requestId + '"]');
                  start_date_row = row.find("td.start-date");
@@ -333,20 +328,18 @@
                  start_date_row.html(startDate);
                  end_date_row.html(endDate);
 
-                 editBar.css({'top': '0px'});
-                 setTimeout(function () {
-                     editBar.css({'top': '-55px'});
-                 }, 2000);
+                 showLoadingBar(data["result"]);
              } else if (data["error"]) {
                  // error
-                 errorBar.css({'top': '0px'});
-                 setTimeout(function () {
-                     errorBar.css({'top': '-55px'});
-                 }, 2000);
+                 showErrorBar(data["error"]);
              }
-         }).always(function (data) {
-             hideLoadingBar();
-         });
+         };
+
+         always = function (data) {
+             //
+         };
+
+         post(saveBtn, "{{ path('edit_request') }}", data, callback, done, always);
      });
 
      $(document).on("click", "#delete", function () {
@@ -361,37 +354,24 @@
 
      $(document).on("click", "#delete-btn", function () {
          var requestId = reqid.val();
-         showLoadingBar();
+         data = { req_id: requestId, category: category_modal.text() };
+         callback = function (data) {
+             delete_modal.closeModal();
+         };
 
-         $.post(
-             "{{ path('delete_request') }}",
-             {
-                 req_id: requestId,
-                 category: category_modal.text(),
-             },
-             function (data) {
-                 delete_modal.closeModal();
-             }, "json"
-         ).done(function (data) {
+         done = function (data) {
              if (data["result"]) {
                  $('tr.request-row[data-id="' + requestId + '"]').remove();
-                 deleteBar.css({'top': '0px'});
-                 setTimeout(function () {
-                     deleteBar.css({'top': '-55px'});
-                 }, 2000);
+                 showSuccessBar(data["result"]);
              } else if (data["error"]) {
                  // error
-                 console.log(data["error"]);
-                 errorBar.css({'top': '0px'});
-                 setTimeout(function () {
-                     errorBar.css({'top': '-55px'});
-                 }, 2000);
+                 showErrorBar(data["error"]);
              }
-
              recountPending();
-         }).always(function (data) {
-             hideLoadingBar();
-         });
+         };
+
+         always = function (data) {};
+         post(deleteBtn, "{{ path('delete_request') }}", data, callback, done, always);
      });
 
      $(document).on("click", ".request-row", function () {
@@ -444,7 +424,7 @@
              isChanged = "CHANGED";
          else isChanged = "NOT CHANGED";
          changed = false;
-         changeStatus(3, isChanged);
+         changeStatus(3, isChanged, accept);
      });
 
      $(document).on("click", ".admin_decline", function () {
@@ -452,36 +432,37 @@
              isChanged = "CHANGED";
          else isChanged = "NOT CHANGED";
          changed = false;
-         changeStatus(4, isChanged);
+         changeStatus(4, isChanged, decline);
      });
 
-     function changeStatus(currStatus, isChanged) {
+     function changeStatus(currStatus, isChanged, button) {
          admin_comment_modal.attr("disabled", true);
          accept.attr("disabled", true);
          decline.attr("disabled", true);
-         showLoadingBar();
 
          adminId = admin_id_modal.val();
          empId   = admin_empid.val();
          reqid = admin_reqid.val();
 
-         $.post("{{ path('change_status') }}",
-             {
-                 adminid: adminId,
-                 empId: empId,
-                 reqid: reqid,
-                 requestname: admin_category_modal.text(),
-                 datestart: admin_start_modal.val(),
-                 dateend: admin_end_modal.val(),
-                 comment: admin_comment_modal.val(),
-                 status: currStatus,
-                 isChanged: isChanged,
-                 reason: admin_reason_modal.val()
+         data = {
+             adminid: adminId,
+             empId: empId,
+             reqid: reqid,
+             requestname: admin_category_modal.text(),
+             datestart: admin_start_modal.val(),
+             dateend: admin_end_modal.val(),
+             comment: admin_comment_modal.val(),
+             status: currStatus,
+             isChanged: isChanged,
+             reason: admin_reason_modal.val()
+         };
 
-             },  function(data){
-                    resetAdminModal();
-                    admin_modal.closeModal();
-             }, "json").done(function(data){
+         callback = function(data){
+             resetAdminModal();
+             admin_modal.closeModal();
+         };
+
+         done = function(data){
              if(data["result"]){
                  request_row = $('tr.request-row[data-id="' + reqid + '"]');
                  status_row = request_row.find("td.status button");
@@ -489,32 +470,24 @@
                      status_row.html('Approved');
                      status_row.attr('class', 'btn green');
                      status_row.attr('id', 'accepted');
-                     acceptBar.css({'top': '0px'});
-                     setTimeout(function () {
-                         acceptBar.css({'top': '-55px'});
-                     }, 2000);
                  } else {
                      status_row.html('Declined');
                      status_row.attr('class', 'btn red');
                      status_row.attr('id', 'declined');
                      declineBar.css({'top': '0px'});
-                     setTimeout(function () {
-                         declineBar.css({'top': '-55px'});
-                     }, 2000);
                  }
+                 showSuccessBar(data["result"]);
                  accept.attr("disabled", false);
                  decline.attr("disabled", false);
                  recountPending();
              } else {
-                 errorBar.css({'top': '0px'});
-                 setTimeout(function () {
-                     errorBar.css({'top': '-55px'});
-                 }, 2000);
+                 showErrorBar(data["error"]);
                  recountPending();
              }
-         }).always(function (data) {
-             hideLoadingBar();
-         });
+         }
+
+         always = function (data) {};
+         post(button, "{{ path('change_status') }}", data, callback, done, always);
      }
 
      function getValues(request_row, role, adminid) {
@@ -588,33 +561,6 @@
 
          saveBtn.hide();
          view_modal.openModal();
-     }
-
-     function showLoadingBar() {
-         loadBar.show();
-         loadBar.css({'top': '0px'});
-     }
-
-     function hideLoadingBar() {
-         loadBar.hide();
-         loadBar.css({'top': '-55px'});
-     }
-
-     function checkFields() {
-         var hasRequired = 0;
-
-         if (reason_modal.val() == '') {
-             reason_modal.css({'border-color': 'red'});
-             setTimeout(function () {
-                 reason_modal.css({'border-color': 'gray'})
-             }, 1000);
-
-             hasRequired++;
-         }
-
-         if (hasRequired > 0)
-             return true;
-         else return false;
      }
 
      function resetAdminModal(){

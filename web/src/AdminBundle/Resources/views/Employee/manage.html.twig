@@ -403,7 +403,7 @@
                 }
             };
             always = function (data) {
-                hideLoadingBar();
+                //
             };
             post(savePositionBtn, "{{ path('add_position') }}", data, callback, done, always);
         });
@@ -427,7 +427,7 @@
                 }
             };
             always = function (data) {
-                hideLoadingBar();
+                //
             };
             post(saveDepartmentBtn, "{{ path('add_department') }}", data, callback, done, always);
         });
@@ -504,7 +504,6 @@
             var validate = checkAddEmpFields();
             if (validate == true) // true == there are errors
                 return;
-            showLoadingBar();
 
             usernameinput       = usernameInput.val();
             passwordinput       = passwordInput.val();
@@ -576,7 +575,7 @@
             };
 
             always = function (data) {
-                hideLoadingBar();
+                //
             };
 
             post(saveEmployeeModalBtn, "{{ path('admin_edit_employee_profile') }}", data, callback, done, always);
@@ -654,7 +653,7 @@
             };
 
             always = function (data) {
-                hideLoadingBar();
+                //
             };
 
             post(addEmployeeModalBtn, "{{ path('add_employee') }}", data, callback, done, always);

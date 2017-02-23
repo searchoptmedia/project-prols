@@ -5,18 +5,12 @@
 var data, callback, done, always;
 
 // LOADER VARIABLES
-var loadBar = $('.loader-notif');
+var loadingBar = $('.loader-notif');
 var successBar = $('.successful-popup');
 var errorBar = $('.error-popup');
 
 function showLoadingBar() {
-    loadBar.show();
-    loadBar.css({'top': '0px'});
-}
-
-function hideLoadingBar() {
-    loadBar.hide();
-    loadBar.css({'top': '-55px'});
+    loadingBar.css({'top': '0px'});
 }
 
 function showSuccessBar(message) {
@@ -24,27 +18,31 @@ function showSuccessBar(message) {
     successBar.css({'top': '0px'});
     setTimeout(function () {
         successBar.css({'top': '-55px'});
+        loadingBar.css({'top': '-55px'});
     }, 2000);
 }
 
 function showErrorBar(message) {
+    console.log(message);
     errorBar.find("#error").html(message);
     errorBar.css({'top': '0px'});
     setTimeout(function () {
         errorBar.css({'top': '-55px'});
+        loadingBar.css({'top': '-55px'});
     }, 2000);
 }
 
 // AJAX POST
 function post(button, path, data, callback, done, always) {
+    console.log("enter post");
     showLoadingBar();
+    console.log("done loading   ");
     disableEnableButton(button, true);
     $.post(path, data, callback, "json").done(done).always(always)
         .fail(function() {
             showErrorBar("Server Error. Please try again.");
         });
     disableEnableButton(button, false);
-    hideLoadingBar();
 }
 
 function disableEnableButton(button, val) {

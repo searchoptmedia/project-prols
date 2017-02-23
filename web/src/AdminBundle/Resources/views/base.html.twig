@@ -39,7 +39,7 @@
 </head>
 
 <body>
-    {{ notif.notif_loader() }}
+    {{ notif.notif_loader }}
     {{ notif.time_in_time_out_notif }}
     {{ notif.loader }}
     {{ notif.login_top_loader }}
@@ -368,7 +368,7 @@
                     $('.timein-notif-container').css({'top' : '-55px'});
                 }, 5000);
             }).always(function(data){
-                hideLoadingBar();
+                //
             }).fail( function() {
                 $('.error-notif-container').css({'top':'0px'});
                 setTimeout(function(){
@@ -416,7 +416,7 @@
                 if(isFromForgot) window.location = '/logout';
 
             }).always(function(data){
-                hideLoadingBar();
+                //
             }).fail(function(data){
                 console.log(data);
                 timeInContainer.hide();

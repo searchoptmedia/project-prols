@@ -270,18 +270,22 @@ class EmployeeRequestController extends Controller
         if(isset($accept) && !empty($accept))
         {
             $accept->setAdminId($req->request->get('adminid'));
-            $accept->setStatus($req->request->get('status'));
+            $status = $req->request->get('status');
+            $accept->setStatus($status);
+            if($status == 3) $status = "Approved";
+            else $status = "Declined";
+            $response = "Status " . $status;
 
             $email = new EmailController();
             $sendemail = $email->acceptRequestEmail($req, $this);
 
             if($accept->save())
             {
-                $response = array('result' => 'success');
+                $response = array('result' => $response);
             }
             else
             {
-                $response = array('error' => 'not saved');
+                $response = array('error' => 'Status not successfully changed');
             }
 
         }
@@ -537,10 +541,10 @@ class EmployeeRequestController extends Controller
                     //$this->deleteRequestAction($req);
                     $result = array('error' => 'Email not sent');
                 } else {
-                    $result = array('result' => 'ok');
+                    $result = array('result' => 'Event Successfully Deleted');
                 }
             } else {
-                $result = array('error' => 'Event update not successful');
+                $result = array('error' => 'Event not successfully deleted');
             }
         } else {
             $result = array('error' => 'Event not found');

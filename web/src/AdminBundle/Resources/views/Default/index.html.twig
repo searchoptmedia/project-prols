@@ -229,7 +229,7 @@
                         }, 5000);
                     }).always(function(data){
                 console.log(data);
-                hideLoadingBar();
+                //
                 $('.btn-submitmeeting').show();
             });
         });
@@ -379,7 +379,7 @@
             };
 
             always = function(data){
-                hideLoadingBar();
+                //
             };
 
             post(submitLeaveButton, "{{path('request_leave')}}", data, callback, done, always);

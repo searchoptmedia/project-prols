@@ -283,7 +283,7 @@
                 }
             };
             always = function(data) {
-                hideLoadingBar();
+                //
             };
             post(edit_btn_modal, "{{ path('edit_event') }}", data, callback, done, always);
         });
@@ -326,7 +326,7 @@
             };
 
             always = function (data) {
-                hideLoadingBar();
+                //
             };
 
             post(add_btn_modal, "{{ path('add_event') }}", data, callback, done, always);
@@ -417,7 +417,7 @@
             };
 
             always = function (data) {
-                hideLoadingBar();
+                //
             };
 
             post(resend_btn, "{{ path('notify_event') }}", data, callback, done, always);
@@ -455,7 +455,7 @@
                 }
             };
             always = function (data) {
-                hideLoadingBar();
+                //
             };
             post(delete_button, "{{ path('delete_event') }}", data, callback, done, always);
         });

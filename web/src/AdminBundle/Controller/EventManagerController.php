@@ -178,7 +178,7 @@ class EventManagerController extends Controller
         $sendemail = $email->notifyEventEmail($req, $this);
 
         if($sendemail == 0) {
-            $delete = $this->delete($req);
+            //$delete = $this->delete($req);
             return false;
         } else {
             return true;

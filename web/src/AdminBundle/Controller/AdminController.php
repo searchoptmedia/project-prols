@@ -90,7 +90,7 @@ class AdminController extends Controller
 
         //counts number of pending requests
         $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
+            ->filterByStatus(2)
             ->find()->count();
 
         $userip = InitController::getUserIP($this);
