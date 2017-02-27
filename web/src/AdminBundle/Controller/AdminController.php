@@ -37,27 +37,38 @@ class AdminController extends Controller
         $currenttimein = 0;
         $currenttimeout = 0;
         $timeflag = 0;
-
-        //get last timed in
-        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-        {
-            $checktimein = $timedata[$ctr]->getTimeIn();
-            $checktimeout = $timedata[$ctr]->getTimeOut();
-            if(!is_null($checktimein) && is_null($checktimeout)){
-                $currenttimein = $checktimein->format('h:i A');
-            }
-            else
-            {
-                $currenttimein = 0;
-                $currenttimeout = $checktimeout->format('h:i A');
-            }
-        }
+        $et = EmpTimePeer::getEmpLastTimein($id);
         $checkipdata = null;
         $datetoday = date('Y-m-d');
 
+        //get last timed in
+        if(!empty($et)) {
+            $currentTimeInDate = $et->getDate('Y-m-d');
+
+            if($datetoday == $currentTimeInDate) {
+                $currenttimein = $et->getTimeIn()->format('h:i A');
+                $currenttimeout = $et->getTimeOut();
+
+                if (!empty($currenttimeout)) {
+                    $currenttimeout = $currenttimeout->format('h:i A');
+                }
+            }
+        }
+
+//        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
+//            $checktimein = $timedata[$ctr]->getTimeIn();
+//            $checktimeout = $timedata[$ctr]->getTimeOut();
+//
+//            if(!is_null($checktimein) && is_null($checktimeout)) {
+//                $currenttimein = $checktimein->format('h:i A');
+//            } else {
+//                $currenttimein = 0;
+//                $currenttimeout = $checktimeout->format('h:i A');
+//            }
+//        }
+
         //check if already timed in today
-        if(!empty($timedata))
-        {
+        if(!empty($timedata)) {
             $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
             $datetoday = date('Y-m-d');
             $emp_time = EmpTimePeer::getTime($id);
@@ -67,19 +78,16 @@ class AdminController extends Controller
             $checkipdata = $emp_time[$currenttime]->getCheckIp();
         }
 
-        $et = EmpTimePeer::getEmpLastTimein($id);
-        if(!empty($et))
-        {
+        if(!empty($et)) {
             $emptimedate = $et->getDate();
+            $empTimeout  = $et->getTimeOut();
             $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
             if($emptimedate->format('Y-m-d') == $datetoday) {
                 $timeflag = 1;
             }
-            if(! empty($et->getTimeOut()))
-                $isTimeOut = 'true';
-        }
-        else
-        {
+
+            if(! empty($empTimeout)) $isTimeOut = 'true';
+        } else {
             $isTimeOut = 'true';
         }
 
@@ -92,33 +100,24 @@ class AdminController extends Controller
             ->filterByStatus('Pending')
             ->find()->count();
 
-        $userip = InitController::getUserIP($this);
-        $ip_add = ListIpPeer::getValidIP($userip);
+        $userip     = InitController::getUserIP($this);
+        $ip_add     = ListIpPeer::getValidIP($userip);
+        $matchedIp  = !empty($ip_add) ? $ip_add->getAllowedIp() : null;
+        $ip_checker = ($userip == $matchedIp) ? 1 : 0;
 
-        if(!is_null($ip_add)){
-            $matchedip = $ip_add->getAllowedIp();
-        }
-        else {
-            $matchedip = '';
-        }
+        $timedintoday   = EmpTimePeer::getAllTimeToday($datetoday);
+        $allusers       = EmpProfilePeer::getAllProfile();
+        $allacc         = EmpAccPeer::getAllUser();
+        $userbdaynames  = array();
 
-        if($userip == $matchedip) {
-            $ip_checker = 1;
-        } else {
-            $ip_checker = 0;
-        }
-
-        $timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
-        $allusers = EmpProfilePeer::getAllProfile();
-        $allacc = EmpAccPeer::getAllUser();
-        $userbdaynames = array();
         foreach($allusers as $u) {
             $bday = $u->getBday()->format('m-d');
-            if($bday == date('m-d'))
-            {
+
+            if($bday == date('m-d')) {
                 $userbdaynames[] = $u->getFname();
             }
         }
+
         return $this->render('AdminBundle:Default:index.html.twig', array(
             'userbdaynames' => $userbdaynames,
             'user' => $user,
@@ -130,7 +129,7 @@ class AdminController extends Controller
             'systime' => $systime,
             'afternoon' => $afternoon,
             'userip' => $userip,
-            'matchedip' => $matchedip,
+            'matchedip' => $matchedIp,
             'checkipdata' => $checkipdata,
             'checkip' => $ip_checker,
             'requestcount' => $requestcount,

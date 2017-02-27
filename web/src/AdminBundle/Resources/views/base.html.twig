@@ -129,10 +129,17 @@
         {% elseif currentPath == viewRequestPath %}
         $('.view-request-page').addClass("active");
         {% endif %}
-        //-------------------------------------------------------------------------
+
+        //-----------------------VARIABLES--------------------------------------------------
+        var _moAutoTimeout = $('.auto-timeout-notice');
+        var _moTimeIn      = $('.time-in-container');
+        var _btnAutoTimeOutTimeIn = '.btn-forgot-timeout-show-timein';
 
         var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
-        var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
+        var isSameDay   = '{{ app.session.get('isSameDay')|default('') }}';
+        var timeLogCase = '{{ app.session.get('timeLogCase') }}';
+        var isAutoTimeOut = '{{ app.session.get('isAutoTimeOut')|default('') }}';
+        console.log(timeLogCase, isAutoTimeOut)
 
         function timeOutInit() {
             //--------------12 AM ALERT MODAL-------------------------
@@ -178,23 +185,29 @@
             }
 
             function checkIf_AutoTimeOut() {
-                var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
-                var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
+                var isAutoTimeOut = "{{ app.session.get('isAutoTimeOut')|default('false') }}";
+                var timeOutDate = "{{ app.session.get('autoTimeOutDate')|default('') }}";
 
                 $d = new Date(timeOutDate);
                 var options = {
                     year: "numeric", month: "short",
                     day: "numeric", hour: "2-digit", minute: "2-digit"
                 };
+
                 $d = $d.toLocaleTimeString("en-us", options);
+
                 if(isAutoTimeOut == 'true')
                 {
-                    $('.auto-timeout-notice').show();
+                    _moAutoTimeout.show();
                     $('.auto-timeout-time-message').html($d);
-                    $('.time-in-container').hide();
+                    _moTimeIn.hide();
                     toggleTimeWidget('hide');
                 }
+
+                console.log(isAutoTimeOut);
             }
+
+            checkIf_AutoTimeOut();
 
             $('.forgot-timeout-btn').click(function () {
                 $('.forgot-timeout-modal').hide();
@@ -263,17 +276,27 @@
                 });
             });
             $('.btn-forgot-timeout-show-timein').bind('click', function() {
-                $('.auto-timeout-notice').hide();
+                _moAutoTimeout.hide();
                 toggleTimeInModal('show');
             });
             //checkIf_AutoTimeOut();
         }
-        window.onload = function () {
-            timeOutInit();
-        };
+//        window.onload = function () {
+//            timeOutInit();
+//        };
     </script>
 
     <script>
+        initWidget();
+        bindEvents();
+
+        function bindEvents() {
+            $(document).on('click', _btnAutoTimeOutTimeIn, function() {
+                _moAutoTimeout.hide();
+                toggleTimeInModal('show');
+            });
+        }
+
         function toggleTimeWidget(act) {
             if(act == 'show') {
                 $('.timed-in').show();
@@ -288,29 +311,43 @@
 
         function toggleTimeInModal(act) {
             if(act == 'show') {
-                $('.time-in-container').show();
+                _moTimeIn.show();
                 $('.btn-timeout').hide();
             }
         }
 
-        initWidget = function() {
-            if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
-                toggleTimeWidget('show');
+        function initWidget() {
+            {#if((isSameDay == '' || isSameDay == 'true') && '{{ isTimeoutAlready }}' != 'true') {#}
+                {#toggleTimeWidget('show');#}
+            {#} else if(isSameDay == '' && isTimeout == '') {#}
+                {#toggleTimeInModal('show');#}
+            {#}#}
 
-            } else if(dayNow == '' && isTimeout == '') {
+            {#if('{{ isTimeoutAlready }}' == 'true'){#}
+                {#toggleTimeWidget('hide');#}
+            {#}#}
 
+            if(timeLogCase == 'no-record') {
                 toggleTimeInModal('show');
-            }
 
-            if('{{ isTimeoutAlready }}' == 'true'){
-                toggleTimeWidget('hide');
+            } else if(timeLogCase == 'timed-in') {
+                console.log(isAutoTimeOut)
+                if(isAutoTimeOut == 'true')
+                    _moAutoTimeout.show();
+                else {
+                    toggleTimeWidget('show');
+                }
+
+
+            } else if(timeLogCase == 'timed-out') {
+                if(isSameDay != 'true')
+                    toggleTimeInModal('show');
             }
         }
-        initWidget();
 
 
         $('.select-emp-tag').select2({
-            placeholder: 'Type name here',
+            placeholder: 'Type name here'
         });
         $('#leavetype').material_select();
         $('.caret').hide();
@@ -331,10 +368,12 @@
         {#});#}
 
         var pass = '';
+        var btnTimeIn = $('#time-in-button');
+        var notifLoader = $('.loader-notif');
 
-        $('#time-in-button').click(function(){
+        btnTimeIn.click(function(){
             var message = $('#diffip-input-reason').val(), error = false,
-                user_ip =  $('#time-in-button').data('ip'),
+                user_ip = btnTimeIn.data('ip'),
                 is_message = undefined, action = $(this).data('action'), pass;
             if(user_ip == 0){
                 message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
@@ -347,15 +386,15 @@
                     return false;
                 }
             }
-            $('#time-in-button').hide();
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
+            btnTimeIn.hide();
+            notifLoader.show();
+            notifLoader.css({'top' : '0px'});
             $('.forgot-timeout-modal').hide();
             var timetoday = "{{ timetoday }}";
             $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
                 console.log(data);
                 toggleTimeWidget('show');
-                $('.time-in-container').css({'display' : 'none'});
+                _moTimeIn.hide();
                 $('.timein-notif-container').css({'top':'0px'});
                 $('.timed-in').css({'display' : 'block'});
                 $('.btn-timeout').show();
@@ -367,8 +406,8 @@
                 }, 5000);
             }).always(function(data){
                 console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
+                notifLoader.hide();
+                notifLoader.css({'top' : '-55px'});
             }).fail( function() {
                 $('.error-notif-container').css({'top':'0px'});
                 setTimeout(function(){
@@ -387,8 +426,8 @@
                 return;
             }
 
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
+            notifLoader.show();
+            notifLoader.css({'top' : '0px'});
             $('#time-out-button').hide();
             $('.timeout-cancel').hide();
             $.post("{{ path('time_out') }}" + pass, function(data){
@@ -419,11 +458,11 @@
 
             }).always(function(data){
                 console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
+                notifLoader.hide();
+                notifLoader.css({'top' : '-55px'});
             }).fail(function(data){
                 console.log(data);
-                $('.time-in-container').hide();
+                _moTimeIn.hide();
                 $('.timeout-container').hide();
                 $('.modal-logout-notify-container').show();
                 //                      $('.modal-session-content').show();

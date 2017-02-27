@@ -2,6 +2,7 @@
 
 namespace AdminBundle\Controller;
 
+use CoreBundle\AuthenticationHandler\LoginHandler;
 use CoreBundle\Model\CapabilitiesListPeer;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
@@ -98,6 +99,8 @@ class EmployeeController extends Controller
 			}
 			if($empTimeSave->save())
 			{
+                InitController::loginSetTimeSession($this);
+
 				$this->session->set('timeout', 'false');
 				$is_message = $request->request->get('is_message');
 				$emailresp = '';
