@@ -5,8 +5,6 @@
 
 
 {% block body %}
-    {{ notif.add_notif }}
-    {{ notif.notif_loader }}
     <section id="main-container">
         <section id="main-wrapper">
             <div class="container-fluid">
@@ -199,13 +197,6 @@
 {% block customjs %}
     <script type="text/javascript">
         /*--------Variables---------*/
-        // Notification Bars
-        var loadBar = $('.loader-notif');
-        var editBar = $('.edit-event-notif');
-        var addBar = $('.add-event-notif');
-        var notifyBar = $('.notify-event-notif');
-        var deleteBar = $('.delete-event-notif');
-
         // Row elements
         var event_row, event_date, event_name;
         var event_id, event_type, event_desc;
@@ -233,6 +224,7 @@
         var resend_btn = $('.btn-resend');
         var delete_id = $("#delete-event-id");
         var delete_modal = $("#delete_event_modal");
+        var delete_button = $("#delete-btn-delete");
 
         /*-----------End-----------*/
 
@@ -261,66 +253,46 @@
         });
 
         $(document).on("click", ".btn-edit", function () {
-            var validate = checkFields();
+            elements = [add_edit_date, add_edit_desc, add_edit_desc, add_edit_type];
+            var validate = checkFields(elements);
             if (validate == true) // true == there are errors
                 return;
-            showLoadingBar();
-            edit_btn_modal.hide();
 
             event_id = add_edit_id.val();
-
             date = add_edit_date.val();
             name = add_edit_name.val();
             type = add_edit_type.val();
             desc = add_edit_desc.val();
-
-            $.post(
-                "{{ path('edit_event') }}",
-                {
-                    event_date: date,
-                    event_name: name,
-                    event_desc: desc,
-                    event_type: type,
-                    event_id: event_id
-                },
-                function (data) {
-                    removeFields();
-                    add_edit_event_modal.closeModal();
-                }, "json"
-            ).done(function (data) {
+            data = {
+                event_date: date,
+                event_name: name,
+                event_desc: desc,
+                event_type: type,
+                event_id: event_id
+            };
+            callback = function(data) {
+                removeFields();
+                add_edit_event_modal.closeModal();
+            };
+            done = function(data) {
                 if (data["result"]) {
-                    event_row = $('tr.event-tr[data-id="' + event_id + '"]');
-                    event_date = event_row.find("td.event-date");
-                    event_name = event_row.find("td.event-name");
-                    event_type = event_row.find("td.event-type");
-                    event_desc = event_row.find("td.event-desc");
-                    event_date.html(date);
-                    event_name.html(name);
-                    event_desc.html(desc);
-                    if(type == 1) event_type.html("Holiday");
-                    else event_type.html("Regular");
+                    changeInfoView(event_id, date, name, desc, type);
+                    showSuccessBar(data["result"]);
                 } else if (data["error"]) {
-                    // error
-                    console.log(data["error"]);
+                    showErrorBar(data["error"]);
                 }
-
-                editBar.css({'top': '0px'});
-                setTimeout(function () {
-                    editBar.css({'top': '-55px'});
-                }, 2000);
-            }).always(function (data) {
-                hideLoadingBar();
-                edit_btn_modal.show();
-            });
+            };
+            always = function(data) {
+                //
+            };
+            post(edit_btn_modal, "{{ path('edit_event') }}", data, callback, done, always);
         });
 
         $(document).on("click", ".btn-create", function () {
-            var validate = checkFields();
-            var notify = '';
+            elements = [add_edit_date, add_edit_desc, add_edit_desc, add_edit_type];
+            var validate = checkFields(elements);
             if (validate == true) // true == there are errors
                 return;
-            showLoadingBar();
-            add_btn_modal.hide();
 
             date = add_edit_date.val();
             name = add_edit_name.val();
@@ -330,29 +302,34 @@
             if ($('#notify').is(":checked")) notify = 1;
             else notify = 0;
 
-            $.post(
-                "{{ path('add_event') }}",
-                {
-                    event_date: date,
-                    event_name: name,
-                    event_desc: desc,
-                    event_type: type,
-                    notify: notify
-                },
-                function (data) {
-                    removeFields();
-                    add_edit_event_modal.closeModal();
-                }, "json"
-            ).done(function (data) {
-                addBar.css({'top': '0px'});
-                setTimeout(function () {
-                    addBar.css({'top': '-55px'});
+            data = {
+                event_date: date,
+                event_name: name,
+                event_desc: desc,
+                event_type: type,
+                notify: notify
+            };
+
+            callback = function (data) {
+                removeFields();
+                add_edit_event_modal.closeModal();
+            };
+
+            done = function (data) {
+                if (data["result"]) {
+                    changeInfoView(event_id, date, name, desc, type);
+                    showSuccessBar(data["result"]);
                     addEvent(date, name, desc, type, data["id"]);
-                }, 2000);
-            }).always(function (data) {
-                hideLoadingBar();
-                add_btn_modal.show();
-            });
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function (data) {
+                //
+            };
+
+            post(add_btn_modal, "{{ path('add_event') }}", data, callback, done, always);
         });
 
         $(document).on("click", ".btnEditEvent", function () {
@@ -390,57 +367,6 @@
             add_edit_event_modal.openModal();
         }
 
-        // Checking if there are any inputs on the required fields
-        function checkFields() {
-            var hasRequired = 0;
-            var event_date, event_name, event_desc, event_type;
-
-            event_date = add_edit_date;
-            event_name = add_edit_name;
-            event_desc = add_edit_desc;
-            event_type = add_edit_type;
-
-            if (event_date.val() == '') {
-                event_date.css({'border-color': 'red'});
-                setTimeout(function () {
-                    event_date.css({'border-color': 'gray'})
-                }, 1000);
-
-                hasRequired++;
-            }
-
-            if (event_name.val() == '') {
-                event_name.css({'border-color': 'red'});
-                setTimeout(function () {
-                    event_name.css({'border-color': 'gray'})
-                }, 1000);
-
-                hasRequired++;
-            }
-
-            if (event_desc.val() == '') {
-                event_desc.css({'border-color': 'red'});
-                setTimeout(function () {
-                    event_desc.css({'border-color': 'gray'})
-                }, 1000);
-
-                hasRequired++;
-            }
-
-            if (event_type == '') {
-                event_type.css({'border-color': 'red'});
-                setTimeout(function () {
-                    event_type.css({'border-color': 'gray'})
-                }, 1000);
-
-                hasRequired++;
-            }
-
-            if (hasRequired > 0)
-                return true;
-            else return false;
-        }
-
         function removeFields() {
             picker.destroy();
             event_date = add_edit_date.val('');
@@ -449,39 +375,52 @@
             event_type = add_edit_type.val('');
         }
 
+        function changeInfoView(event_id, date, name, desc, type) {
+            event_row = $('tr.event-tr[data-id="' + event_id + '"]');
+            event_date = event_row.find("td.event-date");
+            event_name = event_row.find("td.event-name");
+            event_type = event_row.find("td.event-type");
+            event_desc = event_row.find("td.event-desc");
+            event_date.html(date);
+            event_name.html(name);
+            event_desc.html(desc);
+            if(type == 1) event_type.html("Holiday");
+            else event_type.html("Regular");
+        }
+
         /*-------------- View & Delete ---------------*/
 
         $(document).on("click", ".btn-resend", function () {
-            showLoadingBar();
-            resend_btn.hide();
-
             date = view_date.val();
             name = view_name.val();
             type = view_type.text();
             desc = view_desc.text();
 
-            $.post(
-                "{{ path('notify_event') }}",
-                {
-                    event_date: date,
-                    event_name: name,
-                    event_desc: desc,
-                    event_type: type
-                },
-                function (data) {
-                    console.log(data);
-                    removeFields();
-                    view_modal.closeModal();
-                }, "json"
-            ).done(function (data) {
-                notifyBar.css({'top': '0px'});
-                setTimeout(function () {
-                    notifyBar.css({'top': '-55px'});
-                }, 2000);
-            }).always(function (data) {
-                hideLoadingBar();
-                resend_btn.show();
-            });
+            data = {
+                event_date: date,
+                event_name: name,
+                event_desc: desc,
+                event_type: type
+            };
+
+            callback = function (data) {
+                removeFields();
+                view_modal.closeModal();
+            };
+
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function (data) {
+                //
+            };
+
+            post(resend_btn, "{{ path('notify_event') }}", data, callback, done, always);
         });
 
         $(document).on("click", ".btnViewEvent", function () {
@@ -503,31 +442,22 @@
 
         $(document).on("click", "#delete-btn-delete", function () {
             event_id = delete_id.val();
-            showLoadingBar();
-
-            $.post(
-                "{{ path('delete_event') }}",
-                {
-                    event_id: event_id
-                },
-                function (data) {
-                    delete_modal.closeModal();
-                }, "json"
-            ).done(function (data) {
+            data = { event_id: event_id };
+            callback = function (data) {
+                delete_modal.closeModal();
+            };
+            done = function (data) {
                 if (data["result"]) {
                     $('tr.event-tr[data-id="' + event_id + '"]').remove();
+                    showSuccessBar(data["result"]);
                 } else if (data["error"]) {
-                    // error
-                    console.log(data["error"]);
+                    showErrorBar(data["error"]);
                 }
-
-                deleteBar.css({'top': '0px'});
-                setTimeout(function () {
-                    deleteBar.css({'top': '-55px'});
-                }, 2000);
-            }).always(function (data) {
-                hideLoadingBar();
-            });
+            };
+            always = function (data) {
+                //
+            };
+            post(delete_button, "{{ path('delete_event') }}", data, callback, done, always);
         });
 
         function view(type, date, name, desc) {
@@ -594,16 +524,6 @@
             row.append(td_view);
 
             $("tbody").append(row);
-        }
-
-        function showLoadingBar() {
-            loadBar.show();
-            loadBar.css({'top': '0px'});
-        }
-
-        function hideLoadingBar() {
-            loadBar.hide();
-            loadBar.css({'top': '-55px'});
         }
     </script>
 {% endblock %}

@@ -95,7 +95,7 @@ class EmailController extends Controller
                             "<br>Date ended: ". $req->request->get('dateend');
 
             $email = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',  array('message' => $inputMessage)));
 
         }
         else
@@ -145,6 +145,7 @@ class EmailController extends Controller
 
     public function requestTypeEmail($req, $class)
     {
+        $email = 0;
         $user = $class->getUser();
         $id   = $user->getId();
 
@@ -162,7 +163,6 @@ class EmailController extends Controller
         $requesttype = $requestlist->getRequestType();
 
         $admins = EmpAccPeer::getAdminInfo();
-        $adminemails = array();
         $subject = "PROLS » " . $requesttype . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         foreach ($admins as $admin){
@@ -171,11 +171,16 @@ class EmailController extends Controller
             $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
                 "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/requests'>View Request</a>" . "<br>";
 
-            $email = self::sendEmail($class, $subject, $from, $to,
+            $response = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+
+            if(!$response)
+                $email++;
         }
 
-        return $email ? 1: 0;
+        if($email > 0)
+            return 0;
+        else return 1;
     }
 
     public function addEmployeeEmail($req, $class){

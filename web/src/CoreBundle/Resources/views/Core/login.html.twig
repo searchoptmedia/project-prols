@@ -14,8 +14,6 @@
 </head>
 
 <body class="login-2">
-{{ notif.login_top_loader() }}
-{{ notif.email_sent_notif() }}
 <!-- <img class="main-logo" src="{{ asset('prols2/img/propelrrlogo.png') }}" alt="">
     <div class="bg-top"></div>
     <div class="bg-bottom">
@@ -75,36 +73,8 @@
     </div>
 </div>
 
-{#<div class="diff-ip-container">#}
-    {#<div class="diff-ip center-align">#}
-        {#<div class="valign-wrapper">#}
-
-            {#<div class="prompt prompt-send-request" style="display:block; width:100%; float:none; clear:both;">#}
-
-                {#<p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>#}
-                {#<p class="diff-ip-notice">Request Access?</p>#}
-                {#<div class="invalid-email-message" style="color:red; display:none;"><strong>Invalid Email</strong></div>#}
-                {#<div class="diffip-input-request-wrapper">#}
-                    {#<input id="diffip-input-email" style="width:500px; color: white; text-align:center; font-weight:400"#}
-                           {#type="text" placeholder="Enter Email"/><br>#}
-                    {#<textarea id="diffip-input-reason"#}
-                              {#style="width:500px; color: white; text-align:center; font-weight:400; text-align: left; height: 150px; padding:10px; resize: none;"#}
-                              {#type="text" placeholder="Enter your message..."></textarea>#}
-                {#</div>#}
-                {#<p class="diff-ip-sent">Request Sent!</p>#}
-                {#<p class="diff-ip-reason">Enter reason:</p>#}
-
-                {#<div class="btn-block">#}
-                    {#<a class="waves-effect waves-light green btn-flat btn-large btn-timein send-btn">Send</a>#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
-{#</div>#}
-
 <!--Import jQuery before materialize.js-->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-{#<script type="text/javascript" src="{{asset('prols2/js/materialize.min.js')}}"></script>#}
 <script>
     $(document).ready(function() {
         $('.forgotpass').click(function(e) {
@@ -153,7 +123,7 @@
         $('.send-btn').click(function () {
             var email = $('#diffip-input-email').val();
             var message = $('#diffip-input-reason').val();
-            var loader = $('.top-login-loader'), error = false;
+            var error = false;
 
             if (email == '' || message == '') {
                 if (email == '') {
@@ -170,8 +140,7 @@
                 return false;
             }
 
-            loader.show();
-            loader.css({'top' : '-105px'});
+            showLoadingBar();
             $.post("{{ path('request_access') }}", {
                 email: email,
                 message: message
@@ -179,8 +148,7 @@
                 console.log(data)
 
             }).always(function (data) {
-                loader.hide();
-                loader.css({'top' : '-155px'});
+                hideLoadingBar();
                 if (data == 1) {
                     $('.invalid-email-message').show();
                     $('#diffip-input-email').css({'border-color': '#f44336'});

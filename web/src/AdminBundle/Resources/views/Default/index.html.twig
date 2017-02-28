@@ -207,8 +207,7 @@
                 }, 1000);
                 return;
             }
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
+            showLoadingBar()
             $('.btn-submitmeeting').hide();
             $.post("{{ path('request_meeting') }}",
                     {
@@ -230,8 +229,7 @@
                         }, 5000);
                     }).always(function(data){
                 console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
+                //
                 $('.btn-submitmeeting').show();
             });
         });
@@ -332,18 +330,14 @@
             pickDay(unique_id);
         }
 
-        // request leave
+        var submitLeaveButton = $('.btn-submitleave');
+
         $('.btn-submitleave').click(function(){
             // validate first
             var validate = checkFields();
             if(validate == true) // true == there are errors
                 return;
             // else continue
-
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
-            $('.btn-submitleave').hide();
-
             var obj = {};
             typeleave = 2;
 
@@ -364,28 +358,31 @@
 
             obj["unique_id"] = unique_id;
 
-            $.post(
-                "{{path('request_leave')}}",
-                {
-                    typeleave: typeleave,
-                    obj: JSON.stringify(obj)
-                },
-                function(data){
-                    console.log(data);
+            data = {
+                typeleave: typeleave,
+                obj: JSON.stringify(obj)
+            };
+
+            callback = function(data){
+                //
+            };
+
+            done = function(data){
+                if (data["result"]) {
                     removeClonedFields();
-                    $('.required-field').hide();
-                    // $('.sent').show();
                     $('#daily_agenda').closeModal();
-                    $('.request-leave-notif').css({'top':'0px'});
-                    setTimeout(function(){
-                        $('.request-leave-notif').css({'top' : '-55px'});
-                    }, 5000);
-                }, "json"
-            ).always(function(data){
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
-                $('.btn-submitleave').show();
-            });
+                    showSuccessBar(data["result"]);
+                } else if (data["error"]) {
+                    // error
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function(data){
+                //
+            };
+
+            post(submitLeaveButton, "{{path('request_leave')}}", data, callback, done, always);
         });
 
         function checkFields() {      // Checking if there are any inputs on the required fields
