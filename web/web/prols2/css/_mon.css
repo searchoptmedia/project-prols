@@ -4,9 +4,7 @@
 .emp-list tbody{
     cursor: default;
 }
-.select-emp-tag{
-    width:350px;
-}
+
 .select-wrapper input.select-dropdown{
     padding-left: 0px;
 }

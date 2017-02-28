@@ -540,7 +540,6 @@ $(function() {
                     },
 
                     dayClick: function(date){
-                     console.log(moment(date).format('MM-DD-YYYY'));
                         $('.agenda-list ul').remove();
                         $(".agenda-list").append('<ul class="collection agenda-list"></ul>');
 
@@ -555,17 +554,10 @@ $(function() {
                             }
                         });
 
-                        $('#daily_agenda').openModal();
-                        $('.agenda-date').html("Daily Agenda - " + date.format('MMMM DD, YYYY'));
-                        $('.start-date').val('');
-                        $('.end-date').val('');
-                        $('#reason-leave-sbt').val('');
-                        $('#leavetype').val('');
-                        $('.form-reqleave').hide();
-                        $('.form-reqmeeting').hide();
-                        $('.btn-submitleave').hide();
-                        
-                        
+                        hideForms();
+                        agendaList.show();
+                        dailyAgendaModal.openModal();
+                        agendaDate.html(date.format('MMMM DD, YYYY'));
                     },
 
                     header: {

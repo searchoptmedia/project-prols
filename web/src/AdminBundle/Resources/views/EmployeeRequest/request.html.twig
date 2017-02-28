@@ -47,23 +47,53 @@
 
                             <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
                             {% for request in allrequest %}
-                                <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                {#{% if (request.listRequestTypeId == 4) %}#}
+                                    {#<tr class = "request-row" data-empid="{{ request.empAccId }}"#}
+                                        {#data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"#}
+                                        {#data-reason = "{{ request.request }}" data-title="{{ request.meetingTitle }}" data-type="CREATED">#}
+                                {#{% else %}#}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
                                     data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
+                                {#{% endif %}#}
                                     <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
                                     <td class="category">{{ request.listRequestType.requestType|upper }}</td>
                                     <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
                                     <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
                                     <td class = "status">
-                                        {% if request.status == 2 %}
-                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
-                                        {% elseif request.status == 3 %}
-                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
-                                        {% elseif request.status == 4 %}
-                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
-                                        {% endif %}
+                                        {#{% if(request.listRequestTypeId == 4) %}#}
+                                            {#&#123;&#35;<button class="btn amber creator" id = "creator" disabled style = "width: 130px;">Creator</button>&#35;&#125;#}
+                                        {#{% else %}#}
+                                            {% if request.status == 2 %}
+                                                <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                            {% elseif request.status == 3 %}
+                                                <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                            {% elseif request.status == 4 %}
+                                                <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                            {% endif %}
+                                        {#{% endif %}#}
                                     </td>
                                 </tr>
                             {% endfor %}
+
+                            {#{% for meeting in taggedRequests %}#}
+                                {#<tr class = "request-row" data-empid="{{ meeting.empAccId }}"#}
+                                    {#data-id="{{ meeting.id }}" data-request="{{ meeting.getEmpRequest.listRequestTypeId }}"#}
+                                    {#data-reason = "{{ meeting.getEmpRequest.request }}" data-title="{{ meeting.getEmpRequest.meetingTitle }}" data-type="TAGGED">#}
+                                    {#<td class = "name">{{ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>#}
+                                    {#<td class="category">TAGGED {{ meeting.getEmpRequest.listRequestType.requestType|upper }}</td>#}
+                                    {#<td class = "start-date">{{ meeting.getEmpRequest.dateStarted|date('n/d/Y')}}</td>#}
+                                    {#<td class = "end-date">{{ meeting.getEmpRequest.dateEnded|date('n/d/Y')}}</td>#}
+                                    {#<td class = "status">#}
+                                        {#{% if meeting.status == 2 %}#}
+                                            {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>#}
+                                        {#{% elseif meeting.status == 3 %}#}
+                                            {#<button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>#}
+                                        {#{% elseif meeting.status == 4 %}#}
+                                            {#<button class="btn red" id = "declined" style = "width: 130px;">Declined</button>#}
+                                        {#{% endif %}#}
+                                    {#</td>#}
+                                {#</tr>#}
+                            {#{% endfor %}#}
                             </tbody>
                         </table>
                     </div>

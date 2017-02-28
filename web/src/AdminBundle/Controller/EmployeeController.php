@@ -624,9 +624,6 @@ class EmployeeController extends Controller
 
         $getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
-
-
-
         return $this->render('AdminBundle:Employee:empprofile.html.twig', array(
             'name' => $name,
             'fname' => $fname,
@@ -1226,6 +1223,7 @@ class EmployeeController extends Controller
             $updatecell->setContact($request->request->get('cellphone'));
             $updatecell->save();
         }
+
         $response = array('result' => 'Update Successful');
         echo json_encode($response);
         exit;

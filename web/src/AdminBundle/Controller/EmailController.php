@@ -96,7 +96,6 @@ class EmailController extends Controller
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',  array('message' => $inputMessage)));
-
         }
         else
         {
@@ -186,12 +185,11 @@ class EmailController extends Controller
     public function addEmployeeEmail($req, $class){
         $user = $class->getUser();
         $id   = $user->getId();
-
+        $profile = EmpProfilePeer::getInformation($id);
         $employeeemail = $req->request->get('emailinput');
         $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
         $empusername = $req->request->get('usernameinput');
         $emppassword = $req->request->get('passwordinput');
-
 
         $subject = "PROLS » Your Account Was Created";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
@@ -219,13 +217,21 @@ class EmailController extends Controller
         $empusername = $req->request->get('usernameinput');
         $emppassword = $req->request->get('passwordinput');
 
-
-        $subject = "PROLS Account Updated";
+        $subject = "PROLS » Account Updated";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($employeeemail);
 
         $inputMessage = "Hi ". $empname . "!<br> Your account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
         $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+
+        $admins = EmpAccPeer::getAdminInfo();
+        $subject = "PROLS » Employee Account Updated";
+        foreach ($admins as $admin){
+            $to = array($admin->getEmail());
+
+            $inputMessage = "Hi ". $empname . "!<br>". $empname ."'s account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
+            $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+        }
 
         return $email ? 1: 0;
     }
@@ -247,6 +253,11 @@ class EmailController extends Controller
 
     public function sendEmailMeetingRequest($req, $email, $class, $param = array())
     {
+        $user = $class->getUser();
+        $id   = $user->getId();
+        $empinfo = EmpProfilePeer::getInformation($user->getId());
+        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
         $taggedemail = $req->request->get('taggedemail');
         $employee = EmpAccPeer::getUserInfo($email);
 
@@ -263,12 +274,12 @@ class EmailController extends Controller
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($email);
         if($type == 1) {
-            $inputMessage = "Hi " . $employee_name . "!<br> You requested for  Meeting " . ".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
+            $inputMessage = "Hi " . $employee_name . "!<br> ". $empname ." requested for a meeting with you. " . ".<br><br> Click <a href='http://login.propelrr.com/main/requests'>here</a> to accept/decline.";
             $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
         }
         if($type == 2){
             $name = $param["names"];
-            $inputMessage = "Hi  " . $employee_name . "!<br> You requested for  Meeting with  ". $name .".<br><br> Wait for Admin to accept/decline <a href='http://login.propelrr.com/profile'>here</a>";
+            $inputMessage = "Hi  " . $employee_name . "!<br> You requested for  Meeting with  ". $name .".<br><br> Click <a href='http://login.propelrr.com/main/requests'>here</a> to view your request.";
             $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
         }
         return $email ? 1: 0;

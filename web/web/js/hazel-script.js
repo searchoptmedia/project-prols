@@ -13,6 +13,10 @@ function showLoadingBar() {
     loadingBar.css({'top': '0px'});
 }
 
+function hideLoadingBar() {
+    loadingBar.css({'top': '-55px'});
+}
+
 function showSuccessBar(message) {
     successBar.find("#successful").html(message);
     successBar.css({'top': '0px'});
