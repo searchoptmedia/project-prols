@@ -10,6 +10,7 @@ use CoreBundle\Model\RequestMeetingsTag;
 use CoreBundle\Model\RequestMeetingsTagPeer;
 use CoreBundle\Model\RequestMeetingsTagsPeer;
 use CoreBundle\Model\RequestMeetingTags;
+use CoreBundle\Model\RequestMeetingTagsPeer;
 use CoreBundle\Model\RequestMeetingTagsQuery;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
@@ -36,27 +37,10 @@ class EmployeeRequestController extends Controller
         // redirect to index if not Admin
 
             if((strcasecmp($role,'ADMIN')== 0))
-            {
-                $getEmployeeRequest = EmpRequestPeer::getAllRequest();
-            }
-            else {
-                /*$getRequestListType = ListRequestTypeQuery::create()
-                    ->filterByRequestType(4)
-                    ->find();
-                if($getRequestListType)
-                {
-                    $getEmployeeRequest = EmpRequestQuery::create()
-                        ->useRequestMeetingTagsQuery()
-                        ->filterByEmpAccId($id)
-                        ->endUse()
-                        ->find();
-                }*/
+                $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
+            else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
 
-                $getEmployeeRequest = EmpRequestQuery::create()
-                    ->filterByEmpAccId($id)
-                    ->find();
-            }
-
+            $getTaggedRequest = RequestMeetingTagsPeer::getTaggedRequest($id);
             $timedata = EmpTimePeer::getTime($id);
             $timeflag = 0;
             $currenttimein = 0;
@@ -132,31 +116,27 @@ class EmployeeRequestController extends Controller
                 'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
                 'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
                 'timetoday' => $timetoday,
+                'taggedRequests' => $getTaggedRequest
             ));
 
     }
 
     public function requestMeetingAction(Request $req)
     {
-        //request meeting functionality
         $email = new EmailController();
-//
-        $sendemail = $email->requestTypeEmail($req, $this);
-//
         $user = $this->getUser();
         $user_id = $user->getId();
         $current_date = date('Y-m-d H:i:s');
         $meetingTitle = $req->request->get('meetingTitle');
         $taggedemail = $req->request->get('taggedemail');
-        $taggedMessage = $req->request->get('reqmeetmessage');
-        $meetingDate = $req->request->get('meetingDate');
+        $taggedMessage = $req->request->get('meetingNote');
         $meetingTimeFrom = $req->request->get('meetingTimeFrom');
         $meetingTimeTo = $req->request->get('meetingTimeTo');
 
         $empRequest = new EmpRequest();
         $empRequest->setMeetingTitle($meetingTitle);
         $empRequest->setRequest($taggedMessage);
-        $empRequest->setStatus('Pending');
+        $empRequest->setStatus(2);
         $empRequest->setEmpAccId($user_id);
         $empRequest->setListRequestTypeId(4);
         $empRequest->setDateStarted($meetingTimeFrom);
@@ -166,35 +146,70 @@ class EmployeeRequestController extends Controller
         $request_id = $empRequest->getId();
 
         $tag_names = array();
-        $tag_id = array();
-        $old_tagged_ids = array();
+        $tag_request_ids = array();
 
-
-        foreach($taggedemail as $tagemail)
-        {
-
-            $emp = EmpAccPeer::getUserInfo($tagemail);
-            $tag_record = EmpAccPeer::getUserInfo($tagemail);
-            $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
-            $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
-            if(!empty($emp))
+        try {
+            foreach($taggedemail as $tagemail)
             {
-                $empTagRequest = new RequestMeetingTags();
-                $empTagRequest->setRequestId($request_id);
-                $empTagRequest->setEmpAccId($emp->getId());
-                $empTagRequest->setStatus('Pending');
-                $empTagRequest->save();
+                $emp = EmpAccPeer::getUserInfo($tagemail);
+                $tag_record = EmpAccPeer::getUserInfo($tagemail);
+                $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
+                $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
+                if(!empty($emp))
+                {
+                    $empTagRequest = new RequestMeetingTags();
+                    $empTagRequest->setRequestId($request_id);
+                    $empTagRequest->setEmpAccId($emp->getId());
+                    $empTagRequest->setStatus(2);
+                    $empTagRequest->save();
+                    array_push($tag_request_ids, $empTagRequest->getId());
+                    $send =  $email->sendEmailMeetingRequest($req, $emp->getEmail(), $this, array("type" => 1));
 
-                $send =  $email->sendEmailMeetingRequest($req, $emp->getEmail(), $this, array("type" => 1));
+                    if (!$send) {
+                        $this->deleteRequestMeeting($request_id, $tag_request_ids);
+                        echo json_encode(array('error' => 'Email not successfully sent'));
+                        exit;
+                    }
+                }
             }
+
+            $tagnames = implode("," ,$tag_names);
+
+            $send = $email->sendEmailMeetingRequest($req, $this->getUser()->getEmail() , $this ,array("names" =>$tagnames,
+                "type" => 2));
+
+            if (!$send) {
+                $this->deleteRequestMeeting($request_id, $tag_request_ids);
+                echo json_encode(array('error' => 'Email not successfully sent'));
+                exit;
+            }
+            else {
+                echo json_encode(array('result' => 'Request for Meeting has been successfully sent'));
+                exit;
+            }
+        } catch (Exception $e){
+            echo $e->getMessage();
+        } finally {
+            $this->deleteRequestMeeting($request_id, $tag_request_ids);
+            echo json_encode(array('error' => 'Server Error'));
+            exit;
+        }
+    }
+
+    public function deleteRequestMeeting($reqId, $reqMeetingTagIds) {
+        $request = EmpRequestQuery::create()->findPk($reqId);
+        if(!empty($request)) {
+            $request->delete();
         }
 
-        $tagnames = implode("," ,$tag_names);
-
-        $send = $email->sendEmailMeetingRequest($req, $this->getUser()->getEmail() , $this ,array("names" =>$tagnames,
-            "type" => 2));
-
-        exit;
+        if(!empty($reqMeetingTagIds)) {
+            foreach($reqMeetingTagIds as $id) {
+                $request = RequestMeetingTagsQuery::create()->findPk($id);
+                if(!empty($request)) {
+                    $request->delete();
+                }
+            }
+        }
     }
 
     public function requestLeaveAction(Request $req)
