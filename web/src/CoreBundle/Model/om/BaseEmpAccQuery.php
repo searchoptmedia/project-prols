@@ -19,6 +19,7 @@ use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimeReject;
+use CoreBundle\Model\RequestMeetingTags;
 
 /**
  * @method EmpAccQuery orderById($order = Criteria::ASC) Order by the id column
@@ -30,6 +31,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAccQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method EmpAccQuery orderByRole($order = Criteria::ASC) Order by the role column
  * @method EmpAccQuery orderByKey($order = Criteria::ASC) Order by the key column
+ * @method EmpAccQuery orderByCapabilities($order = Criteria::ASC) Order by the capabilities column
  *
  * @method EmpAccQuery groupById() Group by the id column
  * @method EmpAccQuery groupByUsername() Group by the username column
@@ -40,6 +42,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAccQuery groupByEmail() Group by the email column
  * @method EmpAccQuery groupByRole() Group by the role column
  * @method EmpAccQuery groupByKey() Group by the key column
+ * @method EmpAccQuery groupByCapabilities() Group by the capabilities column
  *
  * @method EmpAccQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpAccQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -52,6 +55,10 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAccQuery leftJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpRequestRelatedByAdminId relation
  * @method EmpAccQuery rightJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpRequestRelatedByAdminId relation
  * @method EmpAccQuery innerJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpRequestRelatedByAdminId relation
+ *
+ * @method EmpAccQuery leftJoinRequestMeetingTags($relationAlias = null) Adds a LEFT JOIN clause to the query using the RequestMeetingTags relation
+ * @method EmpAccQuery rightJoinRequestMeetingTags($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RequestMeetingTags relation
+ * @method EmpAccQuery innerJoinRequestMeetingTags($relationAlias = null) Adds a INNER JOIN clause to the query using the RequestMeetingTags relation
  *
  * @method EmpAccQuery leftJoinEmpProfile($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpProfile relation
  * @method EmpAccQuery rightJoinEmpProfile($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpProfile relation
@@ -76,6 +83,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method EmpAcc findOneByEmail(string $email) Return the first EmpAcc filtered by the email column
  * @method EmpAcc findOneByRole(string $role) Return the first EmpAcc filtered by the role column
  * @method EmpAcc findOneByKey(string $key) Return the first EmpAcc filtered by the key column
+ * @method EmpAcc findOneByCapabilities(string $capabilities) Return the first EmpAcc filtered by the capabilities column
  *
  * @method array findById(int $id) Return EmpAcc objects filtered by the id column
  * @method array findByUsername(string $username) Return EmpAcc objects filtered by the username column
@@ -86,6 +94,7 @@ use CoreBundle\Model\EmpTimeReject;
  * @method array findByEmail(string $email) Return EmpAcc objects filtered by the email column
  * @method array findByRole(string $role) Return EmpAcc objects filtered by the role column
  * @method array findByKey(string $key) Return EmpAcc objects filtered by the key column
+ * @method array findByCapabilities(string $capabilities) Return EmpAcc objects filtered by the capabilities column
  */
 abstract class BaseEmpAccQuery extends ModelCriteria
 {
@@ -191,7 +200,7 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key` FROM `emp_acc` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key`, `capabilities` FROM `emp_acc` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -569,6 +578,35 @@ abstract class BaseEmpAccQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the capabilities column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCapabilities('fooValue');   // WHERE capabilities = 'fooValue'
+     * $query->filterByCapabilities('%fooValue%'); // WHERE capabilities LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $capabilities The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function filterByCapabilities($capabilities = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($capabilities)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $capabilities)) {
+                $capabilities = str_replace('*', '%', $capabilities);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpAccPeer::CAPABILITIES, $capabilities, $comparison);
+    }
+
+    /**
      * Filter the query by a related EmpRequest object
      *
      * @param   EmpRequest|PropelObjectCollection $empRequest  the related object to use as filter
@@ -714,6 +752,80 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         return $this
             ->joinEmpRequestRelatedByAdminId($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpRequestRelatedByAdminId', '\CoreBundle\Model\EmpRequestQuery');
+    }
+
+    /**
+     * Filter the query by a related RequestMeetingTags object
+     *
+     * @param   RequestMeetingTags|PropelObjectCollection $requestMeetingTags  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByRequestMeetingTags($requestMeetingTags, $comparison = null)
+    {
+        if ($requestMeetingTags instanceof RequestMeetingTags) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $requestMeetingTags->getEmpAccId(), $comparison);
+        } elseif ($requestMeetingTags instanceof PropelObjectCollection) {
+            return $this
+                ->useRequestMeetingTagsQuery()
+                ->filterByPrimaryKeys($requestMeetingTags->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByRequestMeetingTags() only accepts arguments of type RequestMeetingTags or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the RequestMeetingTags relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinRequestMeetingTags($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('RequestMeetingTags');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'RequestMeetingTags');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the RequestMeetingTags relation RequestMeetingTags object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\RequestMeetingTagsQuery A secondary query class using the current class as primary query
+     */
+    public function useRequestMeetingTagsQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinRequestMeetingTags($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'RequestMeetingTags', '\CoreBundle\Model\RequestMeetingTagsQuery');
     }
 
     /**

@@ -7,7 +7,8 @@ use CoreBundle\Model\om\BaseListIpPeer;
 use \Criteria;
 
 class ListIpPeer extends BaseListIpPeer{
-	public static function getValidIP($ip, Criteria $c = null){
+	public static function getValidIP($ip, Criteria $c = null)
+	{
 		if (is_null($c)) {
 			$c = new Criteria();
 		}	
@@ -20,7 +21,8 @@ class ListIpPeer extends BaseListIpPeer{
 	}
 	public static function getAllIp(Criteria $c = null)
 	{
-		if(is_null($c)){
+		if(is_null($c))
+		{
 			$c = new Criteria();
 		}
 		

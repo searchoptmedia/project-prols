@@ -48,7 +48,7 @@ class EmpProfileTableMap extends TableMap
         $this->addColumn('lname', 'Lname', 'VARCHAR', true, 45, null);
         $this->addColumn('mname', 'Mname', 'VARCHAR', true, 45, null);
         $this->addColumn('bday', 'Bday', 'TIMESTAMP', true, null, null);
-        $this->addColumn('address', 'Address', 'VARCHAR', true, 255, null);
+        $this->addColumn('address', 'Address', 'VARCHAR', true, 45, null);
         $this->addColumn('gender', 'Gender', 'VARCHAR', true, 10, null);
         $this->addColumn('img_path', 'ImgPath', 'VARCHAR', true, 45, null);
         $this->addColumn('date_joined', 'DateJoined', 'TIMESTAMP', true, null, null);
@@ -57,9 +57,6 @@ class EmpProfileTableMap extends TableMap
         $this->addForeignKey('list_pos_id', 'ListPosPosId', 'INTEGER', 'list_pos', 'id', true, null, null);
         $this->addColumn('status', 'Status', 'VARCHAR', true, 45, null);
         $this->addColumn('profile_status', 'ProfileStatus', 'INTEGER', true, null, null);
-        $this->addColumn('sss', 'Sss', 'VARCHAR', true, 255, null);
-        $this->addColumn('bir', 'Bir', 'VARCHAR', true, 255, null);
-        $this->addColumn('philhealth', 'Philhealth', 'VARCHAR', true, 255, null);
         // validators
     } // initialize()
 
