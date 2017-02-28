@@ -23,7 +23,7 @@ parameters:
 #local
     database_host: localhost
     database_port: null
-    database_name: prols
+    database_name: prolsdb
     database_user: root
     database_password: null
 

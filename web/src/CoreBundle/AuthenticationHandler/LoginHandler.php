@@ -19,7 +19,6 @@ use CoreBundle\Model\EmpProfilePeer;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\Constraints\DateTime;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class LoginHandler implements AuthenticationSuccessHandlerInterface
 {
@@ -35,23 +34,13 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
     public function onAuthenticationSuccess(Request $request, TokenInterface $token){
         
     	$response = new RedirectResponse($this->router->generate('error403'));
-        $session    = new Session();
-
         $user       = $token->getUser();
         $id         = $user->getId();
-        $data       = EmpProfilePeer::getInformation($id);
-        $empStatus = $user->getStatus();
+        $empStatus  = $user->getStatus();
         $timedata   = EmpTimePeer::getEmpLastTimein($id);
-        $isTimeout  = false;
 
-        if(!is_null($timedata)){
-            $timeout = $timedata->getTimeOut();
-            $timeoutdate = $timedata->getDate('M d Y');
-            $datetoday = date('M d Y');
-            if(empty($timeout) && $timeoutdate != $datetoday){
-              $isTimeout = true;
-            }
-        }
+        $session    = new Session();
+        $session->clear();
 
         if ($token->getUser() instanceof EmpAcc)
         {
@@ -60,59 +49,21 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
                 //get date today
                 if(!empty($timedata))
                 {
-                    $date       = date('Y/m/d H:i:s');
-                    $timein     = $timedata->getTimeIn();
-                    $dateTimeIn = $timein->format('Y/m/d H:i:s');
-
-                    $datetime1 = date_create($date);
-                    $datetime2 = date_create($dateTimeIn);
-                    $interval  = date_diff($datetime1, $datetime2);
-
-                    $hours = $interval->format('%h') + ($interval->format('%d') * 24);
-
-                    //check if not time out
-                    if(empty($timedata->getTimeOut()))
-                    {
-                        //if not yet timeout and currently within max hours(16)
-                        if($hours <= 16)
-                        {
-                            //check if another day
-                            $session->set('timeout', 'false');
-
-                            if($timein->format('Y/m/d') != date('Y/m/d')) $session->set('isSameDay', 'false');
-                            else $session->set('isSameDay', 'true');
-                        }
-                        //if more than 16 hours not timeout
-                        else
-                        {
-                            //auto-time out the employee by 12am the of last time in +1day at 12am
-                            $timedout = $timein->modify('+1 day')->format('Y/m/d 00:00:00');
-                            $timedata->setTimeOut($timedout);
-
-                            if ($timedata->save())
-                            {
-                                $timeOutQry = array('timeout_qry' => 'true', 'timeout_date' => $timedout);
-                                $session->set('timeout', 'true');
-                                $session->set('isSameDay', '');
-                            }
-                        }
-                    }
+                    InitController::loginSetTimeSession($token);
                 }
 
-                $refererUrl = $this->router->generate('admin_homepage', !empty($timeOutQry) ? $timeOutQry : array());
+                $refererUrl = $this->router->generate('admin_homepage');
                 $response = new RedirectResponse($refererUrl);
-            } else {
-//                $session->clear();
-//                $init = new InitController();
-//                $refererUrl = $this->router->generate('login', array('status' => '-1'));
-//                $response = new RedirectResponse($refererUrl);
-//                $this->redirect($this->generateUrl('logout'));
-                echo json_encode(array('error' => 'INVALID ACCOUNT'));
+            }else{
+                $response = array("Invalid Account");
+                echo json_encode($response);
                 exit;
             }
         }
         return $response;
     }
+
+
     	// if (isset($token)) {
     	// 	if (($request->request->get('_username') === 'superadmin' && $request->request->get('_password') === 'sominc123')) {
     	// 		$refererUrl = $request->getSession()->get('_security.secured_area.target_path');
