@@ -1109,6 +1109,7 @@ class EmployeeController extends Controller
             }
             else {
                 $newUser->setStatus(1);
+                $newUser->save();
                 echo json_encode(array('result' => 'User has been successfully created'));
                 exit;
             }
