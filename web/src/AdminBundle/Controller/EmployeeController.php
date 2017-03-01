@@ -1083,7 +1083,7 @@ class EmployeeController extends Controller
                 $cellcontact->save();
 
                 $telcontact = new EmpContact();
-                $telcontact->setEmpProfileId($empid);
+                $telcontact->setEmpProfileId($profileid);
                 $telcontact->setListContTypesId(3);
                 $telcontact->setContact($request->request->get('telnuminput'));
                 $telcontact->save();
