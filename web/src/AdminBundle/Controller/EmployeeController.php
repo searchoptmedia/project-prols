@@ -1016,11 +1016,12 @@ class EmployeeController extends Controller
         $datetimetoday = date('Y-m-d H:i:s');
         $user = $this->getUser();
         $id = $user->getId();
+        $role = $user->getRole();
 
         $newUserEmail = $request->request->get('emailinput');
         $newUser = EmpAccPeer::getUserInfo($newUserEmail);
         if($newUser != null) {
-            $newUserStatus =$newUser->getStatus();
+            $newUserStatus = $newUser->getStatus();
             if($newUserStatus == -1) {
                 // send email
                 $email = new EmailController();
@@ -1087,14 +1088,16 @@ class EmployeeController extends Controller
                 $telcontact->setContact($request->request->get('telnuminput'));
                 $telcontact->save();
 
-                $capabilities = $request->request->get('capabilities');
-                $capIds = array();
-                foreach ($capabilities as $cap) {
-                    $empcap = new EmpCapabilities();
-                    $empcap->setEmpId($empid);
-                    $empcap->setCapId($cap);
-                    $empcap->save();
-                    array_push($capIds, $empcap->getId());
+                if($role == 'ADMIN') {
+                    $capabilities = $request->request->get('capabilities');
+                    $capIds = array();
+                    foreach ($capabilities as $cap) {
+                        $empcap = new EmpCapabilities();
+                        $empcap->setEmpId($empid);
+                        $empcap->setCapId($cap);
+                        $empcap->save();
+                        array_push($capIds, $empcap->getId());
+                    }
                 }
             }
 
