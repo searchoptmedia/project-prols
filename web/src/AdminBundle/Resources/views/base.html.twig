@@ -374,6 +374,7 @@
     var notifLoader = $('.loader-notif');
 
     btnTimeIn.click(function(){
+        $('.error-notif-container').css({'top':'-55px'});
         var message = $('#diffip-input-reason').val(), error = false,
                 user_ip = btnTimeIn.data('ip'),
                 is_message = undefined, action = $(this).data('action'), pass;
@@ -393,24 +394,27 @@
         notifLoader.css({'top' : '0px'});
         $('.forgot-timeout-modal').hide();
         var timetoday = "{{ timetoday }}";
-        $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
-            console.log(data);
-            toggleTimeWidget('show');
-            _moTimeIn.hide();
-            $('.timein-notif-container').css({'top':'0px'});
-            $('.timed-in').css({'display' : 'block'});
-            $('.btn-timeout').show();
-            $('.diff-ip-container').hide();
-            $('.timechip').html("Timed-in at " + timetoday);
-            showBirthday();
-            setTimeout(function(){
-                $('.timein-notif-container').css({'top' : '-55px'});
-            }, 5000);
+        $.post("{{ path('time_in') }}",
+                {is_message : is_message, message : message },
+                function(data){
+                    console.log(data);
+                    toggleTimeWidget('show');
+                    _moTimeIn.hide();
+                    $('.timein-notif-container').css({'top':'0px'});
+                    $('.timed-in').css({'display' : 'block'});
+                    $('.btn-timeout').show();
+                    $('.diff-ip-container').hide();
+                    $('.timechip').html("Timed-in at " + timetoday);
+                    showBirthday();
+                    setTimeout(function(){
+                        $('.timein-notif-container').css({'top' : '-55px'});
+                    }, 5000);
         }).always(function(data){
             console.log(data);
             notifLoader.hide();
             notifLoader.css({'top' : '-55px'});
         }).fail( function() {
+            btnTimeIn.show();
             $('.error-notif-container').css({'top':'0px'});
             setTimeout(function(){
                 $('.timein-notif-container').css({'top' : '-55px'});
