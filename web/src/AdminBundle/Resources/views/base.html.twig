@@ -129,7 +129,7 @@
     var isSameDay   = '{{ app.session.get('isSameDay')|default('') }}';
     var timeLogCase = '{{ app.session.get('timeLogCase') }}';
     var isAutoTimeOut = '{{ app.session.get('isAutoTimeOut')|default('') }}';
-    console.log(timeLogCase, isAutoTimeOut)
+    //console.log(timeLogCase, isAutoTimeOut)
 
     //-------------------------------------------------------------------------
     // Variables
@@ -343,6 +343,10 @@
             if(isSameDay != 'true')
                 toggleTimeInModal('show');
         }
+
+        console.log(timeLogCase);
+        console.log(isAutoTimeOut);
+        console.log(isSameDay);
     }
 
 

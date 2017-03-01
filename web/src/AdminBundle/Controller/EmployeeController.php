@@ -98,21 +98,18 @@ class EmployeeController extends Controller
 				$empTimeSave->setCheckIp(0);
 			}
 
-             InitController::loginSetTimeSession($this);
-
              $this->session->set('timeout', 'false');
              $is_message = $request->request->get('is_message');
              $emailresp = '';
+             $is_email = false;
              if(!is_null($is_message))
              {
                  $email = new EmailController();
                  $sendemail = $email->sendTimeInRequest($request, $this);
-                 if (!$sendemail)
-                 {
+                 if (!$sendemail) {
                      $emailresp = 'No email sent';
                  }
-                 else
-                 {
+                 else {
                      $emailresp = 'Email Sent';
                      $requesttimein = new EmpRequest();
                      $requesttimein->setStatus('Pending');
@@ -127,6 +124,7 @@ class EmployeeController extends Controller
              }
 
 			if($empTimeSave->save()) {
+                InitController::loginSetTimeSession($this);
                 $message = 'Time in Successful';
 			}
 		}
