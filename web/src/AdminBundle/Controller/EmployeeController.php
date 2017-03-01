@@ -97,38 +97,36 @@ class EmployeeController extends Controller
 			{
 				$empTimeSave->setCheckIp(0);
 			}
-			if($empTimeSave->save())
-			{
+
+             $this->session->set('timeout', 'false');
+             $is_message = $request->request->get('is_message');
+             $emailresp = '';
+             $is_email = false;
+             if(!is_null($is_message))
+             {
+                 $email = new EmailController();
+                 $sendemail = $email->sendTimeInRequest($request, $this);
+                 if (!$sendemail) {
+                     $emailresp = 'No email sent';
+                 }
+                 else {
+                     $emailresp = 'Email Sent';
+                     $requesttimein = new EmpRequest();
+                     $requesttimein->setStatus('Pending');
+                     $requesttimein->setRequest($request->request->get('message'));
+                     $requesttimein->setEmpAccId($this->getUser()->getId());
+                     $requesttimein->setDateStarted($datetoday);
+                     $requesttimein->setDateEnded($datetoday);
+                     $requesttimein->setListRequestTypeId(3);
+                     $requesttimein->setEmpTimeId($empTimeSave->getId());
+                     $requesttimein->save();
+                 }
+             }
+
+			if($empTimeSave->save()) {
                 InitController::loginSetTimeSession($this);
-
-				$this->session->set('timeout', 'false');
-				$is_message = $request->request->get('is_message');
-				$emailresp = '';
-				if(!is_null($is_message))
-				{
-					$email = new EmailController();
-					$sendemail = $email->sendTimeInRequest($request, $this);
-					if (!$sendemail)
-					{
-						$emailresp = 'No email sent';
-					}
-					else
-					{
-						$emailresp = 'Email Sent';
-						$requesttimein = new EmpRequest();
-						$requesttimein->setStatus('Pending');
-						$requesttimein->setRequest($request->request->get('message'));
-						$requesttimein->setEmpAccId($this->getUser()->getId());
-						$requesttimein->setDateStarted($datetoday);
-						$requesttimein->setDateEnded($datetoday);
-						$requesttimein->setListRequestTypeId(3);
-						$requesttimein->setEmpTimeId($empTimeSave->getId());
-						$requesttimein->save();
-
-					}
-				}
+                $message = 'Time in Successful';
 			}
-			$message = 'Time in Successful';
 		}
 		else
 		{
@@ -1018,11 +1016,12 @@ class EmployeeController extends Controller
         $datetimetoday = date('Y-m-d H:i:s');
         $user = $this->getUser();
         $id = $user->getId();
+        $role = $user->getRole();
 
         $newUserEmail = $request->request->get('emailinput');
         $newUser = EmpAccPeer::getUserInfo($newUserEmail);
         if($newUser != null) {
-            $newUserStatus =$newUser->getStatus();
+            $newUserStatus = $newUser->getStatus();
             if($newUserStatus == -1) {
                 // send email
                 $email = new EmailController();
@@ -1089,14 +1088,16 @@ class EmployeeController extends Controller
                 $telcontact->setContact($request->request->get('telnuminput'));
                 $telcontact->save();
 
-                $capabilities = $request->request->get('capabilities');
-                $capIds = array();
-                foreach ($capabilities as $cap) {
-                    $empcap = new EmpCapabilities();
-                    $empcap->setEmpId($empid);
-                    $empcap->setCapId($cap);
-                    $empcap->save();
-                    array_push($capIds, $empcap->getId());
+                if($role == 'ADMIN') {
+                    $capabilities = $request->request->get('capabilities');
+                    $capIds = array();
+                    foreach ($capabilities as $cap) {
+                        $empcap = new EmpCapabilities();
+                        $empcap->setEmpId($empid);
+                        $empcap->setCapId($cap);
+                        $empcap->save();
+                        array_push($capIds, $empcap->getId());
+                    }
                 }
             }
 
