@@ -47,10 +47,12 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
             if($empStatus == 1)
             {
                 //get date today
-                if(!empty($timedata))
-                {
-                    InitController::loginSetTimeSession($token);
-                }
+//                if(!empty($timedata))
+//                {
+//                    InitController::loginSetTimeSession($token);
+//                }
+
+                InitController::loginSetTimeSession($token);
 
                 $refererUrl = $this->router->generate('admin_homepage');
                 $response = new RedirectResponse($refererUrl);
