@@ -81,23 +81,21 @@ class EmployeeController extends Controller
 			$empTimeSave->setIpAdd($matchedip);
 			$empTimeSave->setDate($datetoday);
 			$empTimeSave->setEmpAccAccId($this->getUser()->getId());
-			if(!empty($ip_add))
-			{
+
+			if(!empty($ip_add)) {
 				$allowedip = $ip_add->getAllowedIp();
-				if($allowedip == $matchedip)
-				{
+
+				if($allowedip == $matchedip) {
 					$empTimeSave->setCheckIp(1);
-				}
-				else
-				{
+				} else {
 					$empTimeSave->setCheckIp(0);
 				}
-			}
-			else
-			{
+			} else {
 				$empTimeSave->setCheckIp(0);
 			}
 
+             $message = "Oops. Something went wrong. Please try again.";
+             $empTimeAlreadySaved = false;
              $this->session->set('timeout', 'false');
              $is_message = $request->request->get('is_message');
              $emailresp = '';
@@ -108,25 +106,37 @@ class EmployeeController extends Controller
                  $sendemail = $email->sendTimeInRequest($request, $this);
                  if (!$sendemail) {
                      $emailresp = 'No email sent';
-                 }
-                 else {
+                 } else {
                      $emailresp = 'Email Sent';
                      $requesttimein = new EmpRequest();
-                     $requesttimein->setStatus('Pending');
+                     $requesttimein->setStatus(2);
                      $requesttimein->setRequest($request->request->get('message'));
                      $requesttimein->setEmpAccId($this->getUser()->getId());
                      $requesttimein->setDateStarted($datetoday);
                      $requesttimein->setDateEnded($datetoday);
                      $requesttimein->setListRequestTypeId(3);
-                     $requesttimein->setEmpTimeId($empTimeSave->getId());
-                     $requesttimein->save();
+
+                     if($empTimeSave->save()) {
+                         $requesttimein->setEmpTimeId($empTimeSave->getId());
+
+                         if($empTimeSave->isAlreadyInSave())
+                             $empTimeAlreadySaved = true;
+
+                         $requesttimein->save();
+                         InitController::ResetSessionValue();
+                         InitController::loginSetTimeSession($this);
+                         $message = 'Time in Successful';
+                     }
                  }
              }
 
-			if($empTimeSave->save()) {
-                InitController::loginSetTimeSession($this);
-                $message = 'Time in Successful';
-			}
+             if(!$empTimeAlreadySaved) {
+                 if($empTimeSave->save()) {
+                     InitController::ResetSessionValue();
+                     InitController::loginSetTimeSession($this);
+                     $message = 'Time in Successful';
+                 }
+             }
 		}
 		else
 		{
@@ -142,8 +152,7 @@ class EmployeeController extends Controller
 		date_default_timezone_set('Asia/Manila');
 
 		$user = $this->getUser();
-		if(empty($user))
-		{
+		if(empty($user)) {
 			// if session expire
 			echo 1;
 			exit;
@@ -157,8 +166,7 @@ class EmployeeController extends Controller
 		$inputpass 		= $passw;
 		$error 			= false;
 
-		if($pass == $inputpass)
-		{
+		if($pass == $inputpass) {
 			//set time out
 			$timeout = EmpTimePeer::retrieveByPK($timeinId);
 			$timeout->setTimeOut($datetimetoday);
@@ -172,30 +180,30 @@ class EmployeeController extends Controller
 			$totalHoursDec = number_format($h + $i, 2);
 
 			//set total hours and overtime
-			if(date('D') == 'Sat' || date('D')=='Sun')
-			{
+			if(date('D') == 'Sat' || date('D')=='Sun') {
 				$timeout->setOvertime($totalHoursDec);
-			}
-			else
-			{
+			} else {
 				$timeout->setManhours($totalHoursDec);
 				$overtime = 0;
-				if($totalHoursDec > 9)
-				{
+
+				if($totalHoursDec > 9) {
 					$overtime = $totalHoursDec - 9;
 				}
+
 				$timeout->setOvertime($overtime);
 			}
+
 			$timeout->save();
+            InitController::ResetSessionValue();
+            InitController::loginSetTimeSession($this);
 			$message = 'Time out successful';
-		}
-		else
-		{
+		} else {
 			$error = true;
 			$message = 'Wrong Password';
 			echo $error;
 			exit;
 		}
+
 		$response = array('message' => $message, 'error' => $error);
 		echo json_encode($response);
 		exit;
@@ -219,12 +227,9 @@ class EmployeeController extends Controller
 		$session = new Session();
 		$userId = $this->getUser()->getId();
 
-		if($type == 'working')
-		{
+		if($type == 'working') {
 			$session->set('isSameDay', '');
-		}
-		else
-		{
+		} else {
 			$session->set('isSameDay', '');
 			$session->set('timeout', 'true');
 			$user = $this->getUser();
@@ -246,12 +251,9 @@ class EmployeeController extends Controller
         $id = $user->getId();
         $timename = AdminController::timeInOut($id);
 
-        if((strcasecmp($role, 'employee') == 0))
-        {
+        if((strcasecmp($role, 'employee') == 0)) {
             return $this->redirect($this->generateUrl('admin_homepage'));
-        }
-        else{
-
+        } else {
             $getEmployee = EmpProfilePeer::getAllProfile();
             $getPos = ListPosPeer::getAllPos();
             $getDept = ListDeptPeer::getAllDept();
@@ -261,24 +263,21 @@ class EmployeeController extends Controller
             $timeflag = 0;
 
             //get last timed in
-            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-            {
+            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
                 $checktimein = $timedata[$ctr]->getTimeIn();
                 $checktimeout = $timedata[$ctr]->getTimeOut();
-                if(!is_null($checktimein) && is_null($checktimeout))
-                {
+
+                if(!is_null($checktimein) && is_null($checktimeout)) {
                     $currenttimein = $checktimein->format('h:i A');
-                }
-                else
-                {
+                } else {
                     $currenttimein = 0;
                     $currenttimeout = $checktimeout->format('h:i A');
                 }
             }
+
             $checkipdata = null;
             //check if already timed in today
-            if(!empty($timedata))
-            {
+            if(!empty($timedata)) {
                 $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
                 $datetoday = date('Y-m-d');
                 $emp_time = EmpTimePeer::getTime($id);
@@ -288,6 +287,7 @@ class EmployeeController extends Controller
                 $checkipdata = $emp_time[$currenttime]->getCheckIp();
                 // echo $checkipdata;
             }
+
             $systime = date('H:i A');
             $timetoday = date('h:i A');
             $afternoon = date('H:i A', strtotime('12 pm'));
@@ -299,17 +299,18 @@ class EmployeeController extends Controller
             $getTime = EmpTimePeer::getAllTime();
             $getAllProfile = EmpProfilePeer::getAllProfile();
             $et = EmpTimePeer::getEmpLastTimein($id);
-            if(!empty($et))
-            {
+
+            if(!empty($et)) {
                 $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
                 $emptimedate = $et->getDate();
-                if($emptimedate->format('Y-m-d') == $datetoday)
-                {
+                if($emptimedate->format('Y-m-d') == $datetoday) {
                     $timeflag = 1;
                 }
+
                 if(! empty($et->getTimeOut()))
                     $isTimeOut = 'true';
             }
+
             $requestcount = EmpRequestQuery::create()
                 ->filterByStatus('Pending')
                 ->find()->count();
@@ -1031,8 +1032,59 @@ class EmployeeController extends Controller
                     exit;
                 }
                 else {
+                    // create user
+                    $newUser->setUsername($request->request->get('usernameinput'));
+                    $newUser->setPassword($request->request->get('passwordinput'));
+                    $newUser->setTimestamp($datetimetoday);
+                    $newUser->setIpAdd(InitController::getUserIP($this));
                     $newUser->setStatus(1);
+                    $newUser->setEmail($request->request->get('emailinput'));
+                    $newUser->setRole("employee");
+                    $newUser->setCreatedBy($id);
+                    $newUser->setLastUpdatedBy($id);
                     $newUser->save();
+                    $empid = $newUser->getId();
+
+                    if($empid != '') {
+                        $empprofile = EmpProfilePeer::getInformation($empid);
+                        $empprofile->setFname($request->request->get('fnameinput'));
+                        $empprofile->setMname($request->request->get('mnameinput'));
+                        $empprofile->setLname($request->request->get('lnameinput'));
+                        $empprofile->setBday($request->request->get('bdayinput'));
+                        $empprofile->setAddress($request->request->get('addressinput'));
+                        $empprofile->setGender($request->request->get('genderinput'));
+                        $empprofile->setDateJoined($datetimetoday);
+                        $empprofile->setEmployeeNumber($request->request->get('empnumber'));
+                        $empprofile->setListDeptDeptId($request->request->get('departmentinput'));
+                        $empprofile->setListPosPosId($request->request->get('positioninput'));
+                        $empprofile->setStatus($request->request->get('statusinput'));
+                        $empprofile->setSss($request->request->get('sssinput'));
+                        $empprofile->setBir($request->request->get('birinput'));
+                        $empprofile->setPhilhealth($request->request->get('philhealthinput'));
+                        $empprofile->save();
+                        $profileid = $empprofile->getId();
+
+                        $cellcontact = EmpContactPeer::getContactObject($profileid, 2);
+                        $cellcontact->setContact($request->request->get('celnuminput'));
+                        $cellcontact->save();
+
+                        $telcontact = EmpContactPeer::getContactObject($profileid, 3);
+                        $telcontact->setContact($request->request->get('telnuminput'));
+                        $telcontact->save();
+
+                        if ($role == 'ADMIN') {
+                            $capabilities = $request->request->get('capabilities');
+                            $capIds = array();
+                            foreach ($capabilities as $cap) {
+                                $empcap = new EmpCapabilities();
+                                $empcap->setEmpId($empid);
+                                $empcap->setCapId($cap);
+                                $empcap->save();
+                                array_push($capIds, $empcap->getId());
+                            }
+                        }
+                    }
+
                     echo json_encode(array('result' => 'User has been successfully created'));
                     exit;
                 }
@@ -1087,6 +1139,16 @@ class EmployeeController extends Controller
                 $telcontact->setListContTypesId(3);
                 $telcontact->setContact($request->request->get('telnuminput'));
                 $telcontact->save();
+            }
+
+            $email = new EmailController();
+            $sendemail = $email->addEmployeeEmail($request, $this);
+            if (!$sendemail) {
+                echo json_encode(array('error' => 'Error: Email cannot be sent.'));
+                exit;
+            } else {
+                $empacc->setStatus(1);
+                $empacc->save();
 
                 if($role == 'ADMIN') {
                     $capabilities = $request->request->get('capabilities');
@@ -1099,17 +1161,6 @@ class EmployeeController extends Controller
                         array_push($capIds, $empcap->getId());
                     }
                 }
-            }
-
-            $email = new EmailController();
-            $sendemail = $email->addEmployeeEmail($request, $this);
-            if (!$sendemail) {
-                echo json_encode(array('error' => 'Error: Email cannot be sent.'));
-                exit;
-            }
-            else {
-                $newUser->setStatus(1);
-                $newUser->save();
                 echo json_encode(array('result' => 'User has been successfully created'));
                 exit;
             }

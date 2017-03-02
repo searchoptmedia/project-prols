@@ -229,7 +229,7 @@ class EmailController extends Controller
         foreach ($admins as $admin){
             $to = array($admin->getEmail());
 
-            $inputMessage = "Hi ". $empname . "!<br>". $empname ."'s account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
+            $inputMessage = "Hi Admin!<br>". $empname ."'s account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
             $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
         }
 

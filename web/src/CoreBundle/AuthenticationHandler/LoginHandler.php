@@ -38,7 +38,6 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
         $id         = $user->getId();
         $empStatus  = $user->getStatus();
         $timedata   = EmpTimePeer::getEmpLastTimein($id);
-
         $session    = new Session();
         $session->clear();
 

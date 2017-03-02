@@ -176,7 +176,7 @@
 
             <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
                 <p class="confirm-timein">You have been timed out automatically!</p>
-                <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="auto-timeout-time-message">08/21/2016 12:00 AM</span></p>
+                <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="auto-timeout-time-message">{{ app.session.get('autoTimeOutDate')|date('M d, Y') }} 12:00 AM</span></p>
                 <p class="confirm-timein" style="font-size: 24px">Last Timed in at <span class="auto-timeout-time-message-2">{{ lasttimein }}</span></p>
                 <br><br>
                 <div class="btn-block">

@@ -129,4 +129,13 @@ class  InitController extends Controller
         }
     }
 
+    public static function ResetSessionValue() {
+        $session    = new Session();
+        $session->set('timeout', '');
+        $session->set('timeLogCase', '');
+        $session->set('isSameDay', '');
+        $session->set('isAutoTimeOut', '');
+        $session->set('autoTimeOutDate', '');
+    }
+
 }

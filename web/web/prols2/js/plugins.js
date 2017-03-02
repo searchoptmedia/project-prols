@@ -558,6 +558,7 @@ $(function() {
                         agendaList.show();
                         dailyAgendaModal.openModal();
                         agendaDate.html(date.format('MMMM DD, YYYY'));
+                        agendaDateDiffFormat.html(date.format('YYYY-MM-DD'));
                     },
 
                     header: {

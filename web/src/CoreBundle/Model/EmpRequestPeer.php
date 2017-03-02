@@ -20,6 +20,7 @@ class EmpRequestPeer extends BaseEmpRequestPeer
         $c3->addOr($c1);
 
         $c->add($c3);
+        $c->addDescendingOrderByColumn(self::ID);
 
         $_self = self::doSelect($c);
 
@@ -33,6 +34,7 @@ class EmpRequestPeer extends BaseEmpRequestPeer
         }
 
         $c->add(self::EMP_ACC_ID, $id, Criteria::EQUAL);
+        $c->addDescendingOrderByColumn(self::ID);
 
         $_self = self::doSelect($c);
 

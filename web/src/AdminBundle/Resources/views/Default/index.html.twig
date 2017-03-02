@@ -25,8 +25,9 @@
             <h4>
                 <i class="small material-icons" id = "agenda" onmouseover="this.style.cursor='pointer'">today</i>&nbsp;
                 <span class = "agenda-date" style = "font-size: 32px;">Daily Agenda</span>
+                <span class = "agenda-date-hidden" style = "display:none;">Daily Agenda</span>
                 <div style = "float: right">
-                    <button class="waves-effect waves-light btn btn-reqmeeting" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem; display: none;">
+                    <button class="waves-effect waves-light btn btn-reqmeeting" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem; display:none;">
                         Request Meeting
                     </button>
                     <button class="waves-effect waves-light btn orange btn-reqleave" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem">
@@ -134,6 +135,7 @@
 
         // Forms
         var agendaDate = $('.agenda-date');
+        var agendaDateDiffFormat = $('.agenda-date-hidden');
         var agendaList = $('.agenda-list');
         var requestMeetingForm = $('.form-reqmeeting');
         var requestLeaveForm = $('.form-reqleave');
@@ -155,6 +157,7 @@
         // Main Variables
         var typeleave = '';
         var date_meeting = null;
+        var endDatePicker = null;
 
 
         $(document).on("click", ".btn-reqmeeting", function () {
@@ -175,6 +178,18 @@
         $(document).on("click", ".btn-reqleave", function () {
             hideForms();
             requestLeaveForm.show();
+            $('#start_date').val(agendaDateDiffFormat.text());
+            if(endDatePicker != null)
+                endDatePicker.destroy();
+            endDatePicker = new Pikaday(
+                    {
+                        field: document.getElementById('end_date'),
+                        firstDay: 1,
+                        minDate: new Date(),
+                        maxDate: new Date(2020, 12, 31),
+                        yearRange: [2000, 2020],
+                        format: 'YYYY-MM-DD'
+                    });
             submitLeaveButton.show();
         });
 
@@ -430,7 +445,8 @@
             };
 
             always = function(data){
-                //
+                if(endDatePicker != null)
+                    endDatePicker.destroy();
             };
 
             post(submitLeaveButton, "{{path('request_leave')}}", data, callback, done, always);

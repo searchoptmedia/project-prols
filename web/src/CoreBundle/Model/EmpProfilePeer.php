@@ -15,7 +15,7 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 
 		$_self = self::doSelectOne($c);
 
-		return $_self ? $_self : null;
+		return $_self ? $_self : array();
 
 	}
 
