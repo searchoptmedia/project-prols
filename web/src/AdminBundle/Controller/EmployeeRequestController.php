@@ -5,6 +5,7 @@ namespace AdminBundle\Controller;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\EmpRequestQuery;
+use CoreBundle\Model\EmpTimeQuery;
 use CoreBundle\Model\ListRequestTypeQuery;
 use CoreBundle\Model\RequestMeetingsTag;
 use CoreBundle\Model\RequestMeetingsTagPeer;
@@ -118,7 +119,6 @@ class EmployeeRequestController extends Controller
                 'timetoday' => $timetoday,
                 'taggedRequests' => $getTaggedRequest
             ));
-
     }
 
     public function requestMeetingAction(Request $req)
@@ -255,18 +255,6 @@ class EmployeeRequestController extends Controller
             echo json_encode(array('error' => 'Server Error'));
             exit;
         }
-
-//        $email = new EmailController();
-//        $sendemail = $email->requestTypeEmail($req, $this);
-//        if (!$sendemail) {
-//            $this->deleteRequestLeave($reqIds);
-//            echo json_encode(array('error' => 'Email not successfully sent'));
-//            exit;
-//        }
-//        else {
-//            echo json_encode(array('result' => 'Request for Leave has been successfully sent'));
-//            exit;
-//        }
     }
 
     public function deleteRequestLeave($reqIds) {
@@ -280,19 +268,40 @@ class EmployeeRequestController extends Controller
 
     public function statusChangeAction(Request $req)
     {
+        $emptimeid = $req->request->get('emptimeid');
+        $requesttype = $req->request->get('requesttype');
+        $prevstatus = $req->request->get('prevstatus');
         $response = array('error' => 'none');
         $accept = EmpRequestPeer::retrieveByPk($req->request->get('reqid'));
         if(isset($accept) && !empty($accept))
         {
             $accept->setAdminId($req->request->get('adminid'));
             $status = $req->request->get('status');
-            $accept->setStatus($status);
-            if($status == 3) $status = "Approved";
-            else $status = "Declined";
-            $response = "Status " . $status;
 
-            $email = new EmailController();
-            $sendemail = $email->acceptRequestEmail($req, $this);
+            if($status == 3) {
+                $statusLbl = "Approved";
+                if($requesttype == 3) {
+                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
+                    $emptime->setStatus(1);
+                    $emptime->save();
+                }
+            }
+            else{
+                $statusLbl = "Declined";
+                if($requesttype == 3) {
+                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
+                    $emptime->setStatus(-1);
+                    $emptime->save();
+                }
+            }
+
+            $response = "Status " . $statusLbl;
+
+            if($prevstatus != $status) {
+                $accept->setStatus($status);
+                $email = new EmailController();
+                $sendemail = $email->acceptRequestEmail($req, $this);
+            }
 
             if($accept->save())
             {
@@ -300,7 +309,7 @@ class EmployeeRequestController extends Controller
             }
             else
             {
-                $response = array('error' => 'Status not successfully changed');
+                $response = array('error' => 'Status not changed');
             }
 
         }

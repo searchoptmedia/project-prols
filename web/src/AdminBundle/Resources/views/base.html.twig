@@ -129,6 +129,7 @@
     var isSameDay   = '{{ app.session.get('isSameDay')|default('') }}';
     var timeLogCase = '{{ app.session.get('timeLogCase') }}';
     var isAutoTimeOut = '{{ app.session.get('isAutoTimeOut')|default('') }}';
+    var autoTimeOutDate = '{{ app.session.get('autoTimeOutDate')|default('') }}';
     //console.log(timeLogCase, isAutoTimeOut)
 
     //-------------------------------------------------------------------------
@@ -343,13 +344,12 @@
             if(isSameDay != 'true')
                 toggleTimeInModal('show');
         }
-
-        console.log("timelogcase: " + timeLogCase);
-        console.log("isAutoTimeOut: " + isAutoTimeOut);
-        console.log("isSameDay: " + isSameDay);
     }
 
-
+    console.log("timelogcase: " + timeLogCase);
+    console.log("isAutoTimeOut: " + isAutoTimeOut);
+    console.log("isSameDay: " + isSameDay);
+    console.log("autoTimeOutDate: " + autoTimeOutDate);
 
     $('.select-emp-tag').select2({
         placeholder: 'Type name here'

@@ -13,6 +13,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		}
 		
 		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL);
+		$c->add(self::STATUS, -1, Criteria::NOT_EQUAL);
 
 		$_self = self::doSelect($c);
 
@@ -24,6 +25,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 			$c = new Criteria();
 		}
 
+		$c->add(self::STATUS, -1, Criteria::NOT_EQUAL);
 		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL);
 		$c->addDescendingOrderByColumn(self::DATE);
 		$_self = self::doSelect($c);

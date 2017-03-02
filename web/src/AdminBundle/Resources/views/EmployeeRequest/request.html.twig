@@ -47,22 +47,27 @@
 
                             <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
                             {% for request in allrequest %}
-                                {#{% if (request.listRequestTypeId == 4) %}#}
-                                    {#<tr class = "request-row" data-empid="{{ request.empAccId }}"#}
-                                        {#data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"#}
-                                        {#data-reason = "{{ request.request }}" data-title="{{ request.meetingTitle }}" data-type="CREATED">#}
-                                {#{% else %}#}
+                                {% if (request.listRequestTypeId == 4) %}
                                     <tr class = "request-row" data-empid="{{ request.empAccId }}"
-                                    data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
-                                {#{% endif %}#}
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"
+                                        data-reason = "{{ request.request }}" data-title="{{ request.meetingTitle }}" data-type="CREATED">
+                                {% elseif (request.listRequestTypeId == 3) %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"
+                                        data-reason = "{{ request.request }}" data-emptime="{{ request.empTimeId }}">
+                                {% else %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
+                                {% endif %}
                                     <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
                                     <td class="category">{{ request.listRequestType.requestType|upper }}</td>
                                     <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
                                     <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
                                     <td class = "status">
-                                        {#{% if(request.listRequestTypeId == 4) %}#}
-                                            {#&#123;&#35;<button class="btn amber creator" id = "creator" disabled style = "width: 130px;">Creator</button>&#35;&#125;#}
-                                        {#{% else %}#}
+                                        {% if(request.listRequestTypeId == 4) %}
+                                            {#<button class="btn amber creator" id = "creator" disabled style = "width: 130px;">Creator</button>#}
+                                            <span style = "width: 130px; text-align: center;"><i>Creator</i></span>
+                                        {% else %}
                                             {% if request.status == 2 %}
                                                 <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
                                             {% elseif request.status == 3 %}
@@ -70,30 +75,30 @@
                                             {% elseif request.status == 4 %}
                                                 <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
                                             {% endif %}
-                                        {#{% endif %}#}
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
 
-                            {#{% for meeting in taggedRequests %}#}
-                                {#<tr class = "request-row" data-empid="{{ meeting.empAccId }}"#}
-                                    {#data-id="{{ meeting.id }}" data-request="{{ meeting.getEmpRequest.listRequestTypeId }}"#}
-                                    {#data-reason = "{{ meeting.getEmpRequest.request }}" data-title="{{ meeting.getEmpRequest.meetingTitle }}" data-type="TAGGED">#}
-                                    {#<td class = "name">{{ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>#}
-                                    {#<td class="category">TAGGED {{ meeting.getEmpRequest.listRequestType.requestType|upper }}</td>#}
-                                    {#<td class = "start-date">{{ meeting.getEmpRequest.dateStarted|date('n/d/Y')}}</td>#}
-                                    {#<td class = "end-date">{{ meeting.getEmpRequest.dateEnded|date('n/d/Y')}}</td>#}
-                                    {#<td class = "status">#}
-                                        {#{% if meeting.status == 2 %}#}
-                                            {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>#}
-                                        {#{% elseif meeting.status == 3 %}#}
-                                            {#<button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>#}
-                                        {#{% elseif meeting.status == 4 %}#}
-                                            {#<button class="btn red" id = "declined" style = "width: 130px;">Declined</button>#}
-                                        {#{% endif %}#}
-                                    {#</td>#}
-                                {#</tr>#}
-                            {#{% endfor %}#}
+                            {% for meeting in taggedRequests %}
+                                <tr class = "request-row" data-empid="{{ meeting.empAccId }}"
+                                    data-id="{{ meeting.id }}" data-request="{{ meeting.getEmpRequest.listRequestTypeId }}"
+                                    data-reason = "{{ meeting.getEmpRequest.request }}" data-title="{{ meeting.getEmpRequest.meetingTitle }}" data-type="TAGGED">
+                                    <td class = "name">{{ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                    <td class="category">TAGGED {{ meeting.getEmpRequest.listRequestType.requestType|upper }}</td>
+                                    <td class = "start-date">{{ meeting.getEmpRequest.dateStarted|date('n/d/Y')}}</td>
+                                    <td class = "end-date">{{ meeting.getEmpRequest.dateEnded|date('n/d/Y')}}</td>
+                                    <td class = "status">
+                                        {% if meeting.status == 2 %}
+                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                        {% elseif meeting.status == 3 %}
+                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                        {% elseif meeting.status == 4 %}
+                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -150,6 +155,63 @@
             <input type="hidden" name="emp_id" class="emp_id" id="emp_id">
             <input type="hidden" name="req_id" class="req_id" id="req_id">
             <input type="hidden" name="status_modal" class="status_modal" id="status_modal">
+        </div>
+
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="close_modal">Close</a>
+            <a href="#!" class="waves-effect waves-light green custombtn btn-flat save-modal-agenda" id="save_modal" style="margin-right:5px;">Save</a>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+
+    <!----------------------- VIEW MEETING REQUEST MODAL -------------------------->
+    <div id="view_meeting_modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="agenda-date">
+                Request &nbsp;&nbsp;
+                <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
+                <div style = "float: right;">
+                    <a class="btn-floating btn-medium orange" id = "edit">
+                        <i class="medium material-icons">mode_edit</i>
+                    </a>
+                    <a class="btn-floating btn-medium red" id = "delete">
+                        <i class="medium material-icons">delete</i>
+                    </a>
+                </div>
+            </h4>
+            <br>
+            <div class="event-form-cont">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
+                        <input type="text" name="req-name" class="req-name" id="req_name" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Start Date</span>
+                        <input type="text" name="start-date" class="start-date datepicker" id="start_date_modal" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">End Date</span>
+                        <input type="text" name="end-date" class="end-date datepicker" id="end_date_modal" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="event-lbl" style = "font-weight: 500;">Reason</span>
+                        <input type="text" name="reason" class="reason" id="reason" readonly>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <input type="hidden" name="emp_id" class="emp_id" id="emp_id">
+            <input type="hidden" name="req_id" class="req_id" id="req_id">
+            <input type="hidden" name="status_modal" class="status_modal" id="status_modal">
+            <input type="hidden" name="emptime_id" class="emptime_id" id="emptime_id">
         </div>
 
         <div class="modal-footer">
@@ -222,6 +284,7 @@
             <input type="hidden" name="req_id" class="req_id" id="admin_req_id">
             <input type="hidden" name="admin_id" class="admin_id" id="admin_id">
             <input type="hidden" name="status_modal" class="status_modal" id="admin_status_modal">
+            <input type="hidden" name="emptime_id" class="emptime_id" id="emptime_id">
         </div>
         <div class="modal-footer">
             <a class="waves-effect waves-light grey custombtn btn-flat admin_cancel">Cancel</a>
@@ -261,6 +324,7 @@
      var admin_start_modal = $("#admin_start_date_modal");
      var admin_end_modal = $("#admin_end_date_modal");
      var admin_comment_modal = $("#admin_comment");
+     var emptime_id = $("#emptime_id");
      var admin_empid = $("#admin_emp_id");
      var admin_reqid = $("#admin_req_id");
      var admin_status = $("#admin_status_modal");
@@ -271,6 +335,7 @@
      var admin_id_modal = $("#admin_id");
      var badge = $('span.reqcount');
      var changed = false;
+     var prevStatus;
 
      $(document).on("click", "#allbtn", function () {
          modifyElements(0);
@@ -414,30 +479,33 @@
      $(document).on("click", "#edit", function () {
          reason_modal.attr("readonly", false);
          saveBtn.show();
-         picker2 = new Pikaday({
-             field: document.querySelector('#end_date_modal'),
-             maxDate: new Date(2020, 12, 31),
-             yearRange: [2000, 2020],
-             format: 'MM/DD/YYYY'
-         });
 
-         picker = new Pikaday({
-             field: document.querySelector('#start_date_modal'),
-             onSelect: function () {
-                 picker2.hide();
-                 if (picker.getDate != '') {
-                     picker.setStartRange(picker.getDate());
-                     picker.setEndRange(picker2.getDate());
-                     picker2.setStartRange(picker.getDate());
-                     picker2.show();
-                     picker2.setMinDate(picker.getDate());
-                 }
-             },
-             minDate: new Date(),
-             maxDate: new Date(2020, 12, 31),
-             yearRange: [2000, 2020],
-             format: 'MM/DD/YYYY'
-         });
+         if(category_modal.val() != 3) {
+             picker2 = new Pikaday({
+                 field: document.querySelector('#end_date_modal'),
+                 maxDate: new Date(2020, 12, 31),
+                 yearRange: [2000, 2020],
+                 format: 'MM/DD/YYYY'
+             });
+
+             picker = new Pikaday({
+                 field: document.querySelector('#start_date_modal'),
+                 onSelect: function () {
+                     picker2.hide();
+                     if (picker.getDate != '') {
+                         picker.setStartRange(picker.getDate());
+                         picker.setEndRange(picker2.getDate());
+                         picker2.setStartRange(picker.getDate());
+                         picker2.show();
+                         picker2.setMinDate(picker.getDate());
+                     }
+                 },
+                 minDate: new Date(),
+                 maxDate: new Date(2020, 12, 31),
+                 yearRange: [2000, 2020],
+                 format: 'MM/DD/YYYY'
+             });
+         }
      });
 
      $(document).on("click", ".admin_consider", function () {
@@ -466,6 +534,11 @@
      });
 
      function changeStatus(currStatus, isChanged, button) {
+         elements = [admin_comment_modal];
+         var validate = checkFields(elements);
+         if (validate == true) // true == there are errors
+             return;
+
          admin_comment_modal.attr("disabled", true);
          accept.attr("disabled", true);
          decline.attr("disabled", true);
@@ -478,13 +551,16 @@
              adminid: adminId,
              empId: empId,
              reqid: reqid,
+             emptimeid: emptime_id.val(),
              requestname: admin_category_modal.text(),
+             requesttype: admin_category_modal.val(),
              datestart: admin_start_modal.val(),
              dateend: admin_end_modal.val(),
              comment: admin_comment_modal.val(),
              status: currStatus,
              isChanged: isChanged,
-             reason: admin_reason_modal.val()
+             reason: admin_reason_modal.val(),
+             prevstatus: prevStatus
          };
 
          callback = function(data){
@@ -521,31 +597,49 @@
      }
 
      function getValues(request_row, role, adminid) {
+         emptimeid = -1;
+         emptimeid = request_row.data("emptime");
          emp_id = request_row.data("empid");
          request_id = request_row.data("id");
          desc = request_row.data("reason");
+         request = request_row.data("request");
          name = request_row.find("td.name").html();
          category = request_row.find("td.category").html();
          start_date = request_row.find("td.start-date").html();
          end_date = request_row.find("td.end-date").html();
 
-         status = request_row.find("td.status button").html();
-         if(status == "Pending")
-             status = 2;
-         else if (status == "Approved")
-             status = 3;
-         else status = 4;
+         if(request != 4) {
+             // If not meeting request
+             status = request_row.find("td.status button").html();
+             if(status == "Pending")
+                 status = 2;
+             else if (status == "Approved")
+                 status = 3;
+             else status = 4;
 
-         if (role == "ADMIN") {
-             initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid);
+             prevStatus = status;
+
+             if (role == "ADMIN") {
+                 initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid, request, emptimeid);
+             } else {
+                 initModal(emp_id, request_id, name, category, start_date, end_date, status, desc, request, emptimeid);
+             }
          } else {
-             initModal(emp_id, request_id, name, category, start_date, end_date, status, desc);
+             // if meeting request
+             type = request_row.data("type"); // whether creator or tagged
+             if(type == 'CREATOR') {
+                 // show creator view modal
+             } else {
+                 // show tagged view modal
+             }
          }
      }
 
-     function initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid){
+     function initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid, request_type, emptimeid){
+         emptime_id.val(emptimeid);
          admin_name_modal.val(name);
          admin_category_modal.text(category);
+         admin_category_modal.val(request_type);
          admin_start_modal.val(start_date);
          admin_end_modal.val(end_date);
          admin_empid.val(emp_id);
@@ -571,9 +665,11 @@
          admin_modal.openModal();
      }
 
-     function initModal(emp_id, request_id, name, category, start_date, end_date, status, desc) {
+     function initModal(emp_id, request_id, name, category, start_date, end_date, status, desc, request_type, emptimeid) {
+         emptime_id.val(emptimeid);
          name_modal.val(name);
          category_modal.text(category);
+         category_modal.val(request_type);
          start_modal.val(start_date);
          end_modal.val(end_date);
          empid.val(emp_id);

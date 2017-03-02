@@ -272,7 +272,8 @@
             });
             var picker = new Pikaday({field: document.getElementById('datepicker')});
             var picker2 = new Pikaday({field: document.getElementById('datepicker2')});
-            $('.btn-export').click(function(){
+            $('#btn-export-modal').on("click", function(){
+                $('#exportchoice').openModal();
                 $('.start-date').val('');
                 $('.end-date').val('');
                 picker.destroy();

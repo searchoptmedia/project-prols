@@ -206,13 +206,14 @@ class EmployeeReportController extends Controller
             $handle = fopen('php://output', 'w+');
             // Add the header of the CSV file
 
-            fputcsv($handle, array('Employee ID', 'Name', 'Address', 'Birthday', 'Email', 'Department', 'Position'));
+            fputcsv($handle, array('Employee ID', 'Name', 'Address', 'Birthday', 'Email', 'Department', 'Position', 'SSS', 'BIR', 'PhilHealth'));
 
             $records = $this->getEmployeeRecord();
             foreach($records as $emp)
             {
                 $empid  = $emp->getEmpAccAccId();
                 $empacc = EmpAccPeer::getAcc($empid);
+                $empProfile = EmpProfilePeer::getInformation($empid);
 
                 $email  = $empacc->getEmail();
                 $fname  = $emp->getFname();
@@ -222,6 +223,9 @@ class EmployeeReportController extends Controller
                 $deptid = $emp->getListDeptDeptId();
                 $posid  = $emp->getListPosPosId();
                 $address = $emp->getAddress();
+                $sss = $empProfile->getSss();
+                $bir = $empProfile->getBir();
+                $philhealth = $empProfile->getPhilhealth();
 
                 $getdept   = ListDeptPeer::getDept($deptid);
                 $getpos  = ListPosPeer::getPos($posid);
@@ -230,7 +234,7 @@ class EmployeeReportController extends Controller
                 $pos = $getpos->getPosNames();
 
                 fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $address, $bday, $email, $dept, $pos)
+                    array("EMP-" . $empnum,  $lname . ", " . $fname, $address, $bday, $email, $dept, $pos, $sss, $bir, $philhealth)
                 );
             }
             exit;
