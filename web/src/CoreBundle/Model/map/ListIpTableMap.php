@@ -44,7 +44,7 @@ class ListIpTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('allowed_ip', 'AllowedIp', 'VARCHAR', true, 45, null);
-        $this->addColumn('status', 'Status', 'VARCHAR', true, 45, null);
+        $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
         // validators
     } // initialize()
 

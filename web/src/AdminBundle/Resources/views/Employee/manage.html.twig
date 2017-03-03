@@ -1,0 +1,806 @@
+{% extends 'AdminBundle::base.html.twig' %}
+{% block title %}
+    <title>Propelrr Log-in System| Manage Employees</title>
+{% endblock %}
+
+{% block body %}
+    <section id="main-container">
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="page-content">
+                        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                            <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                            <div class="top-nav">
+                                <h3>Employee List</h3>
+                                {{ include ('AdminBundle:Employee:manageemployees.html.twig') }}
+                            </div>
+                        </div>
+                        <div class="col-md-12 content manageemployees-content" style="display: block;">
+                            <div class="row" style="margin-left:5px;">
+                                <table class="bordered highlight emp-list">
+                                    <thead>
+                                    <tr>
+                                        <th>Employee Number</th>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>Position</th>
+                                        <th>Status</th>
+                                        {% if user.role == 'ADMIN' %}
+                                        <th>Capability</th>
+                                        {% endif %}
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% for emp in getEmployee %}
+                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ user.id }}">
+                                            <td class = "number">{{emp.getEmployeeNumber}}</td>
+                                            <td class = "name">{{ emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname }}</td>
+                                            <td class = "dept">{{emp.getListDept().DeptNames}}</td>
+                                            <td class = "pos">{{emp.getListPos().PosNames}}</td>
+                                            <td class = "status">{{ emp.getEmpStatusType().name }}</td>
+                                            {% if user.role == 'ADMIN' %}
+                                                <td class = "capabilities">
+                                                    {% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}
+                                                    {{ cap.getCapabilitiesList().Capability }}<br>
+                                                    {% endfor %}
+                                                </td>
+                                            {% endif %}
+
+                                            <td>
+                                                {% if user.role == 'ADMIN' %}
+                                                <button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
+                                                {% endif %}
+
+                                                {% for cap in capabilities %}
+                                                    {% if cap.Capid == 1  %}
+                                                        <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
+                                                                data-username = "{{ emp.EmpAcc.username }}"
+                                                                data-password = "{{ emp.EmpAcc.password }}"
+                                                                data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                                data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                                data-mname="{{ emp.EmpAcc.getEmpProfiles[0].mname}}"
+                                                                data-empnum="{{ emp.getEmployeeNumber }}"
+                                                                data-gender="{{ emp.gender }}"
+                                                                data-department="{{emp.getListDept().id}}"
+                                                                data-position="{{emp.getListPos().id}}"
+                                                                data-status="{{ emp.getEmpStatusType().id }}"
+                                                                data-email="{{ emp.EmpAcc.getEmail }}"
+                                                                data-address="{{ emp.address }}"
+                                                                data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                                data-capabilities="{% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}{{ cap.getCapabilitiesList().Id }},{% endfor %}"
+                                                                data-sss = "{{ emp.sss }}"
+                                                                data-bir = "{{ emp.bir }}"
+                                                                data-philhealth = "{{ emp.philhealth }}"
+                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                                    data-cellphone="{{ contact.contact }}"
+                                                                    data-cellphoneid="{{ contact.id }}"
+                                                                {% endfor %}
+                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                                    data-telephone="{{ contact.contact }}"
+                                                                    data-telphoneid="{{ contact.id }}"
+                                                                {% endfor %}
+                                                                data-empid="{{ emp.empAccAccId }}">Edit
+                                                        </button>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {#<ul class="pagination">#}
+                                {#<li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>#}
+                                {#<li class="active"><a href="#!">1</a></li>#}
+                                {#<li class="waves-effect"><a href="#!">2</a></li>#}
+                                {#<li class="waves-effect"><a href="#!">3</a></li>#}
+                                {#<li class="waves-effect"><a href="#!">4</a></li>#}
+                                {#<li class="waves-effect"><a href="#!">5</a></li>#}
+                                {#<li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>#}
+                            {#</ul>#}
+
+                        </div>
+                    </div>
+
+                    <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+                        <a class="btn-floating btn-large red">
+                            <i class="material-icons">add</i>
+                        </a>
+
+                        <ul class="add">
+                            {% for cap in capabilities %}
+                                {% if cap.Capid == 1 %}
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">employee</a></li>
+                                {% endif %}
+                                {% if cap.capid == 2 %}
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-dept-btn" style = "padding: 0px 10px;">department</a></li>
+                                {% endif %}
+                                {% if cap.capid == 3 %}
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-pos-btn" style = "padding: 0px 10px;">position</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <!----------------------- ADD/EDIT EMPLOYEE MODAL -------------------------->
+    <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
+        <div class="modal-content add-employee-modal" >
+            <h4>Employee</h4>
+            <input type="hidden" name="employee-id" id = "employee-id"/>
+            <div class="row">
+                {% if user.role == 'ADMIN' %}
+                <div class="col-md-7 col-lg-8">
+                    {% else %}
+                    <div class="col-md-12 col-lg-12">
+                        {% endif %}
+                        <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field" style="margin-bottom: 0;"><br>
+                            <span id = "username-error" style = "padding: 0; font-size: 10px; color: red;">Username already exists</span></p>
+                        <p>Password<input name = "password" placeholder="type here..." id="password" type="password" class="input-field" style="margin-bottom: 0;">
+                            <span id = "password-error" style = "padding: 0; font-size: 10px; color: red;">Password do not match</span></p>
+                        <p>Re-type Password<input name = "repassword" placeholder="type here..." id="confirmpassword" type="password" class="input-field" style="margin-bottom: 0;">
+                            <span id = "re-password-error" style = "padding: 0; font-size: 10px; color: red;">Password do not match</span></p>
+                        <br>
+                        <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field" style="margin-bottom: 0;">
+                            <span id = "employeenum-error" style = "padding: 0; font-size: 10px; color: red;">Employee Number already used</span></p>
+                        <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
+                        <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
+                        <p>Middle Name<input name = "mname" placeholder="type here..." id="mname" type="text" class="input-field"/></p>
+
+                        <p>Gender</p>
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="gender" id="gender" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                                <option value="" disabled selected>Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+
+                        <p>Department</p>
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="dept" id="dept" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                                <option value="" disabled selected>Select department</option>
+                                {% for dept in getDept %}
+                                    <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <p>Position</p>
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="pos" id="pos" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                                <option value="" disabled selected>Select position</option>
+                                {% for pos in getPos %}
+                                    <option value="{{pos.Id}}">{{pos.PosNames}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <p>Employment Status</p>
+                        <div class="select-wrapper"><span class="caret">?</span>
+                            <select name="status"id="status" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                                <option value="" disabled selected>Select status</option>
+                                {% for status in allstatus %}
+                                    <option value="{{status.Id}}">{{status.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <p>Company Email<input name="email" placeholder="type here..." id="companyemail" type="text" class="input-field"></p>
+                        <p>Telephone #<input name="telnum" placeholder="type here..." id="telnum" type="text" class="input-field"></p>
+                        <p>Cellphone #<input name="cellnum" placeholder="type here..." id="celnum" type="text" class="input-field"></p>
+                        <p>Address<input name="address" placeholder="type here..." id="address" type="text" class="input-field"></p>
+                        <p>Birthday<input type = "date" name="bday" class="bday" id="bday"></p>
+                        <p>SSS<input name="sss" placeholder="type here..." id="sss" type="text" class="input-field"></p>
+                        <p>BIR<input name="bir" placeholder="type here..." id="bir" type="text" class="input-field"></p>
+                        <p>PhilHealth<input name="philhealth" placeholder="type here..." id="philhealth" type="text" class="input-field"></p>
+                    </div>
+                    {% if user.role == 'ADMIN' %}
+                        <div class="col-md-5 col-lg-4 div-capabilities-area">
+                            <big>User Capabilities</big>
+                            {% for allcap in allcapabilities %}
+                                <p>
+                                    <input type="checkbox" class="filled-in" id="filled-in-box-1 {{ allcap.id }}" value="{{ allcap.id }}" />
+                                    <label for="filled-in-box-1 {{ allcap.id }}" class="black-text">{{ allcap.capability }}</label>
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <input type = "hidden" id = "telnumid">
+                    <input type = "hidden" id = "celnumid">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
+                <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
+                <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
+            </div>
+        </div>
+    </div>
+    <!----------------------------- END -------------------------------->
+
+    <!----------------------- ADD POSITION/DEPARTMENT MODAL -------------------------->
+    <div id="modal-pos-dept" class="modal">
+        <div class="modal-content">
+            <h4 id = "position_hdr">Position</h4>
+            <h4 id = "department_hdr">Department</h4>
+            <input id="input-pos-dept" type="text" placeholder="Type name here...">
+        </div>
+
+        <div class="modal-footer">
+            <a class="waves-effect waves-light grey custombtn btn-flat" id = "close_addposdept_modal">Cancel</a>
+            <a class="waves-effect waves-light orange custombtn btn-flat" id = "save-pos" style="margin-right: 5px;">Add</a>
+            <a class="waves-effect waves-light orange custombtn btn-flat" id = "save-dept" style="margin-right: 5px;">Add</a>
+        </div>
+    </div>
+    <!----------------------------- END -------------------------------->
+
+    <!----------------------- EXPORT MODAL -------------------------->
+    <div id="exportchoice" class="modal">
+        <div class="modal-content">
+            <h4>Export</h4>
+
+            <p>Choose entity: </p>
+            <div class="radiobtn" style="margin-bottom: 20px;">
+                <input name="group1" type="radio" id="select-all" class="export-radio-input" data-type="all" checked/>
+                <label for="select-all" class="lbl-info radio-lbl">All Employees</label>
+
+                <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
+                <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+            </div>
+
+            <div class = "dept-container">
+                <select id = "listdept" class="browser-default departmentselect" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                    <option value="" disabled selected>Choose your department</option>
+                    {% for dept in getDept %}
+                        <option value="{{ dept.Id }}">{{dept.DeptNames}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
+                <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
+            </div>
+        </div>
+    </div>
+    <!----------------------------- END -------------------------------->
+{% endblock %}
+
+{% block customjs %}
+    <script type = "text/javascript">
+        // Action Buttons
+        var deptExportContainer = $('.dept-container');
+        var addEmployeeModalBtn = $('#add-emp');
+        var saveEmployeeModalBtn = $('#edit-emp');
+
+        // Modals
+        var exportModal = $('#exportchoice');
+        var addPosDeptModal = $('#modal-pos-dept');
+        var addEditEmpModal = $('#modal-emp');
+
+        // Forms
+        var deptListExportOption = $('.departmentselect');
+        var posModalHeader = $('#position_hdr');
+        var deptModalHeader = $('#department_hdr');
+        var savePositionBtn = $('#save-pos');
+        var saveDepartmentBtn = $('#save-dept');
+        var nameInputAddPosDept = $('#input-pos-dept');
+
+        // Add/Edit Employee Modal Forms
+        var employeeIdInput = $('#employee-id');
+        var usernameInput = $('#username');
+        var passwordInput = $('#password');
+        var confirmPasswordInput = $('#confirmpassword');
+        var empNumInput = $('#empnum');
+        var firstNameInput = $('#fname');
+        var lastNameInput = $('#lname');
+        var middleNameInput = $('#mname');
+        var genderCombo = $('#gender');
+        var departmentCombo = $('#dept');
+        var positionCombo = $('#pos');
+        var empStatusCombo = $('#status');
+        var companyEmailInput = $('#companyemail');
+        var telNumIdInput = $('#telnumid');
+        var telNumInput = $('#telnum');
+        var celNumIdInput = $('#celnumid');
+        var celNumInput = $('#celnum');
+        var addressInput = $('#address');
+        var bdayInput = $('#bday');
+        var sssInput = $('#sss');
+        var birInput = $('#bir');
+        var philHealthInput = $('#philhealth');
+        var usernameError = $('#username-error');
+        var passwordError = $('#password-error');
+        var repasswordError = $('#re-password-error');
+        var empnumError = $('#employeenum-error');
+
+        // SCRIPTS FOR EXPORT
+        $(document).on("click", "#btn-export-modal", function () {
+            deptExportContainer.hide();
+            exportModal.openModal();
+        });
+
+        $(document).on("click", "#export-cancel", function () {
+            exportModal.closeModal();
+        });
+
+        $(document).on("click", "#select-dept", function () {
+            deptExportContainer.show();
+        });
+
+        $(document).on("click", "#select-all", function () {
+            deptExportContainer.hide();
+        });
+
+        $(document).on("click", "#export-submit", function () {
+            var deptid = $('#listdept').val();
+
+            if ($('#select-dept:checked').length){
+                if(deptid == null){
+                    deptListExportOption.css({'color' : 'red'});
+                    setTimeout(function(){
+                        deptListExportOption.css({'color' : 'black'});
+                    }, 500);
+                    return;
+                }
+            }
+            exportModal.closeModal();
+            window.open("{{ path('admin_employee_list_report') }}?deptid=" + deptid, '_blank');
+        });
+
+        // SCRIPT FOR VIEW EMPLOYEE
+        $('.view-profile-btn').click(function(){
+            empId = $(this).data('empid');
+            window.location.href = '{{ path('emp_page')}}' + empId;
+        });
+
+        // SCRIPTS FOR ADDING POSITION/DEPARTMENT
+        $(document).on("click", "#add-dept-btn", function () {
+            nameInputAddPosDept.val('');
+            posModalHeader.hide();
+            deptModalHeader.show();
+            savePositionBtn.hide();
+            saveDepartmentBtn.show();
+            addPosDeptModal.openModal();
+        });
+
+        $(document).on("click", "#add-pos-btn", function () {
+            nameInputAddPosDept.val('');
+            posModalHeader.show();
+            deptModalHeader.hide();
+            savePositionBtn.show();
+            saveDepartmentBtn.hide();
+            addPosDeptModal.openModal();
+        });
+
+        $(document).on("click", "#close_addposdept_modal", function () {
+            closeAddPosDeptModal();
+        });
+
+        $(document).on("click", "#save-pos", function () {
+            var validate = checkFields(elements = [nameInputAddPosDept]);
+            if (validate == true) // true == there are errors
+                return;
+
+            inputName = nameInputAddPosDept.val();
+            data = { posname: inputName };
+            callback = function (data) {
+                closeAddPosDeptModal();
+            };
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                    addOption("Position", data["id"], inputName);
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+            always = function (data) {
+                //
+            };
+            post(savePositionBtn, "{{ path('add_position') }}", data, callback, done, always);
+        });
+
+        $(document).on("click", "#save-dept", function () {
+            var validate = checkFields(elements = [nameInputAddPosDept]);
+            if (validate == true) // true == there are errors
+                return;
+
+            inputName = nameInputAddPosDept.val();
+            data = { deptname: inputName };
+            callback = function (data) {
+                closeAddPosDeptModal();
+            };
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                    addOption("Department", data["id"], inputName);
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+            always = function (data) {
+                //
+            };
+            post(saveDepartmentBtn, "{{ path('add_department') }}", data, callback, done, always);
+        });
+
+        function closeAddPosDeptModal() {
+            nameInputAddPosDept.val('');
+            addPosDeptModal.closeModal();
+        }
+
+        function addOption(type, id, name) {
+            var option = document.createElement("option");
+            option.value = id;
+            option.textContent = name;
+
+            if (type == "Position")
+                positionCombo.append(option);
+            else departmentCombo.append(option);
+        }
+
+        // SCRIPTS FOR ADD EMPLOYEE
+        $(document).on("click", "#add-emp-btn", function () {
+            saveEmployeeModalBtn.hide();
+            addEmployeeModalBtn.show();
+            addEditEmpModal.openModal();
+            defaultInputs();
+        });
+
+        $(document).on("click", "#edit-employee-btn", function () {
+            saveEmployeeModalBtn.show();
+            addEmployeeModalBtn.hide();
+            currElement = $(this);
+            defaultInputs();
+            usernameInput.attr("disabled", true);
+            usernameInput.val(currElement.data('username'));
+            passwordInput.attr("disabled", true);
+            passwordInput.val(currElement.data('password'));
+            confirmPasswordInput.attr("disabled", true);
+            confirmPasswordInput.val(currElement.data('password'));
+            empNumInput.val(currElement.data('empnum'));
+            firstNameInput.val(currElement.data('fname'));
+            lastNameInput.val(currElement.data('lname'));
+            middleNameInput.val(currElement.data('mname'));
+            genderCombo.val(currElement.data('gender'));
+            departmentCombo.val(currElement.data('department'));
+            positionCombo.val(currElement.data('position'));
+            empStatusCombo.val(currElement.data('status'));
+            companyEmailInput.val(currElement.data('email'));
+            telNumInput.val(currElement.data('telephone'));
+            celNumInput.val(currElement.data('cellphone'));
+            addressInput.val(currElement.data('address'));
+            bdayInput.val(currElement.data('bday'));
+            sssInput.val(currElement.data('sss'));
+            birInput.val(currElement.data('bir'));
+            philHealthInput.val(currElement.data('philhealth'));
+            employeeIdInput.val(currElement.data('empid'));
+            telNumIdInput.val(currElement.data('telphoneid'));
+            celNumIdInput.val(currElement.data('cellphoneid'));
+
+            capabilities = currElement.data('capabilities');
+            if(capabilities.length) {
+                var c = capabilities.split(',');
+                for(i in c) {
+                    if(c[i] != '')
+                        $('.div-capabilities-area').find('input[value='+c[i]+']').prop('checked', true);
+                }
+            } else if(capabilities > 0) {
+                $('.div-capabilities-area').find('input[value='+capabilities+']').prop('checked', true);
+            }
+
+            addEditEmpModal.openModal();
+        });
+
+        $(document).on("click", "#edit-emp", function () {
+            var validate = checkAddEmpFields();
+            if (validate == true) // true == there are errors
+                return;
+
+            usernameinput       = usernameInput.val();
+            passwordinput       = passwordInput.val();
+            empnumber           = empNumInput.val();
+            fnameinput          = firstNameInput.val();
+            mnameinput          = middleNameInput.val();
+            lnameinput          = lastNameInput.val();
+            genderinput         = genderCombo.val();
+            departmentinput     = departmentCombo.val();
+            positioninput       = positionCombo.val();
+            statusinput         = empStatusCombo.val();
+            emailinput          = companyEmailInput.val();
+            addressinput        = addressInput.val();
+            bdayinput           = bdayInput.val();
+            telnuminput         = telNumInput.val();
+            celnuminput         = celNumInput.val();
+            sssinput            = sssInput.val();
+            birinput            = birInput.val();
+            philhealthinput     = philHealthInput.val();
+            empid               = employeeIdInput.val();
+            telnumid            = telNumIdInput.val();
+            celnumid            = celNumIdInput.val();
+
+            //update capabilities
+            capabilities = [];
+            $('.div-capabilities-area').find(':checkbox').each(function() {
+                if(this.checked)
+                    capabilities.push(this.value);
+            });
+
+            if(capabilities.length == 0) capabilities = '';
+
+            data = {
+                usernameinput:usernameinput,
+                passwordinput:passwordinput,
+                empnumber:empnumber,
+                fnameinput:fnameinput,
+                mnameinput:mnameinput,
+                lnameinput:lnameinput,
+                genderinput:genderinput,
+                departmentinput:departmentinput,
+                positioninput:positioninput,
+                statusinput:statusinput,
+                emailinput:emailinput,
+                addressinput:addressinput,
+                bdayinput:bdayinput,
+                telnuminput:telnuminput,
+                celnuminput:celnuminput,
+                sssinput:sssinput,
+                birinput:birinput,
+                philhealthinput:philhealthinput,
+                capabilities:capabilities,
+                empid:empid,
+                telnumid:telnumid,
+                celnumid:celnumid
+            };
+
+            callback = function (data) {
+                addEditEmpModal.closeModal();
+            };
+
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                    location.reload();
+                } else if (data["error"]) {
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function (data) {
+                //
+            };
+
+            post(saveEmployeeModalBtn, "{{ path('admin_edit_employee_profile') }}", data, callback, done, always);
+        });
+
+        $(document).on("click", "#add-emp", function () {
+            var validate = checkAddEmpFields();
+            if (validate == true) // true == there are errors
+                return;
+            showLoadingBar();
+
+            usernameinput       = usernameInput.val();
+            passwordinput       = passwordInput.val();
+            empnumber           = empNumInput.val();
+            fnameinput          = firstNameInput.val();
+            mnameinput          = middleNameInput.val();
+            lnameinput          = lastNameInput.val();
+            genderinput         = genderCombo.val();
+            departmentinput     = departmentCombo.val();
+            positioninput       = positionCombo.val();
+            statusinput         = empStatusCombo.val();
+            emailinput          = companyEmailInput.val();
+            addressinput        = addressInput.val();
+            bdayinput           = bdayInput.val();
+            telnuminput         = telNumInput.val();
+            celnuminput         = celNumInput.val();
+            sssinput            = sssInput.val();
+            birinput            = birInput.val();
+            philhealthinput     = philHealthInput.val();
+
+            //update capabilities
+            capabilities = [];
+            $('.div-capabilities-area').find(':checkbox').each(function() {
+                if(this.checked)
+                    capabilities.push(this.value);
+            });
+
+            if(capabilities.length == 0) capabilities = '';
+
+            data = {
+                usernameinput:usernameinput,
+                passwordinput:passwordinput,
+                empnumber:empnumber,
+                fnameinput:fnameinput,
+                mnameinput:mnameinput,
+                lnameinput:lnameinput,
+                genderinput:genderinput,
+                departmentinput:departmentinput,
+                positioninput:positioninput,
+                statusinput:statusinput,
+                emailinput:emailinput,
+                addressinput:addressinput,
+                bdayinput:bdayinput,
+                telnuminput:telnuminput,
+                celnuminput:celnuminput,
+                sssinput:sssinput,
+                birinput:birinput,
+                philhealthinput:philhealthinput,
+                capabilities:capabilities
+            };
+
+            callback = function (data) {
+                addEditEmpModal.closeModal();
+            };
+
+            done = function (data) {
+                if (data["result"]) {
+                    showSuccessBar(data["result"]);
+                    location.reload();
+                    // add new row
+                } else if (data["error"]) {
+                    // error
+                    showErrorBar(data["error"]);
+                }
+            };
+
+            always = function (data) {
+                //
+            };
+
+            post(addEmployeeModalBtn, "{{ path('add_employee') }}", data, callback, done, always);
+        });
+
+        function checkAddEmpFields() {
+            var error = 0;
+            var foundUsername = 0, foundEmpNum = 0;
+            var dbuser, dbempnum;
+
+            usernameError.hide();
+            passwordError.hide();
+            repasswordError.hide();
+            empnumError.hide();
+
+            if(employeeIdInput.val() == '' && usernameInput.val() != '' && empNumInput.val() != '') {
+                {% for usedUsers in allusers %}
+                dbuser = '{{ usedUsers.Username }}';
+                dbempnum = '{{ usedUsers.getEmpProfiles[0].EmployeeNumber }}';
+                if (usernameInput.val() == dbuser)
+                    foundUsername++;
+
+                if (empNumInput.val() == dbempnum)
+                    foundEmpNum++;
+                {% endfor %}
+            }
+
+            if(foundUsername > 0) {
+                usernameError.show();
+                notifyInvalid(usernameInput);
+                error++;
+            }
+
+            if(foundEmpNum > 0) {
+                empnumError.show();
+                notifyInvalid(empNumInput);
+                error++;
+            }
+
+            if(passwordInput.val() != confirmPasswordInput.val()) {
+                passwordError.show();
+                repasswordError.show();
+                notifyInvalid(passwordInput);
+                notifyInvalid(confirmPasswordInput);
+                error++;
+            }
+
+            if(usernameInput.val() == '') {
+                notifyInvalid(usernameInput);
+                error++;
+            }
+
+            if(passwordInput.val() == '') {
+                notifyInvalid(passwordInput);
+                error++;
+            }
+
+            if(confirmPasswordInput.val() == '') {
+                notifyInvalid(confirmPasswordInput);
+                error++;
+            }
+
+            if(empNumInput.val() == '') {
+                notifyInvalid(empNumInput);
+                error++;
+            }
+
+            if(firstNameInput.val() == '') {
+                notifyInvalid(firstNameInput);
+                error++;
+            }
+
+            if(middleNameInput.val() == '') {
+                notifyInvalid(middleNameInput);
+                error++;
+            }
+
+            if(lastNameInput.val() == '') {
+                notifyInvalid(lastNameInput);
+                error++;
+            }
+
+            if(departmentCombo.val() == '') {
+                notifyInvalid(departmentCombo);
+                error++;
+            }
+
+            if(positionCombo.val() == '') {
+                notifyInvalid(positionCombo);
+                error++;
+            }
+
+            if(empStatusCombo.val() == '') {
+                notifyInvalid(empStatusCombo);
+                error++;
+            }
+
+            if(companyEmailInput.val() == '') {
+                notifyInvalid(companyEmailInput);
+                error++;
+            }
+
+            if(bdayInput.val() == '') {
+                notifyInvalid(bdayInput);
+                error++;
+            }
+
+            if(error > 0)
+                return true;
+            else return false;
+        }
+
+        function notifyInvalid(element) {
+            element.css({'border-color': 'red'});
+            setTimeout(function () {
+                element.css({'border-color': 'gray'})
+            }, 1000);
+        }
+
+        function defaultInputs() {
+            employeeIdInput.val('');
+            usernameInput.val('');
+            passwordInput.val('');
+            confirmPasswordInput.val('');
+            empNumInput.val('');
+            firstNameInput.val('');
+            lastNameInput.val('');
+            middleNameInput.val('');
+            departmentCombo.val('');
+            positionCombo.val('');
+            empStatusCombo.val('');
+            companyEmailInput.val('');
+            telNumInput.val('');
+            celNumInput.val('');
+            addressInput.val('');
+            bdayInput.val('');
+            sssInput.val('');
+            birInput.val('');
+            philHealthInput.val('');
+            usernameError.hide();
+            passwordError.hide();
+            repasswordError.hide();
+            empnumError.hide();
+            $('.div-capabilities-area').find('input:checkbox').prop('checked', false);
+            usernameInput.attr("disabled", false);
+            passwordInput.attr("disabled", false);
+            confirmPasswordInput.attr("disabled", false);
+        }
+    </script>
+{% endblock %}

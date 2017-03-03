@@ -15,10 +15,10 @@ use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpTime;
-use CoreBundle\Model\EmpTimeReject;
 use CoreBundle\Model\RequestMeetingTags;
 
 /**
@@ -31,7 +31,8 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method EmpAccQuery orderByRole($order = Criteria::ASC) Order by the role column
  * @method EmpAccQuery orderByKey($order = Criteria::ASC) Order by the key column
- * @method EmpAccQuery orderByCapabilities($order = Criteria::ASC) Order by the capabilities column
+ * @method EmpAccQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
+ * @method EmpAccQuery orderByLastUpdatedBy($order = Criteria::ASC) Order by the last_updated_by column
  *
  * @method EmpAccQuery groupById() Group by the id column
  * @method EmpAccQuery groupByUsername() Group by the username column
@@ -42,7 +43,8 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery groupByEmail() Group by the email column
  * @method EmpAccQuery groupByRole() Group by the role column
  * @method EmpAccQuery groupByKey() Group by the key column
- * @method EmpAccQuery groupByCapabilities() Group by the capabilities column
+ * @method EmpAccQuery groupByCreatedBy() Group by the created_by column
+ * @method EmpAccQuery groupByLastUpdatedBy() Group by the last_updated_by column
  *
  * @method EmpAccQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpAccQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -68,9 +70,9 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery rightJoinEmpTime($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpTime relation
  * @method EmpAccQuery innerJoinEmpTime($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpTime relation
  *
- * @method EmpAccQuery leftJoinEmpTimeReject($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpTimeReject relation
- * @method EmpAccQuery rightJoinEmpTimeReject($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpTimeReject relation
- * @method EmpAccQuery innerJoinEmpTimeReject($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpTimeReject relation
+ * @method EmpAccQuery leftJoinEmpCapabilities($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpCapabilities relation
+ * @method EmpAccQuery rightJoinEmpCapabilities($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpCapabilities relation
+ * @method EmpAccQuery innerJoinEmpCapabilities($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpCapabilities relation
  *
  * @method EmpAcc findOne(PropelPDO $con = null) Return the first EmpAcc matching the query
  * @method EmpAcc findOneOrCreate(PropelPDO $con = null) Return the first EmpAcc matching the query, or a new EmpAcc object populated from the query conditions when no match is found
@@ -79,22 +81,24 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAcc findOneByPassword(string $password) Return the first EmpAcc filtered by the password column
  * @method EmpAcc findOneByTimestamp(string $timestamp) Return the first EmpAcc filtered by the timestamp column
  * @method EmpAcc findOneByIpAdd(string $ip_add) Return the first EmpAcc filtered by the ip_add column
- * @method EmpAcc findOneByStatus(string $status) Return the first EmpAcc filtered by the status column
+ * @method EmpAcc findOneByStatus(int $status) Return the first EmpAcc filtered by the status column
  * @method EmpAcc findOneByEmail(string $email) Return the first EmpAcc filtered by the email column
  * @method EmpAcc findOneByRole(string $role) Return the first EmpAcc filtered by the role column
  * @method EmpAcc findOneByKey(string $key) Return the first EmpAcc filtered by the key column
- * @method EmpAcc findOneByCapabilities(string $capabilities) Return the first EmpAcc filtered by the capabilities column
+ * @method EmpAcc findOneByCreatedBy(int $created_by) Return the first EmpAcc filtered by the created_by column
+ * @method EmpAcc findOneByLastUpdatedBy(int $last_updated_by) Return the first EmpAcc filtered by the last_updated_by column
  *
  * @method array findById(int $id) Return EmpAcc objects filtered by the id column
  * @method array findByUsername(string $username) Return EmpAcc objects filtered by the username column
  * @method array findByPassword(string $password) Return EmpAcc objects filtered by the password column
  * @method array findByTimestamp(string $timestamp) Return EmpAcc objects filtered by the timestamp column
  * @method array findByIpAdd(string $ip_add) Return EmpAcc objects filtered by the ip_add column
- * @method array findByStatus(string $status) Return EmpAcc objects filtered by the status column
+ * @method array findByStatus(int $status) Return EmpAcc objects filtered by the status column
  * @method array findByEmail(string $email) Return EmpAcc objects filtered by the email column
  * @method array findByRole(string $role) Return EmpAcc objects filtered by the role column
  * @method array findByKey(string $key) Return EmpAcc objects filtered by the key column
- * @method array findByCapabilities(string $capabilities) Return EmpAcc objects filtered by the capabilities column
+ * @method array findByCreatedBy(int $created_by) Return EmpAcc objects filtered by the created_by column
+ * @method array findByLastUpdatedBy(int $last_updated_by) Return EmpAcc objects filtered by the last_updated_by column
  */
 abstract class BaseEmpAccQuery extends ModelCriteria
 {
@@ -200,7 +204,7 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key`, `capabilities` FROM `emp_acc` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key`, `created_by`, `last_updated_by` FROM `emp_acc` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -466,24 +470,37 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
-     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
      * </code>
      *
-     * @param     string $status The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return EmpAccQuery The current query, for fluid interface
      */
     public function filterByStatus($status = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($status)) {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(EmpAccPeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(EmpAccPeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $status)) {
-                $status = str_replace('*', '%', $status);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -578,32 +595,87 @@ abstract class BaseEmpAccQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the capabilities column
+     * Filter the query on the created_by column
      *
      * Example usage:
      * <code>
-     * $query->filterByCapabilities('fooValue');   // WHERE capabilities = 'fooValue'
-     * $query->filterByCapabilities('%fooValue%'); // WHERE capabilities LIKE '%fooValue%'
+     * $query->filterByCreatedBy(1234); // WHERE created_by = 1234
+     * $query->filterByCreatedBy(array(12, 34)); // WHERE created_by IN (12, 34)
+     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by >= 12
+     * $query->filterByCreatedBy(array('max' => 12)); // WHERE created_by <= 12
      * </code>
      *
-     * @param     string $capabilities The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     mixed $createdBy The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return EmpAccQuery The current query, for fluid interface
      */
-    public function filterByCapabilities($capabilities = null, $comparison = null)
+    public function filterByCreatedBy($createdBy = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($capabilities)) {
+        if (is_array($createdBy)) {
+            $useMinMax = false;
+            if (isset($createdBy['min'])) {
+                $this->addUsingAlias(EmpAccPeer::CREATED_BY, $createdBy['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($createdBy['max'])) {
+                $this->addUsingAlias(EmpAccPeer::CREATED_BY, $createdBy['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $capabilities)) {
-                $capabilities = str_replace('*', '%', $capabilities);
-                $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(EmpAccPeer::CAPABILITIES, $capabilities, $comparison);
+        return $this->addUsingAlias(EmpAccPeer::CREATED_BY, $createdBy, $comparison);
+    }
+
+    /**
+     * Filter the query on the last_updated_by column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByLastUpdatedBy(1234); // WHERE last_updated_by = 1234
+     * $query->filterByLastUpdatedBy(array(12, 34)); // WHERE last_updated_by IN (12, 34)
+     * $query->filterByLastUpdatedBy(array('min' => 12)); // WHERE last_updated_by >= 12
+     * $query->filterByLastUpdatedBy(array('max' => 12)); // WHERE last_updated_by <= 12
+     * </code>
+     *
+     * @param     mixed $lastUpdatedBy The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function filterByLastUpdatedBy($lastUpdatedBy = null, $comparison = null)
+    {
+        if (is_array($lastUpdatedBy)) {
+            $useMinMax = false;
+            if (isset($lastUpdatedBy['min'])) {
+                $this->addUsingAlias(EmpAccPeer::LAST_UPDATED_BY, $lastUpdatedBy['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($lastUpdatedBy['max'])) {
+                $this->addUsingAlias(EmpAccPeer::LAST_UPDATED_BY, $lastUpdatedBy['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(EmpAccPeer::LAST_UPDATED_BY, $lastUpdatedBy, $comparison);
     }
 
     /**
@@ -977,41 +1049,41 @@ abstract class BaseEmpAccQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related EmpTimeReject object
+     * Filter the query by a related EmpCapabilities object
      *
-     * @param   EmpTimeReject|PropelObjectCollection $empTimeReject  the related object to use as filter
+     * @param   EmpCapabilities|PropelObjectCollection $empCapabilities  the related object to use as filter
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return                 EmpAccQuery The current query, for fluid interface
      * @throws PropelException - if the provided filter is invalid.
      */
-    public function filterByEmpTimeReject($empTimeReject, $comparison = null)
+    public function filterByEmpCapabilities($empCapabilities, $comparison = null)
     {
-        if ($empTimeReject instanceof EmpTimeReject) {
+        if ($empCapabilities instanceof EmpCapabilities) {
             return $this
-                ->addUsingAlias(EmpAccPeer::ID, $empTimeReject->getEmpAccAccId(), $comparison);
-        } elseif ($empTimeReject instanceof PropelObjectCollection) {
+                ->addUsingAlias(EmpAccPeer::ID, $empCapabilities->getEmpId(), $comparison);
+        } elseif ($empCapabilities instanceof PropelObjectCollection) {
             return $this
-                ->useEmpTimeRejectQuery()
-                ->filterByPrimaryKeys($empTimeReject->getPrimaryKeys())
+                ->useEmpCapabilitiesQuery()
+                ->filterByPrimaryKeys($empCapabilities->getPrimaryKeys())
                 ->endUse();
         } else {
-            throw new PropelException('filterByEmpTimeReject() only accepts arguments of type EmpTimeReject or PropelCollection');
+            throw new PropelException('filterByEmpCapabilities() only accepts arguments of type EmpCapabilities or PropelCollection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the EmpTimeReject relation
+     * Adds a JOIN clause to the query using the EmpCapabilities relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return EmpAccQuery The current query, for fluid interface
      */
-    public function joinEmpTimeReject($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinEmpCapabilities($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('EmpTimeReject');
+        $relationMap = $tableMap->getRelation('EmpCapabilities');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -1026,14 +1098,14 @@ abstract class BaseEmpAccQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'EmpTimeReject');
+            $this->addJoinObject($join, 'EmpCapabilities');
         }
 
         return $this;
     }
 
     /**
-     * Use the EmpTimeReject relation EmpTimeReject object
+     * Use the EmpCapabilities relation EmpCapabilities object
      *
      * @see       useQuery()
      *
@@ -1041,13 +1113,13 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return   \CoreBundle\Model\EmpTimeRejectQuery A secondary query class using the current class as primary query
+     * @return   \CoreBundle\Model\EmpCapabilitiesQuery A secondary query class using the current class as primary query
      */
-    public function useEmpTimeRejectQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useEmpCapabilitiesQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joinEmpTimeReject($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'EmpTimeReject', '\CoreBundle\Model\EmpTimeRejectQuery');
+            ->joinEmpCapabilities($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpCapabilities', '\CoreBundle\Model\EmpCapabilitiesQuery');
     }
 
     /**

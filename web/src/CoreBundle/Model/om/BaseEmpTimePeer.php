@@ -30,13 +30,13 @@ abstract class BaseEmpTimePeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\EmpTimeTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 10;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /** the column name for the id field */
     const ID = 'emp_time.id';
@@ -65,6 +65,9 @@ abstract class BaseEmpTimePeer
     /** the column name for the check_ip field */
     const CHECK_IP = 'emp_time.check_ip';
 
+    /** the column name for the status field */
+    const STATUS = 'emp_time.status';
+
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -84,12 +87,12 @@ abstract class BaseEmpTimePeer
      * e.g. EmpTimePeer::$fieldNames[EmpTimePeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'TimeIn', 'TimeOut', 'IpAdd', 'Date', 'EmpAccAccId', 'Manhours', 'Overtime', 'CheckIp', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'timeIn', 'timeOut', 'ipAdd', 'date', 'empAccAccId', 'manhours', 'overtime', 'checkIp', ),
-        BasePeer::TYPE_COLNAME => array (EmpTimePeer::ID, EmpTimePeer::TIME_IN, EmpTimePeer::TIME_OUT, EmpTimePeer::IP_ADD, EmpTimePeer::DATE, EmpTimePeer::EMP_ACC_ACC_ID, EmpTimePeer::MANHOURS, EmpTimePeer::OVERTIME, EmpTimePeer::CHECK_IP, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'TIME_IN', 'TIME_OUT', 'IP_ADD', 'DATE', 'EMP_ACC_ACC_ID', 'MANHOURS', 'OVERTIME', 'CHECK_IP', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'time_in', 'time_out', 'ip_add', 'date', 'emp_acc_acc_id', 'manhours', 'overtime', 'check_ip', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'TimeIn', 'TimeOut', 'IpAdd', 'Date', 'EmpAccAccId', 'Manhours', 'Overtime', 'CheckIp', 'Status', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'timeIn', 'timeOut', 'ipAdd', 'date', 'empAccAccId', 'manhours', 'overtime', 'checkIp', 'status', ),
+        BasePeer::TYPE_COLNAME => array (EmpTimePeer::ID, EmpTimePeer::TIME_IN, EmpTimePeer::TIME_OUT, EmpTimePeer::IP_ADD, EmpTimePeer::DATE, EmpTimePeer::EMP_ACC_ACC_ID, EmpTimePeer::MANHOURS, EmpTimePeer::OVERTIME, EmpTimePeer::CHECK_IP, EmpTimePeer::STATUS, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'TIME_IN', 'TIME_OUT', 'IP_ADD', 'DATE', 'EMP_ACC_ACC_ID', 'MANHOURS', 'OVERTIME', 'CHECK_IP', 'STATUS', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'time_in', 'time_out', 'ip_add', 'date', 'emp_acc_acc_id', 'manhours', 'overtime', 'check_ip', 'status', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -99,12 +102,12 @@ abstract class BaseEmpTimePeer
      * e.g. EmpTimePeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'TimeIn' => 1, 'TimeOut' => 2, 'IpAdd' => 3, 'Date' => 4, 'EmpAccAccId' => 5, 'Manhours' => 6, 'Overtime' => 7, 'CheckIp' => 8, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'timeIn' => 1, 'timeOut' => 2, 'ipAdd' => 3, 'date' => 4, 'empAccAccId' => 5, 'manhours' => 6, 'overtime' => 7, 'checkIp' => 8, ),
-        BasePeer::TYPE_COLNAME => array (EmpTimePeer::ID => 0, EmpTimePeer::TIME_IN => 1, EmpTimePeer::TIME_OUT => 2, EmpTimePeer::IP_ADD => 3, EmpTimePeer::DATE => 4, EmpTimePeer::EMP_ACC_ACC_ID => 5, EmpTimePeer::MANHOURS => 6, EmpTimePeer::OVERTIME => 7, EmpTimePeer::CHECK_IP => 8, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'TIME_IN' => 1, 'TIME_OUT' => 2, 'IP_ADD' => 3, 'DATE' => 4, 'EMP_ACC_ACC_ID' => 5, 'MANHOURS' => 6, 'OVERTIME' => 7, 'CHECK_IP' => 8, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'time_in' => 1, 'time_out' => 2, 'ip_add' => 3, 'date' => 4, 'emp_acc_acc_id' => 5, 'manhours' => 6, 'overtime' => 7, 'check_ip' => 8, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'TimeIn' => 1, 'TimeOut' => 2, 'IpAdd' => 3, 'Date' => 4, 'EmpAccAccId' => 5, 'Manhours' => 6, 'Overtime' => 7, 'CheckIp' => 8, 'Status' => 9, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'timeIn' => 1, 'timeOut' => 2, 'ipAdd' => 3, 'date' => 4, 'empAccAccId' => 5, 'manhours' => 6, 'overtime' => 7, 'checkIp' => 8, 'status' => 9, ),
+        BasePeer::TYPE_COLNAME => array (EmpTimePeer::ID => 0, EmpTimePeer::TIME_IN => 1, EmpTimePeer::TIME_OUT => 2, EmpTimePeer::IP_ADD => 3, EmpTimePeer::DATE => 4, EmpTimePeer::EMP_ACC_ACC_ID => 5, EmpTimePeer::MANHOURS => 6, EmpTimePeer::OVERTIME => 7, EmpTimePeer::CHECK_IP => 8, EmpTimePeer::STATUS => 9, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'TIME_IN' => 1, 'TIME_OUT' => 2, 'IP_ADD' => 3, 'DATE' => 4, 'EMP_ACC_ACC_ID' => 5, 'MANHOURS' => 6, 'OVERTIME' => 7, 'CHECK_IP' => 8, 'STATUS' => 9, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'time_in' => 1, 'time_out' => 2, 'ip_add' => 3, 'date' => 4, 'emp_acc_acc_id' => 5, 'manhours' => 6, 'overtime' => 7, 'check_ip' => 8, 'status' => 9, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -187,6 +190,7 @@ abstract class BaseEmpTimePeer
             $criteria->addSelectColumn(EmpTimePeer::MANHOURS);
             $criteria->addSelectColumn(EmpTimePeer::OVERTIME);
             $criteria->addSelectColumn(EmpTimePeer::CHECK_IP);
+            $criteria->addSelectColumn(EmpTimePeer::STATUS);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.time_in');
@@ -197,6 +201,7 @@ abstract class BaseEmpTimePeer
             $criteria->addSelectColumn($alias . '.manhours');
             $criteria->addSelectColumn($alias . '.overtime');
             $criteria->addSelectColumn($alias . '.check_ip');
+            $criteria->addSelectColumn($alias . '.status');
         }
     }
 

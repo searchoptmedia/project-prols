@@ -1,4 +1,4 @@
-{% import 'AdminBundle:Default:notification.html.twig' as notif %}
+{% import 'AdminBundle:Templates:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
 {% set userbdaynames = userbdaynames|default([]) %}
 
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
     <link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
     <link rel="stylesheet" href="{{ asset('css/event-style.css') }}" media="all"/>
+
     <style>
         label.black {
             color: #555 !important;
@@ -38,387 +39,451 @@
 </head>
 
 <body>
-    {{ notif.notif_loader() }}
-    {{ notif.request_leave_notif }}
-    {{ notif.request_meeting_notif }}
-    {{ notif.time_in_time_out_notif }}
+{{ notif.notif_loader }}
+{{ notif.time_in_time_out_notif }}
+{{ notif.loader }}
+{{ notif.login_top_loader }}
 
-    <section id="main-container">
-        <section id="main-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="nav-right z-depth-1">
-                        <div class="company-logo">
-                            <img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%";>
-                            <h4 style="font-size: 23px;">{{ app.user.username|upper }}</h4>
-                        </div>
-                        <div class="rightpanel">
-                            <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
-                                <div class="widget-subtitle plugin-date">Loading...</div>
-                            </div>
-                            <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
-                            <br>
-                            <div class="chip timechip" style="display: none">
-                                Timed-in at {{ currenttimein }}
-                            </div>
-                        </div>
-                        <div class="clr"></div>
-                        {% block nav %}
-                            {% if user.role == 'ADMIN' %}
-                                {{ sidenav.admin_navbar(requestcount) }}
-                            {% else %}
-                                {{ sidenav.emp_navbar() }}
-                            {% endif %}
-                        {% endblock %}
+<section id="main-container">
+    <section id="main-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="nav-right z-depth-1">
+                    <div class="company-logo">
+                        <img src="{{asset('prols2/img/propelrrlogo.png')}}" style="border:1px solid #e0e0e0; border-radius:50%">
+                        <h4 style="font-size: 23px;">{{ app.user.username|upper }}</h4>
                     </div>
-
-                    {% block body %} {% endblock %}
+                    <div class="rightpanel">
+                        <div class="clock"> <div class="widget-big-int plugin-clock">00:00</div>
+                            <div class="widget-subtitle plugin-date">Loading...</div>
+                        </div>
+                        <a class="waves-effect waves-light btn-flat red btn-large btn-timeout" style="display:none;"><i class="material-icons left">query_builder</i>Time Out</a>
+                        <br>
+                        <div class="chip timechip" style="display: none">
+                            Timed-in at {{ currenttimein }}
+                        </div>
+                    </div>
+                    <div class="clr"></div>
+                    {% block nav %}
+                        {% if user.role == 'ADMIN' %}
+                            {{ sidenav.admin_navbar(requestcount) }}
+                        {% else %}
+                            {{ sidenav.emp_navbar() }}
+                        {% endif %}
+                    {% endblock %}
                 </div>
+
+                {% block body %} {% endblock %}
             </div>
-            {{  include ('AdminBundle:Default:modal.html.twig') }}
-        </section>
+        </div>
+        {{  include ('AdminBundle:Templates:modal.html.twig') }}
     </section>
+</section>
 
-    <script src="{{asset('prols2/js/jquery.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
-    <script src="{{asset('prols2/js/html5.js')}}"></script>
-    <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
-    <script src="{{asset('prols2/js/materialize.js')}}"></script>
-    <script src="{{asset('prols2/js/script.js')}}"></script>
-    <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
-    <script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
-    <script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
-    {% block scripts %}{% endblock %}
+<script src="{{asset('prols2/js/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/plugins/bootstrap/bootstrap.min.js')}}"></script>
+<script src="{{asset('prols2/js/html5.js')}}"></script>
+<script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
+<script src="{{asset('prols2/js/materialize.js')}}"></script>
+<script src="{{asset('prols2/js/script.js')}}"></script>
+<script src="{{ asset('prols2/js/select2.min.js') }}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/plugins.js')}}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/customscript.js')}}"></script>
+<script type="text/javascript" src="{{asset('prols2/js/pikaday.js')}}"></script>
+<script type="text/javascript" src="{{ asset('prols2/js/pikadayfunc.js') }}"></script>
+<script type="text/javascript" src="{{ asset('prols2/js/jquery.timepicker.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/hazel-script.js') }}"></script>
+{#<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>#}
+{% block scripts %}{% endblock %}
 
-    <script type="text/javascript">
-        //------------------------LEFT SIDEBAR JS-----------------------------------
-        {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
-        {% set indexPath =  path('admin_homepage') %}
-        {% set profilePath = path('profile_page') %}
-        {% set managePath = path('manage_employee') %}
-        {% set manageEventPath = path('manage_events') %}
-        {% set timeLogPath = path('time_logs_page') %}
-        {% set viewRequestPath = path('view_request') %}
+<script type="text/javascript">
+    //------------------------LEFT SIDEBAR JS-----------------------------------
+    {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
+    {% set indexPath =  path('admin_homepage') %}
+    {% set profilePath = path('profile_page') %}
+    {% set managePath = path('manage_employee') %}
+    {% set manageEventPath = path('manage_events') %}
+    {% set timeLogPath = path('time_logs_page') %}
+    {% set viewRequestPath = path('view_request') %}
 
-        {% if currentPath == indexPath %}
-        $('.index-page').addClass("active");
-        {% elseif currentPath == profilePath %}
-        $('.profile-page').addClass("active");
-        {% elseif currentPath == managePath or currentPath == timeLogPath %}
-        $('.manage-page').addClass("active");
-        {% elseif currentPath == manageEventPath %}
-        $('.manage-events-page').addClass("active");
-        {% elseif currentPath == viewRequestPath %}
-        $('.view-request-page').addClass("active");
-        {% endif %}
-        //-------------------------------------------------------------------------
+    {% if currentPath == indexPath %}
+    $('.index-page').addClass("active");
+    {% elseif currentPath == profilePath %}
+    $('.profile-page').addClass("active");
+    {% elseif currentPath == managePath or currentPath == timeLogPath %}
+    $('.manage-page').addClass("active");
+    {% elseif currentPath == manageEventPath %}
+    $('.manage-events-page').addClass("active");
+    {% elseif currentPath == viewRequestPath %}
+    $('.view-request-page').addClass("active");
+    {% endif %}
 
-        var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
-        var dayNow      = '{{ app.session.get('isSameDay')|default('') }}';
+    //-----------------------VARIABLES--------------------------------------------------
+    var _moAutoTimeout = $('.auto-timeout-notice');
+    var _moTimeIn      = $('.time-in-container');
+    var _btnAutoTimeOutTimeIn = '.btn-forgot-timeout-show-timein';
 
-        function timeOutInit() {
-            //--------------12 AM ALERT MODAL-------------------------
-            var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
-            var displayTime = 30;
-            var display     = document.querySelector('#time');
+    var isTimeout   = '{{ app.session.get('timeout')|default('') }}';
+    var isSameDay   = '{{ app.session.get('isSameDay')|default('') }}';
+    var timeLogCase = '{{ app.session.get('timeLogCase') }}';
+    var isAutoTimeOut = '{{ app.session.get('isAutoTimeOut')|default('') }}';
+    var autoTimeOutDate = '{{ app.session.get('autoTimeOutDate')|default('') }}';
+    //console.log(timeLogCase, isAutoTimeOut)
 
-            function breakTime() {
-                /* Set Alert Hour in 24hr Notation */
-                var alertHour = 0;
-                /* Set Alert Minute */
-                var alertMinute = 0;
-                /* Set Alert Minute */
-                var alertSec = 0;
-                /* Set time for alert timeout */
-                var theDate = new Date();
+    //-------------------------------------------------------------------------
+    // Variables
+    var forgotTimeoutModal = $('.forgot-timeout-modal');
+    var autoTimeoutTimeMessage = $('.auto-timeout-time-message');
+    var timeOutContainer = $('.timeout-container');
+    var modalFailAjaxContainer = $('.modal-fail-ajax-container');
+    var btnKeepWorking = $('.btn-keep-working');
+    //-------------------------------------------------------------------------
 
-                //if 12am
-                if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
+    function timeOutInit() {
+        //--------------12 AM ALERT MODAL-------------------------
+        var alertInt    = isTimeout == 'false' ? setTimeout(breakTime, 1000) : setTimeout(checkTimeout, 1000);
+        var displayTime = 30;
+        var display     = document.querySelector('#time');
+
+        function breakTime() {
+            /* Set Alert Hour in 24hr Notation */
+            var alertHour = 0;
+            /* Set Alert Minute */
+            var alertMinute = 0;
+            /* Set Alert Minute */
+            var alertSec = 0;
+            /* Set time for alert timeout */
+            var theDate = new Date();
+
+            //if 12am
+            if ((Math.abs(theDate.getHours()) == alertHour && Math.abs(theDate.getMinutes()) == alertMinute
                     && Math.abs(theDate.getSeconds()) == alertSec)) {
-                    this.focus();
-                    clearTimeout(alertInt);
-                    alert('Good Morning!');
-                    $('.forgot-timeout-modal').show();
-                    startTimer(displayTime, display);
-                    //if 1am onwards
-                } else if(dayNow == 'false') {
-                    $('.forgot-timeout-modal').show();
-                    startTimer(displayTime, display);
-                    //else run loop
-                } else {
-                    alertInt = setTimeout(breakTime, 50);
+                this.focus();
+                clearTimeout(alertInt);
+                alert('Good Morning!');
+                forgotTimeoutModal.show();
+                startTimer(displayTime, display);
+                //if 1am onwards
+            } else if(dayNow == 'false') {
+                forgotTimeoutModal.show();
+                startTimer(displayTime, display);
+                //else run loop
+            } else {
+                alertInt = setTimeout(breakTime, 50);
+            }
+        }
+
+        function checkTimeout() {
+            if(isTimeout == 'false')
+            {
+                forgotTimeoutModal.show();
+                startTimer(displayTime, display);
+            }
+            console.log('isTimeout? '+isTimeout);
+        }
+
+        function checkIf_AutoTimeOut() {
+            var isAutoTimeOut = "{{ app.session.get('isAutoTimeOut')|default('false') }}";
+            var timeOutDate = "{{ app.session.get('autoTimeOutDate')|default('') }}";
+
+            $d = new Date(timeOutDate);
+            var options = {
+                year: "numeric", month: "short",
+                day: "numeric", hour: "2-digit", minute: "2-digit"
+            };
+            $d = $d.toLocaleTimeString("en-us", options);
+
+            if(isAutoTimeOut == 'true')
+            {
+                _moAutoTimeout.show();
+                $('.auto-timeout-time-message').html($d);
+                _moTimeIn.hide();
+                toggleTimeWidget('hide');
+            }
+        }
+
+        checkIf_AutoTimeOut();
+
+        $('.forgot-timeout-btn').click(function () {
+            forgotTimeoutModal.hide();
+            timer = 0;
+            checker = true;
+            isTimeout = '{{ app.session.get('timeout', 'true') }}'
+        });
+
+        //----------------BUTTON-TIMER--------------------
+        var checker = false;
+        var timer, seconds, timerInt = null;
+
+        function startTimer(duration, display) {
+            timer = duration, seconds;
+            timerInt = setInterval(function () {
+                //minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                //minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
+
+                if (--timer < 0) timer = 0;
+
+                if (seconds == 0 && checker == false) {
+                    checker = true;
+
+                    display.textContent = '';
+                    forgotTimeoutModal.hide();
+                    manage_time_newday('timeout');
                 }
+                console.log('timer')
+            }, 1000);
+        }
+
+        function manage_time_newday(type) {
+            var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
+            if(type == 'working') {
+                url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
             }
 
-            function checkTimeout() {
-                if(isTimeout == 'false')
-                {
-                    $('.forgot-timeout-modal').show();
-                    startTimer(displayTime, display);
-                }
-                console.log('isTimeout? '+isTimeout);
-            }
-
-            function checkIf_AutoTimeOut() {
-                var isAutoTimeOut = "{{ app.request.query.get('timeout_qry') }}";
-                var timeOutDate = "{{ app.request.query.get('timeout_date') }}";
-
-                $d = new Date(timeOutDate);
-                var options = {
-                    year: "numeric", month: "short",
-                    day: "numeric", hour: "2-digit", minute: "2-digit"
-                };
-                $d = $d.toLocaleTimeString("en-us", options);
-                if(isAutoTimeOut == 'true')
-                {
-                    $('.auto-timeout-notice').show();
-                    $('.auto-timeout-time-message').html($d);
-                    $('.time-in-container').hide();
-                    toggleTimeWidget('hide');
-                }
-            }
-
-            $('.forgot-timeout-btn').click(function () {
-                $('.forgot-timeout-modal').hide();
-                timer = 0;
-                checker = true;
-                isTimeout = '{{ app.session.get('timeout', 'true') }}'
-            });
-
-            //----------------BUTTON-TIMER--------------------
-            var checker = false;
-            var timer, seconds, timerInt = null;
-
-            function startTimer(duration, display) {
-                timer = duration, seconds;
-                timerInt = setInterval(function () {
-                    //minutes = parseInt(timer / 60, 10);
-                    seconds = parseInt(timer % 60, 10);
-
-                    //minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-                    display.innerHTML = "(<b style='font-size: 18px'>" + (seconds - 1) + "</b>)";
-
-                    if (--timer < 0) timer = 0;
-
-                    if (seconds == 0 && checker == false) {
-                        checker = true;
-
-                        display.textContent = '';
-                        $('.forgot-timeout-modal').hide();
-                        manage_time_newday('timeout');
-                    }
-                    console.log('timer')
-                }, 1000);
-            }
-
-            function manage_time_newday(type) {
-                var url = '{{ path('admin_manage_working_time_new_day', {type: 'timeout'}) }}';
-                if(type == 'working') {
-                    url = '{{ path('admin_manage_working_time_new_day', {type: 'working'}) }}';
-                }
-
-                $.getJSON( url,
+            $.getJSON( url,
                     function( data ) {
                         if(type == 'working') toggleTimeWidget('show');
                         else  toggleTimeWidget('hide');
                     })
                     .fail( function() {
-                        $('.modal-fail-ajax-container').show();
+                        modalFailAjaxContainer.show();
                     });
-            }
+        }
 
-            $('.btn-keep-working').bind('click', function() {
-                manage_time_newday('working');
-            });
+        btnKeepWorking.bind('click', function() {
+            manage_time_newday('working');
+        });
 
-            $('.btn-timeout-newday').bind('click', function() {
+        $('.btn-timeout-newday').bind('click', function() {
+            clearInterval(timerInt);
+
+            $('#time-out-button').attr('data-forgot', '1');
+
+            $('.timeout-cancel').bind('click', function() {
                 clearInterval(timerInt);
-
-                $('#time-out-button').attr('data-forgot', '1');
-
-                $('.timeout-cancel').bind('click', function() {
-                    clearInterval(timerInt);
-                    display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
-                    $('.forgot-timeout-modal').show();
-                    startTimer(displayTime, display);
-                });
+                display.innerHTML = '(<b  style="font-size: 18px">'+displayTime+'</b>)';
+                forgotTimeoutModal.show();
+                startTimer(displayTime, display);
             });
-            $('.btn-forgot-timeout-show-timein').bind('click', function() {
-                $('.auto-timeout-notice').hide();
-                toggleTimeInModal('show');
-            });
-            checkIf_AutoTimeOut();
-        }
-        window.onload = function () {
-            timeOutInit();
-        };
-    </script>
-
-    <script>
-        function toggleTimeWidget(act) {
-            if(act == 'show') {
-                $('.timed-in').show();
-                $('.btn-timeout').show();
-                $('.timechip').show();
-            } else {
-                $('.timed-in').hide();
-                $('.btn-timeout').hide();
-                $('.timechip').hide();
-            }
-        }
-
-        function toggleTimeInModal(act) {
-            if(act == 'show') {
-                $('.time-in-container').show();
-                $('.btn-timeout').hide();
-            }
-        }
-
-        initWidget = function() {
-            if((dayNow == '' || dayNow == 'true') && '{{ isTimeoutAlready }}' != 'true') {
-                toggleTimeWidget('show');
-
-            } else if(dayNow == '' && isTimeout == '') {
-
-                toggleTimeInModal('show');
-            }
-
-            if('{{ isTimeoutAlready }}' == 'true'){
-                toggleTimeWidget('hide');
-            }
-        }
-        initWidget();
-
-
-        $('.select-emp-tag').select2({
-            placeholder: 'Type name here',
         });
-        $('#leavetype').material_select();
-        $('.caret').hide();
-        {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
+        $('.btn-forgot-timeout-show-timein').bind('click', function() {
+            _moAutoTimeout.hide();
+            toggleTimeInModal('show');
+        });
+        //checkIf_AutoTimeOut();
+    }
 
-        {#}).always(function(data) {#}
-        {#console.log(data)#}
-        {#var res = parseInt(data);#}
-        {#if(res == 1) {#}
-        {#console.log('ok')#}
-        {#$('.time-in-container').hide();#}
-        {#$('.btn-timeout').show();#}
-        {#$('.timechip').show();#}
-        {#}else{#}
-        {#$('.time-in-container').show();#}
-        {#$('.btn-timeout').hide();#}
+//    window.onload = function () {
+//        timeOutInit();
+//    };
+
+</script>
+
+<script>
+    initWidget();
+    bindEvents();
+
+    function bindEvents() {
+        $(document).on('click', _btnAutoTimeOutTimeIn, function() {
+            _moAutoTimeout.hide();
+            toggleTimeInModal('show');
+        });
+    }
+
+    function toggleTimeWidget(act) {
+        if(act == 'show') {
+            $('.timed-in').show();
+            $('.btn-timeout').show();
+            $('.timechip').show();
+        } else {
+            $('.timed-in').hide();
+            $('.btn-timeout').hide();
+            $('.timechip').hide();
+        }
+    }
+
+    function toggleTimeInModal(act) {
+        if(act == 'show') {
+            _moTimeIn.show();
+            $('.btn-timeout').hide();
+        }
+    }
+
+    function initWidget() {
+        {#if((isSameDay == '' || isSameDay == 'true') && '{{ isTimeoutAlready }}' != 'true') {#}
+        {#toggleTimeWidget('show');#}
+
+        {#} else if(isSameDay == '' && isTimeout == '') {#}
+        {#toggleTimeInModal('show');#}
         {#}#}
-        {#});#}
 
-        var pass = '';
+        {#if('{{ isTimeoutAlready }}' == 'true'){#}
+        {#toggleTimeWidget('hide');#}
+        {#}#}
 
-        $('#time-in-button').click(function(){
-            var message = $('#diffip-input-reason').val(), error = false,
-                user_ip =  $('#time-in-button').data('ip'),
-                is_message = undefined, action = $(this).data('action'), pass;
-            if(user_ip == 0){
-                message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
-                if(message == ''){
-                    $('#diffip-input-reason').css({'border-color': '#f44336'});
-                    error = true;
-                }
-                is_message = true;
-                if(error){
-                    return false;
-                }
-            }
-            $('#time-in-button').hide();
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
-            $('.forgot-timeout-modal').hide();
-            var timetoday = "{{ timetoday }}";
-            $.post("{{ path('time_in') }}", {is_message : is_message, message : message }, function(data){
-                console.log(data);
+        if(timeLogCase == 'no-record') {
+
+            toggleTimeInModal('show');
+
+        } else if(timeLogCase == 'timed-in') {
+            console.log(isAutoTimeOut)
+            if(isAutoTimeOut == 'true')
+                _moAutoTimeout.show();
+            else {
                 toggleTimeWidget('show');
-                $('.time-in-container').css({'display' : 'none'});
-                $('.timein-notif-container').css({'top':'0px'});
-                $('.timed-in').css({'display' : 'block'});
-                $('.btn-timeout').show();
-                $('.diff-ip-container').hide();
-                $('.timechip').html("Timed-in at " + timetoday);
-                showBirthday();
-                setTimeout(function(){
-                    $('.timein-notif-container').css({'top' : '-55px'});
-                }, 5000);
-            }).always(function(data){
-                console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
-            }).fail( function() {
-                $('.error-notif-container').css({'top':'0px'});
-                setTimeout(function(){
-                    $('.timein-notif-container').css({'top' : '-55px'});
-                }, 5000);
-            });
+            }
+
+
+        } else if(timeLogCase == 'timed-out') {
+            if(isSameDay != 'true')
+                toggleTimeInModal('show');
+        }
+    }
+
+    console.log("timelogcase: " + timeLogCase);
+    console.log("isAutoTimeOut: " + isAutoTimeOut);
+    console.log("isSameDay: " + isSameDay);
+    console.log("autoTimeOutDate: " + autoTimeOutDate);
+
+    $('.select-emp-tag').select2({
+        placeholder: 'Type name here'
+    });
+    $('#leavetype').material_select();
+    $('.caret').hide();
+    {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
+
+    {#}).always(function(data) {#}
+    {#console.log(data)#}
+    {#var res = parseInt(data);#}
+    {#if(res == 1) {#}
+    {#console.log('ok')#}
+    {#$('.time-in-container').hide();#}
+    {#$('.btn-timeout').show();#}
+    {#$('.timechip').show();#}
+    {#}else{#}
+    {#$('.time-in-container').show();#}
+    {#$('.btn-timeout').hide();#}
+    {#}#}
+    {#});#}
+
+    var pass = '';
+
+    var btnTimeIn = $('#time-in-button');
+    var notifLoader = $('.loader-notif');
+
+    btnTimeIn.click(function(){
+        $('.error-notif-container').css({'top':'-55px'});
+        var message = $('#diffip-input-reason').val(), error = false,
+                user_ip = btnTimeIn.data('ip'),
+                is_message = undefined, action = $(this).data('action'), pass;
+        if(user_ip == 0){
+            message = message.replace(/(?:\r\n|\r|\n)/g, '<br>')
+            if(message == ''){
+                $('#diffip-input-reason').css({'border-color': '#f44336'});
+                error = true;
+            }
+            is_message = true;
+            if(error){
+                return false;
+            }
+        }
+        btnTimeIn.hide();
+        notifLoader.show();
+        notifLoader.css({'top' : '0px'});
+        $('.forgot-timeout-modal').hide();
+        var timetoday = "{{ timetoday }}";
+        $.post("{{ path('time_in') }}",
+                {is_message : is_message, message : message },
+                function(data){
+                    console.log(data);
+                    toggleTimeWidget('show');
+                    _moTimeIn.hide();
+                    $('.timein-notif-container').css({'top':'0px'});
+                    $('.timed-in').css({'display' : 'block'});
+                    $('.btn-timeout').show();
+                    $('.diff-ip-container').hide();
+                    $('.timechip').html("Timed-in at " + timetoday);
+                    showBirthday();
+                    setTimeout(function(){
+                        $('.timein-notif-container').css({'top' : '-55px'});
+                    }, 5000);
+        }).always(function(data){
+            console.log(data);
+            notifLoader.hide();
+            notifLoader.css({'top' : '-55px'});
+        }).fail( function() {
+            btnTimeIn.show();
+            $('.error-notif-container').css({'top':'0px'});
+            setTimeout(function(){
+                $('.timein-notif-container').css({'top' : '-55px'});
+            }, 5000);
         });
+    });
 
-        $('#time-out-button').click(function(){
-            var pass = $('#confirmpw-timeout').val();
-            var isFromForgot = parseInt($(this).data('forgot') || 0);
+    $('#time-out-button').click(function(){
+        var pass = $('#confirmpw-timeout').val();
+        var isFromForgot = parseInt($(this).data('forgot') || 0);
 
-            //check if password is empty
-            if(pass == ''){
-                $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+        //check if password is empty
+        if(pass == ''){
+            $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
+            return;
+        }
+
+        notifLoader.show();
+        notifLoader.css({'top' : '0px'});
+        $('#time-out-button').hide();
+        $('.timeout-cancel').hide();
+        $.post("{{ path('time_out') }}" + pass, function(data){
+            toggleTimeWidget('hide');
+            //validate password
+            if(data == true) {
+                $('#time-out-button').show();
+                $('.timeout-cancel').show();
+                $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
+                $('#errormessage').show();
                 return;
             }
 
-            $('.loader-notif').show();
-            $('.loader-notif').css({'top' : '0px'});
-            $('#time-out-button').hide();
-            $('.timeout-cancel').hide();
-            $.post("{{ path('time_out') }}" + pass, function(data){
-                toggleTimeWidget('hide');
-                //validate password
-                if(data == true) {
-                    $('#time-out-button').show();
-                    $('.timeout-cancel').show();
-                    $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
-                    $('#errormessage').show();
-                    return;
-                }
+            //time out success
+            $('.timeout-container').css({'display' : 'none'});
+            $('.timeout').css({'display' : 'none'});
+            $('.timeout-notif-container').css({'top':'0px'});
+            //                                    $('.timed-in').css({'display' : 'none'});
+            $('.timed-out').css({'display' : 'block'});
+            $('.btn-timeout').css({'display' : 'none'});
+            $('.timechip').hide();
 
-                //time out success
-                $('.timeout-container').css({'display' : 'none'});
-                $('.timeout').css({'display' : 'none'});
-                $('.timeout-notif-container').css({'top':'0px'});
-    //                                    $('.timed-in').css({'display' : 'none'});
-                $('.timed-out').css({'display' : 'block'});
-                $('.btn-timeout').css({'display' : 'none'});
-                $('.timechip').hide();
+            setTimeout(function(){
+                $('.timeout-notif-container').css({'top' : '-55px'});
+            }, 5000);
 
-                setTimeout(function(){
-                    $('.timeout-notif-container').css({'top' : '-55px'});
-                }, 5000);
+            if(isFromForgot) window.location = '/logout';
 
-                if(isFromForgot) window.location = '/logout';
-
-            }).always(function(data){
-                console.log(data);
-                $('.loader-notif').hide();
-                $('.loader-notif').css({'top' : '-55px'});
-            }).fail(function(data){
-                console.log(data);
-                $('.time-in-container').hide();
-                $('.timeout-container').hide();
-                $('.modal-logout-notify-container').show();
-                //                      $('.modal-session-content').show();
-            });
-
+        }).always(function(data){
+            console.log(data);
+            notifLoader.hide();
+            notifLoader.css({'top' : '-55px'});
+        }).fail(function(data){
+            console.log(data);
+            _moTimeIn.hide();
+            $('.timeout-container').hide();
+            $('.modal-logout-notify-container').show();
+            //                      $('.modal-session-content').show();
         });
-    </script>
 
-    {% block customjs %}{% endblock %}
+    });
+
+
+</script>
+
+{% block customjs %}{% endblock %}
 
 </body>
 </html>

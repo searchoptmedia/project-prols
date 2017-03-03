@@ -1,0 +1,698 @@
+{% extends 'AdminBundle::base.html.twig' %}
+
+{% block title %}
+    <title>Propelrr Log-in System| View Requests</title>
+{% endblock %}
+
+{% block body %}
+<section id="main-container">
+    <section id="main-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="page-content" style = "height: 100%;">
+                    <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                        <div class="responsive-nav"><a class="btn-flat">
+                                <i class="material-icons res-menu">reorder</i></a>
+                        </div>
+                        <div class="top-nav-vl"><h3>Request List</h3>
+                            <a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>
+                        </div>
+                    </div>
+                    <div class = "top-nav">
+                        <!-- Dropdown Structure -->
+                        <ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">
+                            <li><a href="#!" id="allbtn">All</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!" id="vacleavebtn">Vacation Leave</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!" id="sickleavebtn">Sick Leave</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!" id="meetingleavebtn">Meeting</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#!" id="diffipbtn">IP Address</a></li>
+                        </ul>
+                        <!-- End of DS -->
+                    </div>
+                    <div class="col-md-12 content" style = "min-height: 300px;">
+                        <table id = "requests" class="bordered highlight">
+                            <thead>
+                            <tr>
+                                <th data-field="meeting-title">Name</th>
+                                <th data-field="price">Category</th>
+                                <th data-field="price">Start Date</th>
+                                <th data-field="price">End Date</th>
+                                <th data-field="name">Status</th>
+                            </tr>
+                            </thead>
+
+                            <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
+                            {% for request in allrequest %}
+                                {% if (request.listRequestTypeId == 4) %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"
+                                        data-reason = "{{ request.request }}" data-title="{{ request.meetingTitle }}" data-type="CREATED">
+                                {% elseif (request.listRequestTypeId == 3) %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}"
+                                        data-reason = "{{ request.request }}" data-emptime="{{ request.empTimeId }}">
+                                {% else %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
+                                {% endif %}
+                                    <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                    <td class="category">{{ request.listRequestType.requestType|upper }}</td>
+                                    <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
+                                    <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
+                                    <td class = "status">
+                                        {% if(request.listRequestTypeId == 4) %}
+                                            {#<button class="btn amber creator" id = "creator" disabled style = "width: 130px;">Creator</button>#}
+                                            <span style = "width: 130px; text-align: center;"><i>Creator</i></span>
+                                        {% else %}
+                                            {% if request.status == 2 %}
+                                                <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                            {% elseif request.status == 3 %}
+                                                <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                            {% elseif request.status == 4 %}
+                                                <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for meeting in taggedRequests %}
+                                <tr class = "request-row" data-empid="{{ meeting.empAccId }}"
+                                    data-id="{{ meeting.id }}" data-request="{{ meeting.getEmpRequest.listRequestTypeId }}"
+                                    data-reason = "{{ meeting.getEmpRequest.request }}" data-title="{{ meeting.getEmpRequest.meetingTitle }}" data-type="TAGGED">
+                                    <td class = "name">{{ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ meeting.getEmpRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                    <td class="category">TAGGED {{ meeting.getEmpRequest.listRequestType.requestType|upper }}</td>
+                                    <td class = "start-date">{{ meeting.getEmpRequest.dateStarted|date('n/d/Y')}}</td>
+                                    <td class = "end-date">{{ meeting.getEmpRequest.dateEnded|date('n/d/Y')}}</td>
+                                    <td class = "status">
+                                        {% if meeting.status == 2 %}
+                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                        {% elseif meeting.status == 3 %}
+                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                        {% elseif meeting.status == 4 %}
+                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+
+    <!----------------------- VIEW EVENT MODAL -------------------------->
+    <div id="view_request_modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="agenda-date">
+                Request &nbsp;&nbsp;
+                <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
+                <div style = "float: right;">
+                    <a class="btn-floating btn-medium orange" id = "edit">
+                        <i class="medium material-icons">mode_edit</i>
+                    </a>
+                    <a class="btn-floating btn-medium red" id = "delete">
+                        <i class="medium material-icons">delete</i>
+                    </a>
+                </div>
+            </h4>
+            <br>
+            <div class="event-form-cont">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
+                        <input type="text" name="req-name" class="req-name" id="req_name" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Start Date</span>
+                        <input type="text" name="start-date" class="start-date datepicker" id="start_date_modal" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">End Date</span>
+                        <input type="text" name="end-date" class="end-date datepicker" id="end_date_modal" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="event-lbl" style = "font-weight: 500;">Reason</span>
+                        <input type="text" name="reason" class="reason" id="reason" readonly>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <input type="hidden" name="emp_id" class="emp_id" id="emp_id">
+            <input type="hidden" name="req_id" class="req_id" id="req_id">
+            <input type="hidden" name="status_modal" class="status_modal" id="status_modal">
+        </div>
+
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="close_modal">Close</a>
+            <a href="#!" class="waves-effect waves-light green custombtn btn-flat save-modal-agenda" id="save_modal" style="margin-right:5px;">Save</a>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+
+    <!----------------------- VIEW MEETING REQUEST MODAL -------------------------->
+    <div id="view_meeting_modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="agenda-date">
+                Request &nbsp;&nbsp;
+                <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
+                <div style = "float: right;">
+                    <a class="btn-floating btn-medium orange" id = "edit">
+                        <i class="medium material-icons">mode_edit</i>
+                    </a>
+                    <a class="btn-floating btn-medium red" id = "delete">
+                        <i class="medium material-icons">delete</i>
+                    </a>
+                </div>
+            </h4>
+            <br>
+            <div class="event-form-cont">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
+                        <input type="text" name="req-name" class="req-name" id="req_name" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Start Date</span>
+                        <input type="text" name="start-date" class="start-date datepicker" id="start_date_modal" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">End Date</span>
+                        <input type="text" name="end-date" class="end-date datepicker" id="end_date_modal" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="event-lbl" style = "font-weight: 500;">Reason</span>
+                        <input type="text" name="reason" class="reason" id="reason" readonly>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <input type="hidden" name="emp_id" class="emp_id" id="emp_id">
+            <input type="hidden" name="req_id" class="req_id" id="req_id">
+            <input type="hidden" name="status_modal" class="status_modal" id="status_modal">
+            <input type="hidden" name="emptime_id" class="emptime_id" id="emptime_id">
+        </div>
+
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="close_modal">Close</a>
+            <a href="#!" class="waves-effect waves-light green custombtn btn-flat save-modal-agenda" id="save_modal" style="margin-right:5px;">Save</a>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+
+    <!----------------------- DELETE EVENT MODAL -------------------------->
+    <div id="delete_event_modal" class="modal">
+        <div class="modal-content">
+            <center>
+                <h4 class="modal-delete-header">
+                    Are you sure you want to delete this request?&nbsp;
+                </h4>
+                <a href="#!" class="waves-effect waves-light red custombtn btn-flat close-modal-agenda" id="delete-btn">Delete</a>
+                &nbsp;&nbsp;&nbsp;
+                <a href="#!" class="waves-effect waves-light green custombtn btn-flat close-modal-agenda" id="delete-btn-retain"
+                   onclick="$('#delete_event_modal').closeModal();">Retain</a>
+            </center>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+
+    <!----------------------- ADMIN REQUEST MODAL -------------------------->
+    <div id="admin_view_modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="agenda-date">
+                Request &nbsp;&nbsp;
+                <span class="btn btn-default" style="font-size: 16px;" id="admin_request_type"></span>
+            </h4>
+            <br>
+            <div class="event-form-cont">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
+                        <input type="text" name="req-name" class="req-name" id="admin_req_name" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">Start Date</span>
+                        <input type="text" name="start-date" class="start-date datepicker" id="admin_start_date_modal" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <span class="event-lbl" style = "font-weight: 500;">End Date</span>
+                        <input type="text" name="end-date" class="end-date datepicker" id="admin_end_date_modal" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="event-lbl" style = "font-weight: 500;">Reason</span>
+                        <input type="text" name="admin_reason" class="admin_reason" id="admin_reason" readonly>
+                    </div>
+                </div>
+
+                <div class = "row">
+                    <div class = "col-md-12">
+                        <span class="event-lbl" style = "font-weight: 500;">Comment </span>
+                        <input class="admin_comment" id = "admin_comment" placeholder="Type your reason for accepting or declining here...">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <input type="hidden" name="emp_id" class="emp_id" id="admin_emp_id">
+            <input type="hidden" name="req_id" class="req_id" id="admin_req_id">
+            <input type="hidden" name="admin_id" class="admin_id" id="admin_id">
+            <input type="hidden" name="status_modal" class="status_modal" id="admin_status_modal">
+            <input type="hidden" name="emptime_id" class="emptime_id" id="emptime_id">
+        </div>
+        <div class="modal-footer">
+            <a class="waves-effect waves-light grey custombtn btn-flat admin_cancel">Cancel</a>
+            <a class="waves-effect waves-light blue custombtn btn-flat admin_consider" style="margin-right:5px;">Reconsider</a>
+            <a class="waves-effect waves-light red custombtn btn-flat admin_decline" style="margin-right:5px;">Decline</a>
+            <a class="waves-effect waves-light green custombtn btn-flat admin_accept" style="margin-right:5px;">Accept</a>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+
+
+{% endblock %}
+
+{% block customjs %}
+ <script type="text/javascript">
+     var rows = document.getElementById("requests").rows;
+     var view_modal = $('#view_request_modal');
+     var delete_modal = $('#delete_event_modal');
+     var name_modal = $("#req_name");
+     var reason_modal = $("#reason");
+     var category_modal = $("#request_type");
+     var start_modal = $("#start_date_modal");
+     var end_modal = $("#end_date_modal");
+     var empid = $("#emp_id");
+     var reqid = $("#req_id");
+     var editBtn = $("#edit");
+     var deleteBtn = $("#delete");
+     var saveBtn = $("#save_modal");
+     var picker = null, picker2 = null;
+     var declineBar = $('.decline-request-notif');
+     var statusModal = $("#status_modal");
+     var role, count;
+     var admin_modal = $("#admin_view_modal");
+     var admin_name_modal = $("#admin_req_name");
+     var admin_category_modal = $("#admin_request_type");
+     var admin_reason_modal = $("#admin_reason");
+     var admin_start_modal = $("#admin_start_date_modal");
+     var admin_end_modal = $("#admin_end_date_modal");
+     var admin_comment_modal = $("#admin_comment");
+     var emptime_id = $("#emptime_id");
+     var admin_empid = $("#admin_emp_id");
+     var admin_reqid = $("#admin_req_id");
+     var admin_status = $("#admin_status_modal");
+     var cancel = $(".admin_cancel");
+     var decline = $(".admin_decline");
+     var accept = $(".admin_accept");
+     var consider = $(".admin_consider");
+     var admin_id_modal = $("#admin_id");
+     var badge = $('span.reqcount');
+     var changed = false;
+     var prevStatus;
+
+     $(document).on("click", "#allbtn", function () {
+         modifyElements(0);
+     });
+
+     $(document).on("click", "#vacleavebtn", function () {
+         modifyElements(2);
+     });
+
+     $(document).on("click", "#sickleavebtn", function () {
+        modifyElements(1);
+     });
+
+     $(document).on("click", "#meetingleavebtn", function () {
+         modifyElements(4);
+     });
+
+     $(document).on("click", "#diffipbtn", function () {
+         modifyElements(3);
+     });
+
+     function recountPending(){
+         count = $('button.pending').length;
+         badge.text(count);
+     }
+
+     function modifyElements(typeId) {
+         for (var i = 1; i < rows.length; i++) {
+             var row = $(rows[i]);
+             if (row.data("request") == typeId) {
+                 row.show();
+             } else if (typeId == 0) {
+                 row.show();
+             } else {
+                 row.hide();
+             }
+         }
+     }
+
+     $(document).on("click", "#close_modal", function () {
+         if (picker != null)
+             picker.destroy();
+         if (picker2 != null)
+             picker2.destroy();
+
+         view_modal.closeModal();
+     });
+
+     $(document).on("click", ".admin_cancel", function () {
+         resetAdminModal();
+         admin_modal.closeModal();
+     });
+
+     $(document).on("click", "#save_modal", function () {
+         var validate = checkFields(elements = [reason_modal]);
+         if (validate == true) // true == there are errors
+             return;
+
+         var requestId = reqid.val();
+         var startDate = start_modal.val();
+         var endDate = end_modal.val();
+
+         data = {
+             emp_id: empid.val(),
+             req_id: requestId,
+             start_date: startDate,
+             end_date: endDate,
+             category: category_modal.text(),
+             status: statusModal.val(),
+             reason: reason_modal.val()
+         };
+
+         callback = function (data) {
+             picker.destroy();
+             picker2.destroy();
+             view_modal.closeModal();
+         };
+
+         done = function (data) {
+             if (data["result"]) {
+                 row = $('tr.request-row[data-id="' + requestId + '"]');
+                 start_date_row = row.find("td.start-date");
+                 end_date_row = row.find("td.end-date");
+                 row.data("reason", reason_modal.val());
+                 start_date_row.html(startDate);
+                 end_date_row.html(endDate);
+
+                 showLoadingBar(data["result"]);
+             } else if (data["error"]) {
+                 // error
+                 showErrorBar(data["error"]);
+             }
+         };
+
+         always = function (data) {
+             //
+         };
+
+         post(saveBtn, "{{ path('edit_request') }}", data, callback, done, always);
+     });
+
+     $(document).on("click", "#delete", function () {
+         delete_modal.openModal();
+         view_modal.closeModal();
+     });
+
+     $(document).on("click", "#delete-btn-retain", function () {
+         delete_modal.closeModal();
+         view_modal.openModal();
+     });
+
+     $(document).on("click", "#delete-btn", function () {
+         var requestId = reqid.val();
+         data = { req_id: requestId, category: category_modal.text() };
+         callback = function (data) {
+             delete_modal.closeModal();
+         };
+
+         done = function (data) {
+             if (data["result"]) {
+                 $('tr.request-row[data-id="' + requestId + '"]').remove();
+                 showSuccessBar(data["result"]);
+             } else if (data["error"]) {
+                 // error
+                 showErrorBar(data["error"]);
+             }
+             recountPending();
+         };
+
+         always = function (data) {};
+         post(deleteBtn, "{{ path('delete_request') }}", data, callback, done, always);
+     });
+
+     $(document).on("click", ".request-row", function () {
+         var tbody = $(this).closest("tbody");
+         role = tbody.data("role");
+         adminid = tbody.data("id");
+         getValues($(this), role, adminid);
+     });
+
+     $(document).on("click", "#edit", function () {
+         reason_modal.attr("readonly", false);
+         saveBtn.show();
+
+         if(category_modal.val() != 3) {
+             picker2 = new Pikaday({
+                 field: document.querySelector('#end_date_modal'),
+                 maxDate: new Date(2020, 12, 31),
+                 yearRange: [2000, 2020],
+                 format: 'MM/DD/YYYY'
+             });
+
+             picker = new Pikaday({
+                 field: document.querySelector('#start_date_modal'),
+                 onSelect: function () {
+                     picker2.hide();
+                     if (picker.getDate != '') {
+                         picker.setStartRange(picker.getDate());
+                         picker.setEndRange(picker2.getDate());
+                         picker2.setStartRange(picker.getDate());
+                         picker2.show();
+                         picker2.setMinDate(picker.getDate());
+                     }
+                 },
+                 minDate: new Date(),
+                 maxDate: new Date(2020, 12, 31),
+                 yearRange: [2000, 2020],
+                 format: 'MM/DD/YYYY'
+             });
+         }
+     });
+
+     $(document).on("click", ".admin_consider", function () {
+         changed = true;
+         admin_comment_modal.attr("disabled", false);
+         decline.show();
+         accept.show();
+         cancel.show();
+         consider.hide();
+     });
+
+     $(document).on("click", ".admin_accept", function () {
+         if (changed)
+             isChanged = "CHANGED";
+         else isChanged = "NOT CHANGED";
+         changed = false;
+         changeStatus(3, isChanged, accept);
+     });
+
+     $(document).on("click", ".admin_decline", function () {
+         if (changed)
+             isChanged = "CHANGED";
+         else isChanged = "NOT CHANGED";
+         changed = false;
+         changeStatus(4, isChanged, decline);
+     });
+
+     function changeStatus(currStatus, isChanged, button) {
+         elements = [admin_comment_modal];
+         var validate = checkFields(elements);
+         if (validate == true) // true == there are errors
+             return;
+
+         admin_comment_modal.attr("disabled", true);
+         accept.attr("disabled", true);
+         decline.attr("disabled", true);
+
+         adminId = admin_id_modal.val();
+         empId   = admin_empid.val();
+         reqid = admin_reqid.val();
+
+         data = {
+             adminid: adminId,
+             empId: empId,
+             reqid: reqid,
+             emptimeid: emptime_id.val(),
+             requestname: admin_category_modal.text(),
+             requesttype: admin_category_modal.val(),
+             datestart: admin_start_modal.val(),
+             dateend: admin_end_modal.val(),
+             comment: admin_comment_modal.val(),
+             status: currStatus,
+             isChanged: isChanged,
+             reason: admin_reason_modal.val(),
+             prevstatus: prevStatus
+         };
+
+         callback = function(data){
+             resetAdminModal();
+             admin_modal.closeModal();
+         };
+
+         done = function(data){
+             if(data["result"]){
+                 request_row = $('tr.request-row[data-id="' + reqid + '"]');
+                 status_row = request_row.find("td.status button");
+                 if (currStatus == 3) {
+                     status_row.html('Approved');
+                     status_row.attr('class', 'btn green');
+                     status_row.attr('id', 'accepted');
+                 } else {
+                     status_row.html('Declined');
+                     status_row.attr('class', 'btn red');
+                     status_row.attr('id', 'declined');
+                     declineBar.css({'top': '0px'});
+                 }
+                 showSuccessBar(data["result"]);
+                 accept.attr("disabled", false);
+                 decline.attr("disabled", false);
+                 recountPending();
+             } else {
+                 showErrorBar(data["error"]);
+                 recountPending();
+             }
+         }
+
+         always = function (data) {};
+         post(button, "{{ path('change_status') }}", data, callback, done, always);
+     }
+
+     function getValues(request_row, role, adminid) {
+         emptimeid = -1;
+         emptimeid = request_row.data("emptime");
+         emp_id = request_row.data("empid");
+         request_id = request_row.data("id");
+         desc = request_row.data("reason");
+         request = request_row.data("request");
+         name = request_row.find("td.name").html();
+         category = request_row.find("td.category").html();
+         start_date = request_row.find("td.start-date").html();
+         end_date = request_row.find("td.end-date").html();
+
+         if(request != 4) {
+             // If not meeting request
+             status = request_row.find("td.status button").html();
+             if(status == "Pending")
+                 status = 2;
+             else if (status == "Approved")
+                 status = 3;
+             else status = 4;
+
+             prevStatus = status;
+
+             if (role == "ADMIN") {
+                 initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid, request, emptimeid);
+             } else {
+                 initModal(emp_id, request_id, name, category, start_date, end_date, status, desc, request, emptimeid);
+             }
+         } else {
+             // if meeting request
+             type = request_row.data("type"); // whether creator or tagged
+             if(type == 'CREATOR') {
+                 // show creator view modal
+             } else {
+                 // show tagged view modal
+             }
+         }
+     }
+
+     function initAdminModal(emp_id, request_id, name, category, start_date, end_date, status, desc, adminid, request_type, emptimeid){
+         emptime_id.val(emptimeid);
+         admin_name_modal.val(name);
+         admin_category_modal.text(category);
+         admin_category_modal.val(request_type);
+         admin_start_modal.val(start_date);
+         admin_end_modal.val(end_date);
+         admin_empid.val(emp_id);
+         admin_reqid.val(request_id);
+         admin_status.val(status);
+         admin_reason_modal.val(desc);
+         admin_id_modal.val(adminid);
+
+         if (status == 2) {
+             admin_comment_modal.attr("disabled", false);
+             decline.show();
+             accept.show();
+             cancel.show();
+             consider.hide();
+         } else {
+             admin_comment_modal.attr("disabled", true);
+             decline.hide();
+             accept.hide();
+             cancel.show();
+             consider.show();
+         }
+
+         admin_modal.openModal();
+     }
+
+     function initModal(emp_id, request_id, name, category, start_date, end_date, status, desc, request_type, emptimeid) {
+         emptime_id.val(emptimeid);
+         name_modal.val(name);
+         category_modal.text(category);
+         category_modal.val(request_type);
+         start_modal.val(start_date);
+         end_modal.val(end_date);
+         empid.val(emp_id);
+         reqid.val(request_id);
+         statusModal.val(status);
+         reason_modal.val(desc);
+
+         if (status == 2) {
+             editBtn.show();
+             deleteBtn.show();
+         } else {
+             editBtn.hide();
+             deleteBtn.hide();
+         }
+
+         saveBtn.hide();
+         view_modal.openModal();
+     }
+
+     function resetAdminModal(){
+         admin_comment_modal.val('');
+         changed = false;
+     }
+
+ </script>
+{% endblock %}

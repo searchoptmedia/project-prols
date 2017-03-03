@@ -50,7 +50,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
     /**
      * The value for the status field.
-     * @var        string
+     * @var        int
      */
     protected $status;
 
@@ -99,7 +99,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
     /**
      * Get the [status] column value.
      * 
-     * @return string
+     * @return int
      */
     public function getStatus()
     {
@@ -152,13 +152,13 @@ abstract class BaseListIp extends BaseObject implements Persistent
     /**
      * Set the value of [status] column.
      * 
-     * @param  string $v new value
+     * @param  int $v new value
      * @return ListIp The current object (for fluent API support)
      */
     public function setStatus($v)
     {
-        if ($v !== null) {
-            $v = (string) $v;
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
         }
 
         if ($this->status !== $v) {
@@ -204,7 +204,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
 
             $this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
             $this->allowed_ip = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-            $this->status = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+            $this->status = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -453,7 +453,7 @@ abstract class BaseListIp extends BaseObject implements Persistent
                         $stmt->bindValue($identifier, $this->allowed_ip, PDO::PARAM_STR);
                         break;
                     case '`status`':						
-                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_STR);
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                 }
             }

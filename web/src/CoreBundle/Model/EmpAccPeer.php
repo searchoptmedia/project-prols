@@ -26,10 +26,11 @@ class EmpAccPeer extends BaseEmpAccPeer{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
-		
-	$_self = self::doSelect($c);
 
-	return $_self ? $_self : array();
+        $c->add(self::STATUS, 1, Criteria::EQUAL);
+        $result = self::doSelect($c);
+
+        return $result ? $result : array();
 	}
 
 	public static function getUserByEmail($email, Criteria $c = null)
@@ -41,7 +42,7 @@ class EmpAccPeer extends BaseEmpAccPeer{
 		$c->add(self::EMAIL, $email, Criteria::EQUAL);
 		$result = self::doCount($c);
 
-		return $result;
+		return $result ? $result : null;
 	}
 	
 
@@ -56,6 +57,7 @@ class EmpAccPeer extends BaseEmpAccPeer{
 
 		return $result;
 	}
+
 	public static function getAdminInfo(Criteria $c = null)
 	{
 		if(is_null($c)){

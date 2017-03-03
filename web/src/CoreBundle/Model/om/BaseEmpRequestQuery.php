@@ -29,6 +29,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequestQuery orderByListRequestTypeId($order = Criteria::ASC) Order by the list_request_type_id column
  * @method EmpRequestQuery orderByAdminId($order = Criteria::ASC) Order by the admin_id column
  * @method EmpRequestQuery orderByEmpTimeId($order = Criteria::ASC) Order by the emp_time_id column
+ * @method EmpRequestQuery orderByMeetingTitle($order = Criteria::ASC) Order by the meeting_title column
  *
  * @method EmpRequestQuery groupById() Group by the id column
  * @method EmpRequestQuery groupByRequest() Group by the request column
@@ -39,6 +40,7 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequestQuery groupByListRequestTypeId() Group by the list_request_type_id column
  * @method EmpRequestQuery groupByAdminId() Group by the admin_id column
  * @method EmpRequestQuery groupByEmpTimeId() Group by the emp_time_id column
+ * @method EmpRequestQuery groupByMeetingTitle() Group by the meeting_title column
  *
  * @method EmpRequestQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EmpRequestQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -64,23 +66,25 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpRequest findOneOrCreate(PropelPDO $con = null) Return the first EmpRequest matching the query, or a new EmpRequest object populated from the query conditions when no match is found
  *
  * @method EmpRequest findOneByRequest(string $request) Return the first EmpRequest filtered by the request column
- * @method EmpRequest findOneByStatus(string $status) Return the first EmpRequest filtered by the status column
+ * @method EmpRequest findOneByStatus(int $status) Return the first EmpRequest filtered by the status column
  * @method EmpRequest findOneByDateStarted(string $date_started) Return the first EmpRequest filtered by the date_started column
  * @method EmpRequest findOneByDateEnded(string $date_ended) Return the first EmpRequest filtered by the date_ended column
  * @method EmpRequest findOneByEmpAccId(int $emp_acc_id) Return the first EmpRequest filtered by the emp_acc_id column
  * @method EmpRequest findOneByListRequestTypeId(int $list_request_type_id) Return the first EmpRequest filtered by the list_request_type_id column
  * @method EmpRequest findOneByAdminId(int $admin_id) Return the first EmpRequest filtered by the admin_id column
  * @method EmpRequest findOneByEmpTimeId(int $emp_time_id) Return the first EmpRequest filtered by the emp_time_id column
+ * @method EmpRequest findOneByMeetingTitle(string $meeting_title) Return the first EmpRequest filtered by the meeting_title column
  *
  * @method array findById(int $id) Return EmpRequest objects filtered by the id column
  * @method array findByRequest(string $request) Return EmpRequest objects filtered by the request column
- * @method array findByStatus(string $status) Return EmpRequest objects filtered by the status column
+ * @method array findByStatus(int $status) Return EmpRequest objects filtered by the status column
  * @method array findByDateStarted(string $date_started) Return EmpRequest objects filtered by the date_started column
  * @method array findByDateEnded(string $date_ended) Return EmpRequest objects filtered by the date_ended column
  * @method array findByEmpAccId(int $emp_acc_id) Return EmpRequest objects filtered by the emp_acc_id column
  * @method array findByListRequestTypeId(int $list_request_type_id) Return EmpRequest objects filtered by the list_request_type_id column
  * @method array findByAdminId(int $admin_id) Return EmpRequest objects filtered by the admin_id column
  * @method array findByEmpTimeId(int $emp_time_id) Return EmpRequest objects filtered by the emp_time_id column
+ * @method array findByMeetingTitle(string $meeting_title) Return EmpRequest objects filtered by the meeting_title column
  */
 abstract class BaseEmpRequestQuery extends ModelCriteria
 {
@@ -186,7 +190,7 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id` FROM `emp_request` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id`, `meeting_title` FROM `emp_request` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -351,24 +355,37 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
-     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
      * </code>
      *
-     * @param     string $status The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return EmpRequestQuery The current query, for fluid interface
      */
     public function filterByStatus($status = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($status)) {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(EmpRequestPeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(EmpRequestPeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $status)) {
-                $status = str_replace('*', '%', $status);
-                $comparison = Criteria::LIKE;
             }
         }
 
@@ -633,6 +650,35 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpRequestPeer::EMP_TIME_ID, $empTimeId, $comparison);
+    }
+
+    /**
+     * Filter the query on the meeting_title column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByMeetingTitle('fooValue');   // WHERE meeting_title = 'fooValue'
+     * $query->filterByMeetingTitle('%fooValue%'); // WHERE meeting_title LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $meetingTitle The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpRequestQuery The current query, for fluid interface
+     */
+    public function filterByMeetingTitle($meetingTitle = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($meetingTitle)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $meetingTitle)) {
+                $meetingTitle = str_replace('*', '%', $meetingTitle);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpRequestPeer::MEETING_TITLE, $meetingTitle, $comparison);
     }
 
     /**

@@ -50,13 +50,15 @@ class EmpProfileTableMap extends TableMap
         $this->addColumn('bday', 'Bday', 'TIMESTAMP', true, null, null);
         $this->addColumn('address', 'Address', 'VARCHAR', true, 45, null);
         $this->addColumn('gender', 'Gender', 'VARCHAR', true, 10, null);
-        $this->addColumn('img_path', 'ImgPath', 'VARCHAR', true, 45, null);
+        $this->addColumn('img_path', 'ImgPath', 'VARCHAR', true, 50, null);
         $this->addColumn('date_joined', 'DateJoined', 'TIMESTAMP', true, null, null);
         $this->addColumn('emp_num', 'EmployeeNumber', 'VARCHAR', true, 45, null);
         $this->addForeignKey('list_dept_id', 'ListDeptDeptId', 'INTEGER', 'list_dept', 'id', true, null, null);
         $this->addForeignKey('list_pos_id', 'ListPosPosId', 'INTEGER', 'list_pos', 'id', true, null, null);
-        $this->addColumn('status', 'Status', 'VARCHAR', true, 45, null);
-        $this->addColumn('profile_status', 'ProfileStatus', 'INTEGER', true, null, null);
+        $this->addForeignKey('status', 'Status', 'INTEGER', 'emp_status_type', 'id', true, null, null);
+        $this->addColumn('sss', 'Sss', 'VARCHAR', false, 45, null);
+        $this->addColumn('bir', 'Bir', 'VARCHAR', false, 45, null);
+        $this->addColumn('philhealth', 'Philhealth', 'VARCHAR', false, 45, null);
         // validators
     } // initialize()
 
@@ -68,6 +70,7 @@ class EmpProfileTableMap extends TableMap
         $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('emp_acc_acc_id' => 'id', ), null, null);
         $this->addRelation('ListDept', 'CoreBundle\\Model\\ListDept', RelationMap::MANY_TO_ONE, array('list_dept_id' => 'id', ), null, null);
         $this->addRelation('ListPos', 'CoreBundle\\Model\\ListPos', RelationMap::MANY_TO_ONE, array('list_pos_id' => 'id', ), null, null);
+        $this->addRelation('EmpStatusType', 'CoreBundle\\Model\\EmpStatusType', RelationMap::MANY_TO_ONE, array('status' => 'id', ), null, null);
         $this->addRelation('EmpContact', 'CoreBundle\\Model\\EmpContact', RelationMap::ONE_TO_MANY, array('id' => 'emp_profile_id', ), null, null, 'EmpContacts');
     } // buildRelations()
 

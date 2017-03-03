@@ -31,11 +31,11 @@ use CoreBundle\Model\ListIpQuery;
  * @method ListIp findOneOrCreate(PropelPDO $con = null) Return the first ListIp matching the query, or a new ListIp object populated from the query conditions when no match is found
  *
  * @method ListIp findOneByAllowedIp(string $allowed_ip) Return the first ListIp filtered by the allowed_ip column
- * @method ListIp findOneByStatus(string $status) Return the first ListIp filtered by the status column
+ * @method ListIp findOneByStatus(int $status) Return the first ListIp filtered by the status column
  *
  * @method array findById(int $id) Return ListIp objects filtered by the id column
  * @method array findByAllowedIp(string $allowed_ip) Return ListIp objects filtered by the allowed_ip column
- * @method array findByStatus(string $status) Return ListIp objects filtered by the status column
+ * @method array findByStatus(int $status) Return ListIp objects filtered by the status column
  */
 abstract class BaseListIpQuery extends ModelCriteria
 {
@@ -306,24 +306,37 @@ abstract class BaseListIpQuery extends ModelCriteria
      *
      * Example usage:
      * <code>
-     * $query->filterByStatus('fooValue');   // WHERE status = 'fooValue'
-     * $query->filterByStatus('%fooValue%'); // WHERE status LIKE '%fooValue%'
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
      * </code>
      *
-     * @param     string $status The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return ListIpQuery The current query, for fluid interface
      */
     public function filterByStatus($status = null, $comparison = null)
     {
-        if (null === $comparison) {
-            if (is_array($status)) {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(ListIpPeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(ListIpPeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $status)) {
-                $status = str_replace('*', '%', $status);
-                $comparison = Criteria::LIKE;
             }
         }
 

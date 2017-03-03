@@ -3,7 +3,6 @@
 namespace CoreBundle\Model;
 
 use CoreBundle\Model\om\BaseEmpProfilePeer;
-
 use \Criteria;
 
 class EmpProfilePeer extends BaseEmpProfilePeer{
@@ -16,19 +15,21 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 
 		$_self = self::doSelectOne($c);
 
-		return $_self ? $_self : null;
+		return $_self ? $_self : array();
 
 	}
 
-	public static function getAllProfile(Criteria $c = null)
+	public static function getAllProfile($status = 1, Criteria $c = null)
 	{
-		if(is_null($c)){
+	    if(is_null($c)){
 			$c = new Criteria();
 		}
-		
-	$_self = self::doSelect($c);
 
-	return $_self ? $_self : array();
+		$c->addJoin(self::EMP_ACC_ACC_ID, EmpAccPeer::ID);
+        $c->add(EmpAccPeer::STATUS, $status, Criteria::EQUAL);
+        $_self = self::doSelect($c);
+
+        return $_self ? $_self : array();
 	}
 
 	public static function getEmployeeTime(Criteria $c = null){
@@ -41,6 +42,7 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 		
 		return $record ? $record : array();
 	}
+
 	public static function getEmployeeList(Criteria $c = null)
 	{
 		if(is_null($c)){
@@ -51,4 +53,13 @@ class EmpProfilePeer extends BaseEmpProfilePeer{
 		return $rec;
 
 	}
+
+    public static function getEmpStatus(Criteria $c = null) {
+        if(is_null($c)){
+            $c = new Criteria();
+        }
+
+        $status = EmpStatusType::getEmpStatus(self::STATUS);
+        return $status;
+    }
 }

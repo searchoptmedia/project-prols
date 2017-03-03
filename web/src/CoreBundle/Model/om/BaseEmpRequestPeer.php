@@ -31,13 +31,13 @@ abstract class BaseEmpRequestPeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\EmpRequestTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 10;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /** the column name for the id field */
     const ID = 'emp_request.id';
@@ -66,6 +66,9 @@ abstract class BaseEmpRequestPeer
     /** the column name for the emp_time_id field */
     const EMP_TIME_ID = 'emp_request.emp_time_id';
 
+    /** the column name for the meeting_title field */
+    const MEETING_TITLE = 'emp_request.meeting_title';
+
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
 
@@ -85,12 +88,12 @@ abstract class BaseEmpRequestPeer
      * e.g. EmpRequestPeer::$fieldNames[EmpRequestPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'Request', 'Status', 'DateStarted', 'DateEnded', 'EmpAccId', 'ListRequestTypeId', 'AdminId', 'EmpTimeId', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'request', 'status', 'dateStarted', 'dateEnded', 'empAccId', 'listRequestTypeId', 'adminId', 'empTimeId', ),
-        BasePeer::TYPE_COLNAME => array (EmpRequestPeer::ID, EmpRequestPeer::REQUEST, EmpRequestPeer::STATUS, EmpRequestPeer::DATE_STARTED, EmpRequestPeer::DATE_ENDED, EmpRequestPeer::EMP_ACC_ID, EmpRequestPeer::LIST_REQUEST_TYPE_ID, EmpRequestPeer::ADMIN_ID, EmpRequestPeer::EMP_TIME_ID, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'REQUEST', 'STATUS', 'DATE_STARTED', 'DATE_ENDED', 'EMP_ACC_ID', 'LIST_REQUEST_TYPE_ID', 'ADMIN_ID', 'EMP_TIME_ID', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'request', 'status', 'date_started', 'date_ended', 'emp_acc_id', 'list_request_type_id', 'admin_id', 'emp_time_id', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'Request', 'Status', 'DateStarted', 'DateEnded', 'EmpAccId', 'ListRequestTypeId', 'AdminId', 'EmpTimeId', 'MeetingTitle', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'request', 'status', 'dateStarted', 'dateEnded', 'empAccId', 'listRequestTypeId', 'adminId', 'empTimeId', 'meetingTitle', ),
+        BasePeer::TYPE_COLNAME => array (EmpRequestPeer::ID, EmpRequestPeer::REQUEST, EmpRequestPeer::STATUS, EmpRequestPeer::DATE_STARTED, EmpRequestPeer::DATE_ENDED, EmpRequestPeer::EMP_ACC_ID, EmpRequestPeer::LIST_REQUEST_TYPE_ID, EmpRequestPeer::ADMIN_ID, EmpRequestPeer::EMP_TIME_ID, EmpRequestPeer::MEETING_TITLE, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'REQUEST', 'STATUS', 'DATE_STARTED', 'DATE_ENDED', 'EMP_ACC_ID', 'LIST_REQUEST_TYPE_ID', 'ADMIN_ID', 'EMP_TIME_ID', 'MEETING_TITLE', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'request', 'status', 'date_started', 'date_ended', 'emp_acc_id', 'list_request_type_id', 'admin_id', 'emp_time_id', 'meeting_title', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -100,12 +103,12 @@ abstract class BaseEmpRequestPeer
      * e.g. EmpRequestPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Request' => 1, 'Status' => 2, 'DateStarted' => 3, 'DateEnded' => 4, 'EmpAccId' => 5, 'ListRequestTypeId' => 6, 'AdminId' => 7, 'EmpTimeId' => 8, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'request' => 1, 'status' => 2, 'dateStarted' => 3, 'dateEnded' => 4, 'empAccId' => 5, 'listRequestTypeId' => 6, 'adminId' => 7, 'empTimeId' => 8, ),
-        BasePeer::TYPE_COLNAME => array (EmpRequestPeer::ID => 0, EmpRequestPeer::REQUEST => 1, EmpRequestPeer::STATUS => 2, EmpRequestPeer::DATE_STARTED => 3, EmpRequestPeer::DATE_ENDED => 4, EmpRequestPeer::EMP_ACC_ID => 5, EmpRequestPeer::LIST_REQUEST_TYPE_ID => 6, EmpRequestPeer::ADMIN_ID => 7, EmpRequestPeer::EMP_TIME_ID => 8, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'REQUEST' => 1, 'STATUS' => 2, 'DATE_STARTED' => 3, 'DATE_ENDED' => 4, 'EMP_ACC_ID' => 5, 'LIST_REQUEST_TYPE_ID' => 6, 'ADMIN_ID' => 7, 'EMP_TIME_ID' => 8, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'request' => 1, 'status' => 2, 'date_started' => 3, 'date_ended' => 4, 'emp_acc_id' => 5, 'list_request_type_id' => 6, 'admin_id' => 7, 'emp_time_id' => 8, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Request' => 1, 'Status' => 2, 'DateStarted' => 3, 'DateEnded' => 4, 'EmpAccId' => 5, 'ListRequestTypeId' => 6, 'AdminId' => 7, 'EmpTimeId' => 8, 'MeetingTitle' => 9, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'request' => 1, 'status' => 2, 'dateStarted' => 3, 'dateEnded' => 4, 'empAccId' => 5, 'listRequestTypeId' => 6, 'adminId' => 7, 'empTimeId' => 8, 'meetingTitle' => 9, ),
+        BasePeer::TYPE_COLNAME => array (EmpRequestPeer::ID => 0, EmpRequestPeer::REQUEST => 1, EmpRequestPeer::STATUS => 2, EmpRequestPeer::DATE_STARTED => 3, EmpRequestPeer::DATE_ENDED => 4, EmpRequestPeer::EMP_ACC_ID => 5, EmpRequestPeer::LIST_REQUEST_TYPE_ID => 6, EmpRequestPeer::ADMIN_ID => 7, EmpRequestPeer::EMP_TIME_ID => 8, EmpRequestPeer::MEETING_TITLE => 9, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'REQUEST' => 1, 'STATUS' => 2, 'DATE_STARTED' => 3, 'DATE_ENDED' => 4, 'EMP_ACC_ID' => 5, 'LIST_REQUEST_TYPE_ID' => 6, 'ADMIN_ID' => 7, 'EMP_TIME_ID' => 8, 'MEETING_TITLE' => 9, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'request' => 1, 'status' => 2, 'date_started' => 3, 'date_ended' => 4, 'emp_acc_id' => 5, 'list_request_type_id' => 6, 'admin_id' => 7, 'emp_time_id' => 8, 'meeting_title' => 9, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -188,6 +191,7 @@ abstract class BaseEmpRequestPeer
             $criteria->addSelectColumn(EmpRequestPeer::LIST_REQUEST_TYPE_ID);
             $criteria->addSelectColumn(EmpRequestPeer::ADMIN_ID);
             $criteria->addSelectColumn(EmpRequestPeer::EMP_TIME_ID);
+            $criteria->addSelectColumn(EmpRequestPeer::MEETING_TITLE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.request');
@@ -198,6 +202,7 @@ abstract class BaseEmpRequestPeer
             $criteria->addSelectColumn($alias . '.list_request_type_id');
             $criteria->addSelectColumn($alias . '.admin_id');
             $criteria->addSelectColumn($alias . '.emp_time_id');
+            $criteria->addSelectColumn($alias . '.meeting_title');
         }
     }
 

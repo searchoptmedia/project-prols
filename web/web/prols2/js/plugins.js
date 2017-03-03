@@ -532,7 +532,7 @@ $(function() {
                 var calendar = $('#calendar').fullCalendar({
                     events:
                         {
-                            url: '/addevent/acceptrequest',
+                            url: '/main/addevent/acceptrequest',
                         },
 
                     eventClick: function(calEvent){
@@ -540,31 +540,25 @@ $(function() {
                     },
 
                     dayClick: function(date){
-                     console.log(moment(date).format('MM-DD-YYYY'));
                         $('.agenda-list ul').remove();
                         $(".agenda-list").append('<ul class="collection agenda-list"></ul>');
 
                         $('#calendar').fullCalendar('clientEvents', function (event) {
-                            if (moment(date).format('MM-DD-YYYY') == moment(event.start).format('MM-DD-YYYY')){
-                                $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.requesttype +'</span><p>'+ event.empname +'</p></li>');
+                            if (moment(date).format('MM-DD-YYYY') >= moment(event.start).format('MM-DD-YYYY') &&
+                                moment(date).format('MM-DD-YYYY') <= moment(event.end).format('MM-DD-YYYY')){
+                                if(event.type == "request") {
+                                    $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>'+ event.requesttype +'</span><p>'+ event.empname +'</p></li>');
+                                } else if (event.type = "event") {
+                                    $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">grade</i><span>'+ event.eventType +'</span><p>'+ event.eventName +'</p></li>');
+                                }
                             }
-                            if (moment(date).format('MM-DD-YYYY') == moment(event._end).format('MM-DD-YYYY')){
-
-                            }
-
                         });
 
-                        $('#daily_agenda').openModal();
-                        $('.agenda-date').html("Daily Agenda - " + date.format('MMMM DD, YYYY'));
-                        $('.start-date').val('');
-                        $('.end-date').val('');
-                        $('#reason-leave-sbt').val('');
-                        $('#leavetype').val('');
-                        $('.form-reqleave').hide();
-                        $('.form-reqmeeting').hide();
-                        $('.btn-submitleave').hide();
-                        
-                        
+                        hideForms();
+                        agendaList.show();
+                        dailyAgendaModal.openModal();
+                        agendaDate.html(date.format('MMMM DD, YYYY'));
+                        agendaDateDiffFormat.html(date.format('YYYY-MM-DD'));
                     },
 
                     header: {
@@ -573,7 +567,7 @@ $(function() {
                         right: 'month,agendaWeek,agendaDay'
                     },
                     editable: true,
-                    eventSources: {url: "assets/ajax_fullcalendar.php"},
+                    //eventSources: {url: "/assets/ajax_fullcalendar.php"},
                     droppable: true,
                     selectable: true,
                     

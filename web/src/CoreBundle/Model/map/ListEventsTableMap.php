@@ -46,7 +46,7 @@ class ListEventsTableMap extends TableMap
         $this->addColumn('date', 'Date', 'TIMESTAMP', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 45, null);
         $this->addColumn('desc', 'Description', 'LONGVARCHAR', true, 1000, null);
-        $this->addColumn('type', 'Type', 'VARCHAR', true, 45, null);
+        $this->addForeignKey('type', 'Type', 'INTEGER', 'list_events_type', 'id', true, null, null);
         // validators
     } // initialize()
 
@@ -55,6 +55,7 @@ class ListEventsTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('ListEventsType', 'CoreBundle\\Model\\ListEventsType', RelationMap::MANY_TO_ONE, array('type' => 'id', ), null, null);
     } // buildRelations()
 
 } // ListEventsTableMap

@@ -1,0 +1,8 @@
+{% if user.role == 'ADMIN' %}
+<a href="{{ path('time_logs_page') }}" class="waves-effect waves-light btn amber" style="color: white;">
+    View Time logs</a>
+<a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn amber" style="color: white;">
+    View Employees</a>
+<a class="waves-effect waves-light btn orange" id = "btn-export-modal">
+    Export</a>
+{% endif %}
