@@ -169,6 +169,34 @@
     </div>
 </div>
 
+<!-----------------------DIFFERENT IP MODAL CONTAINER------------------------->
+{% if matchedip != userip and timeflag == 0%}
+    <div class="diff-ip-container">
+        <div class="diff-ip center-align">
+            <div class="valign-wrapper">
+
+                <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                    <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+                        <div class="widget-subtitle plugin-date">Loading...</div></div>
+                    <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
+                    <textarea id="diffip-input-reason" class="materialize-textarea" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
+                    <!-- <p class="diff-ip-notice">Request Access?</p>
+                    <p class="diff-ip-sent">Request Sent!</p>
+                    <p class="diff-ip-reason">Enter reason:</p> -->
+
+                    <div class="btn-block">
+                        <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
+                           id="time-in-button" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
+                            <i class="material-icons left icon-timein">query_builder</i>Time in</a>
+                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
+                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
 <!-----------------------AUTO TIME OUT MODAL CONTAINER------------------------->
 <div class="modal-container auto-timeout-notice" style="display:none;">
     <div class="center-align" style="position: relative; top: 20%;">
