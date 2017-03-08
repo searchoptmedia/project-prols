@@ -168,7 +168,7 @@ class EmailController extends Controller
             $to = array($admin->getEmail());
 
             $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/requests'>View Request</a>" . "<br>";
+                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
 
             $response = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
