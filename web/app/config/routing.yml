@@ -6,6 +6,10 @@ sms:
     resource: "@SmsBundle/Resources/config/routing.yml"
     prefix:   /sms
 
+request_redirect:
+    path: /request
+    defaults: { _controller: AdminBundle:EmployeeRequest:requestRedirect }
+
 admin:
     resource: "@AdminBundle/Resources/config/routing.yml"
     prefix:   /main
