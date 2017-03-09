@@ -558,7 +558,10 @@ $(function() {
                         agendaList.show();
                         dailyAgendaModal.openModal();
                         agendaDate.html(date.format('MMMM DD, YYYY'));
-                        agendaDateDiffFormat.html(date.format('YYYY-MM-DD'));
+                        var currDate = moment().format('YYYY-MM-DD');
+                        if(date.format('YYYY-MM-DD') > currDate)
+                            agendaDateDiffFormat.html(date.format('YYYY-MM-DD'));
+                        else agendaDateDiffFormat.html(currDate);
                     },
 
                     header: {

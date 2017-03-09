@@ -67,15 +67,16 @@ class EmployeeController extends Controller
 		//Compare last time in date with date today
 		if(!empty($timedata))
 		{
-			$emptimedate = $timedata->getDate();
+			$emptimedate = $timedata->getTimeIn()->format('Y-m-d');
 			if($emptimedate == $datetoday)
 			{
 				$timeflag = 1;
+                InitController::ResetSessionValue();
+                InitController::loginSetTimeSession($this);
 			}
 		}
 		//Time in
-		if($timeflag == 0)
-		 {
+		if($timeflag == 0) {
 			$empTimeSave = new EmpTime();
 			$empTimeSave->setTimeIn($datetimetoday);
 			$empTimeSave->setIpAdd($matchedip);
@@ -137,9 +138,7 @@ class EmployeeController extends Controller
                      $message = 'Time in Successful';
                  }
              }
-		}
-		else
-		{
+		} else {
 			$message = 'Already Time in today';
 		}
 		$response = array('message' => $message, 'emailresp' => $emailresp);
@@ -1152,13 +1151,15 @@ class EmployeeController extends Controller
 
                 if($role == 'ADMIN') {
                     $capabilities = $request->request->get('capabilities');
-                    $capIds = array();
-                    foreach ($capabilities as $cap) {
-                        $empcap = new EmpCapabilities();
-                        $empcap->setEmpId($empid);
-                        $empcap->setCapId($cap);
-                        $empcap->save();
-                        array_push($capIds, $empcap->getId());
+                    if($capabilities != '') {
+                        $capIds = array();
+                        foreach ($capabilities as $cap) {
+                            $empcap = new EmpCapabilities();
+                            $empcap->setEmpId($empid);
+                            $empcap->setCapId($cap);
+                            $empcap->save();
+                            array_push($capIds, $empcap->getId());
+                        }
                     }
                 }
                 echo json_encode(array('result' => 'User has been successfully created'));
