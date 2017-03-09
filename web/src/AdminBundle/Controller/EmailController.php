@@ -92,7 +92,7 @@ class EmailController extends Controller
             }
 
             $inputMessage .= "</b><br><br><b>Request Info: </b><br>". "Reason: " . $reason ."<br>Date started: " . $req->request->get('datestart') .
-                            "<br>Date ended: ". $req->request->get('dateend');
+                "<br>Date ended: ". $req->request->get('dateend');
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',  array('message' => $inputMessage)));
@@ -309,10 +309,10 @@ class EmailController extends Controller
             $from    = array('no-reply@searchoptmedia.com', 'PROLS');
             $to = array($user->getEmail());
             $inputMessage = "<h2>Hi <b>". $empname ."</b>!" . "</h2> <b>". $adminname ."</b> created a/an <b>". $type ."</b> event. " .
-                            "Here are the following details regarding the said event: <br><br><hr><br>" .
-                            "<b>Event Date: </b>". $date . "<br>" .
-                            "<b>Event Name: </b>". $name . "<br>" .
-                            "<b>Event Description: </b> ". $desc . "<br>";
+                "Here are the following details regarding the said event: <br><br><hr><br>" .
+                "<b>Event Date: </b>". $date . "<br>" .
+                "<b>Event Name: </b>". $name . "<br>" .
+                "<b>Event Description: </b> ". $desc . "<br>";
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
