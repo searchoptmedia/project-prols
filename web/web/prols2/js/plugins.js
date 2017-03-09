@@ -449,18 +449,19 @@ $(function() {
 
                 minutes = minutes < 10 ? '0'+minutes : minutes;
 
-                if(hour > 12)
-                {
+                if(hour == 0) {
+                    hour = 12;
+                } else if(hour > 12) {
                     indicator ='PM';
                     hour = hour - 12;
+                } else if (hour == 12) {
+                    indicator ='PM';
                 }
-                else if(hour == 0){
-                    hour = 12;
-                }
+
                 hour = hour < 10 ? '0'+hour : hour;
 
 
-                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + "" + indicator);
+                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + " " + indicator);
             }
             if($(".plugin-clock").length > 0){
 
