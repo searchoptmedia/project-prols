@@ -24,6 +24,11 @@ use CoreBundle\Model\ListEventsPeer;
 
 class EmployeeRequestController extends Controller
 {
+    public function requestRedirectAction()
+    {
+        return $this->redirectToRoute('view_request');
+    }
+
     public function requestAction()
     {
         $user = $this->getUser();

@@ -56,34 +56,65 @@
 
                                                 {% for cap in capabilities %}
                                                     {% if cap.Capid == 1  %}
-                                                        <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
-                                                                data-username = "{{ emp.EmpAcc.username }}"
-                                                                data-password = "{{ emp.EmpAcc.password }}"
-                                                                data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
-                                                                data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
-                                                                data-mname="{{ emp.EmpAcc.getEmpProfiles[0].mname}}"
-                                                                data-empnum="{{ emp.getEmployeeNumber }}"
-                                                                data-gender="{{ emp.gender }}"
-                                                                data-department="{{emp.getListDept().id}}"
-                                                                data-position="{{emp.getListPos().id}}"
-                                                                data-status="{{ emp.getEmpStatusType().id }}"
-                                                                data-email="{{ emp.EmpAcc.getEmail }}"
-                                                                data-address="{{ emp.address }}"
-                                                                data-bday="{{emp.bday | date('Y-m-d')}}"
-                                                                data-capabilities="{% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}{{ cap.getCapabilitiesList().Id }},{% endfor %}"
-                                                                data-sss = "{{ emp.sss }}"
-                                                                data-bir = "{{ emp.bir }}"
-                                                                data-philhealth = "{{ emp.philhealth }}"
-                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
-                                                                    data-cellphone="{{ contact.contact }}"
-                                                                    data-cellphoneid="{{ contact.id }}"
-                                                                {% endfor %}
-                                                                {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
-                                                                    data-telephone="{{ contact.contact }}"
-                                                                    data-telphoneid="{{ contact.id }}"
-                                                                {% endfor %}
-                                                                data-empid="{{ emp.empAccAccId }}">Edit
-                                                        </button>
+                                                        {% if (emp.EmpAcc.role != 'ADMIN' and user.role != 'ADMIN') %}
+                                                            <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
+                                                                    data-username = "{{ emp.EmpAcc.username }}"
+                                                                    data-password = "{{ emp.EmpAcc.password }}"
+                                                                    data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                                    data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                                    data-mname="{{ emp.EmpAcc.getEmpProfiles[0].mname}}"
+                                                                    data-empnum="{{ emp.getEmployeeNumber }}"
+                                                                    data-gender="{{ emp.gender }}"
+                                                                    data-department="{{emp.getListDept().id}}"
+                                                                    data-position="{{emp.getListPos().id}}"
+                                                                    data-status="{{ emp.getEmpStatusType().id }}"
+                                                                    data-email="{{ emp.EmpAcc.getEmail }}"
+                                                                    data-address="{{ emp.address }}"
+                                                                    data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                                    data-capabilities="{% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}{{ cap.getCapabilitiesList().Id }},{% endfor %}"
+                                                                    data-sss = "{{ emp.sss }}"
+                                                                    data-bir = "{{ emp.bir }}"
+                                                                    data-philhealth = "{{ emp.philhealth }}"
+                                                                    {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                                        data-cellphone="{{ contact.contact }}"
+                                                                        data-cellphoneid="{{ contact.id }}"
+                                                                    {% endfor %}
+                                                                    {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                                        data-telephone="{{ contact.contact }}"
+                                                                        data-telphoneid="{{ contact.id }}"
+                                                                    {% endfor %}
+                                                                    data-empid="{{ emp.empAccAccId }}">Edit
+                                                            </button>
+                                                        {% else %}
+                                                            <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
+                                                                    data-username = "{{ emp.EmpAcc.username }}"
+                                                                    data-password = "{{ emp.EmpAcc.password }}"
+                                                                    data-fname="{{emp.EmpAcc.getEmpProfiles[0].fname}}"
+                                                                    data-lname="{{ emp.EmpAcc.getEmpProfiles[0].lname}}"
+                                                                    data-mname="{{ emp.EmpAcc.getEmpProfiles[0].mname}}"
+                                                                    data-empnum="{{ emp.getEmployeeNumber }}"
+                                                                    data-gender="{{ emp.gender }}"
+                                                                    data-department="{{emp.getListDept().id}}"
+                                                                    data-position="{{emp.getListPos().id}}"
+                                                                    data-status="{{ emp.getEmpStatusType().id }}"
+                                                                    data-email="{{ emp.EmpAcc.getEmail }}"
+                                                                    data-address="{{ emp.address }}"
+                                                                    data-bday="{{emp.bday | date('Y-m-d')}}"
+                                                                    data-capabilities="{% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}{{ cap.getCapabilitiesList().Id }},{% endfor %}"
+                                                                    data-sss = "{{ emp.sss }}"
+                                                                    data-bir = "{{ emp.bir }}"
+                                                                    data-philhealth = "{{ emp.philhealth }}"
+                                                                    {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 2 %}
+                                                                        data-cellphone="{{ contact.contact }}"
+                                                                        data-cellphoneid="{{ contact.id }}"
+                                                                    {% endfor %}
+                                                                    {% for contact in getContact if contact.empProfileId == emp.id and contact.listContTypesId == 3 %}
+                                                                        data-telephone="{{ contact.contact }}"
+                                                                        data-telphoneid="{{ contact.id }}"
+                                                                    {% endfor %}
+                                                                    data-empid="{{ emp.empAccAccId }}">Edit
+                                                            </button>
+                                                        {% endif %}
                                                     {% endif %}
                                                 {% endfor %}
                                             </td>
