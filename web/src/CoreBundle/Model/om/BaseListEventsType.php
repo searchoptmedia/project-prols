@@ -1082,6 +1082,31 @@ abstract class BaseListEventsType extends BaseObject implements Persistent
         return $this;
     }
 
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this ListEventsType is new, it will return
+     * an empty collection; or if this ListEventsType has previously
+     * been saved, it will retrieve related ListEventss from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in ListEventsType.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|ListEvents[] List of ListEvents objects
+     */
+    public function getListEventssJoinEmpAcc($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = ListEventsQuery::create(null, $criteria);
+        $query->joinWith('EmpAcc', $join_behavior);
+
+        return $this->getListEventss($query, $con);
+    }
+
     /**
      * Clears the current object and sets all attributes to their default values
      */

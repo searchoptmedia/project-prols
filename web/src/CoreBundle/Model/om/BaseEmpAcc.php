@@ -26,8 +26,12 @@ use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimeQuery;
-use CoreBundle\Model\RequestMeetingTags;
-use CoreBundle\Model\RequestMeetingTagsQuery;
+use CoreBundle\Model\EventNotes;
+use CoreBundle\Model\EventNotesQuery;
+use CoreBundle\Model\EventTaggedPersons;
+use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\ListEvents;
+use CoreBundle\Model\ListEventsQuery;
 
 abstract class BaseEmpAcc extends BaseObject implements Persistent
 {
@@ -129,12 +133,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     protected $collEmpRequestsRelatedByAdminIdPartial;
 
     /**
-     * @var        PropelObjectCollection|RequestMeetingTags[] Collection to store aggregation of RequestMeetingTags objects.
-     */
-    protected $collRequestMeetingTagss;
-    protected $collRequestMeetingTagssPartial;
-
-    /**
      * @var        PropelObjectCollection|EmpProfile[] Collection to store aggregation of EmpProfile objects.
      */
     protected $collEmpProfiles;
@@ -151,6 +149,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      */
     protected $collEmpCapabilitiess;
     protected $collEmpCapabilitiessPartial;
+
+    /**
+     * @var        PropelObjectCollection|ListEvents[] Collection to store aggregation of ListEvents objects.
+     */
+    protected $collListEventss;
+    protected $collListEventssPartial;
+
+    /**
+     * @var        PropelObjectCollection|EventNotes[] Collection to store aggregation of EventNotes objects.
+     */
+    protected $collEventNotess;
+    protected $collEventNotessPartial;
+
+    /**
+     * @var        PropelObjectCollection|EventTaggedPersons[] Collection to store aggregation of EventTaggedPersons objects.
+     */
+    protected $collEventTaggedPersonss;
+    protected $collEventTaggedPersonssPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -188,12 +204,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * An array of objects scheduled for deletion.
      * @var		PropelObjectCollection
      */
-    protected $requestMeetingTagssScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var		PropelObjectCollection
-     */
     protected $empProfilesScheduledForDeletion = null;
 
     /**
@@ -207,6 +217,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
      * @var		PropelObjectCollection
      */
     protected $empCapabilitiessScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $listEventssScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventNotessScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventTaggedPersonssScheduledForDeletion = null;
 
     /**
      * Get the [id] column value.
@@ -709,13 +737,17 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
             $this->collEmpRequestsRelatedByAdminId = null;
 
-            $this->collRequestMeetingTagss = null;
-
             $this->collEmpProfiles = null;
 
             $this->collEmpTimes = null;
 
             $this->collEmpCapabilitiess = null;
+
+            $this->collListEventss = null;
+
+            $this->collEventNotess = null;
+
+            $this->collEventTaggedPersonss = null;
 
         } // if (deep)
     }
@@ -877,24 +909,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 }
             }
 
-            if ($this->requestMeetingTagssScheduledForDeletion !== null) {
-                if (!$this->requestMeetingTagssScheduledForDeletion->isEmpty()) {
-                    foreach ($this->requestMeetingTagssScheduledForDeletion as $requestMeetingTags) {
-                        // need to save related object because we set the relation to null
-                        $requestMeetingTags->save($con);
-                    }
-                    $this->requestMeetingTagssScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collRequestMeetingTagss !== null) {
-                foreach ($this->collRequestMeetingTagss as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
             if ($this->empProfilesScheduledForDeletion !== null) {
                 if (!$this->empProfilesScheduledForDeletion->isEmpty()) {
                     EmpProfileQuery::create()
@@ -941,6 +955,57 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
             if ($this->collEmpCapabilitiess !== null) {
                 foreach ($this->collEmpCapabilitiess as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->listEventssScheduledForDeletion !== null) {
+                if (!$this->listEventssScheduledForDeletion->isEmpty()) {
+                    ListEventsQuery::create()
+                        ->filterByPrimaryKeys($this->listEventssScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->listEventssScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collListEventss !== null) {
+                foreach ($this->collListEventss as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->eventNotessScheduledForDeletion !== null) {
+                if (!$this->eventNotessScheduledForDeletion->isEmpty()) {
+                    EventNotesQuery::create()
+                        ->filterByPrimaryKeys($this->eventNotessScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventNotessScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventNotess !== null) {
+                foreach ($this->collEventNotess as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->eventTaggedPersonssScheduledForDeletion !== null) {
+                if (!$this->eventTaggedPersonssScheduledForDeletion->isEmpty()) {
+                    EventTaggedPersonsQuery::create()
+                        ->filterByPrimaryKeys($this->eventTaggedPersonssScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventTaggedPersonssScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventTaggedPersonss !== null) {
+                foreach ($this->collEventTaggedPersonss as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1165,14 +1230,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     }
                 }
 
-                if ($this->collRequestMeetingTagss !== null) {
-                    foreach ($this->collRequestMeetingTagss as $referrerFK) {
-                        if (!$referrerFK->validate($columns)) {
-                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-                        }
-                    }
-                }
-
                 if ($this->collEmpProfiles !== null) {
                     foreach ($this->collEmpProfiles as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
@@ -1191,6 +1248,30 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
                 if ($this->collEmpCapabilitiess !== null) {
                     foreach ($this->collEmpCapabilitiess as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collListEventss !== null) {
+                    foreach ($this->collListEventss as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collEventNotess !== null) {
+                    foreach ($this->collEventNotess as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collEventTaggedPersonss !== null) {
+                    foreach ($this->collEventTaggedPersonss as $referrerFK) {
                         if (!$referrerFK->validate($columns)) {
                             $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
                         }
@@ -1318,9 +1399,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             if (null !== $this->collEmpRequestsRelatedByAdminId) {
                 $result['EmpRequestsRelatedByAdminId'] = $this->collEmpRequestsRelatedByAdminId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collRequestMeetingTagss) {
-                $result['RequestMeetingTagss'] = $this->collRequestMeetingTagss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
             if (null !== $this->collEmpProfiles) {
                 $result['EmpProfiles'] = $this->collEmpProfiles->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
@@ -1329,6 +1407,15 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             }
             if (null !== $this->collEmpCapabilitiess) {
                 $result['EmpCapabilitiess'] = $this->collEmpCapabilitiess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collListEventss) {
+                $result['ListEventss'] = $this->collListEventss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEventNotess) {
+                $result['EventNotess'] = $this->collEventNotess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEventTaggedPersonss) {
+                $result['EventTaggedPersonss'] = $this->collEventTaggedPersonss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1547,12 +1634,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                 }
             }
 
-            foreach ($this->getRequestMeetingTagss() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addRequestMeetingTags($relObj->copy($deepCopy));
-                }
-            }
-
             foreach ($this->getEmpProfiles() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addEmpProfile($relObj->copy($deepCopy));
@@ -1568,6 +1649,24 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             foreach ($this->getEmpCapabilitiess() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addEmpCapabilities($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getListEventss() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addListEvents($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getEventNotess() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventNotes($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getEventTaggedPersonss() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventTaggedPersons($relObj->copy($deepCopy));
                 }
             }
 
@@ -1638,9 +1737,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         if ('EmpRequestRelatedByAdminId' == $relationName) {
             $this->initEmpRequestsRelatedByAdminId();
         }
-        if ('RequestMeetingTags' == $relationName) {
-            $this->initRequestMeetingTagss();
-        }
         if ('EmpProfile' == $relationName) {
             $this->initEmpProfiles();
         }
@@ -1649,6 +1745,15 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
         if ('EmpCapabilities' == $relationName) {
             $this->initEmpCapabilitiess();
+        }
+        if ('ListEvents' == $relationName) {
+            $this->initListEventss();
+        }
+        if ('EventNotes' == $relationName) {
+            $this->initEventNotess();
+        }
+        if ('EventTaggedPersons' == $relationName) {
+            $this->initEventTaggedPersonss();
         }
     }
 
@@ -2150,256 +2255,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         $query->joinWith('ListRequestType', $join_behavior);
 
         return $this->getEmpRequestsRelatedByAdminId($query, $con);
-    }
-
-    /**
-     * Clears out the collRequestMeetingTagss collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return EmpAcc The current object (for fluent API support)
-     * @see        addRequestMeetingTagss()
-     */
-    public function clearRequestMeetingTagss()
-    {
-        $this->collRequestMeetingTagss = null; // important to set this to null since that means it is uninitialized
-        $this->collRequestMeetingTagssPartial = null;
-
-        return $this;
-    }
-
-    /**
-     * reset is the collRequestMeetingTagss collection loaded partially
-     *
-     * @return void
-     */
-    public function resetPartialRequestMeetingTagss($v = true)
-    {
-        $this->collRequestMeetingTagssPartial = $v;
-    }
-
-    /**
-     * Initializes the collRequestMeetingTagss collection.
-     *
-     * By default this just sets the collRequestMeetingTagss collection to an empty array (like clearcollRequestMeetingTagss());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initRequestMeetingTagss($overrideExisting = true)
-    {
-        if (null !== $this->collRequestMeetingTagss && !$overrideExisting) {
-            return;
-        }
-        $this->collRequestMeetingTagss = new PropelObjectCollection();
-        $this->collRequestMeetingTagss->setModel('RequestMeetingTags');
-    }
-
-    /**
-     * Gets an array of RequestMeetingTags objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this EmpAcc is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param Criteria $criteria optional Criteria object to narrow the query
-     * @param PropelPDO $con optional connection object
-     * @return PropelObjectCollection|RequestMeetingTags[] List of RequestMeetingTags objects
-     * @throws PropelException
-     */
-    public function getRequestMeetingTagss($criteria = null, PropelPDO $con = null)
-    {
-        $partial = $this->collRequestMeetingTagssPartial && !$this->isNew();
-        if (null === $this->collRequestMeetingTagss || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collRequestMeetingTagss) {
-                // return empty collection
-                $this->initRequestMeetingTagss();
-            } else {
-                $collRequestMeetingTagss = RequestMeetingTagsQuery::create(null, $criteria)
-                    ->filterByEmpAcc($this)
-                    ->find($con);
-                if (null !== $criteria) {
-                    if (false !== $this->collRequestMeetingTagssPartial && count($collRequestMeetingTagss)) {
-                      $this->initRequestMeetingTagss(false);
-
-                      foreach ($collRequestMeetingTagss as $obj) {
-                        if (false == $this->collRequestMeetingTagss->contains($obj)) {
-                          $this->collRequestMeetingTagss->append($obj);
-                        }
-                      }
-
-                      $this->collRequestMeetingTagssPartial = true;
-                    }
-
-                    $collRequestMeetingTagss->getInternalIterator()->rewind();
-
-                    return $collRequestMeetingTagss;
-                }
-
-                if ($partial && $this->collRequestMeetingTagss) {
-                    foreach ($this->collRequestMeetingTagss as $obj) {
-                        if ($obj->isNew()) {
-                            $collRequestMeetingTagss[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collRequestMeetingTagss = $collRequestMeetingTagss;
-                $this->collRequestMeetingTagssPartial = false;
-            }
-        }
-
-        return $this->collRequestMeetingTagss;
-    }
-
-    /**
-     * Sets a collection of RequestMeetingTags objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param PropelCollection $requestMeetingTagss A Propel collection.
-     * @param PropelPDO $con Optional connection object
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function setRequestMeetingTagss(PropelCollection $requestMeetingTagss, PropelPDO $con = null)
-    {
-        $requestMeetingTagssToDelete = $this->getRequestMeetingTagss(new Criteria(), $con)->diff($requestMeetingTagss);
-
-
-        $this->requestMeetingTagssScheduledForDeletion = $requestMeetingTagssToDelete;
-
-        foreach ($requestMeetingTagssToDelete as $requestMeetingTagsRemoved) {
-            $requestMeetingTagsRemoved->setEmpAcc(null);
-        }
-
-        $this->collRequestMeetingTagss = null;
-        foreach ($requestMeetingTagss as $requestMeetingTags) {
-            $this->addRequestMeetingTags($requestMeetingTags);
-        }
-
-        $this->collRequestMeetingTagss = $requestMeetingTagss;
-        $this->collRequestMeetingTagssPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related RequestMeetingTags objects.
-     *
-     * @param Criteria $criteria
-     * @param boolean $distinct
-     * @param PropelPDO $con
-     * @return int             Count of related RequestMeetingTags objects.
-     * @throws PropelException
-     */
-    public function countRequestMeetingTagss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
-    {
-        $partial = $this->collRequestMeetingTagssPartial && !$this->isNew();
-        if (null === $this->collRequestMeetingTagss || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collRequestMeetingTagss) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getRequestMeetingTagss());
-            }
-            $query = RequestMeetingTagsQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByEmpAcc($this)
-                ->count($con);
-        }
-
-        return count($this->collRequestMeetingTagss);
-    }
-
-    /**
-     * Method called to associate a RequestMeetingTags object to this object
-     * through the RequestMeetingTags foreign key attribute.
-     *
-     * @param    RequestMeetingTags $l RequestMeetingTags
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function addRequestMeetingTags(RequestMeetingTags $l)
-    {
-        if ($this->collRequestMeetingTagss === null) {
-            $this->initRequestMeetingTagss();
-            $this->collRequestMeetingTagssPartial = true;
-        }
-
-        if (!in_array($l, $this->collRequestMeetingTagss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddRequestMeetingTags($l);
-
-            if ($this->requestMeetingTagssScheduledForDeletion and $this->requestMeetingTagssScheduledForDeletion->contains($l)) {
-                $this->requestMeetingTagssScheduledForDeletion->remove($this->requestMeetingTagssScheduledForDeletion->search($l));
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param	RequestMeetingTags $requestMeetingTags The requestMeetingTags object to add.
-     */
-    protected function doAddRequestMeetingTags($requestMeetingTags)
-    {
-        $this->collRequestMeetingTagss[]= $requestMeetingTags;
-        $requestMeetingTags->setEmpAcc($this);
-    }
-
-    /**
-     * @param	RequestMeetingTags $requestMeetingTags The requestMeetingTags object to remove.
-     * @return EmpAcc The current object (for fluent API support)
-     */
-    public function removeRequestMeetingTags($requestMeetingTags)
-    {
-        if ($this->getRequestMeetingTagss()->contains($requestMeetingTags)) {
-            $this->collRequestMeetingTagss->remove($this->collRequestMeetingTagss->search($requestMeetingTags));
-            if (null === $this->requestMeetingTagssScheduledForDeletion) {
-                $this->requestMeetingTagssScheduledForDeletion = clone $this->collRequestMeetingTagss;
-                $this->requestMeetingTagssScheduledForDeletion->clear();
-            }
-            $this->requestMeetingTagssScheduledForDeletion[]= $requestMeetingTags;
-            $requestMeetingTags->setEmpAcc(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this EmpAcc is new, it will return
-     * an empty collection; or if this EmpAcc has previously
-     * been saved, it will retrieve related RequestMeetingTagss from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in EmpAcc.
-     *
-     * @param Criteria $criteria optional Criteria object to narrow the query
-     * @param PropelPDO $con optional connection object
-     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return PropelObjectCollection|RequestMeetingTags[] List of RequestMeetingTags objects
-     */
-    public function getRequestMeetingTagssJoinEmpRequest($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-    {
-        $query = RequestMeetingTagsQuery::create(null, $criteria);
-        $query->joinWith('EmpRequest', $join_behavior);
-
-        return $this->getRequestMeetingTagss($query, $con);
     }
 
     /**
@@ -3178,6 +3033,756 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
     }
 
     /**
+     * Clears out the collListEventss collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addListEventss()
+     */
+    public function clearListEventss()
+    {
+        $this->collListEventss = null; // important to set this to null since that means it is uninitialized
+        $this->collListEventssPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collListEventss collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialListEventss($v = true)
+    {
+        $this->collListEventssPartial = $v;
+    }
+
+    /**
+     * Initializes the collListEventss collection.
+     *
+     * By default this just sets the collListEventss collection to an empty array (like clearcollListEventss());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initListEventss($overrideExisting = true)
+    {
+        if (null !== $this->collListEventss && !$overrideExisting) {
+            return;
+        }
+        $this->collListEventss = new PropelObjectCollection();
+        $this->collListEventss->setModel('ListEvents');
+    }
+
+    /**
+     * Gets an array of ListEvents objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|ListEvents[] List of ListEvents objects
+     * @throws PropelException
+     */
+    public function getListEventss($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collListEventssPartial && !$this->isNew();
+        if (null === $this->collListEventss || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collListEventss) {
+                // return empty collection
+                $this->initListEventss();
+            } else {
+                $collListEventss = ListEventsQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collListEventssPartial && count($collListEventss)) {
+                      $this->initListEventss(false);
+
+                      foreach ($collListEventss as $obj) {
+                        if (false == $this->collListEventss->contains($obj)) {
+                          $this->collListEventss->append($obj);
+                        }
+                      }
+
+                      $this->collListEventssPartial = true;
+                    }
+
+                    $collListEventss->getInternalIterator()->rewind();
+
+                    return $collListEventss;
+                }
+
+                if ($partial && $this->collListEventss) {
+                    foreach ($this->collListEventss as $obj) {
+                        if ($obj->isNew()) {
+                            $collListEventss[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collListEventss = $collListEventss;
+                $this->collListEventssPartial = false;
+            }
+        }
+
+        return $this->collListEventss;
+    }
+
+    /**
+     * Sets a collection of ListEvents objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $listEventss A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setListEventss(PropelCollection $listEventss, PropelPDO $con = null)
+    {
+        $listEventssToDelete = $this->getListEventss(new Criteria(), $con)->diff($listEventss);
+
+
+        $this->listEventssScheduledForDeletion = $listEventssToDelete;
+
+        foreach ($listEventssToDelete as $listEventsRemoved) {
+            $listEventsRemoved->setEmpAcc(null);
+        }
+
+        $this->collListEventss = null;
+        foreach ($listEventss as $listEvents) {
+            $this->addListEvents($listEvents);
+        }
+
+        $this->collListEventss = $listEventss;
+        $this->collListEventssPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ListEvents objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related ListEvents objects.
+     * @throws PropelException
+     */
+    public function countListEventss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collListEventssPartial && !$this->isNew();
+        if (null === $this->collListEventss || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collListEventss) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getListEventss());
+            }
+            $query = ListEventsQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collListEventss);
+    }
+
+    /**
+     * Method called to associate a ListEvents object to this object
+     * through the ListEvents foreign key attribute.
+     *
+     * @param    ListEvents $l ListEvents
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addListEvents(ListEvents $l)
+    {
+        if ($this->collListEventss === null) {
+            $this->initListEventss();
+            $this->collListEventssPartial = true;
+        }
+
+        if (!in_array($l, $this->collListEventss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddListEvents($l);
+
+            if ($this->listEventssScheduledForDeletion and $this->listEventssScheduledForDeletion->contains($l)) {
+                $this->listEventssScheduledForDeletion->remove($this->listEventssScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	ListEvents $listEvents The listEvents object to add.
+     */
+    protected function doAddListEvents($listEvents)
+    {
+        $this->collListEventss[]= $listEvents;
+        $listEvents->setEmpAcc($this);
+    }
+
+    /**
+     * @param	ListEvents $listEvents The listEvents object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeListEvents($listEvents)
+    {
+        if ($this->getListEventss()->contains($listEvents)) {
+            $this->collListEventss->remove($this->collListEventss->search($listEvents));
+            if (null === $this->listEventssScheduledForDeletion) {
+                $this->listEventssScheduledForDeletion = clone $this->collListEventss;
+                $this->listEventssScheduledForDeletion->clear();
+            }
+            $this->listEventssScheduledForDeletion[]= clone $listEvents;
+            $listEvents->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related ListEventss from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|ListEvents[] List of ListEvents objects
+     */
+    public function getListEventssJoinListEventsType($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = ListEventsQuery::create(null, $criteria);
+        $query->joinWith('ListEventsType', $join_behavior);
+
+        return $this->getListEventss($query, $con);
+    }
+
+    /**
+     * Clears out the collEventNotess collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addEventNotess()
+     */
+    public function clearEventNotess()
+    {
+        $this->collEventNotess = null; // important to set this to null since that means it is uninitialized
+        $this->collEventNotessPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventNotess collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventNotess($v = true)
+    {
+        $this->collEventNotessPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventNotess collection.
+     *
+     * By default this just sets the collEventNotess collection to an empty array (like clearcollEventNotess());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventNotess($overrideExisting = true)
+    {
+        if (null !== $this->collEventNotess && !$overrideExisting) {
+            return;
+        }
+        $this->collEventNotess = new PropelObjectCollection();
+        $this->collEventNotess->setModel('EventNotes');
+    }
+
+    /**
+     * Gets an array of EventNotes objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventNotes[] List of EventNotes objects
+     * @throws PropelException
+     */
+    public function getEventNotess($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventNotessPartial && !$this->isNew();
+        if (null === $this->collEventNotess || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventNotess) {
+                // return empty collection
+                $this->initEventNotess();
+            } else {
+                $collEventNotess = EventNotesQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventNotessPartial && count($collEventNotess)) {
+                      $this->initEventNotess(false);
+
+                      foreach ($collEventNotess as $obj) {
+                        if (false == $this->collEventNotess->contains($obj)) {
+                          $this->collEventNotess->append($obj);
+                        }
+                      }
+
+                      $this->collEventNotessPartial = true;
+                    }
+
+                    $collEventNotess->getInternalIterator()->rewind();
+
+                    return $collEventNotess;
+                }
+
+                if ($partial && $this->collEventNotess) {
+                    foreach ($this->collEventNotess as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventNotess[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventNotess = $collEventNotess;
+                $this->collEventNotessPartial = false;
+            }
+        }
+
+        return $this->collEventNotess;
+    }
+
+    /**
+     * Sets a collection of EventNotes objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventNotess A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setEventNotess(PropelCollection $eventNotess, PropelPDO $con = null)
+    {
+        $eventNotessToDelete = $this->getEventNotess(new Criteria(), $con)->diff($eventNotess);
+
+
+        $this->eventNotessScheduledForDeletion = $eventNotessToDelete;
+
+        foreach ($eventNotessToDelete as $eventNotesRemoved) {
+            $eventNotesRemoved->setEmpAcc(null);
+        }
+
+        $this->collEventNotess = null;
+        foreach ($eventNotess as $eventNotes) {
+            $this->addEventNotes($eventNotes);
+        }
+
+        $this->collEventNotess = $eventNotess;
+        $this->collEventNotessPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventNotes objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventNotes objects.
+     * @throws PropelException
+     */
+    public function countEventNotess(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventNotessPartial && !$this->isNew();
+        if (null === $this->collEventNotess || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventNotess) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventNotess());
+            }
+            $query = EventNotesQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collEventNotess);
+    }
+
+    /**
+     * Method called to associate a EventNotes object to this object
+     * through the EventNotes foreign key attribute.
+     *
+     * @param    EventNotes $l EventNotes
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addEventNotes(EventNotes $l)
+    {
+        if ($this->collEventNotess === null) {
+            $this->initEventNotess();
+            $this->collEventNotessPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventNotess->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventNotes($l);
+
+            if ($this->eventNotessScheduledForDeletion and $this->eventNotessScheduledForDeletion->contains($l)) {
+                $this->eventNotessScheduledForDeletion->remove($this->eventNotessScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventNotes $eventNotes The eventNotes object to add.
+     */
+    protected function doAddEventNotes($eventNotes)
+    {
+        $this->collEventNotess[]= $eventNotes;
+        $eventNotes->setEmpAcc($this);
+    }
+
+    /**
+     * @param	EventNotes $eventNotes The eventNotes object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeEventNotes($eventNotes)
+    {
+        if ($this->getEventNotess()->contains($eventNotes)) {
+            $this->collEventNotess->remove($this->collEventNotess->search($eventNotes));
+            if (null === $this->eventNotessScheduledForDeletion) {
+                $this->eventNotessScheduledForDeletion = clone $this->collEventNotess;
+                $this->eventNotessScheduledForDeletion->clear();
+            }
+            $this->eventNotessScheduledForDeletion[]= clone $eventNotes;
+            $eventNotes->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related EventNotess from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EventNotes[] List of EventNotes objects
+     */
+    public function getEventNotessJoinListEvents($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EventNotesQuery::create(null, $criteria);
+        $query->joinWith('ListEvents', $join_behavior);
+
+        return $this->getEventNotess($query, $con);
+    }
+
+    /**
+     * Clears out the collEventTaggedPersonss collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpAcc The current object (for fluent API support)
+     * @see        addEventTaggedPersonss()
+     */
+    public function clearEventTaggedPersonss()
+    {
+        $this->collEventTaggedPersonss = null; // important to set this to null since that means it is uninitialized
+        $this->collEventTaggedPersonssPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventTaggedPersonss collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventTaggedPersonss($v = true)
+    {
+        $this->collEventTaggedPersonssPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventTaggedPersonss collection.
+     *
+     * By default this just sets the collEventTaggedPersonss collection to an empty array (like clearcollEventTaggedPersonss());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventTaggedPersonss($overrideExisting = true)
+    {
+        if (null !== $this->collEventTaggedPersonss && !$overrideExisting) {
+            return;
+        }
+        $this->collEventTaggedPersonss = new PropelObjectCollection();
+        $this->collEventTaggedPersonss->setModel('EventTaggedPersons');
+    }
+
+    /**
+     * Gets an array of EventTaggedPersons objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpAcc is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventTaggedPersons[] List of EventTaggedPersons objects
+     * @throws PropelException
+     */
+    public function getEventTaggedPersonss($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTaggedPersonssPartial && !$this->isNew();
+        if (null === $this->collEventTaggedPersonss || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventTaggedPersonss) {
+                // return empty collection
+                $this->initEventTaggedPersonss();
+            } else {
+                $collEventTaggedPersonss = EventTaggedPersonsQuery::create(null, $criteria)
+                    ->filterByEmpAcc($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventTaggedPersonssPartial && count($collEventTaggedPersonss)) {
+                      $this->initEventTaggedPersonss(false);
+
+                      foreach ($collEventTaggedPersonss as $obj) {
+                        if (false == $this->collEventTaggedPersonss->contains($obj)) {
+                          $this->collEventTaggedPersonss->append($obj);
+                        }
+                      }
+
+                      $this->collEventTaggedPersonssPartial = true;
+                    }
+
+                    $collEventTaggedPersonss->getInternalIterator()->rewind();
+
+                    return $collEventTaggedPersonss;
+                }
+
+                if ($partial && $this->collEventTaggedPersonss) {
+                    foreach ($this->collEventTaggedPersonss as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventTaggedPersonss[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventTaggedPersonss = $collEventTaggedPersonss;
+                $this->collEventTaggedPersonssPartial = false;
+            }
+        }
+
+        return $this->collEventTaggedPersonss;
+    }
+
+    /**
+     * Sets a collection of EventTaggedPersons objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventTaggedPersonss A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function setEventTaggedPersonss(PropelCollection $eventTaggedPersonss, PropelPDO $con = null)
+    {
+        $eventTaggedPersonssToDelete = $this->getEventTaggedPersonss(new Criteria(), $con)->diff($eventTaggedPersonss);
+
+
+        $this->eventTaggedPersonssScheduledForDeletion = $eventTaggedPersonssToDelete;
+
+        foreach ($eventTaggedPersonssToDelete as $eventTaggedPersonsRemoved) {
+            $eventTaggedPersonsRemoved->setEmpAcc(null);
+        }
+
+        $this->collEventTaggedPersonss = null;
+        foreach ($eventTaggedPersonss as $eventTaggedPersons) {
+            $this->addEventTaggedPersons($eventTaggedPersons);
+        }
+
+        $this->collEventTaggedPersonss = $eventTaggedPersonss;
+        $this->collEventTaggedPersonssPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventTaggedPersons objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventTaggedPersons objects.
+     * @throws PropelException
+     */
+    public function countEventTaggedPersonss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTaggedPersonssPartial && !$this->isNew();
+        if (null === $this->collEventTaggedPersonss || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventTaggedPersonss) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventTaggedPersonss());
+            }
+            $query = EventTaggedPersonsQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpAcc($this)
+                ->count($con);
+        }
+
+        return count($this->collEventTaggedPersonss);
+    }
+
+    /**
+     * Method called to associate a EventTaggedPersons object to this object
+     * through the EventTaggedPersons foreign key attribute.
+     *
+     * @param    EventTaggedPersons $l EventTaggedPersons
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function addEventTaggedPersons(EventTaggedPersons $l)
+    {
+        if ($this->collEventTaggedPersonss === null) {
+            $this->initEventTaggedPersonss();
+            $this->collEventTaggedPersonssPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventTaggedPersonss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventTaggedPersons($l);
+
+            if ($this->eventTaggedPersonssScheduledForDeletion and $this->eventTaggedPersonssScheduledForDeletion->contains($l)) {
+                $this->eventTaggedPersonssScheduledForDeletion->remove($this->eventTaggedPersonssScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventTaggedPersons $eventTaggedPersons The eventTaggedPersons object to add.
+     */
+    protected function doAddEventTaggedPersons($eventTaggedPersons)
+    {
+        $this->collEventTaggedPersonss[]= $eventTaggedPersons;
+        $eventTaggedPersons->setEmpAcc($this);
+    }
+
+    /**
+     * @param	EventTaggedPersons $eventTaggedPersons The eventTaggedPersons object to remove.
+     * @return EmpAcc The current object (for fluent API support)
+     */
+    public function removeEventTaggedPersons($eventTaggedPersons)
+    {
+        if ($this->getEventTaggedPersonss()->contains($eventTaggedPersons)) {
+            $this->collEventTaggedPersonss->remove($this->collEventTaggedPersonss->search($eventTaggedPersons));
+            if (null === $this->eventTaggedPersonssScheduledForDeletion) {
+                $this->eventTaggedPersonssScheduledForDeletion = clone $this->collEventTaggedPersonss;
+                $this->eventTaggedPersonssScheduledForDeletion->clear();
+            }
+            $this->eventTaggedPersonssScheduledForDeletion[]= clone $eventTaggedPersons;
+            $eventTaggedPersons->setEmpAcc(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EmpAcc is new, it will return
+     * an empty collection; or if this EmpAcc has previously
+     * been saved, it will retrieve related EventTaggedPersonss from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EmpAcc.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EventTaggedPersons[] List of EventTaggedPersons objects
+     */
+    public function getEventTaggedPersonssJoinListEvents($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EventTaggedPersonsQuery::create(null, $criteria);
+        $query->joinWith('ListEvents', $join_behavior);
+
+        return $this->getEventTaggedPersonss($query, $con);
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -3225,11 +3830,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collRequestMeetingTagss) {
-                foreach ($this->collRequestMeetingTagss as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
             if ($this->collEmpProfiles) {
                 foreach ($this->collEmpProfiles as $o) {
                     $o->clearAllReferences($deep);
@@ -3245,6 +3845,21 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collListEventss) {
+                foreach ($this->collListEventss as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collEventNotess) {
+                foreach ($this->collEventNotess as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collEventTaggedPersonss) {
+                foreach ($this->collEventTaggedPersonss as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
@@ -3257,10 +3872,6 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpRequestsRelatedByAdminId->clearIterator();
         }
         $this->collEmpRequestsRelatedByAdminId = null;
-        if ($this->collRequestMeetingTagss instanceof PropelCollection) {
-            $this->collRequestMeetingTagss->clearIterator();
-        }
-        $this->collRequestMeetingTagss = null;
         if ($this->collEmpProfiles instanceof PropelCollection) {
             $this->collEmpProfiles->clearIterator();
         }
@@ -3273,6 +3884,18 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $this->collEmpCapabilitiess->clearIterator();
         }
         $this->collEmpCapabilitiess = null;
+        if ($this->collListEventss instanceof PropelCollection) {
+            $this->collListEventss->clearIterator();
+        }
+        $this->collListEventss = null;
+        if ($this->collEventNotess instanceof PropelCollection) {
+            $this->collEventNotess->clearIterator();
+        }
+        $this->collEventNotess = null;
+        if ($this->collEventTaggedPersonss instanceof PropelCollection) {
+            $this->collEventTaggedPersonss->clearIterator();
+        }
+        $this->collEventTaggedPersonss = null;
     }
 
     /**

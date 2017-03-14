@@ -75,21 +75,6 @@
         </vendor>
     </table>
 
-    <table name="request_meeting_tags">
-        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="request_id" type="INTEGER"/>
-        <column name="status" type="INTEGER" />
-        <column name="emp_acc_id" type="INTEGER"/>
-
-        <foreign-key foreignTable="emp_request" name="fk_emp_requst_id1" onDelete="RESTRICT" onUpdate="RESTRICT">
-            <reference local="request_id" foreign="id"/>
-        </foreign-key>
-
-        <foreign-key foreignTable="emp_acc" name="fk_emp_request_emp_acc1" onDelete="RESTRICT" onUpdate="RESTRICT">
-            <reference local="emp_acc_id" foreign="id"/>
-        </foreign-key>
-    </table>
-
     <table name="emp_profile" phpName="EmpProfile" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="emp_acc_acc_id" phpName="EmpAccAccId" type="INTEGER" required="true"/>
@@ -167,28 +152,6 @@
         </vendor>
     </table>
 
-    <table name="list_events" phpName="ListEvents" idMethod="native">
-        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="date" phpName="Date" type="TIMESTAMP" required="true"/>
-        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
-        <column name="desc" phpName="Description" type="LONGVARCHAR" size="1000" required="true"/>
-        <column name="type" phpName="Type" type="INTEGER" required="true"/>
-        <foreign-key foreignTable="list_events_type">
-            <reference local="type" foreign="id"/>
-        </foreign-key>
-        <vendor type="mysql">
-            <parameter name="Engine" value="InnoDB"/>
-        </vendor>
-    </table>
-
-    <table name="list_events_type" phpName="ListEventsType" idMethod="native">
-        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
-        <vendor type="mysql">
-            <parameter name="Engine" value="InnoDB"/>
-        </vendor>
-    </table>
-
     <table name="list_ip" phpName="ListIp" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="allowed_ip" phpName="AllowedIp" type="VARCHAR" size="45" required="true"/>
@@ -246,6 +209,81 @@
     <table name="emp_status_type" phpName="EmpStatusType" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
         <column name="name" phpName="Name" type="VARCHAR" size="45" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="list_events" phpName="ListEvents" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="created_by" phpName="CreatedBy" type="INTEGER" required="true"/>
+        <column name="date_created" phpName="DateCreated" type="TIMESTAMP" required="true"/>
+        <column name="from_date" phpName="FromDate" type="TIMESTAMP" required="true"/>
+        <column name="to_date" phpName="ToDate" type="TIMESTAMP" required="true"/>
+        <column name="event_name" phpName="EventName" type="VARCHAR" size="45" required="true"/>
+        <column name="event_desc" phpName="EventDescription" type="LONGVARCHAR" size="32700" required="true"/>
+        <column name="event_type" phpName="EventType" type="INTEGER" required="true"/>
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="sms_response" phpName="SmsResponse" type="LONGVARCHAR" size="32700"/>
+        <foreign-key foreignTable="list_events_type">
+            <reference local="event_type" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="emp_acc">
+            <reference local="created_by" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="list_events_type" phpName="ListEventsType" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="name" phpName="Name" type="VARCHAR" size="100" required="true"/>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="event_notes" phpName="EventNotes" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
+        <column name="note" phpName="Note" type="LONGVARCHAR" size = "32700" required="true"/>
+        <column name="created_by" phpName="CreatedBy" type="INTEGER" required="true"/>
+        <column name="date_created" phpName="DateCreated" type="TIMESTAMP" required="true"/>
+        <foreign-key foreignTable="emp_acc">
+            <reference local="created_by" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="list_events">
+            <reference local="event_id" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="event_tagged_persons" phpName="EventTaggedPersons" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
+        <column name="emp_id" phpName="EmpId" type="INTEGER" required="true"/>
+        <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <foreign-key foreignTable="emp_acc">
+            <reference local="emp_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="list_events">
+            <reference local="event_id" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="event_attachment" phpName="EventAttachment" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
+        <column name="filename" phpName="Filename" type="LONGVARCHAR" size = "32700" required="true"/>
+        <foreign-key foreignTable="list_events">
+            <reference local="event_id" foreign="id"/>
+        </foreign-key>
         <vendor type="mysql">
             <parameter name="Engine" value="InnoDB"/>
         </vendor>

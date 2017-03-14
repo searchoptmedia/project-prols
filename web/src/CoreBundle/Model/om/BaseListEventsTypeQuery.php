@@ -317,7 +317,7 @@ abstract class BaseListEventsTypeQuery extends ModelCriteria
     {
         if ($listEvents instanceof ListEvents) {
             return $this
-                ->addUsingAlias(ListEventsTypePeer::ID, $listEvents->getType(), $comparison);
+                ->addUsingAlias(ListEventsTypePeer::ID, $listEvents->getEventType(), $comparison);
         } elseif ($listEvents instanceof PropelObjectCollection) {
             return $this
                 ->useListEventsQuery()

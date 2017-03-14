@@ -12,14 +12,6 @@ class EmpRequestPeer extends BaseEmpRequestPeer
             $c = new Criteria();
         }
 
-        $c1 = $c->getNewCriterion(self::EMP_ACC_ID, $id, Criteria::EQUAL);
-        $c2 = $c->getNewCriterion(self::LIST_REQUEST_TYPE_ID, 4, Criteria::EQUAL);
-        $c1->addAnd($c2);
-
-        $c3 = $c->getNewCriterion(self::LIST_REQUEST_TYPE_ID, 4, Criteria::NOT_EQUAL);
-        $c3->addOr($c1);
-
-        $c->add($c3);
         $c->addDescendingOrderByColumn(self::ID);
 
         $_self = self::doSelect($c);
