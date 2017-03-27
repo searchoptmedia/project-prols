@@ -12,6 +12,10 @@ use \PropelCollection;
 use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\EmpAcc;
+use CoreBundle\Model\EventAttachment;
+use CoreBundle\Model\EventNotes;
+use CoreBundle\Model\EventTaggedPersons;
 use CoreBundle\Model\ListEvents;
 use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListEventsQuery;
@@ -19,16 +23,26 @@ use CoreBundle\Model\ListEventsType;
 
 /**
  * @method ListEventsQuery orderById($order = Criteria::ASC) Order by the id column
- * @method ListEventsQuery orderByDate($order = Criteria::ASC) Order by the date column
- * @method ListEventsQuery orderByName($order = Criteria::ASC) Order by the name column
- * @method ListEventsQuery orderByDescription($order = Criteria::ASC) Order by the desc column
- * @method ListEventsQuery orderByType($order = Criteria::ASC) Order by the type column
+ * @method ListEventsQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
+ * @method ListEventsQuery orderByDateCreated($order = Criteria::ASC) Order by the date_created column
+ * @method ListEventsQuery orderByFromDate($order = Criteria::ASC) Order by the from_date column
+ * @method ListEventsQuery orderByToDate($order = Criteria::ASC) Order by the to_date column
+ * @method ListEventsQuery orderByEventName($order = Criteria::ASC) Order by the event_name column
+ * @method ListEventsQuery orderByEventDescription($order = Criteria::ASC) Order by the event_desc column
+ * @method ListEventsQuery orderByEventType($order = Criteria::ASC) Order by the event_type column
+ * @method ListEventsQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method ListEventsQuery orderBySmsResponse($order = Criteria::ASC) Order by the sms_response column
  *
  * @method ListEventsQuery groupById() Group by the id column
- * @method ListEventsQuery groupByDate() Group by the date column
- * @method ListEventsQuery groupByName() Group by the name column
- * @method ListEventsQuery groupByDescription() Group by the desc column
- * @method ListEventsQuery groupByType() Group by the type column
+ * @method ListEventsQuery groupByCreatedBy() Group by the created_by column
+ * @method ListEventsQuery groupByDateCreated() Group by the date_created column
+ * @method ListEventsQuery groupByFromDate() Group by the from_date column
+ * @method ListEventsQuery groupByToDate() Group by the to_date column
+ * @method ListEventsQuery groupByEventName() Group by the event_name column
+ * @method ListEventsQuery groupByEventDescription() Group by the event_desc column
+ * @method ListEventsQuery groupByEventType() Group by the event_type column
+ * @method ListEventsQuery groupByStatus() Group by the status column
+ * @method ListEventsQuery groupBySmsResponse() Group by the sms_response column
  *
  * @method ListEventsQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method ListEventsQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -38,19 +52,45 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEventsQuery rightJoinListEventsType($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ListEventsType relation
  * @method ListEventsQuery innerJoinListEventsType($relationAlias = null) Adds a INNER JOIN clause to the query using the ListEventsType relation
  *
+ * @method ListEventsQuery leftJoinEmpAcc($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpAcc relation
+ * @method ListEventsQuery rightJoinEmpAcc($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpAcc relation
+ * @method ListEventsQuery innerJoinEmpAcc($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpAcc relation
+ *
+ * @method ListEventsQuery leftJoinEventNotes($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventNotes relation
+ * @method ListEventsQuery rightJoinEventNotes($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventNotes relation
+ * @method ListEventsQuery innerJoinEventNotes($relationAlias = null) Adds a INNER JOIN clause to the query using the EventNotes relation
+ *
+ * @method ListEventsQuery leftJoinEventTaggedPersons($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventTaggedPersons relation
+ * @method ListEventsQuery rightJoinEventTaggedPersons($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventTaggedPersons relation
+ * @method ListEventsQuery innerJoinEventTaggedPersons($relationAlias = null) Adds a INNER JOIN clause to the query using the EventTaggedPersons relation
+ *
+ * @method ListEventsQuery leftJoinEventAttachment($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventAttachment relation
+ * @method ListEventsQuery rightJoinEventAttachment($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventAttachment relation
+ * @method ListEventsQuery innerJoinEventAttachment($relationAlias = null) Adds a INNER JOIN clause to the query using the EventAttachment relation
+ *
  * @method ListEvents findOne(PropelPDO $con = null) Return the first ListEvents matching the query
  * @method ListEvents findOneOrCreate(PropelPDO $con = null) Return the first ListEvents matching the query, or a new ListEvents object populated from the query conditions when no match is found
  *
- * @method ListEvents findOneByDate(string $date) Return the first ListEvents filtered by the date column
- * @method ListEvents findOneByName(string $name) Return the first ListEvents filtered by the name column
- * @method ListEvents findOneByDescription(string $desc) Return the first ListEvents filtered by the desc column
- * @method ListEvents findOneByType(int $type) Return the first ListEvents filtered by the type column
+ * @method ListEvents findOneByCreatedBy(int $created_by) Return the first ListEvents filtered by the created_by column
+ * @method ListEvents findOneByDateCreated(string $date_created) Return the first ListEvents filtered by the date_created column
+ * @method ListEvents findOneByFromDate(string $from_date) Return the first ListEvents filtered by the from_date column
+ * @method ListEvents findOneByToDate(string $to_date) Return the first ListEvents filtered by the to_date column
+ * @method ListEvents findOneByEventName(string $event_name) Return the first ListEvents filtered by the event_name column
+ * @method ListEvents findOneByEventDescription(string $event_desc) Return the first ListEvents filtered by the event_desc column
+ * @method ListEvents findOneByEventType(int $event_type) Return the first ListEvents filtered by the event_type column
+ * @method ListEvents findOneByStatus(int $status) Return the first ListEvents filtered by the status column
+ * @method ListEvents findOneBySmsResponse(string $sms_response) Return the first ListEvents filtered by the sms_response column
  *
  * @method array findById(int $id) Return ListEvents objects filtered by the id column
- * @method array findByDate(string $date) Return ListEvents objects filtered by the date column
- * @method array findByName(string $name) Return ListEvents objects filtered by the name column
- * @method array findByDescription(string $desc) Return ListEvents objects filtered by the desc column
- * @method array findByType(int $type) Return ListEvents objects filtered by the type column
+ * @method array findByCreatedBy(int $created_by) Return ListEvents objects filtered by the created_by column
+ * @method array findByDateCreated(string $date_created) Return ListEvents objects filtered by the date_created column
+ * @method array findByFromDate(string $from_date) Return ListEvents objects filtered by the from_date column
+ * @method array findByToDate(string $to_date) Return ListEvents objects filtered by the to_date column
+ * @method array findByEventName(string $event_name) Return ListEvents objects filtered by the event_name column
+ * @method array findByEventDescription(string $event_desc) Return ListEvents objects filtered by the event_desc column
+ * @method array findByEventType(int $event_type) Return ListEvents objects filtered by the event_type column
+ * @method array findByStatus(int $status) Return ListEvents objects filtered by the status column
+ * @method array findBySmsResponse(string $sms_response) Return ListEvents objects filtered by the sms_response column
  */
 abstract class BaseListEventsQuery extends ModelCriteria
 {
@@ -156,7 +196,7 @@ abstract class BaseListEventsQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `date`, `name`, `desc`, `type` FROM `list_events` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_desc`, `event_type`, `status`, `sms_response` FROM `list_events` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -288,16 +328,60 @@ abstract class BaseListEventsQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the date column
+     * Filter the query on the created_by column
      *
      * Example usage:
      * <code>
-     * $query->filterByDate('2011-03-14'); // WHERE date = '2011-03-14'
-     * $query->filterByDate('now'); // WHERE date = '2011-03-14'
-     * $query->filterByDate(array('max' => 'yesterday')); // WHERE date < '2011-03-13'
+     * $query->filterByCreatedBy(1234); // WHERE created_by = 1234
+     * $query->filterByCreatedBy(array(12, 34)); // WHERE created_by IN (12, 34)
+     * $query->filterByCreatedBy(array('min' => 12)); // WHERE created_by >= 12
+     * $query->filterByCreatedBy(array('max' => 12)); // WHERE created_by <= 12
      * </code>
      *
-     * @param     mixed $date The value to use as filter.
+     * @see       filterByEmpAcc()
+     *
+     * @param     mixed $createdBy The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByCreatedBy($createdBy = null, $comparison = null)
+    {
+        if (is_array($createdBy)) {
+            $useMinMax = false;
+            if (isset($createdBy['min'])) {
+                $this->addUsingAlias(ListEventsPeer::CREATED_BY, $createdBy['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($createdBy['max'])) {
+                $this->addUsingAlias(ListEventsPeer::CREATED_BY, $createdBy['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::CREATED_BY, $createdBy, $comparison);
+    }
+
+    /**
+     * Filter the query on the date_created column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByDateCreated('2011-03-14'); // WHERE date_created = '2011-03-14'
+     * $query->filterByDateCreated('now'); // WHERE date_created = '2011-03-14'
+     * $query->filterByDateCreated(array('max' => 'yesterday')); // WHERE date_created < '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $dateCreated The value to use as filter.
      *              Values can be integers (unix timestamps), DateTime objects, or strings.
      *              Empty strings are treated as NULL.
      *              Use scalar values for equality.
@@ -307,16 +391,16 @@ abstract class BaseListEventsQuery extends ModelCriteria
      *
      * @return ListEventsQuery The current query, for fluid interface
      */
-    public function filterByDate($date = null, $comparison = null)
+    public function filterByDateCreated($dateCreated = null, $comparison = null)
     {
-        if (is_array($date)) {
+        if (is_array($dateCreated)) {
             $useMinMax = false;
-            if (isset($date['min'])) {
-                $this->addUsingAlias(ListEventsPeer::DATE, $date['min'], Criteria::GREATER_EQUAL);
+            if (isset($dateCreated['min'])) {
+                $this->addUsingAlias(ListEventsPeer::DATE_CREATED, $dateCreated['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($date['max'])) {
-                $this->addUsingAlias(ListEventsPeer::DATE, $date['max'], Criteria::LESS_EQUAL);
+            if (isset($dateCreated['max'])) {
+                $this->addUsingAlias(ListEventsPeer::DATE_CREATED, $dateCreated['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -327,81 +411,22 @@ abstract class BaseListEventsQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ListEventsPeer::DATE, $date, $comparison);
+        return $this->addUsingAlias(ListEventsPeer::DATE_CREATED, $dateCreated, $comparison);
     }
 
     /**
-     * Filter the query on the name column
+     * Filter the query on the from_date column
      *
      * Example usage:
      * <code>
-     * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
-     * $query->filterByName('%fooValue%'); // WHERE name LIKE '%fooValue%'
+     * $query->filterByFromDate('2011-03-14'); // WHERE from_date = '2011-03-14'
+     * $query->filterByFromDate('now'); // WHERE from_date = '2011-03-14'
+     * $query->filterByFromDate(array('max' => 'yesterday')); // WHERE from_date < '2011-03-13'
      * </code>
      *
-     * @param     string $name The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ListEventsQuery The current query, for fluid interface
-     */
-    public function filterByName($name = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($name)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $name)) {
-                $name = str_replace('*', '%', $name);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(ListEventsPeer::NAME, $name, $comparison);
-    }
-
-    /**
-     * Filter the query on the desc column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByDescription('fooValue');   // WHERE desc = 'fooValue'
-     * $query->filterByDescription('%fooValue%'); // WHERE desc LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $description The value to use as filter.
-     *              Accepts wildcards (* and % trigger a LIKE)
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return ListEventsQuery The current query, for fluid interface
-     */
-    public function filterByDescription($description = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($description)) {
-                $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $description)) {
-                $description = str_replace('*', '%', $description);
-                $comparison = Criteria::LIKE;
-            }
-        }
-
-        return $this->addUsingAlias(ListEventsPeer::DESC, $description, $comparison);
-    }
-
-    /**
-     * Filter the query on the type column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByType(1234); // WHERE type = 1234
-     * $query->filterByType(array(12, 34)); // WHERE type IN (12, 34)
-     * $query->filterByType(array('min' => 12)); // WHERE type >= 12
-     * $query->filterByType(array('max' => 12)); // WHERE type <= 12
-     * </code>
-     *
-     * @see       filterByListEventsType()
-     *
-     * @param     mixed $type The value to use as filter.
+     * @param     mixed $fromDate The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -409,16 +434,16 @@ abstract class BaseListEventsQuery extends ModelCriteria
      *
      * @return ListEventsQuery The current query, for fluid interface
      */
-    public function filterByType($type = null, $comparison = null)
+    public function filterByFromDate($fromDate = null, $comparison = null)
     {
-        if (is_array($type)) {
+        if (is_array($fromDate)) {
             $useMinMax = false;
-            if (isset($type['min'])) {
-                $this->addUsingAlias(ListEventsPeer::TYPE, $type['min'], Criteria::GREATER_EQUAL);
+            if (isset($fromDate['min'])) {
+                $this->addUsingAlias(ListEventsPeer::FROM_DATE, $fromDate['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($type['max'])) {
-                $this->addUsingAlias(ListEventsPeer::TYPE, $type['max'], Criteria::LESS_EQUAL);
+            if (isset($fromDate['max'])) {
+                $this->addUsingAlias(ListEventsPeer::FROM_DATE, $fromDate['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -429,7 +454,223 @@ abstract class BaseListEventsQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ListEventsPeer::TYPE, $type, $comparison);
+        return $this->addUsingAlias(ListEventsPeer::FROM_DATE, $fromDate, $comparison);
+    }
+
+    /**
+     * Filter the query on the to_date column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByToDate('2011-03-14'); // WHERE to_date = '2011-03-14'
+     * $query->filterByToDate('now'); // WHERE to_date = '2011-03-14'
+     * $query->filterByToDate(array('max' => 'yesterday')); // WHERE to_date < '2011-03-13'
+     * </code>
+     *
+     * @param     mixed $toDate The value to use as filter.
+     *              Values can be integers (unix timestamps), DateTime objects, or strings.
+     *              Empty strings are treated as NULL.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByToDate($toDate = null, $comparison = null)
+    {
+        if (is_array($toDate)) {
+            $useMinMax = false;
+            if (isset($toDate['min'])) {
+                $this->addUsingAlias(ListEventsPeer::TO_DATE, $toDate['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($toDate['max'])) {
+                $this->addUsingAlias(ListEventsPeer::TO_DATE, $toDate['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::TO_DATE, $toDate, $comparison);
+    }
+
+    /**
+     * Filter the query on the event_name column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEventName('fooValue');   // WHERE event_name = 'fooValue'
+     * $query->filterByEventName('%fooValue%'); // WHERE event_name LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $eventName The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByEventName($eventName = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($eventName)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $eventName)) {
+                $eventName = str_replace('*', '%', $eventName);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::EVENT_NAME, $eventName, $comparison);
+    }
+
+    /**
+     * Filter the query on the event_desc column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEventDescription('fooValue');   // WHERE event_desc = 'fooValue'
+     * $query->filterByEventDescription('%fooValue%'); // WHERE event_desc LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $eventDescription The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByEventDescription($eventDescription = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($eventDescription)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $eventDescription)) {
+                $eventDescription = str_replace('*', '%', $eventDescription);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::EVENT_DESC, $eventDescription, $comparison);
+    }
+
+    /**
+     * Filter the query on the event_type column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEventType(1234); // WHERE event_type = 1234
+     * $query->filterByEventType(array(12, 34)); // WHERE event_type IN (12, 34)
+     * $query->filterByEventType(array('min' => 12)); // WHERE event_type >= 12
+     * $query->filterByEventType(array('max' => 12)); // WHERE event_type <= 12
+     * </code>
+     *
+     * @see       filterByListEventsType()
+     *
+     * @param     mixed $eventType The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByEventType($eventType = null, $comparison = null)
+    {
+        if (is_array($eventType)) {
+            $useMinMax = false;
+            if (isset($eventType['min'])) {
+                $this->addUsingAlias(ListEventsPeer::EVENT_TYPE, $eventType['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($eventType['max'])) {
+                $this->addUsingAlias(ListEventsPeer::EVENT_TYPE, $eventType['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::EVENT_TYPE, $eventType, $comparison);
+    }
+
+    /**
+     * Filter the query on the status column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status >= 12
+     * $query->filterByStatus(array('max' => 12)); // WHERE status <= 12
+     * </code>
+     *
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByStatus($status = null, $comparison = null)
+    {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(ListEventsPeer::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(ListEventsPeer::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::STATUS, $status, $comparison);
+    }
+
+    /**
+     * Filter the query on the sms_response column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySmsResponse('fooValue');   // WHERE sms_response = 'fooValue'
+     * $query->filterBySmsResponse('%fooValue%'); // WHERE sms_response LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $smsResponse The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterBySmsResponse($smsResponse = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($smsResponse)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $smsResponse)) {
+                $smsResponse = str_replace('*', '%', $smsResponse);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::SMS_RESPONSE, $smsResponse, $comparison);
     }
 
     /**
@@ -445,14 +686,14 @@ abstract class BaseListEventsQuery extends ModelCriteria
     {
         if ($listEventsType instanceof ListEventsType) {
             return $this
-                ->addUsingAlias(ListEventsPeer::TYPE, $listEventsType->getId(), $comparison);
+                ->addUsingAlias(ListEventsPeer::EVENT_TYPE, $listEventsType->getId(), $comparison);
         } elseif ($listEventsType instanceof PropelObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(ListEventsPeer::TYPE, $listEventsType->toKeyValue('PrimaryKey', 'Id'), $comparison);
+                ->addUsingAlias(ListEventsPeer::EVENT_TYPE, $listEventsType->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
             throw new PropelException('filterByListEventsType() only accepts arguments of type ListEventsType or PropelCollection');
         }
@@ -506,6 +747,304 @@ abstract class BaseListEventsQuery extends ModelCriteria
         return $this
             ->joinListEventsType($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ListEventsType', '\CoreBundle\Model\ListEventsTypeQuery');
+    }
+
+    /**
+     * Filter the query by a related EmpAcc object
+     *
+     * @param   EmpAcc|PropelObjectCollection $empAcc The related object(s) to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 ListEventsQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEmpAcc($empAcc, $comparison = null)
+    {
+        if ($empAcc instanceof EmpAcc) {
+            return $this
+                ->addUsingAlias(ListEventsPeer::CREATED_BY, $empAcc->getId(), $comparison);
+        } elseif ($empAcc instanceof PropelObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ListEventsPeer::CREATED_BY, $empAcc->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByEmpAcc() only accepts arguments of type EmpAcc or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EmpAcc relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function joinEmpAcc($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EmpAcc');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EmpAcc');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EmpAcc relation EmpAcc object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EmpAccQuery A secondary query class using the current class as primary query
+     */
+    public function useEmpAccQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEmpAcc($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EmpAcc', '\CoreBundle\Model\EmpAccQuery');
+    }
+
+    /**
+     * Filter the query by a related EventNotes object
+     *
+     * @param   EventNotes|PropelObjectCollection $eventNotes  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 ListEventsQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventNotes($eventNotes, $comparison = null)
+    {
+        if ($eventNotes instanceof EventNotes) {
+            return $this
+                ->addUsingAlias(ListEventsPeer::ID, $eventNotes->getEventId(), $comparison);
+        } elseif ($eventNotes instanceof PropelObjectCollection) {
+            return $this
+                ->useEventNotesQuery()
+                ->filterByPrimaryKeys($eventNotes->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventNotes() only accepts arguments of type EventNotes or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventNotes relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function joinEventNotes($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventNotes');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventNotes');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventNotes relation EventNotes object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventNotesQuery A secondary query class using the current class as primary query
+     */
+    public function useEventNotesQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventNotes($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventNotes', '\CoreBundle\Model\EventNotesQuery');
+    }
+
+    /**
+     * Filter the query by a related EventTaggedPersons object
+     *
+     * @param   EventTaggedPersons|PropelObjectCollection $eventTaggedPersons  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 ListEventsQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventTaggedPersons($eventTaggedPersons, $comparison = null)
+    {
+        if ($eventTaggedPersons instanceof EventTaggedPersons) {
+            return $this
+                ->addUsingAlias(ListEventsPeer::ID, $eventTaggedPersons->getEventId(), $comparison);
+        } elseif ($eventTaggedPersons instanceof PropelObjectCollection) {
+            return $this
+                ->useEventTaggedPersonsQuery()
+                ->filterByPrimaryKeys($eventTaggedPersons->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventTaggedPersons() only accepts arguments of type EventTaggedPersons or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventTaggedPersons relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function joinEventTaggedPersons($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventTaggedPersons');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventTaggedPersons');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventTaggedPersons relation EventTaggedPersons object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventTaggedPersonsQuery A secondary query class using the current class as primary query
+     */
+    public function useEventTaggedPersonsQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventTaggedPersons($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventTaggedPersons', '\CoreBundle\Model\EventTaggedPersonsQuery');
+    }
+
+    /**
+     * Filter the query by a related EventAttachment object
+     *
+     * @param   EventAttachment|PropelObjectCollection $eventAttachment  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 ListEventsQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventAttachment($eventAttachment, $comparison = null)
+    {
+        if ($eventAttachment instanceof EventAttachment) {
+            return $this
+                ->addUsingAlias(ListEventsPeer::ID, $eventAttachment->getEventId(), $comparison);
+        } elseif ($eventAttachment instanceof PropelObjectCollection) {
+            return $this
+                ->useEventAttachmentQuery()
+                ->filterByPrimaryKeys($eventAttachment->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventAttachment() only accepts arguments of type EventAttachment or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventAttachment relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function joinEventAttachment($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventAttachment');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventAttachment');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventAttachment relation EventAttachment object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventAttachmentQuery A secondary query class using the current class as primary query
+     */
+    public function useEventAttachmentQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventAttachment($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventAttachment', '\CoreBundle\Model\EventAttachmentQuery');
     }
 
     /**

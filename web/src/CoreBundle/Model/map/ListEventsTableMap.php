@@ -43,10 +43,15 @@ class ListEventsTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('date', 'Date', 'TIMESTAMP', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', true, 45, null);
-        $this->addColumn('desc', 'Description', 'LONGVARCHAR', true, 1000, null);
-        $this->addForeignKey('type', 'Type', 'INTEGER', 'list_events_type', 'id', true, null, null);
+        $this->addForeignKey('created_by', 'CreatedBy', 'INTEGER', 'emp_acc', 'id', true, null, null);
+        $this->addColumn('date_created', 'DateCreated', 'TIMESTAMP', true, null, null);
+        $this->addColumn('from_date', 'FromDate', 'TIMESTAMP', true, null, null);
+        $this->addColumn('to_date', 'ToDate', 'TIMESTAMP', true, null, null);
+        $this->addColumn('event_name', 'EventName', 'VARCHAR', true, 45, null);
+        $this->addColumn('event_desc', 'EventDescription', 'LONGVARCHAR', true, 32700, null);
+        $this->addForeignKey('event_type', 'EventType', 'INTEGER', 'list_events_type', 'id', true, null, null);
+        $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
+        $this->addColumn('sms_response', 'SmsResponse', 'LONGVARCHAR', false, 32700, null);
         // validators
     } // initialize()
 
@@ -55,7 +60,11 @@ class ListEventsTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('ListEventsType', 'CoreBundle\\Model\\ListEventsType', RelationMap::MANY_TO_ONE, array('type' => 'id', ), null, null);
+        $this->addRelation('ListEventsType', 'CoreBundle\\Model\\ListEventsType', RelationMap::MANY_TO_ONE, array('event_type' => 'id', ), null, null);
+        $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('created_by' => 'id', ), null, null);
+        $this->addRelation('EventNotes', 'CoreBundle\\Model\\EventNotes', RelationMap::ONE_TO_MANY, array('id' => 'event_id', ), null, null, 'EventNotess');
+        $this->addRelation('EventTaggedPersons', 'CoreBundle\\Model\\EventTaggedPersons', RelationMap::ONE_TO_MANY, array('id' => 'event_id', ), null, null, 'EventTaggedPersonss');
+        $this->addRelation('EventAttachment', 'CoreBundle\\Model\\EventAttachment', RelationMap::ONE_TO_MANY, array('id' => 'event_id', ), null, null, 'EventAttachments');
     } // buildRelations()
 
 } // ListEventsTableMap

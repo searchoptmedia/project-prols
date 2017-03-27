@@ -52,7 +52,7 @@ class ListEventsTypeTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('ListEvents', 'CoreBundle\\Model\\ListEvents', RelationMap::ONE_TO_MANY, array('id' => 'type', ), null, null, 'ListEventss');
+        $this->addRelation('ListEvents', 'CoreBundle\\Model\\ListEvents', RelationMap::ONE_TO_MANY, array('id' => 'event_type', ), null, null, 'ListEventss');
     } // buildRelations()
 
 } // ListEventsTypeTableMap

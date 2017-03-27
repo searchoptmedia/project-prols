@@ -10,9 +10,19 @@ use \Exception;
 use \PDO;
 use \Persistent;
 use \Propel;
+use \PropelCollection;
 use \PropelDateTime;
 use \PropelException;
+use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\EmpAcc;
+use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EventAttachment;
+use CoreBundle\Model\EventAttachmentQuery;
+use CoreBundle\Model\EventNotes;
+use CoreBundle\Model\EventNotesQuery;
+use CoreBundle\Model\EventTaggedPersons;
+use CoreBundle\Model\EventTaggedPersonsQuery;
 use CoreBundle\Model\ListEvents;
 use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListEventsQuery;
@@ -47,33 +57,86 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     protected $id;
 
     /**
-     * The value for the date field.
-     * @var        string
-     */
-    protected $date;
-
-    /**
-     * The value for the name field.
-     * @var        string
-     */
-    protected $name;
-
-    /**
-     * The value for the desc field.
-     * @var        string
-     */
-    protected $desc;
-
-    /**
-     * The value for the type field.
+     * The value for the created_by field.
      * @var        int
      */
-    protected $type;
+    protected $created_by;
+
+    /**
+     * The value for the date_created field.
+     * @var        string
+     */
+    protected $date_created;
+
+    /**
+     * The value for the from_date field.
+     * @var        string
+     */
+    protected $from_date;
+
+    /**
+     * The value for the to_date field.
+     * @var        string
+     */
+    protected $to_date;
+
+    /**
+     * The value for the event_name field.
+     * @var        string
+     */
+    protected $event_name;
+
+    /**
+     * The value for the event_desc field.
+     * @var        string
+     */
+    protected $event_desc;
+
+    /**
+     * The value for the event_type field.
+     * @var        int
+     */
+    protected $event_type;
+
+    /**
+     * The value for the status field.
+     * @var        int
+     */
+    protected $status;
+
+    /**
+     * The value for the sms_response field.
+     * @var        string
+     */
+    protected $sms_response;
 
     /**
      * @var        ListEventsType
      */
     protected $aListEventsType;
+
+    /**
+     * @var        EmpAcc
+     */
+    protected $aEmpAcc;
+
+    /**
+     * @var        PropelObjectCollection|EventNotes[] Collection to store aggregation of EventNotes objects.
+     */
+    protected $collEventNotess;
+    protected $collEventNotessPartial;
+
+    /**
+     * @var        PropelObjectCollection|EventTaggedPersons[] Collection to store aggregation of EventTaggedPersons objects.
+     */
+    protected $collEventTaggedPersonss;
+    protected $collEventTaggedPersonssPartial;
+
+    /**
+     * @var        PropelObjectCollection|EventAttachment[] Collection to store aggregation of EventAttachment objects.
+     */
+    protected $collEventAttachments;
+    protected $collEventAttachmentsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -96,6 +159,24 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     protected $alreadyInClearAllReferencesDeep = false;
 
     /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventNotessScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventTaggedPersonssScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventAttachmentsScheduledForDeletion = null;
+
+    /**
      * Get the [id] column value.
      * 
      * @return int
@@ -107,7 +188,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
-     * Get the [optionally formatted] temporal [date] column value.
+     * Get the [created_by] column value.
+     * 
+     * @return int
+     */
+    public function getCreatedBy()
+    {
+
+        return $this->created_by;
+    }
+
+    /**
+     * Get the [optionally formatted] temporal [date_created] column value.
      * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
@@ -115,22 +207,22 @@ abstract class BaseListEvents extends BaseObject implements Persistent
      * @return mixed Formatted date/time value as string or DateTime object (if format is null), null if column is null, and 0 if column value is 0000-00-00 00:00:00
      * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getDate($format = null)
+    public function getDateCreated($format = null)
     {
-        if ($this->date === null) {
+        if ($this->date_created === null) {
             return null;
         }
 
-        if ($this->date === '0000-00-00 00:00:00') {
+        if ($this->date_created === '0000-00-00 00:00:00') {
             // while technically this is not a default value of null,
             // this seems to be closest in meaning.
             return null;
         }
 
         try {
-            $dt = new DateTime($this->date);
+            $dt = new DateTime($this->date_created);
         } catch (Exception $x) {
-            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->date, true), $x);
+            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->date_created, true), $x);
         }
 
         if ($format === null) {
@@ -147,36 +239,138 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
-     * Get the [name] column value.
+     * Get the [optionally formatted] temporal [from_date] column value.
      * 
-     * @return string
+     *
+     * @param string $format The date/time format string (either date()-style or strftime()-style).
+     *				 If format is null, then the raw DateTime object will be returned.
+     * @return mixed Formatted date/time value as string or DateTime object (if format is null), null if column is null, and 0 if column value is 0000-00-00 00:00:00
+     * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getName()
+    public function getFromDate($format = null)
     {
+        if ($this->from_date === null) {
+            return null;
+        }
 
-        return $this->name;
+        if ($this->from_date === '0000-00-00 00:00:00') {
+            // while technically this is not a default value of null,
+            // this seems to be closest in meaning.
+            return null;
+        }
+
+        try {
+            $dt = new DateTime($this->from_date);
+        } catch (Exception $x) {
+            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->from_date, true), $x);
+        }
+
+        if ($format === null) {
+            // Because propel.useDateTimeClass is true, we return a DateTime object.
+            return $dt;
+        }
+
+        if (strpos($format, '%') !== false) {
+            return strftime($format, $dt->format('U'));
+        }
+
+        return $dt->format($format);
+        
     }
 
     /**
-     * Get the [desc] column value.
+     * Get the [optionally formatted] temporal [to_date] column value.
      * 
-     * @return string
+     *
+     * @param string $format The date/time format string (either date()-style or strftime()-style).
+     *				 If format is null, then the raw DateTime object will be returned.
+     * @return mixed Formatted date/time value as string or DateTime object (if format is null), null if column is null, and 0 if column value is 0000-00-00 00:00:00
+     * @throws PropelException - if unable to parse/validate the date/time value.
      */
-    public function getDescription()
+    public function getToDate($format = null)
     {
+        if ($this->to_date === null) {
+            return null;
+        }
 
-        return $this->desc;
+        if ($this->to_date === '0000-00-00 00:00:00') {
+            // while technically this is not a default value of null,
+            // this seems to be closest in meaning.
+            return null;
+        }
+
+        try {
+            $dt = new DateTime($this->to_date);
+        } catch (Exception $x) {
+            throw new PropelException("Internally stored date/time/timestamp value could not be converted to DateTime: " . var_export($this->to_date, true), $x);
+        }
+
+        if ($format === null) {
+            // Because propel.useDateTimeClass is true, we return a DateTime object.
+            return $dt;
+        }
+
+        if (strpos($format, '%') !== false) {
+            return strftime($format, $dt->format('U'));
+        }
+
+        return $dt->format($format);
+        
     }
 
     /**
-     * Get the [type] column value.
+     * Get the [event_name] column value.
+     * 
+     * @return string
+     */
+    public function getEventName()
+    {
+
+        return $this->event_name;
+    }
+
+    /**
+     * Get the [event_desc] column value.
+     * 
+     * @return string
+     */
+    public function getEventDescription()
+    {
+
+        return $this->event_desc;
+    }
+
+    /**
+     * Get the [event_type] column value.
      * 
      * @return int
      */
-    public function getType()
+    public function getEventType()
     {
 
-        return $this->type;
+        return $this->event_type;
+    }
+
+    /**
+     * Get the [status] column value.
+     * 
+     * @return int
+     */
+    public function getStatus()
+    {
+
+        return $this->status;
+    }
+
+    /**
+     * Get the [sms_response] column value.
+     * 
+     * @return string
+     */
+    public function getSmsResponse()
+    {
+
+        return $this->sms_response;
     }
 
     /**
@@ -201,85 +395,156 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     } // setId()
 
     /**
-     * Sets the value of [date] column to a normalized version of the date/time value specified.
-     * 
-     * @param mixed $v string, integer (timestamp), or DateTime value.
-     *               Empty strings are treated as null.
-     * @return ListEvents The current object (for fluent API support)
-     */
-    public function setDate($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->date !== null || $dt !== null) {
-            $currentDateAsString = ($this->date !== null && $tmpDt = new DateTime($this->date)) ? $tmpDt->format('Y-m-d H:i:s') : null;
-            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
-            if ($currentDateAsString !== $newDateAsString) {
-                $this->date = $newDateAsString;
-                $this->modifiedColumns[] = ListEventsPeer::DATE;
-            }
-        } // if either are not null
-
-
-        return $this;
-    } // setDate()
-
-    /**
-     * Set the value of [name] column.
-     * 
-     * @param  string $v new value
-     * @return ListEvents The current object (for fluent API support)
-     */
-    public function setName($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[] = ListEventsPeer::NAME;
-        }
-
-
-        return $this;
-    } // setName()
-
-    /**
-     * Set the value of [desc] column.
-     * 
-     * @param  string $v new value
-     * @return ListEvents The current object (for fluent API support)
-     */
-    public function setDescription($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->desc !== $v) {
-            $this->desc = $v;
-            $this->modifiedColumns[] = ListEventsPeer::DESC;
-        }
-
-
-        return $this;
-    } // setDescription()
-
-    /**
-     * Set the value of [type] column.
+     * Set the value of [created_by] column.
      * 
      * @param  int $v new value
      * @return ListEvents The current object (for fluent API support)
      */
-    public function setType($v)
+    public function setCreatedBy($v)
     {
         if ($v !== null && is_numeric($v)) {
             $v = (int) $v;
         }
 
-        if ($this->type !== $v) {
-            $this->type = $v;
-            $this->modifiedColumns[] = ListEventsPeer::TYPE;
+        if ($this->created_by !== $v) {
+            $this->created_by = $v;
+            $this->modifiedColumns[] = ListEventsPeer::CREATED_BY;
+        }
+
+        if ($this->aEmpAcc !== null && $this->aEmpAcc->getId() !== $v) {
+            $this->aEmpAcc = null;
+        }
+
+
+        return $this;
+    } // setCreatedBy()
+
+    /**
+     * Sets the value of [date_created] column to a normalized version of the date/time value specified.
+     * 
+     * @param mixed $v string, integer (timestamp), or DateTime value.
+     *               Empty strings are treated as null.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setDateCreated($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->date_created !== null || $dt !== null) {
+            $currentDateAsString = ($this->date_created !== null && $tmpDt = new DateTime($this->date_created)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+            if ($currentDateAsString !== $newDateAsString) {
+                $this->date_created = $newDateAsString;
+                $this->modifiedColumns[] = ListEventsPeer::DATE_CREATED;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setDateCreated()
+
+    /**
+     * Sets the value of [from_date] column to a normalized version of the date/time value specified.
+     * 
+     * @param mixed $v string, integer (timestamp), or DateTime value.
+     *               Empty strings are treated as null.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setFromDate($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->from_date !== null || $dt !== null) {
+            $currentDateAsString = ($this->from_date !== null && $tmpDt = new DateTime($this->from_date)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+            if ($currentDateAsString !== $newDateAsString) {
+                $this->from_date = $newDateAsString;
+                $this->modifiedColumns[] = ListEventsPeer::FROM_DATE;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setFromDate()
+
+    /**
+     * Sets the value of [to_date] column to a normalized version of the date/time value specified.
+     * 
+     * @param mixed $v string, integer (timestamp), or DateTime value.
+     *               Empty strings are treated as null.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setToDate($v)
+    {
+        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
+        if ($this->to_date !== null || $dt !== null) {
+            $currentDateAsString = ($this->to_date !== null && $tmpDt = new DateTime($this->to_date)) ? $tmpDt->format('Y-m-d H:i:s') : null;
+            $newDateAsString = $dt ? $dt->format('Y-m-d H:i:s') : null;
+            if ($currentDateAsString !== $newDateAsString) {
+                $this->to_date = $newDateAsString;
+                $this->modifiedColumns[] = ListEventsPeer::TO_DATE;
+            }
+        } // if either are not null
+
+
+        return $this;
+    } // setToDate()
+
+    /**
+     * Set the value of [event_name] column.
+     * 
+     * @param  string $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventName($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->event_name !== $v) {
+            $this->event_name = $v;
+            $this->modifiedColumns[] = ListEventsPeer::EVENT_NAME;
+        }
+
+
+        return $this;
+    } // setEventName()
+
+    /**
+     * Set the value of [event_desc] column.
+     * 
+     * @param  string $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventDescription($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->event_desc !== $v) {
+            $this->event_desc = $v;
+            $this->modifiedColumns[] = ListEventsPeer::EVENT_DESC;
+        }
+
+
+        return $this;
+    } // setEventDescription()
+
+    /**
+     * Set the value of [event_type] column.
+     * 
+     * @param  int $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventType($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->event_type !== $v) {
+            $this->event_type = $v;
+            $this->modifiedColumns[] = ListEventsPeer::EVENT_TYPE;
         }
 
         if ($this->aListEventsType !== null && $this->aListEventsType->getId() !== $v) {
@@ -288,7 +553,49 @@ abstract class BaseListEvents extends BaseObject implements Persistent
 
 
         return $this;
-    } // setType()
+    } // setEventType()
+
+    /**
+     * Set the value of [status] column.
+     * 
+     * @param  int $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[] = ListEventsPeer::STATUS;
+        }
+
+
+        return $this;
+    } // setStatus()
+
+    /**
+     * Set the value of [sms_response] column.
+     * 
+     * @param  string $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setSmsResponse($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->sms_response !== $v) {
+            $this->sms_response = $v;
+            $this->modifiedColumns[] = ListEventsPeer::SMS_RESPONSE;
+        }
+
+
+        return $this;
+    } // setSmsResponse()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -323,10 +630,15 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         try {
 
             $this->id = ($row[$startcol + 0] !== null) ? (int) $row[$startcol + 0] : null;
-            $this->date = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-            $this->name = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
-            $this->desc = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
-            $this->type = ($row[$startcol + 4] !== null) ? (int) $row[$startcol + 4] : null;
+            $this->created_by = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
+            $this->date_created = ($row[$startcol + 2] !== null) ? (string) $row[$startcol + 2] : null;
+            $this->from_date = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
+            $this->to_date = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
+            $this->event_name = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
+            $this->event_desc = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+            $this->event_type = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
+            $this->status = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+            $this->sms_response = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -336,7 +648,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 5; // 5 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating ListEvents object", $e);
@@ -359,7 +671,10 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     public function ensureConsistency()
     {
 
-        if ($this->aListEventsType !== null && $this->type !== $this->aListEventsType->getId()) {
+        if ($this->aEmpAcc !== null && $this->created_by !== $this->aEmpAcc->getId()) {
+            $this->aEmpAcc = null;
+        }
+        if ($this->aListEventsType !== null && $this->event_type !== $this->aListEventsType->getId()) {
             $this->aListEventsType = null;
         }
     } // ensureConsistency
@@ -402,6 +717,13 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($deep) {  // also de-associate any related objects?
 
             $this->aListEventsType = null;
+            $this->aEmpAcc = null;
+            $this->collEventNotess = null;
+
+            $this->collEventTaggedPersonss = null;
+
+            $this->collEventAttachments = null;
+
         } // if (deep)
     }
 
@@ -527,6 +849,13 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 $this->setListEventsType($this->aListEventsType);
             }
 
+            if ($this->aEmpAcc !== null) {
+                if ($this->aEmpAcc->isModified() || $this->aEmpAcc->isNew()) {
+                    $affectedRows += $this->aEmpAcc->save($con);
+                }
+                $this->setEmpAcc($this->aEmpAcc);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -536,6 +865,57 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 }
                 $affectedRows += 1;
                 $this->resetModified();
+            }
+
+            if ($this->eventNotessScheduledForDeletion !== null) {
+                if (!$this->eventNotessScheduledForDeletion->isEmpty()) {
+                    EventNotesQuery::create()
+                        ->filterByPrimaryKeys($this->eventNotessScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventNotessScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventNotess !== null) {
+                foreach ($this->collEventNotess as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->eventTaggedPersonssScheduledForDeletion !== null) {
+                if (!$this->eventTaggedPersonssScheduledForDeletion->isEmpty()) {
+                    EventTaggedPersonsQuery::create()
+                        ->filterByPrimaryKeys($this->eventTaggedPersonssScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventTaggedPersonssScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventTaggedPersonss !== null) {
+                foreach ($this->collEventTaggedPersonss as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->eventAttachmentsScheduledForDeletion !== null) {
+                if (!$this->eventAttachmentsScheduledForDeletion->isEmpty()) {
+                    EventAttachmentQuery::create()
+                        ->filterByPrimaryKeys($this->eventAttachmentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventAttachmentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventAttachments !== null) {
+                foreach ($this->collEventAttachments as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             $this->alreadyInSave = false;
@@ -567,17 +947,32 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($this->isColumnModified(ListEventsPeer::ID)) {
             $modifiedColumns[':p' . $index++]  = '`id`';
         }
-        if ($this->isColumnModified(ListEventsPeer::DATE)) {
-            $modifiedColumns[':p' . $index++]  = '`date`';
+        if ($this->isColumnModified(ListEventsPeer::CREATED_BY)) {
+            $modifiedColumns[':p' . $index++]  = '`created_by`';
         }
-        if ($this->isColumnModified(ListEventsPeer::NAME)) {
-            $modifiedColumns[':p' . $index++]  = '`name`';
+        if ($this->isColumnModified(ListEventsPeer::DATE_CREATED)) {
+            $modifiedColumns[':p' . $index++]  = '`date_created`';
         }
-        if ($this->isColumnModified(ListEventsPeer::DESC)) {
-            $modifiedColumns[':p' . $index++]  = '`desc`';
+        if ($this->isColumnModified(ListEventsPeer::FROM_DATE)) {
+            $modifiedColumns[':p' . $index++]  = '`from_date`';
         }
-        if ($this->isColumnModified(ListEventsPeer::TYPE)) {
-            $modifiedColumns[':p' . $index++]  = '`type`';
+        if ($this->isColumnModified(ListEventsPeer::TO_DATE)) {
+            $modifiedColumns[':p' . $index++]  = '`to_date`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::EVENT_NAME)) {
+            $modifiedColumns[':p' . $index++]  = '`event_name`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::EVENT_DESC)) {
+            $modifiedColumns[':p' . $index++]  = '`event_desc`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::EVENT_TYPE)) {
+            $modifiedColumns[':p' . $index++]  = '`event_type`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::STATUS)) {
+            $modifiedColumns[':p' . $index++]  = '`status`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::SMS_RESPONSE)) {
+            $modifiedColumns[':p' . $index++]  = '`sms_response`';
         }
 
         $sql = sprintf(
@@ -593,17 +988,32 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                     case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`date`':						
-                        $stmt->bindValue($identifier, $this->date, PDO::PARAM_STR);
+                    case '`created_by`':						
+                        $stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
                         break;
-                    case '`name`':						
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+                    case '`date_created`':						
+                        $stmt->bindValue($identifier, $this->date_created, PDO::PARAM_STR);
                         break;
-                    case '`desc`':						
-                        $stmt->bindValue($identifier, $this->desc, PDO::PARAM_STR);
+                    case '`from_date`':						
+                        $stmt->bindValue($identifier, $this->from_date, PDO::PARAM_STR);
                         break;
-                    case '`type`':						
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_INT);
+                    case '`to_date`':						
+                        $stmt->bindValue($identifier, $this->to_date, PDO::PARAM_STR);
+                        break;
+                    case '`event_name`':						
+                        $stmt->bindValue($identifier, $this->event_name, PDO::PARAM_STR);
+                        break;
+                    case '`event_desc`':						
+                        $stmt->bindValue($identifier, $this->event_desc, PDO::PARAM_STR);
+                        break;
+                    case '`event_type`':						
+                        $stmt->bindValue($identifier, $this->event_type, PDO::PARAM_INT);
+                        break;
+                    case '`status`':						
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
+                        break;
+                    case '`sms_response`':						
+                        $stmt->bindValue($identifier, $this->sms_response, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -710,11 +1120,41 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 }
             }
 
+            if ($this->aEmpAcc !== null) {
+                if (!$this->aEmpAcc->validate($columns)) {
+                    $failureMap = array_merge($failureMap, $this->aEmpAcc->getValidationFailures());
+                }
+            }
+
 
             if (($retval = ListEventsPeer::doValidate($this, $columns)) !== true) {
                 $failureMap = array_merge($failureMap, $retval);
             }
 
+
+                if ($this->collEventNotess !== null) {
+                    foreach ($this->collEventNotess as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collEventTaggedPersonss !== null) {
+                    foreach ($this->collEventTaggedPersonss as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
+                if ($this->collEventAttachments !== null) {
+                    foreach ($this->collEventAttachments as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
 
 
             $this->alreadyInValidation = false;
@@ -755,16 +1195,31 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 return $this->getId();
                 break;
             case 1:
-                return $this->getDate();
+                return $this->getCreatedBy();
                 break;
             case 2:
-                return $this->getName();
+                return $this->getDateCreated();
                 break;
             case 3:
-                return $this->getDescription();
+                return $this->getFromDate();
                 break;
             case 4:
-                return $this->getType();
+                return $this->getToDate();
+                break;
+            case 5:
+                return $this->getEventName();
+                break;
+            case 6:
+                return $this->getEventDescription();
+                break;
+            case 7:
+                return $this->getEventType();
+                break;
+            case 8:
+                return $this->getStatus();
+                break;
+            case 9:
+                return $this->getSmsResponse();
                 break;
             default:
                 return null;
@@ -796,10 +1251,15 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $keys = ListEventsPeer::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getDate(),
-            $keys[2] => $this->getName(),
-            $keys[3] => $this->getDescription(),
-            $keys[4] => $this->getType(),
+            $keys[1] => $this->getCreatedBy(),
+            $keys[2] => $this->getDateCreated(),
+            $keys[3] => $this->getFromDate(),
+            $keys[4] => $this->getToDate(),
+            $keys[5] => $this->getEventName(),
+            $keys[6] => $this->getEventDescription(),
+            $keys[7] => $this->getEventType(),
+            $keys[8] => $this->getStatus(),
+            $keys[9] => $this->getSmsResponse(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -809,6 +1269,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($includeForeignObjects) {
             if (null !== $this->aListEventsType) {
                 $result['ListEventsType'] = $this->aListEventsType->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aEmpAcc) {
+                $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collEventNotess) {
+                $result['EventNotess'] = $this->collEventNotess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEventTaggedPersonss) {
+                $result['EventTaggedPersonss'] = $this->collEventTaggedPersonss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collEventAttachments) {
+                $result['EventAttachments'] = $this->collEventAttachments->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -848,16 +1320,31 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 $this->setId($value);
                 break;
             case 1:
-                $this->setDate($value);
+                $this->setCreatedBy($value);
                 break;
             case 2:
-                $this->setName($value);
+                $this->setDateCreated($value);
                 break;
             case 3:
-                $this->setDescription($value);
+                $this->setFromDate($value);
                 break;
             case 4:
-                $this->setType($value);
+                $this->setToDate($value);
+                break;
+            case 5:
+                $this->setEventName($value);
+                break;
+            case 6:
+                $this->setEventDescription($value);
+                break;
+            case 7:
+                $this->setEventType($value);
+                break;
+            case 8:
+                $this->setStatus($value);
+                break;
+            case 9:
+                $this->setSmsResponse($value);
                 break;
         } // switch()
     }
@@ -884,10 +1371,15 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $keys = ListEventsPeer::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setDate($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setName($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setDescription($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setType($arr[$keys[4]]);
+        if (array_key_exists($keys[1], $arr)) $this->setCreatedBy($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setDateCreated($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setFromDate($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setToDate($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setEventName($arr[$keys[5]]);
+        if (array_key_exists($keys[6], $arr)) $this->setEventDescription($arr[$keys[6]]);
+        if (array_key_exists($keys[7], $arr)) $this->setEventType($arr[$keys[7]]);
+        if (array_key_exists($keys[8], $arr)) $this->setStatus($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setSmsResponse($arr[$keys[9]]);
     }
 
     /**
@@ -900,10 +1392,15 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $criteria = new Criteria(ListEventsPeer::DATABASE_NAME);
 
         if ($this->isColumnModified(ListEventsPeer::ID)) $criteria->add(ListEventsPeer::ID, $this->id);
-        if ($this->isColumnModified(ListEventsPeer::DATE)) $criteria->add(ListEventsPeer::DATE, $this->date);
-        if ($this->isColumnModified(ListEventsPeer::NAME)) $criteria->add(ListEventsPeer::NAME, $this->name);
-        if ($this->isColumnModified(ListEventsPeer::DESC)) $criteria->add(ListEventsPeer::DESC, $this->desc);
-        if ($this->isColumnModified(ListEventsPeer::TYPE)) $criteria->add(ListEventsPeer::TYPE, $this->type);
+        if ($this->isColumnModified(ListEventsPeer::CREATED_BY)) $criteria->add(ListEventsPeer::CREATED_BY, $this->created_by);
+        if ($this->isColumnModified(ListEventsPeer::DATE_CREATED)) $criteria->add(ListEventsPeer::DATE_CREATED, $this->date_created);
+        if ($this->isColumnModified(ListEventsPeer::FROM_DATE)) $criteria->add(ListEventsPeer::FROM_DATE, $this->from_date);
+        if ($this->isColumnModified(ListEventsPeer::TO_DATE)) $criteria->add(ListEventsPeer::TO_DATE, $this->to_date);
+        if ($this->isColumnModified(ListEventsPeer::EVENT_NAME)) $criteria->add(ListEventsPeer::EVENT_NAME, $this->event_name);
+        if ($this->isColumnModified(ListEventsPeer::EVENT_DESC)) $criteria->add(ListEventsPeer::EVENT_DESC, $this->event_desc);
+        if ($this->isColumnModified(ListEventsPeer::EVENT_TYPE)) $criteria->add(ListEventsPeer::EVENT_TYPE, $this->event_type);
+        if ($this->isColumnModified(ListEventsPeer::STATUS)) $criteria->add(ListEventsPeer::STATUS, $this->status);
+        if ($this->isColumnModified(ListEventsPeer::SMS_RESPONSE)) $criteria->add(ListEventsPeer::SMS_RESPONSE, $this->sms_response);
 
         return $criteria;
     }
@@ -967,10 +1464,15 @@ abstract class BaseListEvents extends BaseObject implements Persistent
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setDate($this->getDate());
-        $copyObj->setName($this->getName());
-        $copyObj->setDescription($this->getDescription());
-        $copyObj->setType($this->getType());
+        $copyObj->setCreatedBy($this->getCreatedBy());
+        $copyObj->setDateCreated($this->getDateCreated());
+        $copyObj->setFromDate($this->getFromDate());
+        $copyObj->setToDate($this->getToDate());
+        $copyObj->setEventName($this->getEventName());
+        $copyObj->setEventDescription($this->getEventDescription());
+        $copyObj->setEventType($this->getEventType());
+        $copyObj->setStatus($this->getStatus());
+        $copyObj->setSmsResponse($this->getSmsResponse());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -978,6 +1480,24 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $copyObj->setNew(false);
             // store object hash to prevent cycle
             $this->startCopy = true;
+
+            foreach ($this->getEventNotess() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventNotes($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getEventTaggedPersonss() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventTaggedPersons($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getEventAttachments() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventAttachment($relObj->copy($deepCopy));
+                }
+            }
 
             //unflag object copy
             $this->startCopy = false;
@@ -1039,9 +1559,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     public function setListEventsType(ListEventsType $v = null)
     {
         if ($v === null) {
-            $this->setType(NULL);
+            $this->setEventType(NULL);
         } else {
-            $this->setType($v->getId());
+            $this->setEventType($v->getId());
         }
 
         $this->aListEventsType = $v;
@@ -1067,8 +1587,8 @@ abstract class BaseListEvents extends BaseObject implements Persistent
      */
     public function getListEventsType(PropelPDO $con = null, $doQuery = true)
     {
-        if ($this->aListEventsType === null && ($this->type !== null) && $doQuery) {
-            $this->aListEventsType = ListEventsTypeQuery::create()->findPk($this->type, $con);
+        if ($this->aListEventsType === null && ($this->event_type !== null) && $doQuery) {
+            $this->aListEventsType = ListEventsTypeQuery::create()->findPk($this->event_type, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
@@ -1082,15 +1602,819 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
+     * Declares an association between this object and a EmpAcc object.
+     *
+     * @param                  EmpAcc $v
+     * @return ListEvents The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setEmpAcc(EmpAcc $v = null)
+    {
+        if ($v === null) {
+            $this->setCreatedBy(NULL);
+        } else {
+            $this->setCreatedBy($v->getId());
+        }
+
+        $this->aEmpAcc = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the EmpAcc object, it will not be re-added.
+        if ($v !== null) {
+            $v->addListEvents($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated EmpAcc object
+     *
+     * @param PropelPDO $con Optional Connection object.
+     * @param $doQuery Executes a query to get the object if required
+     * @return EmpAcc The associated EmpAcc object.
+     * @throws PropelException
+     */
+    public function getEmpAcc(PropelPDO $con = null, $doQuery = true)
+    {
+        if ($this->aEmpAcc === null && ($this->created_by !== null) && $doQuery) {
+            $this->aEmpAcc = EmpAccQuery::create()->findPk($this->created_by, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aEmpAcc->addListEventss($this);
+             */
+        }
+
+        return $this->aEmpAcc;
+    }
+
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('EventNotes' == $relationName) {
+            $this->initEventNotess();
+        }
+        if ('EventTaggedPersons' == $relationName) {
+            $this->initEventTaggedPersonss();
+        }
+        if ('EventAttachment' == $relationName) {
+            $this->initEventAttachments();
+        }
+    }
+
+    /**
+     * Clears out the collEventNotess collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return ListEvents The current object (for fluent API support)
+     * @see        addEventNotess()
+     */
+    public function clearEventNotess()
+    {
+        $this->collEventNotess = null; // important to set this to null since that means it is uninitialized
+        $this->collEventNotessPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventNotess collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventNotess($v = true)
+    {
+        $this->collEventNotessPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventNotess collection.
+     *
+     * By default this just sets the collEventNotess collection to an empty array (like clearcollEventNotess());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventNotess($overrideExisting = true)
+    {
+        if (null !== $this->collEventNotess && !$overrideExisting) {
+            return;
+        }
+        $this->collEventNotess = new PropelObjectCollection();
+        $this->collEventNotess->setModel('EventNotes');
+    }
+
+    /**
+     * Gets an array of EventNotes objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ListEvents is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventNotes[] List of EventNotes objects
+     * @throws PropelException
+     */
+    public function getEventNotess($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventNotessPartial && !$this->isNew();
+        if (null === $this->collEventNotess || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventNotess) {
+                // return empty collection
+                $this->initEventNotess();
+            } else {
+                $collEventNotess = EventNotesQuery::create(null, $criteria)
+                    ->filterByListEvents($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventNotessPartial && count($collEventNotess)) {
+                      $this->initEventNotess(false);
+
+                      foreach ($collEventNotess as $obj) {
+                        if (false == $this->collEventNotess->contains($obj)) {
+                          $this->collEventNotess->append($obj);
+                        }
+                      }
+
+                      $this->collEventNotessPartial = true;
+                    }
+
+                    $collEventNotess->getInternalIterator()->rewind();
+
+                    return $collEventNotess;
+                }
+
+                if ($partial && $this->collEventNotess) {
+                    foreach ($this->collEventNotess as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventNotess[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventNotess = $collEventNotess;
+                $this->collEventNotessPartial = false;
+            }
+        }
+
+        return $this->collEventNotess;
+    }
+
+    /**
+     * Sets a collection of EventNotes objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventNotess A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventNotess(PropelCollection $eventNotess, PropelPDO $con = null)
+    {
+        $eventNotessToDelete = $this->getEventNotess(new Criteria(), $con)->diff($eventNotess);
+
+
+        $this->eventNotessScheduledForDeletion = $eventNotessToDelete;
+
+        foreach ($eventNotessToDelete as $eventNotesRemoved) {
+            $eventNotesRemoved->setListEvents(null);
+        }
+
+        $this->collEventNotess = null;
+        foreach ($eventNotess as $eventNotes) {
+            $this->addEventNotes($eventNotes);
+        }
+
+        $this->collEventNotess = $eventNotess;
+        $this->collEventNotessPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventNotes objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventNotes objects.
+     * @throws PropelException
+     */
+    public function countEventNotess(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventNotessPartial && !$this->isNew();
+        if (null === $this->collEventNotess || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventNotess) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventNotess());
+            }
+            $query = EventNotesQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByListEvents($this)
+                ->count($con);
+        }
+
+        return count($this->collEventNotess);
+    }
+
+    /**
+     * Method called to associate a EventNotes object to this object
+     * through the EventNotes foreign key attribute.
+     *
+     * @param    EventNotes $l EventNotes
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function addEventNotes(EventNotes $l)
+    {
+        if ($this->collEventNotess === null) {
+            $this->initEventNotess();
+            $this->collEventNotessPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventNotess->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventNotes($l);
+
+            if ($this->eventNotessScheduledForDeletion and $this->eventNotessScheduledForDeletion->contains($l)) {
+                $this->eventNotessScheduledForDeletion->remove($this->eventNotessScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventNotes $eventNotes The eventNotes object to add.
+     */
+    protected function doAddEventNotes($eventNotes)
+    {
+        $this->collEventNotess[]= $eventNotes;
+        $eventNotes->setListEvents($this);
+    }
+
+    /**
+     * @param	EventNotes $eventNotes The eventNotes object to remove.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function removeEventNotes($eventNotes)
+    {
+        if ($this->getEventNotess()->contains($eventNotes)) {
+            $this->collEventNotess->remove($this->collEventNotess->search($eventNotes));
+            if (null === $this->eventNotessScheduledForDeletion) {
+                $this->eventNotessScheduledForDeletion = clone $this->collEventNotess;
+                $this->eventNotessScheduledForDeletion->clear();
+            }
+            $this->eventNotessScheduledForDeletion[]= clone $eventNotes;
+            $eventNotes->setListEvents(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this ListEvents is new, it will return
+     * an empty collection; or if this ListEvents has previously
+     * been saved, it will retrieve related EventNotess from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in ListEvents.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EventNotes[] List of EventNotes objects
+     */
+    public function getEventNotessJoinEmpAcc($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EventNotesQuery::create(null, $criteria);
+        $query->joinWith('EmpAcc', $join_behavior);
+
+        return $this->getEventNotess($query, $con);
+    }
+
+    /**
+     * Clears out the collEventTaggedPersonss collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return ListEvents The current object (for fluent API support)
+     * @see        addEventTaggedPersonss()
+     */
+    public function clearEventTaggedPersonss()
+    {
+        $this->collEventTaggedPersonss = null; // important to set this to null since that means it is uninitialized
+        $this->collEventTaggedPersonssPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventTaggedPersonss collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventTaggedPersonss($v = true)
+    {
+        $this->collEventTaggedPersonssPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventTaggedPersonss collection.
+     *
+     * By default this just sets the collEventTaggedPersonss collection to an empty array (like clearcollEventTaggedPersonss());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventTaggedPersonss($overrideExisting = true)
+    {
+        if (null !== $this->collEventTaggedPersonss && !$overrideExisting) {
+            return;
+        }
+        $this->collEventTaggedPersonss = new PropelObjectCollection();
+        $this->collEventTaggedPersonss->setModel('EventTaggedPersons');
+    }
+
+    /**
+     * Gets an array of EventTaggedPersons objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ListEvents is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventTaggedPersons[] List of EventTaggedPersons objects
+     * @throws PropelException
+     */
+    public function getEventTaggedPersonss($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTaggedPersonssPartial && !$this->isNew();
+        if (null === $this->collEventTaggedPersonss || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventTaggedPersonss) {
+                // return empty collection
+                $this->initEventTaggedPersonss();
+            } else {
+                $collEventTaggedPersonss = EventTaggedPersonsQuery::create(null, $criteria)
+                    ->filterByListEvents($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventTaggedPersonssPartial && count($collEventTaggedPersonss)) {
+                      $this->initEventTaggedPersonss(false);
+
+                      foreach ($collEventTaggedPersonss as $obj) {
+                        if (false == $this->collEventTaggedPersonss->contains($obj)) {
+                          $this->collEventTaggedPersonss->append($obj);
+                        }
+                      }
+
+                      $this->collEventTaggedPersonssPartial = true;
+                    }
+
+                    $collEventTaggedPersonss->getInternalIterator()->rewind();
+
+                    return $collEventTaggedPersonss;
+                }
+
+                if ($partial && $this->collEventTaggedPersonss) {
+                    foreach ($this->collEventTaggedPersonss as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventTaggedPersonss[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventTaggedPersonss = $collEventTaggedPersonss;
+                $this->collEventTaggedPersonssPartial = false;
+            }
+        }
+
+        return $this->collEventTaggedPersonss;
+    }
+
+    /**
+     * Sets a collection of EventTaggedPersons objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventTaggedPersonss A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventTaggedPersonss(PropelCollection $eventTaggedPersonss, PropelPDO $con = null)
+    {
+        $eventTaggedPersonssToDelete = $this->getEventTaggedPersonss(new Criteria(), $con)->diff($eventTaggedPersonss);
+
+
+        $this->eventTaggedPersonssScheduledForDeletion = $eventTaggedPersonssToDelete;
+
+        foreach ($eventTaggedPersonssToDelete as $eventTaggedPersonsRemoved) {
+            $eventTaggedPersonsRemoved->setListEvents(null);
+        }
+
+        $this->collEventTaggedPersonss = null;
+        foreach ($eventTaggedPersonss as $eventTaggedPersons) {
+            $this->addEventTaggedPersons($eventTaggedPersons);
+        }
+
+        $this->collEventTaggedPersonss = $eventTaggedPersonss;
+        $this->collEventTaggedPersonssPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventTaggedPersons objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventTaggedPersons objects.
+     * @throws PropelException
+     */
+    public function countEventTaggedPersonss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTaggedPersonssPartial && !$this->isNew();
+        if (null === $this->collEventTaggedPersonss || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventTaggedPersonss) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventTaggedPersonss());
+            }
+            $query = EventTaggedPersonsQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByListEvents($this)
+                ->count($con);
+        }
+
+        return count($this->collEventTaggedPersonss);
+    }
+
+    /**
+     * Method called to associate a EventTaggedPersons object to this object
+     * through the EventTaggedPersons foreign key attribute.
+     *
+     * @param    EventTaggedPersons $l EventTaggedPersons
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function addEventTaggedPersons(EventTaggedPersons $l)
+    {
+        if ($this->collEventTaggedPersonss === null) {
+            $this->initEventTaggedPersonss();
+            $this->collEventTaggedPersonssPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventTaggedPersonss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventTaggedPersons($l);
+
+            if ($this->eventTaggedPersonssScheduledForDeletion and $this->eventTaggedPersonssScheduledForDeletion->contains($l)) {
+                $this->eventTaggedPersonssScheduledForDeletion->remove($this->eventTaggedPersonssScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventTaggedPersons $eventTaggedPersons The eventTaggedPersons object to add.
+     */
+    protected function doAddEventTaggedPersons($eventTaggedPersons)
+    {
+        $this->collEventTaggedPersonss[]= $eventTaggedPersons;
+        $eventTaggedPersons->setListEvents($this);
+    }
+
+    /**
+     * @param	EventTaggedPersons $eventTaggedPersons The eventTaggedPersons object to remove.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function removeEventTaggedPersons($eventTaggedPersons)
+    {
+        if ($this->getEventTaggedPersonss()->contains($eventTaggedPersons)) {
+            $this->collEventTaggedPersonss->remove($this->collEventTaggedPersonss->search($eventTaggedPersons));
+            if (null === $this->eventTaggedPersonssScheduledForDeletion) {
+                $this->eventTaggedPersonssScheduledForDeletion = clone $this->collEventTaggedPersonss;
+                $this->eventTaggedPersonssScheduledForDeletion->clear();
+            }
+            $this->eventTaggedPersonssScheduledForDeletion[]= clone $eventTaggedPersons;
+            $eventTaggedPersons->setListEvents(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this ListEvents is new, it will return
+     * an empty collection; or if this ListEvents has previously
+     * been saved, it will retrieve related EventTaggedPersonss from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in ListEvents.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EventTaggedPersons[] List of EventTaggedPersons objects
+     */
+    public function getEventTaggedPersonssJoinEmpAcc($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EventTaggedPersonsQuery::create(null, $criteria);
+        $query->joinWith('EmpAcc', $join_behavior);
+
+        return $this->getEventTaggedPersonss($query, $con);
+    }
+
+    /**
+     * Clears out the collEventAttachments collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return ListEvents The current object (for fluent API support)
+     * @see        addEventAttachments()
+     */
+    public function clearEventAttachments()
+    {
+        $this->collEventAttachments = null; // important to set this to null since that means it is uninitialized
+        $this->collEventAttachmentsPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventAttachments collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventAttachments($v = true)
+    {
+        $this->collEventAttachmentsPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventAttachments collection.
+     *
+     * By default this just sets the collEventAttachments collection to an empty array (like clearcollEventAttachments());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventAttachments($overrideExisting = true)
+    {
+        if (null !== $this->collEventAttachments && !$overrideExisting) {
+            return;
+        }
+        $this->collEventAttachments = new PropelObjectCollection();
+        $this->collEventAttachments->setModel('EventAttachment');
+    }
+
+    /**
+     * Gets an array of EventAttachment objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ListEvents is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventAttachment[] List of EventAttachment objects
+     * @throws PropelException
+     */
+    public function getEventAttachments($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventAttachmentsPartial && !$this->isNew();
+        if (null === $this->collEventAttachments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventAttachments) {
+                // return empty collection
+                $this->initEventAttachments();
+            } else {
+                $collEventAttachments = EventAttachmentQuery::create(null, $criteria)
+                    ->filterByListEvents($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventAttachmentsPartial && count($collEventAttachments)) {
+                      $this->initEventAttachments(false);
+
+                      foreach ($collEventAttachments as $obj) {
+                        if (false == $this->collEventAttachments->contains($obj)) {
+                          $this->collEventAttachments->append($obj);
+                        }
+                      }
+
+                      $this->collEventAttachmentsPartial = true;
+                    }
+
+                    $collEventAttachments->getInternalIterator()->rewind();
+
+                    return $collEventAttachments;
+                }
+
+                if ($partial && $this->collEventAttachments) {
+                    foreach ($this->collEventAttachments as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventAttachments[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventAttachments = $collEventAttachments;
+                $this->collEventAttachmentsPartial = false;
+            }
+        }
+
+        return $this->collEventAttachments;
+    }
+
+    /**
+     * Sets a collection of EventAttachment objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventAttachments A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventAttachments(PropelCollection $eventAttachments, PropelPDO $con = null)
+    {
+        $eventAttachmentsToDelete = $this->getEventAttachments(new Criteria(), $con)->diff($eventAttachments);
+
+
+        $this->eventAttachmentsScheduledForDeletion = $eventAttachmentsToDelete;
+
+        foreach ($eventAttachmentsToDelete as $eventAttachmentRemoved) {
+            $eventAttachmentRemoved->setListEvents(null);
+        }
+
+        $this->collEventAttachments = null;
+        foreach ($eventAttachments as $eventAttachment) {
+            $this->addEventAttachment($eventAttachment);
+        }
+
+        $this->collEventAttachments = $eventAttachments;
+        $this->collEventAttachmentsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventAttachment objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventAttachment objects.
+     * @throws PropelException
+     */
+    public function countEventAttachments(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventAttachmentsPartial && !$this->isNew();
+        if (null === $this->collEventAttachments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventAttachments) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventAttachments());
+            }
+            $query = EventAttachmentQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByListEvents($this)
+                ->count($con);
+        }
+
+        return count($this->collEventAttachments);
+    }
+
+    /**
+     * Method called to associate a EventAttachment object to this object
+     * through the EventAttachment foreign key attribute.
+     *
+     * @param    EventAttachment $l EventAttachment
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function addEventAttachment(EventAttachment $l)
+    {
+        if ($this->collEventAttachments === null) {
+            $this->initEventAttachments();
+            $this->collEventAttachmentsPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventAttachments->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventAttachment($l);
+
+            if ($this->eventAttachmentsScheduledForDeletion and $this->eventAttachmentsScheduledForDeletion->contains($l)) {
+                $this->eventAttachmentsScheduledForDeletion->remove($this->eventAttachmentsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventAttachment $eventAttachment The eventAttachment object to add.
+     */
+    protected function doAddEventAttachment($eventAttachment)
+    {
+        $this->collEventAttachments[]= $eventAttachment;
+        $eventAttachment->setListEvents($this);
+    }
+
+    /**
+     * @param	EventAttachment $eventAttachment The eventAttachment object to remove.
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function removeEventAttachment($eventAttachment)
+    {
+        if ($this->getEventAttachments()->contains($eventAttachment)) {
+            $this->collEventAttachments->remove($this->collEventAttachments->search($eventAttachment));
+            if (null === $this->eventAttachmentsScheduledForDeletion) {
+                $this->eventAttachmentsScheduledForDeletion = clone $this->collEventAttachments;
+                $this->eventAttachmentsScheduledForDeletion->clear();
+            }
+            $this->eventAttachmentsScheduledForDeletion[]= clone $eventAttachment;
+            $eventAttachment->setListEvents(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
     {
         $this->id = null;
-        $this->date = null;
-        $this->name = null;
-        $this->desc = null;
-        $this->type = null;
+        $this->created_by = null;
+        $this->date_created = null;
+        $this->from_date = null;
+        $this->to_date = null;
+        $this->event_name = null;
+        $this->event_desc = null;
+        $this->event_type = null;
+        $this->status = null;
+        $this->sms_response = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -1113,14 +2437,45 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->collEventNotess) {
+                foreach ($this->collEventNotess as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collEventTaggedPersonss) {
+                foreach ($this->collEventTaggedPersonss as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collEventAttachments) {
+                foreach ($this->collEventAttachments as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->aListEventsType instanceof Persistent) {
               $this->aListEventsType->clearAllReferences($deep);
+            }
+            if ($this->aEmpAcc instanceof Persistent) {
+              $this->aEmpAcc->clearAllReferences($deep);
             }
 
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        if ($this->collEventNotess instanceof PropelCollection) {
+            $this->collEventNotess->clearIterator();
+        }
+        $this->collEventNotess = null;
+        if ($this->collEventTaggedPersonss instanceof PropelCollection) {
+            $this->collEventTaggedPersonss->clearIterator();
+        }
+        $this->collEventTaggedPersonss = null;
+        if ($this->collEventAttachments instanceof PropelCollection) {
+            $this->collEventAttachments->clearIterator();
+        }
+        $this->collEventAttachments = null;
         $this->aListEventsType = null;
+        $this->aEmpAcc = null;
     }
 
     /**

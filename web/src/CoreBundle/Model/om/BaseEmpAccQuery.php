@@ -19,7 +19,9 @@ use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpRequest;
 use CoreBundle\Model\EmpTime;
-use CoreBundle\Model\RequestMeetingTags;
+use CoreBundle\Model\EventNotes;
+use CoreBundle\Model\EventTaggedPersons;
+use CoreBundle\Model\ListEvents;
 
 /**
  * @method EmpAccQuery orderById($order = Criteria::ASC) Order by the id column
@@ -58,10 +60,6 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery rightJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpRequestRelatedByAdminId relation
  * @method EmpAccQuery innerJoinEmpRequestRelatedByAdminId($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpRequestRelatedByAdminId relation
  *
- * @method EmpAccQuery leftJoinRequestMeetingTags($relationAlias = null) Adds a LEFT JOIN clause to the query using the RequestMeetingTags relation
- * @method EmpAccQuery rightJoinRequestMeetingTags($relationAlias = null) Adds a RIGHT JOIN clause to the query using the RequestMeetingTags relation
- * @method EmpAccQuery innerJoinRequestMeetingTags($relationAlias = null) Adds a INNER JOIN clause to the query using the RequestMeetingTags relation
- *
  * @method EmpAccQuery leftJoinEmpProfile($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpProfile relation
  * @method EmpAccQuery rightJoinEmpProfile($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpProfile relation
  * @method EmpAccQuery innerJoinEmpProfile($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpProfile relation
@@ -73,6 +71,18 @@ use CoreBundle\Model\RequestMeetingTags;
  * @method EmpAccQuery leftJoinEmpCapabilities($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpCapabilities relation
  * @method EmpAccQuery rightJoinEmpCapabilities($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpCapabilities relation
  * @method EmpAccQuery innerJoinEmpCapabilities($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpCapabilities relation
+ *
+ * @method EmpAccQuery leftJoinListEvents($relationAlias = null) Adds a LEFT JOIN clause to the query using the ListEvents relation
+ * @method EmpAccQuery rightJoinListEvents($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ListEvents relation
+ * @method EmpAccQuery innerJoinListEvents($relationAlias = null) Adds a INNER JOIN clause to the query using the ListEvents relation
+ *
+ * @method EmpAccQuery leftJoinEventNotes($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventNotes relation
+ * @method EmpAccQuery rightJoinEventNotes($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventNotes relation
+ * @method EmpAccQuery innerJoinEventNotes($relationAlias = null) Adds a INNER JOIN clause to the query using the EventNotes relation
+ *
+ * @method EmpAccQuery leftJoinEventTaggedPersons($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventTaggedPersons relation
+ * @method EmpAccQuery rightJoinEventTaggedPersons($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventTaggedPersons relation
+ * @method EmpAccQuery innerJoinEventTaggedPersons($relationAlias = null) Adds a INNER JOIN clause to the query using the EventTaggedPersons relation
  *
  * @method EmpAcc findOne(PropelPDO $con = null) Return the first EmpAcc matching the query
  * @method EmpAcc findOneOrCreate(PropelPDO $con = null) Return the first EmpAcc matching the query, or a new EmpAcc object populated from the query conditions when no match is found
@@ -827,80 +837,6 @@ abstract class BaseEmpAccQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related RequestMeetingTags object
-     *
-     * @param   RequestMeetingTags|PropelObjectCollection $requestMeetingTags  the related object to use as filter
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return                 EmpAccQuery The current query, for fluid interface
-     * @throws PropelException - if the provided filter is invalid.
-     */
-    public function filterByRequestMeetingTags($requestMeetingTags, $comparison = null)
-    {
-        if ($requestMeetingTags instanceof RequestMeetingTags) {
-            return $this
-                ->addUsingAlias(EmpAccPeer::ID, $requestMeetingTags->getEmpAccId(), $comparison);
-        } elseif ($requestMeetingTags instanceof PropelObjectCollection) {
-            return $this
-                ->useRequestMeetingTagsQuery()
-                ->filterByPrimaryKeys($requestMeetingTags->getPrimaryKeys())
-                ->endUse();
-        } else {
-            throw new PropelException('filterByRequestMeetingTags() only accepts arguments of type RequestMeetingTags or PropelCollection');
-        }
-    }
-
-    /**
-     * Adds a JOIN clause to the query using the RequestMeetingTags relation
-     *
-     * @param     string $relationAlias optional alias for the relation
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return EmpAccQuery The current query, for fluid interface
-     */
-    public function joinRequestMeetingTags($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
-    {
-        $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('RequestMeetingTags');
-
-        // create a ModelJoin object for this join
-        $join = new ModelJoin();
-        $join->setJoinType($joinType);
-        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-        if ($previousJoin = $this->getPreviousJoin()) {
-            $join->setPreviousJoin($previousJoin);
-        }
-
-        // add the ModelJoin to the current object
-        if ($relationAlias) {
-            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-            $this->addJoinObject($join, $relationAlias);
-        } else {
-            $this->addJoinObject($join, 'RequestMeetingTags');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Use the RequestMeetingTags relation RequestMeetingTags object
-     *
-     * @see       useQuery()
-     *
-     * @param     string $relationAlias optional alias for the relation,
-     *                                   to be used as main alias in the secondary query
-     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-     *
-     * @return   \CoreBundle\Model\RequestMeetingTagsQuery A secondary query class using the current class as primary query
-     */
-    public function useRequestMeetingTagsQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
-    {
-        return $this
-            ->joinRequestMeetingTags($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'RequestMeetingTags', '\CoreBundle\Model\RequestMeetingTagsQuery');
-    }
-
-    /**
      * Filter the query by a related EmpProfile object
      *
      * @param   EmpProfile|PropelObjectCollection $empProfile  the related object to use as filter
@@ -1120,6 +1056,228 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         return $this
             ->joinEmpCapabilities($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpCapabilities', '\CoreBundle\Model\EmpCapabilitiesQuery');
+    }
+
+    /**
+     * Filter the query by a related ListEvents object
+     *
+     * @param   ListEvents|PropelObjectCollection $listEvents  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByListEvents($listEvents, $comparison = null)
+    {
+        if ($listEvents instanceof ListEvents) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $listEvents->getCreatedBy(), $comparison);
+        } elseif ($listEvents instanceof PropelObjectCollection) {
+            return $this
+                ->useListEventsQuery()
+                ->filterByPrimaryKeys($listEvents->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByListEvents() only accepts arguments of type ListEvents or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ListEvents relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinListEvents($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ListEvents');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ListEvents');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ListEvents relation ListEvents object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\ListEventsQuery A secondary query class using the current class as primary query
+     */
+    public function useListEventsQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinListEvents($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ListEvents', '\CoreBundle\Model\ListEventsQuery');
+    }
+
+    /**
+     * Filter the query by a related EventNotes object
+     *
+     * @param   EventNotes|PropelObjectCollection $eventNotes  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventNotes($eventNotes, $comparison = null)
+    {
+        if ($eventNotes instanceof EventNotes) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $eventNotes->getCreatedBy(), $comparison);
+        } elseif ($eventNotes instanceof PropelObjectCollection) {
+            return $this
+                ->useEventNotesQuery()
+                ->filterByPrimaryKeys($eventNotes->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventNotes() only accepts arguments of type EventNotes or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventNotes relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinEventNotes($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventNotes');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventNotes');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventNotes relation EventNotes object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventNotesQuery A secondary query class using the current class as primary query
+     */
+    public function useEventNotesQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventNotes($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventNotes', '\CoreBundle\Model\EventNotesQuery');
+    }
+
+    /**
+     * Filter the query by a related EventTaggedPersons object
+     *
+     * @param   EventTaggedPersons|PropelObjectCollection $eventTaggedPersons  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpAccQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventTaggedPersons($eventTaggedPersons, $comparison = null)
+    {
+        if ($eventTaggedPersons instanceof EventTaggedPersons) {
+            return $this
+                ->addUsingAlias(EmpAccPeer::ID, $eventTaggedPersons->getEmpId(), $comparison);
+        } elseif ($eventTaggedPersons instanceof PropelObjectCollection) {
+            return $this
+                ->useEventTaggedPersonsQuery()
+                ->filterByPrimaryKeys($eventTaggedPersons->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventTaggedPersons() only accepts arguments of type EventTaggedPersons or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventTaggedPersons relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function joinEventTaggedPersons($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventTaggedPersons');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventTaggedPersons');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventTaggedPersons relation EventTaggedPersons object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventTaggedPersonsQuery A secondary query class using the current class as primary query
+     */
+    public function useEventTaggedPersonsQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventTaggedPersons($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventTaggedPersons', '\CoreBundle\Model\EventTaggedPersonsQuery');
     }
 
     /**

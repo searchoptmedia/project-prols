@@ -11,6 +11,8 @@ namespace AdminBundle\Controller;
 
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpProfilePeer;
+use CoreBundle\Model\ListEventsPeer;
+use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\ListRequestTypePeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -254,13 +256,10 @@ class EmailController extends Controller
     public function sendEmailMeetingRequest($req, $email, $class, $param = array())
     {
         $user = $class->getUser();
-        $id   = $user->getId();
         $empinfo = EmpProfilePeer::getInformation($user->getId());
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
-        $taggedemail = $req->request->get('taggedemail');
         $employee = EmpAccPeer::getUserInfo($email);
-
         $employee_info = EmpProfilePeer::getInformation($employee->getId());
         $employee_name = $employee_info->getFname() . " " . $employee_info->getLname();
 
@@ -285,37 +284,82 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
-    public function notifyEventEmail($req, $class) {
+    public function notifyEventEmail($req, $class, $datetimecreated, $param = array()) {
         $user = $class->getUser();
         $id   = $user->getId();
-        $adminprofile = EmpProfilePeer::getInformation($id);
-        $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
-
-        $date = $req->request->get('event_date');
+        $userProfile = EmpProfilePeer::getInformation($id);
+        $userName = $userProfile->getFname() . " " . $userProfile->getLname();
+        $eventType = $req->request->get('event_type');
         $name = $req->request->get('event_name');
-        $desc = $req->request->get('event_desc');
-        $type = $req->request->get('event_type');
+        $fromdate = $req->request->get('from_date');
+        $todate = $req->request->get('to_date');
 
-        if ($type == 1) $type = "Holiday";
-        else $type = "Regular";
+        if($eventType == 1) {
+            $typelist = "Holiday";
 
-        $users = EmpAccPeer::getAllUser();
+            $users = EmpAccPeer::getAllUser();
 
-        foreach($users as $user) {
+            foreach($users as $user) {
+                $empinfo = EmpProfilePeer::getInformation($user->getId());
+                $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+
+                $subject = "PROLS » New Event";
+                $from = array('no-reply@searchoptmedia.com', 'PROLS');
+                $to = array($user->getEmail());
+                $inputMessage = "<h2>Hi <b>" . $empname . "</b>!" . "</h2> <b>" . $userName . "</b> created a/an <b>" . $typelist . "</b> event. " .
+                    "Here are the following details regarding the said event: <br><br><hr><br>";
+                    if($fromdate == $todate)
+                        $inputMessage .= "<b>Event Date: </b>" . $fromdate. "<br>";
+                    else $inputMessage .= "<b>Event Date: </b>" . $fromdate . " to " . $todate . "<br>";
+
+                $inputMessage .= "<b>Event Name: </b>" . $name;
+
+                $email = self::sendEmail($class, $subject, $from, $to,
+                    $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            }
+        } else {
+            $type = $param['type'];
+            $emailAdd = $param['guestEmail'];
+            $eventDesc = $req->request->get('event_desc');
+            $eventList = ListEventsTypePeer::getEventType($eventType);
             $empinfo = EmpProfilePeer::getInformation($user->getId());
             $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
-            $subject = "PROLS » Event Notification";
-            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-            $to = array($user->getEmail());
-            $inputMessage = "<h2>Hi <b>". $empname ."</b>!" . "</h2> <b>". $adminname ."</b> created a/an <b>". $type ."</b> event. " .
-                "Here are the following details regarding the said event: <br><br><hr><br>" .
-                "<b>Event Date: </b>". $date . "<br>" .
-                "<b>Event Name: </b>". $name . "<br>" .
-                "<b>Event Description: </b> ". $desc . "<br>";
+            $employee = EmpAccPeer::getUserInfo($emailAdd);
+            $employee_info = EmpProfilePeer::getInformation($employee->getId());
+            $employee_name = $employee_info->getFname() . " " . $employee_info->getLname();
 
-            $email = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            $subject = "PROLS » New Event";
+            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+            $to      = array($emailAdd);
+            if($type == 1) {
+                $inputMessage = "<h2>Hi <b>" . $employee_name . "</b>!" . "</h2> <b>" . $empname . "</b> tagged you on an event." .
+                    "Here are the following details regarding the said event: <br><br><hr><br>";
+                $inputMessage .= "<b>Event Type: </b>" . $eventList->getName();
+                $inputMessage .= "<b>Event Name: </b>" . $name;
+
+                if($fromdate == $todate)
+                    $inputMessage .= "<b>Event Date: </b>" . $fromdate. "<br>";
+                else $inputMessage .= "<b>Event Date: </b>" . $fromdate . " to " . $todate . "<br>";
+
+                $inputMessage .= "<b>Event Description: </b>" . $eventDesc;
+
+                $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+            }
+            if($type == 2){
+                $taggednames = $param["names"];
+                $inputMessage = "Hi  " . $employee_name . "!<br> You have created an event with  ". $taggednames .". " .
+                    "Here are the following details regarding the said event: <br><br><hr><br>";
+                $inputMessage .= "<b>Event Type: </b>" . $eventList->getName() . "<br>";
+                $inputMessage .= "<b>Event Name: </b>" . $name . "<br>";
+
+                if($fromdate == $todate)
+                    $inputMessage .= "<b>Event Date: </b>" . $fromdate. "<br>";
+                else $inputMessage .= "<b>Event Date: </b>" . $fromdate . " to " . $todate . "<br>";
+
+                $inputMessage .= "<b>Event Description: </b>" . $eventDesc;
+                $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+            }
         }
 
         return $email ? 1: 0;

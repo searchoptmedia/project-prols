@@ -3,7 +3,6 @@
     <title>Propelrr Log-in System| Manage Events</title>
 {% endblock %}
 
-
 {% block body %}
     <section id="main-container">
         <section id="main-wrapper">
@@ -13,22 +12,42 @@
                         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
                             <div class="responsive-nav"><a class="btn-flat"><i
                                             class="material-icons res-menu">reorder</i></a></div>
-                            <div class="top-nav">
+                            <div class="top-nav-vl">
                                 <h3>Events List</h3>
-                                <a class="waves-effect waves-light btn amber btn-add" id="btn-add-event"
-                                   style="color: white;">
-                                    Create Event</a>
+                                <a class='dropdown-button btn orange btn-select1' href='#' data-activates='dropdown2'>Category</a>
+                                <a class="btn amber btn-add  btn-select1" id="btn-add-event"
+                                   style="color: white; margin-right: 5px;">Create Event</a>
                             </div>
                         </div>
 
-                        <div class="col-md-12 content manageemployees-content" style="display: block;">
+                        <div class = "top-nav">
+                            <!-- Dropdown Structure -->
+                            <ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">
+                                <li><a href="#!" id="allbtn">All</a></li>
+                                <li class="divider"></li>
+                                {#<li><a href="#!" id="holidaybtn">Holiday</a></li>#}
+                                {#<li class="divider"></li>#}
+                                <li><a href="#!" id="meetingbtn">Meeting</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#!" id="companyeventbtn">Company Event</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#!" id="othersbtn">Other Events</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                            <!-- End of DS -->
+                        </div>
+
+                        <div class="col-md-12 content manageemployees-content" style="display: block; min-height: 700px;">
                             <div class="row" style="margin-left:5px;">
                                 <table class="bordered highlight emp-list">
                                     <thead>
                                     <tr>
                                         <th>Event Name</th>
-                                        <th>Event Date</th>
                                         <th>Event Type</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -36,24 +55,49 @@
                                     <tbody>
                                     {% for event in allEvents %}
                                         <tr data-id="{{ event.getId }}" class="event-tr">
-                                            <td class="event-name">{{ event.getName }}</td>
-                                            <td class="event-date">{{ event.getDate|date('n/d/Y') }}</td>
-                                            {% if (event.type == 1) %}
-                                            <td class="event-type">Holiday</td>
-                                            {% else %}
-                                            <td class="event-type">Regular</td>
-                                            {% endif %}
-                                            <td class="event-desc"
-                                                style="display: none;">{{ event.getDescription }}
+                                            <td class="event-name">{{ event.getEventName }}</td>
+                                            <td class="event-type" id="{{ event.listEventsType.id }}">{{ event.listEventsType.name|upper }}</td>
+                                            <td class="event-from-date">{{ event.getFromDate|date('n/d/Y') }}</td>
+                                            <td class="event-to-date">{{ event.getToDate|date('n/d/Y') }}</td>
+                                            <td class="role">
+                                                {% if (user.getId != event.getCreatedBy) %}Guest
+                                                {% else %}Creator{% endif %}
                                             </td>
-                                            <td style="float: right;">
-                                                <button class="waves-effect waves-light btn green btnViewEvent"
-                                                        style = "margin-right: 10px;">View</button>
-                                                <button class="waves-effect waves-light btn orange btnEditEvent"
-                                                        style = "margin-right: 10px;">Edit</button>
-                                                <button class="waves-effect waves-light btn red btnDeleteEvent"
-                                                        style = "margin-right: 10px;"><i class="material-icons">delete</i>
-                                                </button>
+                                            <td class="status">
+                                                {% if (user.getId != event.getCreatedBy) %}
+                                                    {% for tag in event.getEventTaggedPersonss %}
+                                                        {% if(user.getId == tag.empid) %}
+                                                            {% if(tag.status == 2) %}
+                                                                <div class="event-status pending" id = "pending">Pending</div>
+                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>#}
+
+                                                                <div class="pending-form" style="display:none;">
+                                                                    <div class="event-status approved admin_accept" style="margin-right:5px; width: 45px; display:inline-block;"><i class="fa fa-check" aria-hidden="true"></i></div>
+                                                                    <div class="event-status declined admin_decline" style="margin-right:5px; width: 45px; display:inline-block;"><i class="fa fa-times" aria-hidden="true"></i></div>
+                                                                </div>
+                                                            {% elseif(tag.status == 3) %}
+                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Approved</button>#}
+                                                                <div class="event-status approved">Approved</div>
+                                                            {% else %}
+                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Declined</button>#}
+                                                                <div class="event-status declined">Declined</div>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% else %}<div class="event-status created">Created</div>{% endif %}
+                                            </td>
+                                            <td class="event-desc"
+                                                style="display: none;">{{ event.getEventDescription|raw }}
+                                            </td>
+                                            <td>
+                                                <a class='dropdown-button btn btn-select1' href='#' data-activates='dropdown-more' style="background-color:#26a69a;">More</a>
+                                                <div>
+                                                    <ul id='dropdown-more' class='dropdown-content dd1' style = "z-index: 9999; width: auto !important;">
+                                                        <li><a href="#!" id="viewdetailsbtn">Details</a></li>
+                                                        <li class="divider"></li>
+                                                        <li><a href="#!" id="viewnotesbtn">Notes</a></li>
+                                                    </ul>
+                                                </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -69,49 +113,80 @@
 
     <!----------------------- CREATE/EDIT EVENT MODAL -------------------------->
     <div id="add_event_modal" class="modal modal-fixed-footer">
-
         <div class="modal-content">
             <h4 class="create-header">Create Event</h4>
             <h4 class="edit-header">Edit Event</h4>
-            <br>
             <div class="event-form-cont">
                 <div class="row">
-                    <div class="col-md-4">
-                        <span class="event-lbl">Event Type</span><br><br>
+                    <div class = "col-md-12" id="guest-row">
+                        <label for="tag_employees">Guests</label><br>
+                        <select class="select-emp-tag" multiple="multiple" style="width: 690px;" id="tag_employees">
+                            {% for acc in allacc %}
+                            <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                            {% endfor %}
+                        </select><br><br>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="event_type_modal">Event Type</label>
                         <div class="select-wrapper"><span class="caret">?</span>
-                            <select name="event_type" id="event_type_modal" class="browser-default event-type">
-                                <option value="" disabled selected>Select Event Type</option>
-                                <option value="1">Holiday</option>
-                                <option value="2">Regular Event</option>
+                            <select name="event_type" id="event_type_modal" class="browser-default event-type" onchange="onClickEventType()">
+                                <option value="" disabled selected >Select Event Type</option>
+                                {% for eventtype in eventTypes %}
+                                    <option value="{{ eventtype.id }}">{{ eventtype.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-4">
-                        <span class="event-lbl">Event Date</span>
-                        <input type="text" name="event-date" readonly class="event-date" id="event_date_modal">
-                    </div>
-                    <div class="col-md-8">
-                        <span class="event-lbl">Event Name</span>
+
+                    <div class="col-md-7">
+                        <label for="event_name_modal">Event Name</label>
                         <input type="text" name="event-name" class="event-name" id="event_name_modal" required>
                     </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-12">
-                        <span class="event-lbl">Event Description</span>
+
+                    <div class="col-md-12" id="desc-row">
+                        <label for="event_desc_modal">Event Description</label>
                         <textarea id="event_desc_modal" class="materialize-textarea" required autocapitalize></textarea>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <p class="notify-event">
-                            <input type="checkbox" id="notify" value="1"/>
-                            <label for="notify" class="black-text">
+                    <div class="col-md-6" id="from-row">
+                        <label for="from_event_date_modal">From</label><br>
+                        <input type="text" name="from-event-date" readonly class="from-event-date"
+                               id="from_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
+                        &nbsp; - &nbsp;
+                        <input type="text" readonly class="from_event_time" id="from_event_time"
+                               name="from_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                    </div>
+                    <div class="col-md-6" id="to-row">
+                        <label for="to_event_date_modal">To</label><br>
+                        <input type="text" name="to-event-date" readonly class="to-event-date"
+                               id="to_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
+                        &nbsp; - &nbsp;
+                        <input type="text" readonly class="to_event_time" id="to_event_time"
+                               name="to_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                    </div>
+
+                    <div class="col-md-6" id="from-row-holiday">
+                        <label for="from_event_date_modal">From</label><br>
+                        <input type="text" name="from-event-date" readonly class="from-event-date"
+                               id="from_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                    </div>
+                    <div class="col-md-6" id="to-row-holiday">
+                        <label for="to_event_date_modal">To</label><br>
+                        <input type="text" name="to-event-date" readonly class="to-event-date"
+                               id="to_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                    </div>
+
+                    <div class="col-md-12" id="notify-row">
+                        <p class="notify-email-event">
+                            <input type="checkbox" id="notify-email" value="1"/>
+                            <label for="notify-email" class="black-text">
                                 Notify the employees via Email?
+                            </label>
+                        </p>
+                        <p class="notify-sms-event">
+                            <input type="checkbox" id="notify-sms" value="1"/>
+                            <label for="notify-sms" class="black-text">
+                                Notify the employees via SMS?
                             </label>
                         </p>
                     </div>
@@ -124,6 +199,10 @@
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="btn-close">Close</a>
             <a class="waves-effect waves-light btn amber btn-create" style="margin-right:5px;">Create</a>
             <a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>
+            <div class="chip add-error-chip" style = "font-size: 12px; color: red;">
+                <i class="close material-icons">info_outline</i>
+                Please Input All Fields
+            </div>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -194,7 +273,15 @@
     <!-----------------------END OF MODAL -------------------------->
 {% endblock %}
 
+
 {% block customjs %}
+    <script type="text/javascript">
+        $('.select-emp-tag').select2({
+            placeholder: 'Type name here'
+        });
+
+        var meetingPersonsInvolved = $('.select-emp-tag');
+    </script>
     <script type="text/javascript">
         /*--------Variables---------*/
         // Row elements
@@ -213,7 +300,9 @@
         var add_edit_desc = $('#event_desc_modal');
         var add_edit_type = $('#event_type_modal');
         var add_edit_id = $('#event_id');
+        var meetingPersonsInvolved = $('.select-emp-tag');
         var picker = null;
+        var edit_event_modal = $('#edit_event_modal');
 
         // view & delete
         var view_date = $('#view_event_date');
@@ -226,7 +315,61 @@
         var delete_modal = $("#delete_event_modal");
         var delete_button = $("#delete-btn-delete");
 
+        // add note
+        var addnote_modal = $('#add_note_modal');
+        var notelist_table = $('.note-list');
+        var addnote_form = $('.addnote-content');
+        var createnote_button = $('.btn-create-note');
+        var addnote_button = $('#btn-add-note');
+        var cancel_button = $('.cancel-modal-agenda');
+        var close_button = $('.close-modal-agenda');
+
+        var pending_button = $("#pending");
+        var pending_form = $(".pending-form");
+        pending_button.css("display", "block");
+        pending_form.css("display", "none");
+
+        $(document).on("click", "#pending", function(){
+            pending_button.css("display", "none");
+            pending_form.css("display", "block");
+        });
+
+
         /*-----------End-----------*/
+
+        /*----------- add note function -------------*/
+        $(document).on("click", "#viewnotesbtn", function(){
+            addnote_button.css("display", "block");
+            notelist_table.css("display", "table");
+            createnote_button.css("display", "none");
+            addnote_form.css("display", "none");
+            cancel_button.css("display", "none");
+            close_button.css("display", "block");
+            addnote_modal.openModal();
+        });
+
+        $(document).on("click", "#btn-add-note", function(){
+            addnote_button.css("display", "none");
+            notelist_table.css("display", "none");
+            createnote_button.css("display", "block");
+            cancel_button.css("display", "block");
+            close_button.css("display", "none");
+            addnote_form.css("display", "block");
+        });
+
+        $(document).on("click", ".cancel-modal-agenda", function(){
+            addnote_button.css("display", "block");
+            notelist_table.css("display", "table");
+            cancel_button.css("display", "none");
+            close_button.css("display", "block");
+            createnote_button.css("display", "none");
+            addnote_form.css("display", "none");
+        });
+
+        /*----------- view note function -------------*/
+        $(document).on("click", ".note-tr", function(){
+
+        });
 
         /*----------- add & edit functions -----------*/
         $(document).on("click", "#btn-add-event", function () {
@@ -236,20 +379,21 @@
             edit_btn_modal.css("display", "none");
             notify_option.css("display", "block");
             picker = new Pikaday(
-                {
-                    field: document.getElementById('event_date_modal'),
-                    firstDay: 1,
-                    minDate: new Date(),
-                    maxDate: new Date(2020, 12, 31),
-                    yearRange: [2000, 2020],
-                    format: 'MM/DD/YYYY'
-                });
+                    {
+                        field: document.getElementById('event_date_modal'),
+                        firstDay: 1,
+                        minDate: new Date(),
+                        maxDate: new Date(2020, 12, 31),
+                        yearRange: [2000, 2020],
+                        format: 'MM/DD/YYYY'
+                    });
             add_edit_event_modal.openModal();
         });
 
         $(document).on("click", "#btn-close", function () {
             removeFields();
             add_edit_event_modal.closeModal();
+            edit_event_modal.closeModal();
         });
 
         $(document).on("click", ".btn-edit", function () {
@@ -332,7 +476,7 @@
             post(add_btn_modal, "{{ path('add_event') }}", data, callback, done, always);
         });
 
-        $(document).on("click", ".btnEditEvent", function () {
+        $(document).on("click", "#editeventbtn", function () {
             event_row = $(this).closest("tr.event-tr");
             event_id = event_row.data("id");
             event_date = event_row.find("td.event-date").html();
@@ -342,10 +486,20 @@
             edit(event_type, event_date, event_name, event_desc, event_id);
         });
 
+        /*$(document).on("click", ".btnEditEvent", function () {
+         event_row = $(this).closest("tr.event-tr");
+         event_id = event_row.data("id");
+         event_date = event_row.find("td.event-date").html();
+         event_name = event_row.find("td.event-name").html();
+         event_type = event_row.find("td.event-type").html();
+         event_desc = event_row.find("td.event-desc").html();
+         edit(event_type, event_date, event_name, event_desc, event_id);
+         });*/
+
         function edit(type, date, name, desc, id) {
             add_edit_date.val(date);
             if(type == "Holiday")
-               add_edit_type.val(1);
+                add_edit_type.val(1);
             else add_edit_type.val(2);
             add_edit_name.val(name);
             add_edit_desc.val(desc);
@@ -356,15 +510,15 @@
             edit_btn_modal.css("display", "block");
             notify_option.css("display", "none");
             picker = new Pikaday(
-            {
-                field: document.getElementById('event_date_modal'),
-                firstDay: 1,
-                minDate: new Date(),
-                maxDate: new Date(2020, 12, 31),
-                yearRange: [2000, 2020],
-                format: 'MM/DD/YYYY'
-            });
-            add_edit_event_modal.openModal();
+                    {
+                        field: document.getElementById('event_date_modal'),
+                        firstDay: 1,
+                        minDate: new Date(),
+                        maxDate: new Date(2020, 12, 31),
+                        yearRange: [2000, 2020],
+                        format: 'MM/DD/YYYY'
+                    });
+            edit_event_modal.openModal();
         }
 
         function removeFields() {
@@ -423,7 +577,7 @@
             post(resend_btn, "{{ path('notify_event') }}", data, callback, done, always);
         });
 
-        $(document).on("click", ".btnViewEvent", function () {
+        $(document).on("click", "#viewdetailsbtn", function(){
             event_row = $(this).closest("tr.event-tr");
             event_id = event_row.data("id");
             event_date = event_row.find("td.event-date").html();
@@ -433,12 +587,29 @@
             view(event_type, event_date, event_name, event_desc);
         });
 
-        $(document).on("click", ".btnDeleteEvent", function () {
+        /*$(document).on("click", ".btnViewEvent", function () {
+         event_row = $(this).closest("tr.event-tr");
+         event_id = event_row.data("id");
+         event_date = event_row.find("td.event-date").html();
+         event_name = event_row.find("td.event-name").html();
+         event_type = event_row.find("td.event-type").html();
+         event_desc = event_row.find("td.event-desc").html();
+         view(event_type, event_date, event_name, event_desc);
+         });*/
+
+        $(document).on("click", "#canceleventbtn", function () {
             event_row = $(this).closest("tr.event-tr");
             event_id = event_row.data("id");
             delete_id.val(event_id);
             delete_modal.openModal();
         });
+
+        /*$(document).on("click", ".btnDeleteEvent", function () {
+         event_row = $(this).closest("tr.event-tr");
+         event_id = event_row.data("id");
+         delete_id.val(event_id);
+         delete_modal.openModal();
+         });*/
 
         $(document).on("click", "#delete-btn-delete", function () {
             event_id = delete_id.val();
@@ -527,3 +698,5 @@
         }
     </script>
 {% endblock %}
+
+
