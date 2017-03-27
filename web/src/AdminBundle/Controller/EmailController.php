@@ -211,6 +211,8 @@ class EmailController extends Controller
         $user = $class->getUser();
         $id   = $user->getId();
 
+        $empId = $req->request->get('empid');
+
         $adminprofile = EmpProfilePeer::getInformation($id);
         $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
 
@@ -223,7 +225,7 @@ class EmailController extends Controller
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($employeeemail);
 
-        $inputMessage = "Hi ". $empname . "!<br> Your account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
+        $inputMessage = "<h2>Hi ". $empname . "!</h2><br> Your account was updated by ". $adminname .".<br><br> Visit the profile by clicking <a href='http://login.propelrr.com/main/emp/$empId'>here</a>.";
         $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
 
         $admins = EmpAccPeer::getAdminInfo();
@@ -231,7 +233,7 @@ class EmailController extends Controller
         foreach ($admins as $admin){
             $to = array($admin->getEmail());
 
-            $inputMessage = "Hi Admin!<br>". $empname ."'s account was updated by ". $adminname .".<br><br> See changes <a href='http://login.propelrr.com/profile'>here</a>";
+            $inputMessage = "<h2>Hi Admin!</h2><br>". $empname ."'s account was updated by ". $adminname .".<br><br> Visit the profile by clicking <a href='http://login.propelrr.com/main/emp/$empId'>here</a>.";
             $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
         }
 
