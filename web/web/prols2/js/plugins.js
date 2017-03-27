@@ -10,17 +10,17 @@ $(function() {
 
         // }// END Bootstrap datepicker
 
-        //Bootstrap timepicker
-        var feTimepicker = function(){
-            // Default timepicker
-            if($(".timepicker").length > 0)
-                $('.timepicker').timepicker();
-
-            // 24 hours mode timepicker
-            if($(".timepicker24").length > 0)
-                $(".timepicker24").timepicker({minuteStep: 5,showSeconds: true,showMeridian: false});
-
-        }// END Bootstrap timepicker
+        ////Bootstrap timepicker
+        //var feTimepicker = function(){
+        //    // Default timepicker
+        //    if($(".timepicker").length > 0)
+        //        $('.timepicker').timepicker();
+        //
+        //    // 24 hours mode timepicker
+        //    if($(".timepicker24").length > 0)
+        //        $(".timepicker24").timepicker({minuteStep: 5,showSeconds: true,showMeridian: false});
+        //
+        //}// END Bootstrap timepicker
 
         //Daterangepicker
         var feDaterangepicker = function(){
@@ -149,7 +149,7 @@ $(function() {
         return {// Init all form element features
 		init: function(){
                     //feDatepicker();
-                    feTimepicker();
+                    //feTimepicker();
                     feColorpicker();
                     feSelect();
                     feValidation();
@@ -449,18 +449,19 @@ $(function() {
 
                 minutes = minutes < 10 ? '0'+minutes : minutes;
 
-                if(hour > 12)
-                {
+                if(hour == 0) {
+                    hour = 12;
+                } else if(hour > 12) {
                     indicator ='PM';
                     hour = hour - 12;
+                } else if (hour == 12) {
+                    indicator ='PM';
                 }
-                else if(hour == 0){
-                    hour = 12;
-                }
+
                 hour = hour < 10 ? '0'+hour : hour;
 
 
-                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + "" + indicator);
+                $(".plugin-clock").html(hour+"<span>:</span>"+minutes + " " + indicator);
             }
             if($(".plugin-clock").length > 0){
 

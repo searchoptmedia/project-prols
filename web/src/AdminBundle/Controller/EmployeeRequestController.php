@@ -45,8 +45,6 @@ class EmployeeRequestController extends Controller
             if((strcasecmp($role,'ADMIN')== 0))
                 $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
             else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
-
-            $getTaggedRequest = RequestMeetingTagsPeer::getTaggedRequest($id);
             $timedata = EmpTimePeer::getTime($id);
             $timeflag = 0;
             $currenttimein = 0;
@@ -121,8 +119,7 @@ class EmployeeRequestController extends Controller
                 'requestcount' => $requestcount,
                 'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
                 'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday,
-                'taggedRequests' => $getTaggedRequest
+                'timetoday' => $timetoday
             ));
     }
 

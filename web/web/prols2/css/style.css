@@ -7051,7 +7051,7 @@ button.picker__close:focus {
     width: 100%;
     height: auto;
     z-index: 9999;
-    top: -55px;
+    top: -75px;
     cursor: pointer;
     -webkit-transition: all, 600ms, cubic-bezier(0.075, 0.82, 0.165, 1);
     -moz-transition: all, 600ms, cubic-bezier(0.075, 0.82, 0.165, 1);

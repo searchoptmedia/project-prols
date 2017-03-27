@@ -3,7 +3,11 @@
 namespace AdminBundle\Controller;
 
 use AdminBundle\Controller\AdminController;
+use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpRequestQuery;
+use CoreBundle\Model\EventTaggedPersons;
+use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\RequestMeetingsTag;
 use CoreBundle\Model\RequestMeetingsTagPeer;
 use CoreBundle\Model\RequestMeetingsTagsPeer;
@@ -27,8 +31,16 @@ class EventManagerController extends Controller
         $admincontroller = new AdminController();
         $timename = $admincontroller->timeInOut($id);
 
-        $getEvents = ListEventsPeer::getAllEvents();
+        $getEvents = ListEventsPeer::getAllEvents($id);
+//        echo "<pre>";
+//        var_dump($getEvents);
+//        exit;
+//        echo "<pre>";
+//        var_dump($getEvents);
+//        exit;
+//        $getEvents = null;
         $timedata = EmpTimePeer::getTime($id);
+
         $currenttimein = 0;
         $currenttimeout = 0;
         $timeflag = 0;
@@ -87,6 +99,9 @@ class EventManagerController extends Controller
             ->filterByStatus('Pending')
             ->find()->count();
 
+        $eventTypes = ListEventsTypePeer::getAllEventType();
+        $allacc = EmpAccPeer::getAllUser();
+
         return $this->render('AdminBundle:EventManager:manage.html.twig', array(
             'page' => $page,
             'user' => $user,
@@ -103,42 +118,137 @@ class EventManagerController extends Controller
             'requestcount' => $requestcount,
             'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-            'timetoday' => $timetoday
+            'timetoday' => $timetoday,
+            'eventTypes' => $eventTypes,
+            'allacc' => $allacc
         ));
     }
 
     public function addAction(Request $req) {
-        $notify = $req->request->get('notify');
-        $event = new ListEvents();
-        $event->setDate($req->request->get('event_date'));
-        $event->setName($req->request->get('event_name'));
-        $event->setDescription($req->request->get('event_desc'));
-        $event->setType($req->request->get('event_type'));
-        $event->save();
-        $event_id = $event->getId();
+        date_default_timezone_set('Asia/Manila');
+        $datetimetoday 	= date('Y-m-d H:i:s');
+        $user = $this->getUser();
+        $id = $user->getId();
+        $eventType = $req->request->get('event_type');
 
-        try {
-            if($notify == 1) {
-                $success = $this->notify($req);
-                if ($success) {
-                    // email successfully sent
-                    echo json_encode(array('result' => 'Event Successfully Added'));
-                    exit;
-                } else {
-                    // email not successfully sent
-                    echo json_encode(array('error' => 'Event not Successfully Added'));
+        if($eventType == 1) {
+            // HOLIDAY
+            $event = new ListEvents();
+            $event->setStatus(1);
+            $event->setDateCreated($datetimetoday);
+            $event->setFromDate($req->request->get('from_date'));
+            $event->setToDate($req->request->get('to_date'));
+            $event->setEventName($req->request->get('event_name'));
+            $event->setEventDescription("");
+            $event->setEventType($eventType);
+            $event->setCreatedBy($id);
+
+            if($event->save()) {
+                $event_id = $event->getId();
+                try {
+                    $success = $this->notify($req, $datetimetoday, null);
+                    if ($success) {
+                        // email successfully sent
+                        echo json_encode(array('result' => 'Event Successfully Added', 'event_id' => $event_id));
+                        exit;
+                    } else {
+                        // email not successfully sent
+                        echo json_encode(array('error' => 'Event not Successfully Added'));
+                        exit;
+                    }
+                } catch(Exception $e) {
+                    //
+                } finally {
+                    $deleted = $this->deleteById($event_id);
+                    echo json_encode(array('error' => 'Server Error'));
                     exit;
                 }
             } else {
-                echo json_encode(array('result' => 'Event Successfully Added'));
+                echo json_encode(array('error' => 'Event not Successfully Added'));
                 exit;
             }
-        } catch(Exception $e) {
-            //
-        } finally {
-            $deleted = $this->deleteById($event_id);
-            echo json_encode(array('error' => 'Server Error'));
-            exit;
+        } else {
+            $taggedEmail = $req->request->get('taggedPersons');
+            $event = new ListEvents();
+            $event->setStatus(1);
+            $event->setDateCreated($datetimetoday);
+            $event->setFromDate($req->request->get('parse_from_date'));
+            $event->setToDate($req->request->get('parse_to_date'));
+            $event->setEventName($req->request->get('event_name'));
+            $event->setEventDescription($req->request->get('event_desc'));
+            $event->setEventType($eventType);
+            $event->setCreatedBy($id);
+
+            $tag_names = array();
+            $tag_request_ids = array();
+
+            if($event->save()) {
+                $event_id = $event->getId();
+                try {
+                    foreach($taggedEmail as $tagemail)
+                    {
+                        $emp = EmpAccPeer::getUserInfo($tagemail);
+                        $tag_record = EmpAccPeer::getUserInfo($tagemail);
+                        $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
+                        $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
+                        if(!empty($emp))
+                        {
+                            $empTag = new EventTaggedPersons();
+                            $empTag->setEventId($event_id);
+                            $empTag->setEmpId($emp->getId());
+                            $empTag->setStatus(2);
+                            $empTag->save();
+
+                            array_push($tag_request_ids, $empTag->getId());
+                            $send = $this->notify($req, $datetimetoday, array("type" => 1, "guestEmail" => $emp->getEmail()));
+
+                            if (!$send) {
+                                $this->deleteEventTagged($event_id, $tag_request_ids);
+                                echo json_encode(array('error' => 'Email not successfully sent'));
+                                exit;
+                            }
+                        }
+                    }
+
+                    $tagnames = implode(", " ,$tag_names);
+                    $send = $this->notify($req, $datetimetoday, array("names" =>$tagnames, "type" => 2, "guestEmail" => $this->getUser()->getEmail()));
+
+                    if (!$send) {
+                        $this->deleteEventTagged($event_id, $tag_request_ids);
+                        echo json_encode(array('error' => 'Email not successfully sent'));
+                        exit;
+                    }
+                    else {
+                        echo json_encode(array('result' => 'Request for Meeting has been successfully sent'));
+                        exit;
+                    }
+                } catch (Exception $e){
+                    echo $e->getMessage();
+                } finally {
+                    $this->deleteEventTagged($event_id, $tag_request_ids);
+                    echo json_encode(array('error' => 'Server Error'));
+                    exit;
+                }
+            } else {
+                echo json_encode(array('error' => 'Event not Successfully Added'));
+                exit;
+            }
+        }
+    }
+
+    public function deleteEventTagged($reqId, $reqTagIds) {
+        $request = EmpRequestQuery::create()->findPk($reqId);
+        if(!empty($request)) {
+            $request->delete();
+        }
+
+        if(!empty($reqTagIds)) {
+            foreach($reqTagIds as $id) {
+                $request = EventTaggedPersonsQuery::create()->findPk($id);
+                if(!empty($request)) {
+                    $request->delete();
+                }
+            }
         }
     }
 
@@ -173,9 +283,9 @@ class EventManagerController extends Controller
         }
     }
 
-    public function notify(Request $req) {
+    public function notify(Request $req, $datetimecreated, $arr) {
         $email = new EmailController();
-        $sendemail = $email->notifyEventEmail($req, $this);
+        $sendemail = $email->notifyEventEmail($req, $this, $datetimecreated, $arr);
 
         if($sendemail == 0) {
             //$delete = $this->delete($req);

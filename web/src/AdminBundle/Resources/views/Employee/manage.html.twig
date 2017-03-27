@@ -184,13 +184,14 @@
                         <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
                         <p>Middle Name<input name = "mname" placeholder="type here..." id="mname" type="text" class="input-field"/></p>
 
-                        <p>Gender</p>
+                        <p>Sex</p>
                         <div class="select-wrapper"><span class="caret">?</span>
                             <select name="gender" id="gender" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
-                                <option value="" disabled selected>Select Gender</option>
+                                <option value="" disabled selected>Select Sex</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
                             </select>
+                            <span id = "gender-error" style = "padding: 0; font-size: 10px; color: red;">Please input employee's sex type</span></p>
                         </div>
 
                         <p>Department</p>
@@ -201,6 +202,7 @@
                                     <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
                                 {% endfor %}
                             </select>
+                            <span id = "dept-error" style = "padding: 0; font-size: 10px; color: red;">Please input employee's department</span></p>
                         </div>
 
                         <p>Position</p>
@@ -211,6 +213,7 @@
                                     <option value="{{pos.Id}}">{{pos.PosNames}}</option>
                                 {% endfor %}
                             </select>
+                            <span id = "pos-error" style = "padding: 0; font-size: 10px; color: red;">Please input employee's position</span></p>
                         </div>
 
                         <p>Employment Status</p>
@@ -221,6 +224,7 @@
                                     <option value="{{status.Id}}">{{status.name}}</option>
                                 {% endfor %}
                             </select>
+                            <span id = "emp-status-error" style = "padding: 0; font-size: 10px; color: red;">Please input employee's employment status</span></p>
                         </div>
                         <br>
                         <p>Company Email<input name="email" placeholder="type here..." id="companyemail" type="text" class="input-field"></p>
@@ -252,6 +256,10 @@
                 <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
                 <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
                 <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
+                <div class="chip add-error-chip" style = "font-size: 12px; color: red;">
+                    <i class="close material-icons">info_outline</i>
+                    Please Input All Fields
+                </div>
             </div>
         </div>
     </div>
@@ -351,6 +359,11 @@
         var passwordError = $('#password-error');
         var repasswordError = $('#re-password-error');
         var empnumError = $('#employeenum-error');
+        var genderError = $('#gender-error');
+        var deptError = $('#dept-error');
+        var posError = $('#pos-error');
+        var empStatusError = $('#emp-status-error');
+        var addErrorChip = $('.add-error-chip');
 
         // SCRIPTS FOR EXPORT
         $(document).on("click", "#btn-export-modal", function () {
@@ -614,8 +627,10 @@
 
         $(document).on("click", "#add-emp", function () {
             var validate = checkAddEmpFields();
-            if (validate == true) // true == there are errors
+            if (validate == true) { // true == there are errors
+                addErrorChip.show();
                 return;
+            }
             showLoadingBar();
 
             usernameinput       = usernameInput.val();
@@ -699,6 +714,11 @@
             passwordError.hide();
             repasswordError.hide();
             empnumError.hide();
+            genderError.hide();
+            deptError.hide();
+            posError.hide();
+            empStatusError.hide();
+            addErrorChip.hide();
 
             if(employeeIdInput.val() == '' && usernameInput.val() != '' && empNumInput.val() != '') {
                 {% for usedUsers in allusers %}
@@ -767,17 +787,26 @@
                 error++;
             }
 
-            if(departmentCombo.val() == '') {
+            if(genderCombo.val() == '' || genderCombo.val() == null) {
+//                genderError.show();
+                notifyInvalid(genderCombo);
+                error++;
+            }
+
+            if(departmentCombo.val() == '' || genderCombo.val() == null) {
+//                deptError.show();
                 notifyInvalid(departmentCombo);
                 error++;
             }
 
-            if(positionCombo.val() == '') {
+            if(positionCombo.val() == '' || genderCombo.val() == null) {
+//                posError.show();
                 notifyInvalid(positionCombo);
                 error++;
             }
 
-            if(empStatusCombo.val() == '') {
+            if(empStatusCombo.val() == '' || genderCombo.val() == null) {
+//                empStatusError.show();
                 notifyInvalid(empStatusCombo);
                 error++;
             }
@@ -792,8 +821,7 @@
                 error++;
             }
 
-            if(error > 0)
-                return true;
+            if(error > 0)return true;
             else return false;
         }
 
@@ -828,6 +856,12 @@
             passwordError.hide();
             repasswordError.hide();
             empnumError.hide();
+            genderError.hide();
+            deptError.hide();
+            posError.hide();
+            empStatusError.hide();
+            addErrorChip.hide();
+            genderCombo.val('');
             $('.div-capabilities-area').find('input:checkbox').prop('checked', false);
             usernameInput.attr("disabled", false);
             passwordInput.attr("disabled", false);

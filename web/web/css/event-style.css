@@ -36,3 +36,27 @@
 #agenda:hover {
     cursor: pointer; !important;
 }
+
+.event-status{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100px;
+    text-align: center;
+    color: white;
+}
+
+.pending {
+    background-color: darkgray;
+}
+
+.approved {
+    background-color: #43a047;
+}
+
+.declined {
+    background-color: #e53935;
+}
+
+.created {
+    background-color: #ff9800;
+}
