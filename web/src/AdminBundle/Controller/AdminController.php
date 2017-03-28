@@ -372,6 +372,9 @@ class AdminController extends Controller
         $empEmail = $request->request->get('emailinput');
         $empTelNum = $request->request->get('telnuminput');
         $empCelNum = $request->request->get('celnuminput');
+        $sssId = $request->request->get('sssinput');
+        $bir = $request->request->get('birinput');
+        $philhealth = $request->request->get('philhealthinput');
 
         $updateAcc = EmpAccPeer::getAcc($empid);
         $updateAcc->setEmail($empEmail);
@@ -388,6 +391,9 @@ class AdminController extends Controller
         $updateprofile->setListDeptDeptId($empDept);
         $updateprofile->setListPosPosId($empPos);
         $updateprofile->setStatus($empStatus);
+        $updateprofile->setSss($sssId);
+        $updateprofile->setBir($bir);
+        $updateprofile->setPhilhealth($philhealth);
         $updateprofile->save();
 
         $profileId = $updateprofile->getId();
