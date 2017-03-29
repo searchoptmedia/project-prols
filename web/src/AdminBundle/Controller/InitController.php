@@ -138,4 +138,41 @@ class  InitController extends Controller
         $session->set('autoTimeOutDate', '');
     }
 
+    public function computeHours($in, $out, $day, $name)
+    {
+        $in     = new \DateTime($in);
+        $out    = new \DateTime($out);
+        $manhours = date_diff($out, $in);
+        $overtime = 0;
+
+        //compute duration
+
+        $totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
+
+        $h = $manhours->format('%h');
+        $i = intval($manhours->format('%i'));
+        $i = $i > 0 ? ($i/60) : 0;
+        $totalHoursDec = number_format($h + $i, 2);
+
+        if($totalHoursDec > 9) {
+            $overtime = $totalHoursDec - 9;
+        }
+        if($day == 'Sat' || $day == 'Sun') {
+            $overtime = $totalHoursDec;
+        }
+
+        if($totalHours < 9)
+        {
+            $undertime = 1;
+        }
+
+        if($name == 'total_hours') {
+            return $totalHoursDec;
+        } else if($name == 'overtime') {
+            return $overtime;
+        }
+
+        return 0;
+    }
+
 }
