@@ -411,8 +411,9 @@ class EmployeeRequestController extends Controller
             }
             array_push($request, $event);
         }
+
         $eventManager =  new EventManagerController();
-        $request = $eventManager->showEventsAction($request);
+        $request = $eventManager->showEventsAction($request, $this->getUser()->getId(), $this->getUser()->getRole());
 
         echo json_encode($request);
         exit;

@@ -206,7 +206,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -217,7 +217,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [emp_acc_acc_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpAccAccId()
@@ -228,7 +228,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [fname] column value.
-     * 
+     *
      * @return string
      */
     public function getFname()
@@ -239,7 +239,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [lname] column value.
-     * 
+     *
      * @return string
      */
     public function getLname()
@@ -250,7 +250,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [mname] column value.
-     * 
+     *
      * @return string
      */
     public function getMname()
@@ -261,7 +261,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [bday] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -296,12 +296,12 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [address] column value.
-     * 
+     *
      * @return string
      */
     public function getAddress()
@@ -312,7 +312,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [gender] column value.
-     * 
+     *
      * @return string
      */
     public function getGender()
@@ -323,7 +323,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [img_path] column value.
-     * 
+     *
      * @return string
      */
     public function getImgPath()
@@ -334,7 +334,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date_joined] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -369,12 +369,12 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [emp_num] column value.
-     * 
+     *
      * @return string
      */
     public function getEmployeeNumber()
@@ -385,7 +385,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [list_dept_id] column value.
-     * 
+     *
      * @return int
      */
     public function getListDeptDeptId()
@@ -396,7 +396,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [list_pos_id] column value.
-     * 
+     *
      * @return int
      */
     public function getListPosPosId()
@@ -407,7 +407,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return int
      */
     public function getStatus()
@@ -418,7 +418,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [sss] column value.
-     * 
+     *
      * @return string
      */
     public function getSss()
@@ -429,7 +429,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [bir] column value.
-     * 
+     *
      * @return string
      */
     public function getBir()
@@ -440,7 +440,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Get the [philhealth] column value.
-     * 
+     *
      * @return string
      */
     public function getPhilhealth()
@@ -451,7 +451,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -472,7 +472,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_acc_acc_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -497,7 +497,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [fname] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -518,7 +518,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [lname] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -539,7 +539,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [mname] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -560,7 +560,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Sets the value of [bday] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpProfile The current object (for fluent API support)
@@ -583,7 +583,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [address] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -604,7 +604,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [gender] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -625,7 +625,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [img_path] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -646,7 +646,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date_joined] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpProfile The current object (for fluent API support)
@@ -669,7 +669,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_num] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -690,7 +690,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [list_dept_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -715,7 +715,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [list_pos_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -740,7 +740,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -765,7 +765,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [sss] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -786,7 +786,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [bir] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -807,7 +807,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
 
     /**
      * Set the value of [philhealth] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpProfile The current object (for fluent API support)
      */
@@ -1226,55 +1226,55 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`emp_acc_acc_id`':						
+                    case '`emp_acc_acc_id`':
                         $stmt->bindValue($identifier, $this->emp_acc_acc_id, PDO::PARAM_INT);
                         break;
-                    case '`fname`':						
+                    case '`fname`':
                         $stmt->bindValue($identifier, $this->fname, PDO::PARAM_STR);
                         break;
-                    case '`lname`':						
+                    case '`lname`':
                         $stmt->bindValue($identifier, $this->lname, PDO::PARAM_STR);
                         break;
-                    case '`mname`':						
+                    case '`mname`':
                         $stmt->bindValue($identifier, $this->mname, PDO::PARAM_STR);
                         break;
-                    case '`bday`':						
+                    case '`bday`':
                         $stmt->bindValue($identifier, $this->bday, PDO::PARAM_STR);
                         break;
-                    case '`address`':						
+                    case '`address`':
                         $stmt->bindValue($identifier, $this->address, PDO::PARAM_STR);
                         break;
-                    case '`gender`':						
+                    case '`gender`':
                         $stmt->bindValue($identifier, $this->gender, PDO::PARAM_STR);
                         break;
-                    case '`img_path`':						
+                    case '`img_path`':
                         $stmt->bindValue($identifier, $this->img_path, PDO::PARAM_STR);
                         break;
-                    case '`date_joined`':						
+                    case '`date_joined`':
                         $stmt->bindValue($identifier, $this->date_joined, PDO::PARAM_STR);
                         break;
-                    case '`emp_num`':						
+                    case '`emp_num`':
                         $stmt->bindValue($identifier, $this->emp_num, PDO::PARAM_STR);
                         break;
-                    case '`list_dept_id`':						
+                    case '`list_dept_id`':
                         $stmt->bindValue($identifier, $this->list_dept_id, PDO::PARAM_INT);
                         break;
-                    case '`list_pos_id`':						
+                    case '`list_pos_id`':
                         $stmt->bindValue($identifier, $this->list_pos_id, PDO::PARAM_INT);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
-                    case '`sss`':						
+                    case '`sss`':
                         $stmt->bindValue($identifier, $this->sss, PDO::PARAM_STR);
                         break;
-                    case '`bir`':						
+                    case '`bir`':
                         $stmt->bindValue($identifier, $this->bir, PDO::PARAM_STR);
                         break;
-                    case '`philhealth`':						
+                    case '`philhealth`':
                         $stmt->bindValue($identifier, $this->philhealth, PDO::PARAM_STR);
                         break;
                 }
@@ -1551,7 +1551,7 @@ abstract class BaseEmpProfile extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

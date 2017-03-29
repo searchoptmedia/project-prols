@@ -132,7 +132,7 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpRequest|EmpRequest[]|mixed the result, formatted by the current formatter
@@ -187,7 +187,7 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id`, `meeting_title` FROM `emp_request` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

@@ -343,7 +343,7 @@ abstract class BaseListEventsTypePeer
 
         return null; // just to be explicit
     }
-    
+
     /**
      * Clear the instance pool.
      *
@@ -358,7 +358,7 @@ abstract class BaseListEventsTypePeer
       }
         ListEventsTypePeer::$instances = array();
     }
-    
+
     /**
      * Method to invalidate the instance pool of all tables related to list_events_type
      * by a foreign key with ON DELETE CASCADE
@@ -401,7 +401,7 @@ abstract class BaseListEventsTypePeer
 
         return (int) $row[$startcol];
     }
-    
+
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -412,7 +412,7 @@ abstract class BaseListEventsTypePeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-    
+
         // set the class once to avoid overhead in the loop
         $cls = ListEventsTypePeer::getOMClass();
         // populate the object(s)
@@ -656,7 +656,7 @@ abstract class BaseListEventsTypePeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-            
+
             $affectedRows += BasePeer::doDelete($criteria, $con);
             ListEventsTypePeer::clearRelatedInstancePool();
             $con->commit();

@@ -74,6 +74,7 @@ function checkFields(elements) {
 
 function notifyInvalid(element) {
     element.css({'border-color': 'red'});
+    element.focus();
     setTimeout(function () {
         element.css({'border-color': 'gray'})
     }, 1000);

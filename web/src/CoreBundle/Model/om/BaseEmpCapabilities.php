@@ -90,7 +90,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -101,7 +101,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Get the [empid] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpId()
@@ -112,7 +112,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Get the [capid] column value.
-     * 
+     *
      * @return int
      */
     public function getCapId()
@@ -123,7 +123,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpCapabilities The current object (for fluent API support)
      */
@@ -144,7 +144,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Set the value of [empid] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpCapabilities The current object (for fluent API support)
      */
@@ -169,7 +169,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
 
     /**
      * Set the value of [capid] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpCapabilities The current object (for fluent API support)
      */
@@ -495,13 +495,13 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`empid`':						
+                    case '`empid`':
                         $stmt->bindValue($identifier, $this->empid, PDO::PARAM_INT);
                         break;
-                    case '`capid`':						
+                    case '`capid`':
                         $stmt->bindValue($identifier, $this->capid, PDO::PARAM_INT);
                         break;
                 }
@@ -702,7 +702,7 @@ abstract class BaseEmpCapabilities extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
