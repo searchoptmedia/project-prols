@@ -96,7 +96,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -107,7 +107,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Get the [request_id] column value.
-     * 
+     *
      * @return int
      */
     public function getRequestId()
@@ -118,7 +118,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return int
      */
     public function getStatus()
@@ -129,7 +129,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Get the [emp_acc_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpAccId()
@@ -140,7 +140,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return RequestMeetingTags The current object (for fluent API support)
      */
@@ -161,7 +161,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Set the value of [request_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return RequestMeetingTags The current object (for fluent API support)
      */
@@ -186,7 +186,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  int $v new value
      * @return RequestMeetingTags The current object (for fluent API support)
      */
@@ -207,7 +207,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_acc_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return RequestMeetingTags The current object (for fluent API support)
      */
@@ -537,16 +537,16 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`request_id`':						
+                    case '`request_id`':
                         $stmt->bindValue($identifier, $this->request_id, PDO::PARAM_INT);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
-                    case '`emp_acc_id`':						
+                    case '`emp_acc_id`':
                         $stmt->bindValue($identifier, $this->emp_acc_id, PDO::PARAM_INT);
                         break;
                 }
@@ -751,7 +751,7 @@ abstract class BaseRequestMeetingTags extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpRequest) {
                 $result['EmpRequest'] = $this->aEmpRequest->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

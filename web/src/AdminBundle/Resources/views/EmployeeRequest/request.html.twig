@@ -325,7 +325,7 @@
                  start_date_row.html(startDate);
                  end_date_row.html(endDate);
 
-                 showLoadingBar(data["result"]);
+                 showSuccessBar('Successfully saved changes!');
              } else if (data["error"]) {
                  // error
                  showErrorBar(data["error"]);
@@ -424,7 +424,7 @@
              isChanged = "CHANGED";
          else isChanged = "NOT CHANGED";
          changed = false;
-         changeStatus(3, isChanged, accept);
+         changeStatus(3, isChanged, accept, 'accept');
      });
 
      $(document).on("click", ".admin_decline", function () {
@@ -435,10 +435,10 @@
          changeStatus(4, isChanged, decline);
      });
 
-     function changeStatus(currStatus, isChanged, button) {
+     function changeStatus(currStatus, isChanged, button, action) {
          elements = [admin_comment_modal];
          var validate = checkFields(elements);
-         if (validate == true) // true == there are errors
+         if (validate == true && action != 'accept') // true == there are errors
              return;
 
          admin_comment_modal.attr("disabled", true);

@@ -86,7 +86,7 @@ abstract class BaseListPos extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -97,7 +97,7 @@ abstract class BaseListPos extends BaseObject implements Persistent
 
     /**
      * Get the [pos_names] column value.
-     * 
+     *
      * @return string
      */
     public function getPosNames()
@@ -108,7 +108,7 @@ abstract class BaseListPos extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return ListPos The current object (for fluent API support)
      */
@@ -129,7 +129,7 @@ abstract class BaseListPos extends BaseObject implements Persistent
 
     /**
      * Set the value of [pos_names] column.
-     * 
+     *
      * @param  string $v new value
      * @return ListPos The current object (for fluent API support)
      */
@@ -439,10 +439,10 @@ abstract class BaseListPos extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`pos_names`':						
+                    case '`pos_names`':
                         $stmt->bindValue($identifier, $this->pos_names, PDO::PARAM_STR);
                         break;
                 }
@@ -629,7 +629,7 @@ abstract class BaseListPos extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->collEmpProfiles) {
                 $result['EmpProfiles'] = $this->collEmpProfiles->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);

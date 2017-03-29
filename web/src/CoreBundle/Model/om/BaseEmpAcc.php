@@ -238,7 +238,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -249,7 +249,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [username] column value.
-     * 
+     *
      * @return string
      */
     public function getUsername()
@@ -260,7 +260,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [password] column value.
-     * 
+     *
      * @return string
      */
     public function getPassword()
@@ -271,7 +271,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [timestamp] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -306,12 +306,12 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [ip_add] column value.
-     * 
+     *
      * @return string
      */
     public function getIpAdd()
@@ -322,7 +322,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return int
      */
     public function getStatus()
@@ -333,7 +333,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [email] column value.
-     * 
+     *
      * @return string
      */
     public function getEmail()
@@ -344,7 +344,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [role] column value.
-     * 
+     *
      * @return string
      */
     public function getRole()
@@ -355,7 +355,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [key] column value.
-     * 
+     *
      * @return string
      */
     public function getKey()
@@ -366,7 +366,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [created_by] column value.
-     * 
+     *
      * @return int
      */
     public function getCreatedBy()
@@ -377,7 +377,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Get the [last_updated_by] column value.
-     * 
+     *
      * @return int
      */
     public function getLastUpdatedBy()
@@ -388,7 +388,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -409,7 +409,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [username] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -430,7 +430,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [password] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -451,7 +451,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Sets the value of [timestamp] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpAcc The current object (for fluent API support)
@@ -474,7 +474,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [ip_add] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -495,7 +495,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -516,7 +516,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [email] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -537,7 +537,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [role] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -558,7 +558,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [key] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -579,7 +579,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [created_by] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -600,7 +600,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
 
     /**
      * Set the value of [last_updated_by] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpAcc The current object (for fluent API support)
      */
@@ -1082,37 +1082,37 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`username`':						
+                    case '`username`':
                         $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
                         break;
-                    case '`password`':						
+                    case '`password`':
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
                         break;
-                    case '`timestamp`':						
+                    case '`timestamp`':
                         $stmt->bindValue($identifier, $this->timestamp, PDO::PARAM_STR);
                         break;
-                    case '`ip_add`':						
+                    case '`ip_add`':
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
-                    case '`email`':						
+                    case '`email`':
                         $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
                         break;
-                    case '`role`':						
+                    case '`role`':
                         $stmt->bindValue($identifier, $this->role, PDO::PARAM_STR);
                         break;
-                    case '`key`':						
+                    case '`key`':
                         $stmt->bindValue($identifier, $this->key, PDO::PARAM_STR);
                         break;
-                    case '`created_by`':						
+                    case '`created_by`':
                         $stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
                         break;
-                    case '`last_updated_by`':						
+                    case '`last_updated_by`':
                         $stmt->bindValue($identifier, $this->last_updated_by, PDO::PARAM_INT);
                         break;
                 }
@@ -1391,7 +1391,7 @@ abstract class BaseEmpAcc extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->collEmpRequestsRelatedByEmpAccId) {
                 $result['EmpRequestsRelatedByEmpAccId'] = $this->collEmpRequestsRelatedByEmpAccId->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
