@@ -333,6 +333,7 @@ class EmployeeController extends Controller
                 'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
                 'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
                 'timetoday' => $timetoday,
+                'Util' => new InitController()
             ));
         }
     }
