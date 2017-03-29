@@ -153,35 +153,36 @@ class EmailController extends Controller
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
 
+        $typeOfLeave = $req->request->get('typeleave');
 
-        if(empty($req->request->get('typeleave')))
-        {
+        if(empty($typeOfLeave)) {
             $requestlist = ListRequestTypePeer::retrieveByPK(4);
-        }else
-        {
+        } else {
             $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
         }
+
         $requesttype = $requestlist->getRequestType();
 
         $admins = EmpAccPeer::getAdminInfo();
         $subject = "PROLS » " . $requesttype . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         foreach ($admins as $admin){
-            $to = array($admin->getEmail());
+            $adminEmail = $admin->getEmail();
+            if(!empty($adminEmail)) {
+                $to = array($adminEmail);
 
-            $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
+                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
+                    "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
 
-            $response = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+                $response = self::sendEmail($class, $subject, $from, $to,
+                    $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
 
-            if(!$response)
-                $email++;
+                if ($response)
+                    $email++;
+            }
         }
 
-        if($email > 0)
-            return 0;
-        else return 1;
+        return $email;
     }
 
     public function addEmployeeEmail($req, $class){

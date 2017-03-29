@@ -218,6 +218,7 @@ class EmployeeRequestController extends Controller
         $typeleave = $req->request->get('typeleave');
         $userid = $this->getUser()->getId();
         $reqIds = array();
+        $ref = $this;
 
         for ($i = 0; $i <= $object["unique_id"]; $i++) {            // loop for saving all dates
             $start = "start_date" . $i;
@@ -248,10 +249,8 @@ class EmployeeRequestController extends Controller
                 exit;
             }
         } catch (Exception $e){
-            echo $e->getMessage();
-        } finally {
-            $this->deleteRequestLeave($reqIds);
-            echo json_encode(array('error' => 'Server Error'));
+            $ref->deleteRequestLeave($reqIds);
+            echo json_encode(array('error' => $e->getMessage()));
             exit;
         }
     }
