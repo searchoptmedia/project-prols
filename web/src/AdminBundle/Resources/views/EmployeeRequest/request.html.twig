@@ -46,7 +46,7 @@
                             <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
                             {% for request in allrequest %}
                                 <tr class = "request-row" data-empid="{{ request.empAccId }}"
-                                    data-id="{{ request.id }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
+                                    data-id="{{ request.id }}" data-emptime="{{ request.empTimeId }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
                                     <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
                                     <td class="category">{{ request.listRequestType.requestType|upper }}</td>
                                     <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
@@ -499,7 +499,6 @@
      }
 
      function getValues(request_row, role, adminid) {
-         emptimeid = -1;
          emptimeid = request_row.data("emptime");
          emp_id = request_row.data("empid");
          request_id = request_row.data("id");
