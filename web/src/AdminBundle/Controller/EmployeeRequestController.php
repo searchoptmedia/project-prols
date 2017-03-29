@@ -95,10 +95,7 @@ class EmployeeRequestController extends Controller
             $ip_add = ListIpPeer::getValidIP($userip);
             $is_ip  = InitController::checkIP($userip);
 
-            $requestcount = EmpRequestQuery::create()
-                ->filterByStatus('Pending')
-                ->find()->count();
-
+            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
             return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
                 'name' => $name,
@@ -491,9 +488,9 @@ class EmployeeRequestController extends Controller
 
 
         }
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
+
         return $this->render('AdminBundle:Employee:notif.html.twig', array(
             'name' => $name,
             'page' => $page,

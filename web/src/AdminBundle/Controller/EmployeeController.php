@@ -310,9 +310,7 @@ class EmployeeController extends Controller
                     $isTimeOut = 'true';
             }
 
-            $requestcount = EmpRequestQuery::create()
-                ->filterByStatus('Pending')
-                ->find()->count();
+            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
             return $this->render('AdminBundle:Employee:managetime.html.twig', array(
                 'name' => $name,
@@ -511,9 +509,7 @@ class EmployeeController extends Controller
         $getDept = ListDeptPeer::getAllDept();
 
         //check pending count
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         //Check late
         $late = 0;
@@ -766,9 +762,7 @@ class EmployeeController extends Controller
         $getDept = ListDeptPeer::getAllDept();
 
         //check pending count
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         //Check late
         $late = 0;
@@ -967,9 +961,7 @@ class EmployeeController extends Controller
                 $isTimeOut = 'true';
         }
 
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $AllUsers = EmpAccPeer::getAllUser();
         $AllDepartments = ListDeptPeer::getAllDept();
