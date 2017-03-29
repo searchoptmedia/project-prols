@@ -98,8 +98,8 @@
                                 <td>{{ time.Date | date('M d Y')}}</td>
                                 <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
                                 <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td {% if( time.TimeOut is empty) %}id="duration-time"{% endif %}>{{ time.Manhours }}</td>
-                                <td>{{ time.Overtime }}</td>
+                                <td {% if( time.TimeOut is empty) %}id="duration-time"{% endif %}>{% if time.TimeIn is not empty and time.TimeOut is not empty %}{{ Util.computeHours(time.TimeIn|date('Y-m-d H:i:s'), time.TimeOut|date('Y-m-d H:i:s'), time.Date|date('D'), 'total_hours') }}{% else %}0{% endif %}</td>
+                                <td>{% if time.TimeIn is not empty and time.TimeOut is not empty %}{{ Util.computeHours(time.TimeIn|date('Y-m-d H:i:s'), time.TimeOut|date('Y-m-d H:i:s'), time.Date|date('D'), 'overtime') }}{% else %}0{% endif %}</td>
 
                             </tr>
 

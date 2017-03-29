@@ -837,7 +837,6 @@ class EmployeeController extends Controller
 
         $getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
-
         // add duration
         return $this->render('AdminBundle:Employee:profile.html.twig', array(
             'page' => $page,
@@ -875,6 +874,7 @@ class EmployeeController extends Controller
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'getAllTime' => $getAllTimeData,
             'timetoday' => $timetoday,
+            'Util' =>  new InitController()
         ));
 
     }
