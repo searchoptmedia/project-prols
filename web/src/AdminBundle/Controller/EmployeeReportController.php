@@ -161,6 +161,9 @@ class EmployeeReportController extends Controller
                     );
                 }
             }
+            fputcsv($handle, array(' '));
+            fputcsv($handle, array(' '));
+            fputcsv($handle, array('*********** Note: Please take note that declined out of the office works were not included on the list above.'));
             exit;
 
             fclose($handle);
