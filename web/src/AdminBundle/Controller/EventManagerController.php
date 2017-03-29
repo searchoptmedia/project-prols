@@ -95,9 +95,7 @@ class EventManagerController extends Controller
                 $isTimeOut = 'true';
         }
 
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $eventTypes = ListEventsTypePeer::getAllEventType();
         $allacc = EmpAccPeer::getAllUser();

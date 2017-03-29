@@ -97,9 +97,7 @@ class AdminController extends Controller
         $afternoon = date('H:i A', strtotime('12 pm'));
 
         //counts number of pending requests
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus(2)
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $userip     = InitController::getUserIP($this);
         $ip_add     = ListIpPeer::getValidIP($userip);
