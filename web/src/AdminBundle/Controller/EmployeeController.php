@@ -10,6 +10,8 @@ use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpCapabilitiesPeer;
 use CoreBundle\Model\EmpStatusTypePeer;
+use CoreBundle\Model\EmpTimeQuery;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -159,51 +161,78 @@ class EmployeeController extends Controller
 
 		$pass = $user->getPassword();
 		$datetimetoday 	= date('Y-m-d H:i:s');
+        $datetoday 		= date('Y-m-d');
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$timeinId 		= $timedata->getId();
 		$inputpass 		= $passw;
 		$error 			= false;
+        $code           = 500;
 
-		if($pass == $inputpass) {
-			//set time out
-			$timeout = EmpTimePeer::retrieveByPK($timeinId);
-			$timeout->setTimeOut($datetimetoday);
+        if(!empty($timedata)) {
+            $emptimedate = $timedata->getTimeIn()->format('Y-m-d');
 
-			$in = new \DateTime($timeout->getTimeIn()->format('Y-m-d H:i:s'));
-			$out = new \DateTime($timeout->getTimeOut()->format('Y-m-d H:i:s'));
-			$manhours = date_diff($out, $in);
-			$h = $manhours->format('%h');
-			$i = intval($manhours->format('%i'));
-			$i = $i > 0 ? ($i/60) : 0;
-			$totalHoursDec = number_format($h + $i, 2);
+            $timeoutData = $timedata->getTimeOut();
 
-			//set total hours and overtime
-			if(date('D') == 'Sat' || date('D')=='Sun') {
-				$timeout->setOvertime($totalHoursDec);
-			} else {
-				$timeout->setManhours($totalHoursDec);
-				$overtime = 0;
+            if(empty($timeoutData)) {
+                if ($pass == $inputpass) {
+                    //set time out
+                    $timeout = EmpTimePeer::retrieveByPK($timeinId);
+                    $timeout->setTimeOut($datetimetoday);
 
-				if($totalHoursDec > 9) {
-					$overtime = $totalHoursDec - 9;
-				}
+                    $in = new \DateTime($timeout->getTimeIn()->format('Y-m-d H:i:s'));
+                    $out = new \DateTime($timeout->getTimeOut()->format('Y-m-d H:i:s'));
+                    $manhours = date_diff($out, $in);
+                    $h = $manhours->format('%h');
+                    $i = intval($manhours->format('%i'));
+                    $i = $i > 0 ? ($i / 60) : 0;
+                    $totalHoursDec = number_format($h + $i, 2);
 
-				$timeout->setOvertime($overtime);
-			}
+                    //set total hours and overtime
+                    if (date('D') == 'Sat' || date('D') == 'Sun') {
+                        $timeout->setOvertime($totalHoursDec);
+                    } else {
+                        $timeout->setManhours($totalHoursDec);
+                        $overtime = 0;
 
-			$timeout->save();
-            InitController::ResetSessionValue();
-            InitController::loginSetTimeSession($this);
-			$message = 'Time out successful';
-		} else {
-			$error = true;
-			$message = 'Wrong Password';
-			echo $error;
-			exit;
-		}
+                        if ($totalHoursDec > 9) {
+                            $overtime = $totalHoursDec - 9;
+                        }
 
-		$response = array('message' => $message, 'error' => $error);
+                        $timeout->setOvertime($overtime);
+                    }
+
+                    $timeout->save();
+                    InitController::ResetSessionValue();
+                    InitController::loginSetTimeSession($this);
+                    $message = 'Time out successful';
+                    $code = 200;
+                } else {
+                    $error = true;
+                    $message = 'Wrong Password!';
+                    $code = 501;
+                }
+            } else {
+                $error = true;
+                $message = 'No time in record found!';
+            }
+        } else {
+            $error = true;
+            $message = 'No time in record found!';
+        }
+
+        if($error && $code == 500) {
+            $empTime = EmpTimeQuery::create()->orderById(Criteria::DESC)->findOne();
+            if($empTime) {
+                if($empTime->getStatus() == -1) {
+                    $message = 'Time in has been declined!';
+                } else if($empTime->getStatus() == -2) {
+                    $message = 'Time in has been deleted!';
+                }
+            }
+        }
+
+		$response = array('message' => $message, 'error' => $error, 'code' => $code);
 		echo json_encode($response);
 		exit;
 	}
