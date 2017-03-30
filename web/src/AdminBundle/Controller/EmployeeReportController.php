@@ -100,7 +100,7 @@ class EmployeeReportController extends Controller
             foreach($records as $emp) 
             {
                 $status = $emp->getStatus();
-                if($status != -1) {
+                if($status >= 0) {
                     $empid = $emp->getEmpAccAccId();
                     $timeindata = $emp->getTimeIn()->format('h:i A');
                     $timeoutdata = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
