@@ -379,6 +379,8 @@ class EmailController extends Controller
 
         $admins = EmpAccPeer::getAdminInfo();
         $adminemails = array();
+        $emailCtr = 0;
+
         $subject = "PROLS » " . $action . " " . $category . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         foreach ($admins as $admin){
@@ -393,9 +395,12 @@ class EmailController extends Controller
 
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+
+            if($email)
+                $emailCtr++;
         }
 
-        return $email ? 1: 0;
+        return $emailCtr;
     }
 }
 
