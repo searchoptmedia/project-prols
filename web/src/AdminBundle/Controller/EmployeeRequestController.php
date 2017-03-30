@@ -556,7 +556,7 @@ class EmployeeRequestController extends Controller
             $email = new EmailController();
             $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
 
-            if($sendemail == 0) {
+            if(! $sendemail) {
                 //$this->deleteRequestAction($req);
                 $result = array('error' => 'Email not sent!');
             } else {
