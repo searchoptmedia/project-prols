@@ -440,13 +440,13 @@
             $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color' : '#f44336'});
             return;
         }
-
         notifLoader.show();
         notifLoader.css({'top' : '0px'});
+
         $('#time-out-button').hide();
         $('.timeout-cancel').hide();
+
         $.post("{{ path('time_out') }}" + pass, function(data){
-            toggleTimeWidget('hide');
             //validate password
             if(data.error == true && data.code == 501) {
                 console.log('error dow')
@@ -460,10 +460,9 @@
                 $('.timeout-container').hide();
                 $('.modal-logout-notify-container').show();
                 $('.confirm-timein.error-message').text(data.message);
-            }
-
-            if(data.error == false) {
+            } else if(data.error == false) {
                 //time out success
+                toggleTimeWidget('hide');
                 $('.timeout-container').css({'display' : 'none'});
                 $('.timeout').css({'display' : 'none'});
                 $('.timeout-notif-container').css({'top':'0px'});
