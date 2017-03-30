@@ -72,11 +72,12 @@
 </section>
 
     <!----------------------- VIEW EVENT MODAL -------------------------->
-    <div id="view_request_modal" class="modal modal-fixed-footer">
+    <div id="view_request_modal" class="modal modal-fixed-footer"  data-dismiss="false">
         <div class="modal-content">
             <h4 class="agenda-date">
                 Request &nbsp;&nbsp;
                 <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
+                <span class="btn" style="font-size: 16px;" id="request_type_status">Pending</span>&nbsp;
                 <div style = "float: right;">
                     <a class="btn-floating btn-medium orange" id = "edit">
                         <i class="medium material-icons">mode_edit</i>
@@ -144,11 +145,12 @@
     <!-----------------------END OF MODAL -------------------------->
 
     <!----------------------- ADMIN REQUEST MODAL -------------------------->
-    <div id="admin_view_modal" class="modal modal-fixed-footer">
+    <div id="admin_view_modal" class="modal modal-fixed-footer" data-dismissible="false">
         <div class="modal-content">
             <h4 class="agenda-date">
                 Request &nbsp;&nbsp;
                 <span class="btn btn-default" style="font-size: 16px;" id="admin_request_type"></span>
+                <span class="btn" style="font-size: 16px;" id="admin_request_type_status">Pending</span>&nbsp;
             </h4>
             <br>
             <div class="event-form-cont">
@@ -284,6 +286,8 @@
              picker2.destroy();
 
          view_modal.closeModal();
+         editBtn.removeClass('open');
+         reason_modal.attr("readonly", true);
      });
 
      $(document).on("click", ".admin_cancel", function () {
@@ -375,10 +379,15 @@
          var tbody = $(this).closest("tbody");
          role = tbody.data("role");
          adminid = tbody.data("id");
+         editBtn.removeClass('open');
          getValues($(this), role, adminid);
      });
 
      $(document).on("click", "#edit", function () {
+
+         if(! $(this).hasClass('open')) $(this).addClass('open');
+         else return;
+
          reason_modal.attr("readonly", false);
          saveBtn.show();
 
@@ -563,7 +572,11 @@
              consider.show();
          }
 
-         admin_modal.openModal();
+         if(status==2) $('#admin_request_type_status').removeClass('red green').addClass('grey').text('Pending');
+         if(status==3) $('#admin_request_type_status').removeClass('red grey').addClass('green').text('Approved');//Approved
+         if(status==4) $('#admin_request_type_status').removeClass('grey green').addClass('red').text('Declined');//Approved
+
+         admin_modal.openModal({dismissible: false});
      }
 
      function initModal(emp_id, request_id, name, category, start_date, end_date, status, desc, request_type, emptimeid) {
@@ -578,7 +591,7 @@
          statusModal.val(status);
          reason_modal.val(desc);
 
-         if (status == 2) {
+         if (status == 2 && category_modal.val()!=3) { //if pending and not out of the office
              editBtn.show();
              deleteBtn.show();
          } else {
@@ -586,8 +599,14 @@
              deleteBtn.hide();
          }
 
+         if(category_modal.val()==3 && status == 2) deleteBtn.show();
+         console.log(status)
+         if(status==2) $('#request_type_status').removeClass('red green').addClass('grey').text('Pending');
+         if(status==3) $('#request_type_status').removeClass('red grey').addClass('green').text('Approved');//Approved
+         if(status==4) $('#request_type_status').removeClass('grey green').addClass('red').text('Declined');//Approved
+
          saveBtn.hide();
-         view_modal.openModal();
+         view_modal.openModal({dismissible: false});
      }
 
      function resetAdminModal(){
