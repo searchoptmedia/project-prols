@@ -552,25 +552,28 @@ class EmployeeRequestController extends Controller
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
         if(!empty($request)) {
-            $request->delete();
-            $deleted = $request->isDeleted();
 
-            if($deleted) {
-                $result = array('result' => 'Success');
-                $email = new EmailController();
-                $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
+            $email = new EmailController();
+            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
 
-                if($sendemail == 0) {
-                    //$this->deleteRequestAction($req);
-                    $result = array('error' => 'Email not sent');
-                } else {
-                    $result = array('result' => 'Event Successfully Deleted');
-                }
+            if($sendemail == 0) {
+                //$this->deleteRequestAction($req);
+                $result = array('error' => 'Email not sent!');
             } else {
-                $result = array('error' => 'Event not successfully deleted');
+                $request->setStatus(-1);
+                $request->save();
+
+                $empTimeId = $request->getEmpTimeId();
+                $empTime = EmpTimePeer::retrieveByPK($empTimeId);
+
+                if($empTime)
+                    $empTime->setStatus(-2)->save();
+
+
+                $result = array('result' => 'Request Successfully Deleted!');
             }
         } else {
-            $result = array('error' => 'Event not found');
+            $result = array('error' => 'Request not found!');
         }
 
         echo json_encode($result);

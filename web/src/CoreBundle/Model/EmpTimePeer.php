@@ -25,7 +25,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 			$c = new Criteria();
 		}
 
-		$c->add(self::STATUS, -1, Criteria::NOT_EQUAL);
+		$c->add(self::STATUS, array(-1, -2), Criteria::NOT_IN);
 		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL);
 		$c->addDescendingOrderByColumn(self::DATE);
 		$_self = self::doSelect($c);
@@ -38,7 +38,9 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
+
 		$c->addDescendingOrderByColumn(self::DATE);
+		$c->add(self::STATUS, array(-1, -2), Criteria::NOT_IN);
 		$_self = self::doSelect($c);
 
 		return $_self ? $_self : array();
@@ -92,6 +94,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		}
 
 		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL)
+			->add(self::STATUS, array(-1, -2), Criteria::NOT_IN)
 			->addDescendingOrderByColumn(self::TIME_IN);
 
 		$_self = self::doSelectOne($c);
