@@ -43,7 +43,11 @@ function post(button, path, data, callback, done, always) {
     console.log("done loading   ");
     disableEnableButton(button, true);
     $.post(path, data, callback, "json").done(done).always(always)
-        .fail(function() {
+        .fail(function(data, err) {
+            if(data.status == 401) {
+                alert("You're not login!");
+                window.location='/';
+            }
             showErrorBar("Server Error. Please try again.");
         });
     disableEnableButton(button, false);

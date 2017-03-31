@@ -368,7 +368,7 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
-    public function notifyRequestEmail($req, $class, $action) {
+    public function notifyRequestEmail($req, $class, $action, $param = null) {
         $user = $class->getUser();
         $id   = $user->getId();
 
@@ -390,7 +390,7 @@ class EmailController extends Controller
                 $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request." .
                     "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
             } else {
-                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request.";
+                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request. <br><br>";
             }
 
             $email = self::sendEmail($class, $subject, $from, $to,
