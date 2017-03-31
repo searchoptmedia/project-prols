@@ -167,6 +167,8 @@ class EmailController extends Controller
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $adminEmailList = $this->getAdminEmails($admins);
 
+//        print_r($adminEmailList);exit;
+
         if(count($adminEmailList)) {
             $to = $adminEmailList;
 
@@ -416,11 +418,11 @@ class EmailController extends Controller
             foreach($adminList as $e) {
                 $email = $e->getEmail();
                 $name  = $e->getUsername();
-                $profile  = EmpProfileQuery::create()->findPk($e->getId());
+                $profile  = EmpProfileQuery::create()->filterByEmpAccAccId($e->getId())->findOne();
 
                 if($profile) $name = $profile->getFname() . " " . $profile->getLname();
 
-                if(! empty($email)) $adminEmails[] = array($email => "$name");
+                if(! empty($email)) $adminEmails[0][$email] = "$name";
             }
         }
 
