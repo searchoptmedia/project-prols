@@ -99,70 +99,71 @@ class EmployeeReportController extends Controller
             $records = $this->getRecord();
             foreach($records as $emp) 
             {
-                $empid          = $emp->getEmpAccAccId();
-                $timeindata     = $emp->getTimeIn()->format('h:i A');
-                $timeoutdata    = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
+                $status = $emp->getStatus();
+                if($status >= 0) {
+                    $empid = $emp->getEmpAccAccId();
+                    $timeindata = $emp->getTimeIn()->format('h:i A');
+                    $timeoutdata = is_null($emp->getTimeOut()) ? "" : $emp->getTimeOut()->format('h:i A');
 
-                $date           = $emp->getDate()->format('m/d/Y');
+                    $date = $emp->getDate()->format('m/d/Y');
 
-                $dateday        = $emp->getDate()->format('D');
-                $isOffice       = $emp->getCheckIp() ? 'Yes':'No';
-                $undertime      = 0;
-                //record
-                $profile = EmpProfilePeer::getInformation($empid);
-                $fname   = $profile->getFname();
-                $lname   = $profile->getLname();
-                $empnum  = $profile->getEmployeeNumber();
+                    $dateday = $emp->getDate()->format('D');
+                    $isOffice = $emp->getCheckIp() ? 'Yes' : 'No';
+                    $undertime = 0;
+                    //record
+                    $profile = EmpProfilePeer::getInformation($empid);
+                    $fname = $profile->getFname();
+                    $lname = $profile->getLname();
+                    $empnum = $profile->getEmployeeNumber();
 
-                $totalHours = "N/A";
-                $totalHoursDec = "N/A";
-                $overtime = 0;
+                    $totalHours = "N/A";
+                    $totalHoursDec = "N/A";
+                    $overtime = 0;
 
-                if(! empty($timeoutdata))
-                {
-                    $in = new \DateTime($emp->getTimeIn()->format('Y-m-d H:i:s'));
-                    $out = new \DateTime($emp->getTimeOut()->format('Y-m-d H:i:s'));
-                    $manhours = date_diff($out, $in);
+                    if (!empty($timeoutdata)) {
+                        $in = new \DateTime($emp->getTimeIn()->format('Y-m-d H:i:s'));
+                        $out = new \DateTime($emp->getTimeOut()->format('Y-m-d H:i:s'));
+                        $manhours = date_diff($out, $in);
 
-                    //compute duration
+                        //compute duration
 
 
-                    $totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
+                        $totalHours = $manhours->format('%h') . ':' . $manhours->format('%i');
 
-                    $h = $manhours->format('%h');
-                    $i = intval($manhours->format('%i'));
-                    $i = $i > 0 ? ($i/60) : 0;
-                    $totalHoursDec = number_format($h + $i, 2);
+                        $h = $manhours->format('%h');
+                        $i = intval($manhours->format('%i'));
+                        $i = $i > 0 ? ($i / 60) : 0;
+                        $totalHoursDec = number_format($h + $i, 2);
 
-                    if($totalHoursDec > 9)
-                    {
-                        $overtime = $totalHoursDec - 9;
-                    }
-                    if($dateday == 'Sat' || $dateday == 'Sun')
-                    {
-                        $overtime = $totalHoursDec;
+                        if ($totalHoursDec > 9) {
+                            $overtime = $totalHoursDec - 9;
+                        }
+                        if ($dateday == 'Sat' || $dateday == 'Sun') {
+                            $overtime = $totalHoursDec;
 
 //                        $totalHours = 0;
 //                        $totalHoursDec = 0;
 
-                    }
-                    if($overtime < 1)
-                    {
-                        $overtime = 0;
-                    }
-                    if($totalHours < 9)
-                    {
-                        $undertime = 1;
-                    }
+                        }
+                        if ($overtime < 1) {
+                            $overtime = 0;
+                        }
+                        if ($totalHours < 9) {
+                            $undertime = 1;
+                        }
 
 //                    $totalHoursDec = $emp->getManhours();
 //                    $overtime = $emp->getOvertime();
+                    }
+                    $isUndertime = $undertime ? 'Yes' : 'No';
+                    fputcsv($handle, // The file pointer
+                        array("EMP-" . $empnum, $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime, $isUndertime)
+                    );
                 }
-                $isUndertime = $undertime ? 'Yes':'No';
-                fputcsv($handle, // The file pointer
-                    array("EMP-" . $empnum,  $lname . ", " . $fname, $timeindata, $timeoutdata, $date, $isOffice, $totalHoursDec, $overtime, $isUndertime)
-                );
             }
+            fputcsv($handle, array(' '));
+            fputcsv($handle, array(' '));
+            fputcsv($handle, array('*********** Note: Please take note that declined out of the office works were not included on the list above.'));
             exit;
 
             fclose($handle);

@@ -95,9 +95,7 @@ class EventManagerController extends Controller
                 $isTimeOut = 'true';
         }
 
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $eventTypes = ListEventsTypePeer::getAllEventType();
         $allacc = EmpAccPeer::getAllUser();
@@ -340,8 +338,8 @@ class EventManagerController extends Controller
         exit;
     }
 
-    public function showEventsAction($request) {
-        $allEvents = ListEventsPeer::getAllEvents();
+    public function showEventsAction($request, $userId = 0, $userLevel) {
+        $allEvents = ListEventsPeer::getAllEvents($userId, $userLevel);
         foreach ($allEvents as $event) {
             $eventdate = $event->getDate();
             $eventType = $event->getType();

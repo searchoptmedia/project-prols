@@ -14,6 +14,8 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         $c->addDescendingOrderByColumn(self::ID);
 
+        $c->add(self::STATUS, -1, Criteria::NOT_EQUAL);
+
         $_self = self::doSelect($c);
 
         return $_self ? $_self : array();
@@ -27,7 +29,7 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         $c->add(self::EMP_ACC_ID, $id, Criteria::EQUAL);
         $c->addDescendingOrderByColumn(self::ID);
-
+        $c->add(self::STATUS, -1, Criteria::NOT_EQUAL);
         $_self = self::doSelect($c);
 
         return $_self ? $_self : array();

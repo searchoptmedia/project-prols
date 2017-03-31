@@ -104,7 +104,7 @@ abstract class BaseRequestMeetingTagsQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   RequestMeetingTags|RequestMeetingTags[]|mixed the result, formatted by the current formatter
@@ -159,7 +159,7 @@ abstract class BaseRequestMeetingTagsQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `request_id`, `status`, `emp_acc_id` FROM `request_meeting_tags` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

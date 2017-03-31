@@ -95,10 +95,7 @@ class EmployeeRequestController extends Controller
             $ip_add = ListIpPeer::getValidIP($userip);
             $is_ip  = InitController::checkIP($userip);
 
-            $requestcount = EmpRequestQuery::create()
-                ->filterByStatus('Pending')
-                ->find()->count();
-
+            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
             return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
                 'name' => $name,
@@ -221,6 +218,7 @@ class EmployeeRequestController extends Controller
         $typeleave = $req->request->get('typeleave');
         $userid = $this->getUser()->getId();
         $reqIds = array();
+        $ref = $this;
 
         for ($i = 0; $i <= $object["unique_id"]; $i++) {            // loop for saving all dates
             $start = "start_date" . $i;
@@ -245,16 +243,13 @@ class EmployeeRequestController extends Controller
                 $this->deleteRequestLeave($reqIds);
                 echo json_encode(array('error' => 'Email not successfully sent'));
                 exit;
-            }
-            else {
+            } else {
                 echo json_encode(array('result' => 'Request for Leave has been successfully sent'));
                 exit;
             }
         } catch (Exception $e){
-            echo $e->getMessage();
-        } finally {
-            $this->deleteRequestLeave($reqIds);
-            echo json_encode(array('error' => 'Server Error'));
+            $ref->deleteRequestLeave($reqIds);
+            echo json_encode(array('error' => $e->getMessage()));
             exit;
         }
     }
@@ -411,8 +406,9 @@ class EmployeeRequestController extends Controller
             }
             array_push($request, $event);
         }
+
         $eventManager =  new EventManagerController();
-        $request = $eventManager->showEventsAction($request);
+        $request = $eventManager->showEventsAction($request, $this->getUser()->getId(), $this->getUser()->getRole());
 
         echo json_encode($request);
         exit;
@@ -490,9 +486,9 @@ class EmployeeRequestController extends Controller
 
 
         }
-        $requestcount = EmpRequestQuery::create()
-            ->filterByStatus('Pending')
-            ->find()->count();
+
+        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
+
         return $this->render('AdminBundle:Employee:notif.html.twig', array(
             'name' => $name,
             'page' => $page,
@@ -554,26 +550,30 @@ class EmployeeRequestController extends Controller
         $result = array('result' => 'error');
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
+
         if(!empty($request)) {
-            $request->delete();
-            $deleted = $request->isDeleted();
 
-            if($deleted) {
-                $result = array('result' => 'Success');
-                $email = new EmailController();
-                $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
+            $empTimeId = $request->getEmpTimeId();
+            $empTime = EmpTimePeer::retrieveByPK($empTimeId);
 
-                if($sendemail == 0) {
-                    //$this->deleteRequestAction($req);
-                    $result = array('error' => 'Email not sent');
-                } else {
-                    $result = array('result' => 'Event Successfully Deleted');
-                }
+            $email = new EmailController();
+            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $empTime);
+
+            if(! $sendemail) {
+                //$this->deleteRequestAction($req);
+                $result = array('error' => 'Email not sent!');
             } else {
-                $result = array('error' => 'Event not successfully deleted');
+                $request->setStatus(-1);
+                $request->save();
+
+                if($empTime)
+                    $empTime->setStatus(-2)->save();
+
+
+                $result = array('result' => 'Request Successfully Deleted!');
             }
         } else {
-            $result = array('error' => 'Event not found');
+            $result = array('error' => 'Request not found!');
         }
 
         echo json_encode($result);
