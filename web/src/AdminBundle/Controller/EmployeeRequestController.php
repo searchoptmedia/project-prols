@@ -243,8 +243,7 @@ class EmployeeRequestController extends Controller
                 $this->deleteRequestLeave($reqIds);
                 echo json_encode(array('error' => 'Email not successfully sent'));
                 exit;
-            }
-            else {
+            } else {
                 echo json_encode(array('result' => 'Request for Leave has been successfully sent'));
                 exit;
             }

@@ -61,6 +61,7 @@ class EmailController extends Controller
         $reqName =   $req->request->get('requestname');
         $user   = $class->getUser();
         $id     = $user->getId();
+        $email  = 0;
 
         $employee = EmpAccPeer::retrieveByPK($empid);
         $changed = $req->request->get('isChanged');
@@ -99,10 +100,7 @@ class EmailController extends Controller
             $email = self::sendEmail($class, $subject, $from, $to,
                 $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',  array('message' => $inputMessage)));
         }
-        else
-        {
 
-        }
         return $email ? 1: 0;
     }
 
@@ -166,20 +164,19 @@ class EmailController extends Controller
         $admins = EmpAccPeer::getAdminInfo();
         $subject = "PROLS » " . $requesttype . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        foreach ($admins as $admin){
-            $adminEmail = $admin->getEmail();
-            if(!empty($adminEmail)) {
-                $to = array($adminEmail);
+        $adminEmailList = $this->getAdminEmails($admins);
 
-                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-                    "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
+        if(count($adminEmailList)) {
+            $to = $adminEmailList;
 
-                $response = self::sendEmail($class, $subject, $from, $to,
-                    $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
+                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
 
-                if ($response)
-                    $email++;
-            }
+            $response = self::sendEmail($class, $subject, $from, $to,
+                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+
+            if ($response)
+                $email++;
         }
 
         return $email;
@@ -231,8 +228,10 @@ class EmailController extends Controller
 
         $admins = EmpAccPeer::getAdminInfo();
         $subject = "PROLS » Employee Account Updated";
-        foreach ($admins as $admin){
-            $to = array($admin->getEmail());
+        $adminEmailList = $this->getAdminEmails($admins);
+
+        if(count($adminEmailList)) {
+            $to = $adminEmailList;
 
             $inputMessage = "<h2>Hi Admin!</h2><br>". $empname ."'s account was updated by ". $adminname .".<br><br> Visit the profile by clicking <a href='http://login.propelrr.com/main/emp/$empId'>here</a>.";
             $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
@@ -296,6 +295,7 @@ class EmailController extends Controller
         $name = $req->request->get('event_name');
         $fromdate = $req->request->get('from_date');
         $todate = $req->request->get('to_date');
+        $email  = 0;
 
         if($eventType == 1) {
             $typelist = "Holiday";
@@ -383,8 +383,11 @@ class EmailController extends Controller
 
         $subject = "PROLS » " . $action . " " . $category . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        foreach ($admins as $admin){
-            $to = array($admin->getEmail());
+
+        $adminEmailList = $this->getAdminEmails($admins);
+
+        if(count($adminEmailList)) {
+            $to = $adminEmailList;
 
             if ($action == "UPDATED") {
                 $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request." .
@@ -401,6 +404,21 @@ class EmailController extends Controller
         }
 
         return $emailCtr;
+    }
+
+
+    public function getAdminEmails($adminList = array())
+    {
+        $adminEmails = array();
+
+        if($adminList) {
+            foreach($adminList as $e) {
+                $email = $e->getEmail();
+                if(! empty($email)) $adminEmails[] = $email;
+            }
+        }
+
+        return $adminEmails;
     }
 }
 
