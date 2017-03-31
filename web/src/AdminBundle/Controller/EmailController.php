@@ -11,6 +11,7 @@ namespace AdminBundle\Controller;
 
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpProfilePeer;
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\ListRequestTypePeer;
@@ -414,7 +415,12 @@ class EmailController extends Controller
         if($adminList) {
             foreach($adminList as $e) {
                 $email = $e->getEmail();
-                if(! empty($email)) $adminEmails[] = $email;
+                $name  = $e->getUsername();
+                $profile  = EmpProfileQuery::create()->findPk($e->getId());
+
+                if($profile) $name = $profile->getFname() . " " . $profile->getLname();
+
+                if(! empty($email)) $adminEmails[] = array($email => "$name");
             }
         }
 
