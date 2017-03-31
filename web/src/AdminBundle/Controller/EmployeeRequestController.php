@@ -551,10 +551,14 @@ class EmployeeRequestController extends Controller
         $result = array('result' => 'error');
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
+
         if(!empty($request)) {
 
+            $empTimeId = $request->getEmpTimeId();
+            $empTime = EmpTimePeer::retrieveByPK($empTimeId);
+
             $email = new EmailController();
-            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED");
+            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $empTime);
 
             if(! $sendemail) {
                 //$this->deleteRequestAction($req);
@@ -562,9 +566,6 @@ class EmployeeRequestController extends Controller
             } else {
                 $request->setStatus(-1);
                 $request->save();
-
-                $empTimeId = $request->getEmpTimeId();
-                $empTime = EmpTimePeer::retrieveByPK($empTimeId);
 
                 if($empTime)
                     $empTime->setStatus(-2)->save();
