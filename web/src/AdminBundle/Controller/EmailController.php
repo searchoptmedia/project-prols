@@ -47,7 +47,9 @@ class EmailController extends Controller
         $to      = array($adminemails);
         $empName = $data->getFname() . ' ' . $data->getLname();
         $inputMessage = "$empName has timed in outside the office.<br><br><br>
-            <strong>Reason: </strong><br> $message";
+            <strong>Reason: </strong><br> $message<br><br><br>
+            <a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>
+            ";
 
         $email = self::sendEmail($class, $subject, $from, $to,
             $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',
