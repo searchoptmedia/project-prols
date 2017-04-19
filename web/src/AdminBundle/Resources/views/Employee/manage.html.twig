@@ -322,7 +322,7 @@
             </div>
 
             <div class = "dept-container">
-                <select id = "listdept" class="browser-default departmentselect" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                <select id = "listdept" class="browser-default departmentselect" style="width: 100%; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                     <option value="" disabled selected>Choose your department</option>
                     {% for dept in getDept %}
                         <option value="{{ dept.Id }}">{{dept.DeptNames}}</option>
