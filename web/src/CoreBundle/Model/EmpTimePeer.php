@@ -128,4 +128,20 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		
 		return $record ? $record : array();
 	}
+
+	public static function getOneByDate($date, $userId, Criteria $c = null)
+	{
+		if(is_null($c)){
+			$c = new Criteria();
+		}
+
+		$c->add(EmpAccPeer::ID, $userId, Criteria::EQUAL);
+		$c->add(self::DATE, $date, Criteria::GREATER_EQUAL);
+		$c->addAnd(self::DATE, $date, Criteria::LESS_EQUAL);
+
+		$record = self::doSelectOne($c);
+
+		return $record? $record : array();
+
+	}
 }
