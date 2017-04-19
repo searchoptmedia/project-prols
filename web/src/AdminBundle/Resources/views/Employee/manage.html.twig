@@ -149,23 +149,43 @@
                         </div>
                     </div>
 
-                    <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
-                        <a class="btn-floating btn-large red">
-                            <i class="material-icons">add</i>
+                    {% if user.role == 'ADMIN' %}
+                    <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 110px; right: 24px;">
+                        <a class="btn-floating btn-large blue">
+                            <i class="material-icons">import_export</i>
                         </a>
 
                         <ul class="add">
+                            <li><a class="waves-effect waves-light btn orange" id = "btn-export-modal" style = "padding: 0px 10px;">export employee</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+                        {% if capabilities|length or user.role == 'ADMIN' %}
+                        <a class="btn-floating btn-large red">
+                            <i class="material-icons">add</i>
+                        </a>
+                        {% endif %}
+
+                        <ul class="add">
+                            {% if user.role != 'ADMIN' %}
                             {% for cap in capabilities %}
                                 {% if cap.Capid == 1 %}
-                                    <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">employee</a></li>
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">add employee</a></li>
                                 {% endif %}
                                 {% if cap.capid == 2 %}
-                                    <li><a class="waves-effect waves-light btn orange" id = "add-dept-btn" style = "padding: 0px 10px;">department</a></li>
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-dept-btn" style = "padding: 0px 10px;">add department</a></li>
                                 {% endif %}
                                 {% if cap.capid == 3 %}
-                                    <li><a class="waves-effect waves-light btn orange" id = "add-pos-btn" style = "padding: 0px 10px;">position</a></li>
+                                    <li><a class="waves-effect waves-light btn orange" id = "add-pos-btn" style = "padding: 0px 10px;">add position</a></li>
                                 {% endif %}
                             {% endfor %}
+                            {% else %}
+                                <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">add employee</a></li>
+                                <li><a class="waves-effect waves-light btn orange" id = "add-dept-btn" style = "padding: 0px 10px;">add department</a></li>
+                                <li><a class="waves-effect waves-light btn orange" id = "add-pos-btn" style = "padding: 0px 10px;">add position</a></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

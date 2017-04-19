@@ -48,4 +48,20 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         return $_self ? $_self : array();
     }
+
+    public static function getEmpByTime($time, $empId, $status = 3, Criteria $c = null)
+    {
+        if(is_null($c)){
+            $c = new Criteria();
+        }
+
+        $c->add(self::STATUS, $status);
+        $c->add(self::EMP_ACC_ID, $empId);
+        $c->add(self::DATE_STARTED, $time, Criteria::GREATER_EQUAL);
+        $c->add(self::DATE_ENDED, $time, Criteria::LESS_EQUAL);
+
+        $data = self::doSelectOne($c);
+
+        return $data? $data : array();
+    }
 }

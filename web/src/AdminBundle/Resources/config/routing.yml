@@ -146,7 +146,7 @@ check_timein:
     defaults: {_controller: AdminBundle:Employee:checkTimeIn }
 
 
-
+# ------------ EMPLOYEE REPORT ---------------
 admin_employee_report:
     path: /employee/report
     defaults: { _controller: AdminBundle:EmployeeReport:generateReport }
@@ -155,6 +155,9 @@ admin_employee_list_report:
     path: /emplist/report
     defaults: { _controller:AdminBundle:EmployeeReport:generateEmployeeReport }
 
+admin_employee_leave_absences_report:
+    path: /employee/leave-absences/report
+    defaults: { _controller:AdminBundle:EmployeeReport:generateLeaveAbsencesReport }
 
 
 manage_events:
