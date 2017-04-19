@@ -198,7 +198,7 @@ class EmployeeReportController extends Controller
             fputcsv($handle, array('Employee ID', 'Name', 'Day', 'Date', 'Status'));
 
 
-            while($startdate < $enddate) {
+            while($startdate <= $enddate) {
                 $date = date('Y-m-d 00:00:00', $startdate);
                 $showDate = date('m/d/Y', $startdate);
                 $day  = date('D', $startdate);
