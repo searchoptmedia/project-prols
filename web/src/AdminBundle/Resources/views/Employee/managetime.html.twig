@@ -94,7 +94,7 @@
                     <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
                 </div>
                 <div class="department-option-sect" style="display: none;">
-                    <select id = "listdept" class="departmentselect" style="width: 230px;">
+                    <select id = "listdept" class="departmentselect" style="width: 100%;">
                         <option value="" disabled selected>Choose your department</option>
                         {% for dept in getDept %}
                             <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="employee-option-sect" style="display: none;">
-                    <select id="empnames" class="input-name" style="width: 230px; margin-top: 50px;">
+                    <select id="empnames" class="input-name" style="width: 100%; margin-top: 50px;">
                         <option value="" disabled selected>Type name here..</option>
                         {% for user in getAllProfile %}
                             <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
