@@ -9,7 +9,7 @@ use \Criteria;
 class ListEventsPeer extends BaseListEventsPeer
 {
 
-    public static function getAllEvents($userid, $role, Criteria $c = null)
+    public static function getAllEvents($userid, $role = 0, Criteria $c = null)
     {
         if(is_null($c)){
             $c = new Criteria();
