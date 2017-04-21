@@ -206,7 +206,7 @@ class EmployeeReportController extends Controller
                 $enddate = strtotime($enddateinput);
 
                 while ($startdate <= $enddate) {
-                    $date = date('Y-m-d 00:00:00', $startdate);
+                    $date = date('Y-m-d', $startdate);
                     $showDate = date('m/d/Y', $startdate);
                     $day = date('D', $startdate);
 
@@ -217,15 +217,15 @@ class EmployeeReportController extends Controller
 
                         if ($request && in_array($request->getListRequestType()->getId(), array(1, 2))) {
                             $init       = new InitController();
-                            $timeOut    = $timeData->getTimeOut();
-                            $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
-
                             $leaveType  = $request->getListRequestType()->getRequestType();
 
-                            if($timeData && !is_null($timeOut)) {
+                            if($timeData) {
+                                $timeOut    = $timeData->getTimeOut();
+                                $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
+
                                 $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
                                 if($totalHours > 3) {
-                                    $leaveType = 'Half-day with '.$leaveType;
+                                    $leaveType = $timeData->getTimeIn()->format('m-d-Y') . ' Half-day with '.$leaveType;
                                 }
                             }
 
