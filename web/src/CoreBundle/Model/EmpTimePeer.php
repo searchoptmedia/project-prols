@@ -135,7 +135,7 @@ class EmpTimePeer extends BaseEmpTimePeer{
 			$c = new Criteria();
 		}
 
-		$c->add(EmpAccPeer::ID, $userId, Criteria::EQUAL);
+		$c->add(self::EMP_ACC_ACC_ID, $userId, Criteria::EQUAL);
 		$c->add(self::DATE, $date, Criteria::EQUAL);
 
 		$record = self::doSelectOne($c);
