@@ -229,9 +229,9 @@ class EmployeeReportController extends Controller
                                 }
                             }
 
-                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, $leaveType));
+                            fputcsv($handle, array('EMP-'.$empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, $leaveType));
                         } else if (!$timeData) {
-                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, 'Absent'));
+                            fputcsv($handle, array('EMP-'.$empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, 'Absent'));
                         }
                     }
 
