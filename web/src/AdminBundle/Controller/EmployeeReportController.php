@@ -192,31 +192,53 @@ class EmployeeReportController extends Controller
             $startdateinput = $_REQUEST['start'];
             $enddateinput   = $_REQUEST['end'];
 
-            $startdate = $startDateCopy = strtotime($startdateinput);
-            $enddate = strtotime($enddateinput);
-
             fputcsv($handle, array('Employee ID', 'Name', 'Day', 'Date', 'Status'));
 
+            if($empid == 'all') {
+                $employees = EmpAccPeer::getAllUser();
+            } else {
+                $employees = EmpAccPeer::getAccList($empid);
+            }
 
-            while($startdate <= $enddate) {
-                $date = date('Y-m-d 00:00:00', $startdate);
-                $showDate = date('m/d/Y', $startdate);
-                $day  = date('D', $startdate);
+            foreach($employees as $e) {
+                $empRecord = EmpProfilePeer::getInformation($e->getId());
+                $startdate = $startDateCopy = strtotime($startdateinput);
+                $enddate = strtotime($enddateinput);
 
-                if($day!='Sun' && $day!='Sat') {
-                    $empRecord = EmpProfilePeer::getInformation($empid);
-                    $timeData = EmpTimePeer::getOneByDate($date, $empid);
-                    $request = EmpRequestPeer::getEmpByTime($date, $empid);
+                while ($startdate <= $enddate) {
+                    $date = date('Y-m-d 00:00:00', $startdate);
+                    $showDate = date('m/d/Y', $startdate);
+                    $day = date('D', $startdate);
 
-                    if($request && in_array($request->getListRequestType()->getId(), array(1, 2))) {
-                        fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate,$request->getListRequestType()->getRequestType()));
-                    } else if(!$timeData) {
-                        fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, 'Absent'));
+                    $timeData = EmpTimePeer::getOneByDate($date, $e->getId());
+                    $request = EmpRequestPeer::getEmpByTime($date, $e->getId());
+
+                    if ($day != 'Sun' && $day != 'Sat') {
+
+                        if ($request && in_array($request->getListRequestType()->getId(), array(1, 2))) {
+                            $init       = new InitController();
+                            $timeOut    = $timeData->getTimeOut();
+                            $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
+                            $totalHours = 0;
+                            $leaveType  = $request->getListRequestType()->getRequestType();
+
+                            if(!empty($timeData) && !empty($timeOut)) {
+                                $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
+                            }
+
+                            if($totalHours > 3) {
+                                $leaveType = 'Half-day with '.$leaveType;
+                            }
+
+                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, $leaveType));
+                        } else if (!$timeData) {
+                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, 'Absent'));
+                        }
                     }
-                }
 
-                $timeData = null;
-                $startdate = strtotime("+1 day", $startdate);
+                    $timeData = null;
+                    $startdate = strtotime("+1 day", $startdate);
+                }
             }
 
             fputcsv($handle, array(' '));

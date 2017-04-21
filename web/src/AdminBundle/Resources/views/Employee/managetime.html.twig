@@ -141,6 +141,7 @@
                 <div class="employee-option-sect" style="">
                     <select id="la-employee-id" class="select2" style="width: 100%; margin-top: 50px;">
                         <option value="" disabled selected>Type name here..</option>
+                        <option value="all" selected>All Employees</option>
                         {% for user in getAllProfile %}
                             <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
                         {% endfor %}
@@ -248,7 +249,6 @@
                 var startDate = $('[name=la-start-date]');
                 var endDate   = $('[name=la-end-date]');
                 var empId     = $('#la-employee-id').val();
-
 
                 if(empId==null) {
                     showErrorBar('Select an employee!');

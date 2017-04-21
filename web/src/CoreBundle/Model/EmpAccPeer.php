@@ -20,6 +20,19 @@ class EmpAccPeer extends BaseEmpAccPeer{
 
 	}
 
+	public static function getAccList($id, Criteria $c = null){
+		if (is_null($c)) {
+			$c = new Criteria();
+		}
+
+		$c->add(self::ID, $id, Criteria::EQUAL);
+
+		$_self = self::doSelect($c);
+
+		return $_self ? $_self : null;
+
+	}
+
 
 	public static function getAllUser(Criteria $c = null)
 	{
