@@ -10,6 +10,7 @@ namespace AdminBundle\Controller;
 
 use CoreBundle\Model\EmpAccPeer;
 use CoreBundle\Model\EmpProfilePeer;
+use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListDeptPeer;
 use CoreBundle\Model\ListPosPeer;
@@ -174,7 +175,92 @@ class EmployeeReportController extends Controller
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_time_export.csv"');
         return $response;
     }
-    
+
+    /**
+     * Generate employee absences
+     * @param Request $req
+     * @return StreamedResponse
+     */
+    function generateLeaveAbsencesReportAction(Request $req)
+    {
+        $response = new StreamedResponse();
+        $response->setCallback(function()
+        {
+            $handle = fopen('php://output', 'w+');
+            // Add the header of the CSV file
+            $empid = $_REQUEST['empid'];
+            $startdateinput = $_REQUEST['start'];
+            $enddateinput   = $_REQUEST['end'];
+
+            fputcsv($handle, array('Employee ID', 'Name', 'Day', 'Date', 'Status'));
+
+            if($empid == 'all') {
+                $employees = EmpAccPeer::getAllUser();
+            } else {
+                $employees = EmpAccPeer::getAccList($empid);
+            }
+
+            foreach($employees as $e) {
+                $empRecord = EmpProfilePeer::getInformation($e->getId());
+                $startdate = $startDateCopy = strtotime($startdateinput);
+                $enddate = strtotime($enddateinput);
+
+                while ($startdate <= $enddate) {
+                    $date = date('Y-m-d 00:00:00', $startdate);
+                    $showDate = date('m/d/Y', $startdate);
+                    $day = date('D', $startdate);
+
+                    $timeData = EmpTimePeer::getOneByDate($date, $e->getId());
+                    $request = EmpRequestPeer::getEmpByTime($date, $e->getId());
+
+                    if ($day != 'Sun' && $day != 'Sat') {
+
+                        if ($request && in_array($request->getListRequestType()->getId(), array(1, 2))) {
+                            $init       = new InitController();
+                            $timeOut    = $timeData->getTimeOut();
+                            $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
+                            $totalHours = 0;
+                            $leaveType  = $request->getListRequestType()->getRequestType();
+
+                            if(!empty($timeData) && !empty($timeOut)) {
+                                $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
+                            }
+
+                            if($totalHours > 3) {
+                                $leaveType = 'Half-day with '.$leaveType;
+                            }
+
+                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, $leaveType));
+                        } else if (!$timeData) {
+                            fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, 'Absent'));
+                        }
+                    }
+
+                    $timeData = null;
+                    $startdate = strtotime("+1 day", $startdate);
+                }
+            }
+
+            fputcsv($handle, array(' '));
+            fputcsv($handle, array(' '));/*date('m/d/Y', $startDateCopy)  date('m/d/Y', $enddate)*/
+            fputcsv($handle, array('The login system was lunched last August 02, 2016.'));
+            fputcsv($handle, array('Date From: ' .  $startdateinput. ' | To: ' . $enddateinput));
+            fputcsv($handle, array('*********** Holidays or other events are not traceable since this feature is under development. Temporarily, holidays or other events are set to absent if aligned to weekdays.'));
+            exit;
+
+            fclose($handle);
+        });
+        $filedate           = date('d-m-y');
+        $response->setStatusCode(200);
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_leave_absences_export.csv"');
+        return $response;
+    }
+
+    /**
+     * Get employee record
+     * @return array
+     */
     public function getEmployeeRecord()
     {
         $c = new \Criteria();

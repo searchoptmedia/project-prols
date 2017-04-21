@@ -58,150 +58,123 @@
                             </div>
                         </div>
                     </div>
-                    <div id="modal-emp" class="modal modal-fixed-footer">
-                        <form form action="{{ path('add_employee') }}" method="post">
-                            <div class="modal-content">
-                                <h4>Employee</h4>
-                                <p>Username<input name = "username" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
-                                <p>Password<input name = "password" placeholder="type here..." id="fname" type="password" class="input-field"></p>
-                                <p>Re-type Password<input name = "repassword" placeholder="type here..." id="fname" type="password" class="input-field"></p>
-                                <br>
-                                <p>Employee #<input name = "empnum" placeholder="type here..." id="empnum" type="text" class="input-field"></p>
-                                <p>First Name<input name = "fname" placeholder="type here..." id="fname" type="text" class="input-field"></p>
-                                <p>Last Name<input name = "lname" placeholder="type here..." id="lname" type="text" class="input-field"/></p>
-                                <p>Department</p>
-                                <div class="select-wrapper"><span class="caret">?</span>
-                                    <select name="dept" id="dept" class="initialized emp-dept">
-                                        <option value="" disabled selected>Select department</option>
-                                        {% for dept in getDept %}
-                                            <option value="{{dept.Id}}" data-id="{{dept.Id}}" class="deptid">{{dept.DeptNames}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
 
-                                <p>Position</p>
-                                <div class="select-wrapper"><span class="caret">?</span>
-                                    <select name="pos"id="pos" class="initialized emp-positions">
-                                        <option value="" disabled selected>Select position</option>
-                                        {% for pos in getPos %}
-                                            <option value="{{pos.Id}}">{{pos.PosNames}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <p>Employment Status</p>
-                                <div class="select-wrapper"><span class="caret">?</span>
-                                    <select name="status"id="status" class="initialized emp-status">
-                                        <option value="" disabled selected>Select status</option>
-                                        <option value="Full-time">Full-time</option>
-                                        <option value="Part-time">Part-time</option>
-                                        <option value="Contractual">Contractual</option>
-                                        <option value="Provisionary">Provisionary</option>
-                                        <option value="Home-based">Home-based</option>
-                                        <option value="Intern">Intern</option>
-                                    </select>
-                                </div>
-                                <br>
-                                <p>Company Email<input name="email" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>Telephone #<input name="telnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>Cellphone #<input name="cellnum" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>Address<input name="address" placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>Birthday<input name="bday" placeholder="type here..." id="full_name" type="date" class="input-field"></p>
-                                <p>SSS<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>BIR<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
-                                <p>PhilHealth<input placeholder="type here..." id="full_name" type="text" class="input-field"></p>
+                    {% if user.role == 'ADMIN' %}
+                        <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
+                            <a class="btn-floating btn-large blue">
+                                <i class="material-icons">import_export</i>
+                            </a>
 
-                            </div>
-                            <div class="modal-footer">
-                                <input type=submit value="add" class="modal-action modal-close waves-effect waves-green btn-flat addemp"></input>
-                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div id="modal-pos" class="modal modal-fixed-footer">
-                        <div class="modal-content">
-                            <h4>Position</h4>
-                            <input placeholder="type position here..." id="input-position" type="text">
+                            <ul class="add">
+                                <li><a class="waves-effect waves-light btn green" id = "btn-export-modal" style = "padding: 0px 10px;">export employee time</a></li>
+                                <li><a class="waves-effect waves-light btn orange" id = "btn-export-leave-absences-modal" style = "padding: 0px 10px;">export leave/absences</a></li>
+                            </ul>
                         </div>
-                        <div class="modal-footer">
-                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat addpos">Add</a>
-                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
-                        </div>
-                    </div>
-
-                    <div id="modal-dept" class="modal modal-fixed-footer">
-                        <div class="modal-content">
-                            <h4>Department</h4>
-                            <input placeholder="type department here..." id="input-department" type="text" >
-                        </div>
-                        <div class="modal-footer">
-                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat adddept">Add</a>
-                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Cancel</a>
-                        </div>
-                    </div>
-                    <div id="exportchoice" class="modal">
-                        <div class="modal-content">
-                            <h4>Export</h4>
-
-                            <p>Choose entity: </p>
-                            <form action="#">
-                                <div class="radiobtn" style="margin-bottom: 20px;">
-                                    <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
-                                    <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
-
-                                    <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
-                                    <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
-
-                                    <input name="group1" type="radio" id="select-name" class="export-radio-input" data-type="emp"/>
-                                    <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
-                                </div>
-                                <div class="department-option-sect" style="display: none;">
-                                    <select id = "listdept" class="departmentselect" style="width: 230px;">
-                                        <option value="" disabled selected>Choose your department</option>
-                                        {% for dept in getDept %}
-                                            <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-
-                                <div class="employee-option-sect" style="display: none;">
-                                    <select id="empnames" class="input-name" style="width: 230px; margin-top: 50px;">
-                                        <option value="" disabled selected>Type name here..</option>
-                                        {% for user in getAllProfile %}
-                                            <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-
-                                <div class="row" style="margin-top: 20px;">
-                                    <div class="col-md-6">
-                                        <label class="label">From:</label>
-                                        <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="label">To:</label>
-                                        <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
-
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
-                                    <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
-                                </div>
-                            </form>
-                            </div>
-                        </div>
+                    {% endif %}
                     </div>
                 </div>
         </section>
     </section>
+
+    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
+    <div id="exportchoice" class="modal">
+        <div class="modal-content">
+            <h4>Export Employee Time</h4>
+
+            <p>Choose entity: </p>
+            <form action="#">
+                <div class="radiobtn" style="margin-bottom: 20px;">
+                    <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
+                    <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
+
+                    <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
+                    <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+
+                    <input name="group1" type="radio" id="select-name" class="export-radio-input" data-type="emp"/>
+                    <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
+                </div>
+                <div class="department-option-sect" style="display: none;">
+                    <select id = "listdept" class="departmentselect" style="width: 100%;">
+                        <option value="" disabled selected>Choose your department</option>
+                        {% for dept in getDept %}
+                            <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="employee-option-sect" style="display: none;">
+                    <select id="empnames" class="input-name" style="width: 100%; margin-top: 50px;">
+                        <option value="" disabled selected>Type name here..</option>
+                        {% for user in getAllProfile %}
+                            <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-6">
+                        <label class="label">From:</label>
+                        <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label">To:</label>
+                        <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
+                    <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
+    <div id="export-leave-absences-modal" class="modal">
+        <div class="modal-content">
+            <h4>Export Employee Leave/Absences</h4>
+
+            <p>Select Employee: </p>
+            <form action="#">
+
+                <div class="employee-option-sect" style="">
+                    <select id="la-employee-id" class="select2" style="width: 100%; margin-top: 50px;">
+                        <option value="" disabled selected>Type name here..</option>
+                        <option value="all" selected>All Employees</option>
+                        {% for user in getAllProfile %}
+                            <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-6">
+                        <label class="label">From:</label>
+                        <input name="la-start-date" readonly placeholder="Start Date" class="start-date" id="la-datepicker">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label">To:</label>
+                        <input name="la-end-date" readonly placeholder="End Date" class="end-date" id="la-datepicker2">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
+                    <a class="modal-action waves-effect waves-light orange btn-flat export-leave-absences-btn" style="color:white; margin-right:5px;">Export</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}
 {% block customjs %}
     <script type="text/javascript">
         $(document).ready(function(){
+
             $('select').material_select('destroy');
 
-            $('.departmentselect,.input-name').select2();
+            $('.departmentselect,.input-name,.select2').select2();
 
             var inputfield = '';
             var empId = '';
@@ -266,42 +239,78 @@
                     }
                 }
                 $('#exportchoice').closeModal();
+
                 window.open("{{ path('admin_employee_report') }}?deptid=" + deptid + '&empname=' + empname + '&start='
                         + start + '&end=' + end
                         + '&isDate=' + isDate, '_blank');
             });
-            var picker = new Pikaday({field: document.getElementById('datepicker')});
-            var picker2 = new Pikaday({field: document.getElementById('datepicker2')});
-            $('#btn-export-modal').on("click", function(){
-                $('#exportchoice').openModal();
-                $('.start-date').val('');
-                $('.end-date').val('');
-                picker.destroy();
-                picker2.destroy();
-                picker  = new Pikaday({field: document.getElementById('datepicker'), onSelect: function(){
-                        if(picker.getDate != ''){
-                            $('.end-date').val('');
-                            picker2.destroy();
-                            picker2 = new Pikaday({field: document.getElementById('datepicker2'), onSelect: function(){
-                                picker2.setEndRange(picker2.getDate());
-                                picker.setStartRange(picker.getDate());
-                                picker.setEndRange(picker2.getDate());
-                                }
-                            });
-                            picker.setStartRange(picker.getDate());
-                            picker.setEndRange(picker2.getDate());
-                            picker2.setStartRange(picker.getDate());
-                            picker2.show();
-                            picker2.setMinDate(picker.getDate());
-                            picker2.setMaxDate(new Date());
 
-                        }
-                    }
-                });
-                picker.setMaxDate(new Date());
+            $('.export-leave-absences-btn').click( function() {
+                var startDate = $('[name=la-start-date]');
+                var endDate   = $('[name=la-end-date]');
+                var empId     = $('#la-employee-id').val();
+
+                if(empId==null) {
+                    showErrorBar('Select an employee!');
+                    return false;
+                } else if(startDate.val() == '' || endDate.val() == '') {
+                    showErrorBar('Select <u>from</u> and <u>to</u> date!');
+                    return false;
+                }
+
+                var start  = startDate.val();
+                var end    = endDate.val();
+
+                window.open('{{ path('admin_employee_leave_absences_report') }}?empid=' + empId + '&start='
+                    + start + '&end=' + end, '_blank');
             });
 
+            //on click export employee time
+            $('#btn-export-modal').on("click", function(){
+                initPickaDate('datepicker', 'datepicker2');
+                $('#exportchoice').openModal();
+            });
+
+            //on click export employee leave/absences
+            $('#btn-export-leave-absences-modal').on("click", function(){
+                initPickaDate('la-datepicker', 'la-datepicker2');
+                $('#export-leave-absences-modal').openModal();
+            });
         });
+
+        function initPickaDate(el1, el2) {
+            var picker = new Pikaday({field: document.getElementById(el1)});
+            var picker2 = new Pikaday({field: document.getElementById(el2)});
+
+            $('.start-date').val('');
+            $('.end-date').val('');
+            picker.destroy();
+            picker2.destroy();
+            picker = new Pikaday({
+                field: document.getElementById(el1),
+                onSelect: function(){
+                    if(picker.getDate != ''){
+                        $('.end-date').val('');
+                        picker2.destroy();
+                        picker2 = new Pikaday({field: document.getElementById(el2), onSelect: function(){
+                            picker2.setEndRange(picker2.getDate());
+                            picker.setStartRange(picker.getDate());
+                            picker.setEndRange(picker2.getDate());
+                        }
+                        });
+                        picker.setStartRange(picker.getDate());
+                        picker.setEndRange(picker2.getDate());
+                        picker2.setStartRange(picker.getDate());
+                        picker2.show();
+                        picker2.setMinDate(picker.getDate());
+                        picker2.setMaxDate(new Date());
+
+                    }
+                }
+            });
+            picker.setMaxDate(new Date());
+            picker.setMinDate(new Date("2016-08-02"));
+        }
     </script>
 {% endblock %}
 
