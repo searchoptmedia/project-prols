@@ -223,7 +223,7 @@ class EmployeeReportController extends Controller
                                 $timeOut    = $timeData->getTimeOut();
                                 $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
 
-                                if(!is_null($timeOut) && !empty($timeOut) && !$timeOut) {
+                                if(!is_null($timeOut) && !empty($timeOut) && $timeOut) {
                                     $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
                                     if ($totalHours > 3) {
                                         $leaveType = $timeData->getTimeIn()->format('m-d-Y') . ' Half-day with ' . $leaveType;
