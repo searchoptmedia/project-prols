@@ -244,9 +244,9 @@ class EmployeeReportController extends Controller
 
             fputcsv($handle, array(' '));
             fputcsv($handle, array(' '));/*date('m/d/Y', $startDateCopy)  date('m/d/Y', $enddate)*/
-            fputcsv($handle, array('The login system was lunched last August 02, 2016.'));
+            fputcsv($handle, array('The login system was launched on August 02, 2016.'));
             fputcsv($handle, array('Date From: ' .  $startdateinput. ' | To: ' . $enddateinput));
-            fputcsv($handle, array('*********** Holidays or other events are not traceable since this feature is under development. Temporarily, holidays or other events are set to absent if aligned to weekdays.'));
+            fputcsv($handle, array('*********** Holidays and special events do not reflect since this feature is under development. Temporarily, if holidays and special events fall on a weekday employees will be tagged as absent.'));
             exit;
 
             fclose($handle);
