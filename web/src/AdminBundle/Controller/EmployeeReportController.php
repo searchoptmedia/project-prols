@@ -219,15 +219,14 @@ class EmployeeReportController extends Controller
                             $init       = new InitController();
                             $timeOut    = $timeData->getTimeOut();
                             $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
-                            $totalHours = 0;
+
                             $leaveType  = $request->getListRequestType()->getRequestType();
 
-                            if(!empty($timeData) && !empty($timeOut)) {
+                            if($timeData && !is_null($timeOut)) {
                                 $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
-                            }
-
-                            if($totalHours > 3) {
-                                $leaveType = 'Half-day with '.$leaveType;
+                                if($totalHours > 3) {
+                                    $leaveType = 'Half-day with '.$leaveType;
+                                }
                             }
 
                             fputcsv($handle, array($empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getFname(), $day, $showDate, $leaveType));
