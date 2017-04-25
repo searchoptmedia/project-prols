@@ -7,6 +7,9 @@ use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpProfile;
 use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
+use CoreBundle\Model\EmpStatusTypePeer;
+use CoreBundle\Model\ListDeptPeer;
+use CoreBundle\Model\ListPosPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -352,8 +355,8 @@ class AdminController extends Controller
         $id = $user->getId();
 
         $response = array('result' => 'Profile Update Successful');
+        $changes = array();
         $email = new EmailController();
-        $sendemail = $email->adminEditEmployeeProfileEmail($request, $this);
 
         $empid = $request->request->get('empid');
         $telId = $request->request->get('telnumid');
@@ -362,6 +365,7 @@ class AdminController extends Controller
         $empFname = $request->request->get('fnameinput');
         $empLname = $request->request->get('lnameinput');
         $empMname = $request->request->get('mnameinput');
+        $empGender = $request->request->get('genderinput');
         $empAddress = $request->request->get('addressinput');
         $empBday = $request->request->get('bdayinput');
         $empDept = $request->request->get('departmentinput');
@@ -375,14 +379,67 @@ class AdminController extends Controller
         $philhealth = $request->request->get('philhealthinput');
 
         $updateAcc = EmpAccPeer::getAcc($empid);
+        //check changes
+        if($updateAcc->getEmail()!=$empEmail) {
+            $changes['Email Address'] = $empEmail;
+        }
+
         $updateAcc->setEmail($empEmail);
         $updateAcc->setLastUpdatedBy($id);
         $updateAcc->save();
 
         $updateprofile = EmpProfilePeer::getInformation($empid);
+        //check changes
+        if($updateprofile->getFname()!=$empFname) {
+            $changes['First Name'] = $empFname;
+        }
+        if($updateprofile->getLname()!=$empLname) {
+            $changes['Last Name'] = $empLname;
+        }
+        if($updateprofile->getMname()!=$empMname) {
+            $changes['Middle Name'] = $empMname;
+        }
+        if($updateprofile->getGender()!=$empGender) {
+            $changes['Gender'] = $empGender;
+        }
+        if($updateprofile->getEmployeeNumber()!=$empNum) {
+            $changes['Employee Number'] = $empNum;
+        }
+        if($updateprofile->getAddress()!=$empAddress) {
+            $changes['Address'] = $empAddress;
+        }
+        if($updateprofile->getBday()->format('Y-m-d')!=$empBday) {
+            $changes['Birthday'] = $empBday;
+        }
+        if($updateprofile->getSss()!=$sssId) {
+            $changes['SSS'] = $sssId;
+        }
+        if($updateprofile->getBir()!=$bir) {
+            $changes['BIR'] = $bir;
+        }
+        if($updateprofile->getPhilhealth()!=$philhealth) {
+            $changes['Philhealth'] = $philhealth;
+        }
+        if($updateprofile->getStatus()!=$empStatus) {
+            $statRec = EmpStatusTypePeer::retrieveByPK($empStatus);
+            if($statRec) $changes['Department'] = $statRec->getName();
+        }
+        if($updateprofile->getListDeptDeptId()!=$empDept) {
+            $deptRec = ListDeptPeer::retrieveByPK($empDept);
+            if($deptRec) $changes['Department'] = $deptRec->getDeptNames();
+        }
+        if($updateprofile->getListPosPosId()!=$empPos) {
+            $posRec = ListPosPeer::retrieveByPK($empPos);
+            if($posRec) $changes['Department'] = $posRec->getPosNames();
+        }
+
+        if(count($changes))
+            $sendemail = $email->adminEditEmployeeProfileEmail($request, $this, $changes);
+
         $updateprofile->setFname($empFname);
         $updateprofile->setLname($empLname);
         $updateprofile->setMname($empMname);
+        $updateprofile->setGender($empGender);
         $updateprofile->setEmployeeNumber($empNum);
         $updateprofile->setAddress($empAddress);
         $updateprofile->setBday($empBday);

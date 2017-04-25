@@ -116,16 +116,23 @@
         =====================================================*/
         @media only screen and (min-device-width : 320px) and (max-device-width:568px) {
         }
-        p{ line-height: 18px; }
+
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 5px;
+            padding-bottom: 20px;
+        }
+
+        .email-content tr td:first-child {
+            padding-left: 0px;
+        }
         /* end IOS targeting */
     </style>
     <!--
        Outlook Conditional CSS
-
        These two style blocks target Outlook 2007 & 2010 specifically, forcing
        columns into a single vertical stack as on mobile clients. This is
        primarily done to avoid the 'page break bug' and is optional.
-
        More information here:
        http://templates.mailchimp.com/development/css/outlook-conditional-css
    -->
@@ -147,7 +154,6 @@
        content in the middle of the email page.
        I added "table-layout: fixed;" style to force
        yahoomail which by default put the content left.
-
    2.  For hotmail and yahoomail, the contents of
        the email starts from this center, so we try to
        apply necessary styling e.g. background-color.
@@ -279,7 +285,9 @@
                                                                     <img style="height: 70%;" src="http://login.propelrr.com/prols2/img/propelrrlogo.png">
                                                                 </center>
                                                                 </h1>
-                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">Sick Leave Request</h2>
+                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">
+                                                                    Request for Access
+                                                                </h2>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -375,7 +383,7 @@
                                                     <table border="0" cellpadding="30" cellspacing="0" width="100%">
                                                         <tbody>
                                                         <tr>
-                                                            <td align="center" valign="top" style="padding-top:80px;">
+                                                            <td align="center" valign="top" style="padding-top:40px;">
                                                                 <!-- CONTENT TABLE // -->
                                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                                                     <tbody>
@@ -386,152 +394,42 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                            <h5>Hi Admin,</h5>
-                                                                            <h3><strong>Denmark</strong> has requested for vacation leave. Below are the details.</h3>
-                                                                            <h3 style="margin-top: 40px;">Date: 02/11/2016</h3>
-                                                                            <h3 style="">
-                                                                                Reasons: <p>I am going to leave today I am going to leave today.   </p>
-                                                                            </h3>
-                                                                            <a href="" class="">View Request</a>
+                                                                            <p style="font-size: 17px; font-weight:bold;"><b>Hi Admin</b></p>
+                                                                            <p>Peter Smith timed in outside the office.</p>
+                                                                            <hr style="border-top: 1px dashed #ccc; ">
+
+                                                                            <strong>Details:</strong>
+                                                                            <table class="email-content">
+                                                                                <tbody>
+                                                                                <tr>
+                                                                                    <td>Date(s): </td>
+                                                                                    <td>April 25, 2017 at 04:50 AM</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>Reason(s): </td>
+                                                                                    <td>We will be having an out of town with my family so I won''t be able to work in this day</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <br/>
+                                                                            <center>
+                                                                                <a href="#" id="request-btn" style="
+                                                                                background-color:#2dabf9;-moz-border-radius:6px;
+                                                                                -webkit-border-radius:6px;
+                                                                                border-radius:6px;
+                                                                                border:1px solid rgba(5,5,5,0.2);
+                                                                                display:inline-block;
+                                                                                cursor:pointer;
+                                                                                color:#ffffff;
+                                                                                font-family:Arial;
+                                                                                font-size:17px;
+                                                                                padding:16px 31px;
+                                                                                text-decoration:none;">
+                                                                                    View Request
+                                                                                </a>
+                                                                            </center>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
                                                                 </table>
-                                                                <!-- // CONTENT TABLE -->
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                        <!-- // FLEXIBLE CONTAINER -->
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <!-- // CENTERING TABLE -->
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="center" valign="top">
 
-
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color:#FFFFFF;" bgcolor="#0DB5D8">
-                                <tbody>
-                                <tr>
-                                    <td align="center" valign="top">
-
-
-                                        <table border="0" cellpadding="0" cellspacing="0" width="500" class="flexibleContainer">
-                                            <tbody>
-                                            <tr>
-                                                <td align="center" valign="top" width="500" class="flexibleContainerCell">
-
-
-                                                    <table border="0" cellpadding="30" cellspacing="0" width="100%">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td align="center" valign="top" class="textContent">
-                                                                <h1 style="color:#FFFFFF;line-height:100%;font-family:Helvetica,Arial,sans-serif;font-size:35px;font-weight:normal;margin-bottom:5px;text-align:center; margin: 0 auto;">
-                                                                    <center>
-                                                                        <!-- <img class="contactBg" src="https://cdn.propelrr.com/wp-content/uploads/cloud_bg2.svg"style="
-                                                                        width: 100%;
-                                                                        "> -->
-                                                                        <img src="https://cdn.propelrr.com/wp-content/uploads/strategy.svg" style="
-                                                                width: 100%;
-                                                                ">
-                                                                    </center>
-                                                                </h1>
-
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                    <!-- // CONTENT TABLE -->
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                        <!-- // FLEXIBLE CONTAINER -->
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <!-- // CENTERING TABLE -->
-                        </td>
-                    </tr>
-                    <!-- // MODULE ROW -->
-                    <!-- MODULE ROW // -->
-                    <!-- MODULE DIVIDER // -->
-
-                    <!-- // END -->
-                    <!-- MODULE ROW // -->
-                    <!-- // MODULE ROW -->
-                    <!-- MODULE ROW // -->
-
-                    <!-- // MODULE ROW -->
-                    </tbody>
-                </table>
-                <!-- // END -->
-                <!-- EMAIL FOOTER // -->
-                <!--
-                   The table "emailBody" is the email's container.
-                   Its width can be set to 100% for a color band
-                   that spans the width of the page.
-               -->
-                <table bgcolor="#E1E1E1" border="0" cellpadding="0" cellspacing="0" width="500" id="emailFooter">
-                    <!-- FOOTER ROW // -->
-                    <!--
-                       To move or duplicate any of the design patterns
-                       in this email, simply move or copy the entire
-                       MODULE ROW section for each content block.
-                   -->
-                    <tbody>
-                    <tr>
-                        <td align="center" valign="top">
-                            <!-- CENTERING TABLE // -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tbody>
-                                <tr>
-                                    <td align="center" valign="top">
-                                        <!-- FLEXIBLE CONTAINER // -->
-                                        <table border="0" cellpadding="0" cellspacing="0" width="500" class="flexibleContainer">
-                                            <tbody>
-                                            <tr>
-                                                <td align="center" valign="top" width="500" class="flexibleContainerCell">
-                                                    <table border="0" cellpadding="30" cellspacing="0" width="100%">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td valign="top" bgcolor="#E1E1E1">
-                                                                <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                    <div>Copyright © 2017 Propelrr. All&nbsp;rights&nbsp;reserved.</div>
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                        <!-- // FLEXIBLE CONTAINER -->
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <!-- // CENTERING TABLE -->
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <!-- // END -->
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</center>
-
-</body></html>

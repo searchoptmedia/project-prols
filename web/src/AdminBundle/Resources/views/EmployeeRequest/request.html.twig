@@ -41,9 +41,28 @@
                                 <th data-field="price">End Date</th>
                                 <th data-field="name">Status</th>
                             </tr>
+
                             </thead>
 
                             <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
+                            {% if activeRequest is not empty %}
+                                <tr class="request-row active display-none" style="display:none;" data-empid="{{ activeRequest.empAccId }}"
+                                     data-id="{{ activeRequest.id }}" data-emptime="{{ activeRequest.empTimeId }}" data-request="{{ activeRequest.listRequestTypeId }}" data-reason = "{{ activeRequest.request }}">
+                                    <td class = "name display-none">{{ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                    <td class="category display-none">{{ activeRequest.listRequestType.requestType|upper }}</td>
+                                    <td class = "start-date display-none">{{ activeRequest.dateStarted|date('n/d/Y')}}</td>
+                                    <td class = "end-date display-none">{{ activeRequest.dateEnded|date('n/d/Y')}}</td>
+                                    <td class = "status display-none">
+                                        {% if activeRequest.status == 2 %}
+                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                        {% elseif activeRequest.status == 3 %}
+                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                        {% elseif activeRequest.status == 4 %}
+                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
                             {% for request in allrequest %}
                                 <tr class = "request-row" data-empid="{{ request.empAccId }}"
                                     data-id="{{ request.id }}" data-emptime="{{ request.empTimeId }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
@@ -382,6 +401,17 @@
          editBtn.removeClass('open');
          getValues($(this), role, adminid);
      });
+
+     /************                  **********/
+     {% if app.request.get('id') is not empty %}
+        setTimeout( function() { $('.request-row.active[data-id="{{ app.request.get('id') }}"]').each( function() {
+            var tbody = $(this).closest("tbody");
+            role = tbody.data("role");
+            adminid = tbody.data("id");
+            editBtn.removeClass('open');
+            getValues($(this), role, adminid);
+        }) }, 800);
+     {% endif %}
 
      $(document).on("click", "#edit", function () {
 

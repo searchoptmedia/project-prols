@@ -116,16 +116,14 @@
         =====================================================*/
         @media only screen and (min-device-width : 320px) and (max-device-width:568px) {
         }
-        p{ line-height: 18px; }
         /* end IOS targeting */
     </style>
+    {% block css %}{% endblock %}
     <!--
        Outlook Conditional CSS
-
        These two style blocks target Outlook 2007 & 2010 specifically, forcing
        columns into a single vertical stack as on mobile clients. This is
        primarily done to avoid the 'page break bug' and is optional.
-
        More information here:
        http://templates.mailchimp.com/development/css/outlook-conditional-css
    -->
@@ -147,7 +145,6 @@
        content in the middle of the email page.
        I added "table-layout: fixed;" style to force
        yahoomail which by default put the content left.
-
    2.  For hotmail and yahoomail, the contents of
        the email starts from this center, so we try to
        apply necessary styling e.g. background-color.
@@ -270,7 +267,7 @@
                                                            that's entirely separate from the structural
                                                            framework of the email.
                                                        -->
-                                                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
+                                                    <table border="0" cellpadding="5" cellspacing="0" width="100%"  style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
                                                         <tbody>
                                                         <tr>
                                                             <td align="center" valign="top" class="textContent">
@@ -279,12 +276,14 @@
                                                                     <img style="height: 70%;" src="http://login.propelrr.com/prols2/img/propelrrlogo.png">
                                                                 </center>
                                                                 </h1>
-                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">Sick Leave Request</h2>
+                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">
+                                                                    {% block header_title %}{% endblock %}
+                                                                </h2>
                                                             </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
-                                                    <img class="bottomcloud1" src="https://www.propelrr.com/wp-content/themes/propelrr-parallax/img/header/cloud_blank.svg" alt="" style="width: 100%;">
+                                                    <img class="bottomcloud1" src="https://login-propelrr.herokuapp.com/images/cloud_blank.png" alt="" style="width: 100%;">
                                                     <!-- // CONTENT TABLE -->
                                                 </td>
                                             </tr>
@@ -375,7 +374,7 @@
                                                     <table border="0" cellpadding="30" cellspacing="0" width="100%">
                                                         <tbody>
                                                         <tr>
-                                                            <td align="center" valign="top" style="padding-top:80px;">
+                                                            <td align="center" valign="top" style="padding-top:40px;">
                                                                 <!-- CONTENT TABLE // -->
                                                                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                                                     <tbody>
@@ -386,17 +385,12 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                            <h5>Hi Admin,</h5>
-                                                                            <h3><strong>Denmark</strong> has requested for vacation leave. Below are the details.</h3>
-                                                                            <h3 style="margin-top: 40px;">Date: 02/11/2016</h3>
-                                                                            <h3 style="">
-                                                                                Reasons: <p>I am going to leave today I am going to leave today.   </p>
-                                                                            </h3>
-                                                                            <a href="" class="">View Request</a>
+                                                                            {% block content %}{% endblock %}
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
                                                                 </table>
+
                                                                 <!-- // CONTENT TABLE -->
                                                             </td>
                                                         </tr>
@@ -439,7 +433,7 @@
                                                                         <!-- <img class="contactBg" src="https://cdn.propelrr.com/wp-content/uploads/cloud_bg2.svg"style="
                                                                         width: 100%;
                                                                         "> -->
-                                                                        <img src="https://cdn.propelrr.com/wp-content/uploads/strategy.svg" style="
+                                                                        <img src="https://login-propelrr.herokuapp.com/images/strategy.png" style="
                                                                 width: 100%;
                                                                 ">
                                                                     </center>

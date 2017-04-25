@@ -1,0 +1,57 @@
+{% extends "AdminBundle:Templates/Email:email-template-admin.html.twig" %}
+
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <p style="font-size: 20px; font-weight:bold;"><b>{{ greetings|raw }}</b></p>
+        <p ><strong>{{ doerName }}</strong> has updated <strong>{{ name }}</strong>'s profile.</p>
+        <hr style="border-top: 1px dashed #ccc; ">
+    </div>
+    <table class="email-content" style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px; width: 100%;">
+        <tbody>
+            <tr>
+                <th style="text-align: left;border-bottom: 1px dashed #ccc;">Info </th>
+                <th style="text-align: left;border-bottom: 1px dashed #ccc;">Changes</th>
+            </tr>
+
+            {% for k,d in data %}
+            <tr>
+                <td style="border-bottom: 1px dotted #ccc; font-weight: bold;">{{ k }}: </td>
+                <td style="border-bottom: 1px dotted #ccc">{{ d }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br/>
+    <center style="margin-top: 20px;">
+        {% if links is defined and links|length %}
+            {% for k,l in links %}
+                <a href="{{ l }}" id="request-btn" style="
+                    background-color:#2dabf9;-moz-border-radius:6px;
+                    -webkit-border-radius:6px;
+                    border-radius:6px;
+                    border:1px solid rgba(5,5,5,0.2);
+                    display:inline-block;
+                    cursor:pointer;
+                    color:#ffffff;
+                    font-family:Arial;
+                    font-size:17px;
+                    padding:16px 31px;
+                    text-decoration:none;">
+                    {{ k }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </center>
+{% endblock %}
+
+{% block css %}
+    <style>
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 10px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}
