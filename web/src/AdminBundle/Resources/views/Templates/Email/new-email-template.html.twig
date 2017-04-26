@@ -116,7 +116,6 @@
         =====================================================*/
         @media only screen and (min-device-width : 320px) and (max-device-width:568px) {
         }
-        p{ line-height: 18px; }
         /* end IOS targeting */
     </style>
     <!--
@@ -187,7 +186,7 @@
                                                                     <tr>
                                                                         <td align="left" class="textContent">
                                                                             <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-
+                                                                                The introduction of your message preview goes here. Try to make it short.
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -386,13 +385,9 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                            <h5>Hi Admin,</h5>
-                                                                            <h3><strong>Denmark</strong> has requested for vacation leave. Below are the details.</h3>
-                                                                            <h3 style="margin-top: 40px;">Date: 02/11/2016</h3>
-                                                                            <h3 style="">
-                                                                                Reasons: <p>I am going to leave today I am going to leave today.   </p>
-                                                                            </h3>
-                                                                            <a href="" class="">View Request</a>
+                                                                            <center>
+                                                                                {{ message|raw }}
+                                                                            </center>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
