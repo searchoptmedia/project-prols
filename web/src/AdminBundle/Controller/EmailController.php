@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class EmailController extends Controller
 {
 
-    public function sendTimeInRequest($req, $class)
+    public function sendTimeInRequest($req, $class, $reqId = null)
     {
         $user = $class->getUser();
         $id   = $user->getId();
@@ -46,14 +46,20 @@ class EmailController extends Controller
         }
         $to      = array($adminemails);
         $empName = $data->getFname() . ' ' . $data->getLname();
-        $inputMessage = "$empName has timed in outside the office.<br><br><br>
-            <strong>Reason: </strong><br> $message<br><br><br>
-            <a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>
-            ";
 
-        $email = self::sendEmail($class, $subject, $from, $to,
-            $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',
-                array('name' => 'Admin','message' => $inputMessage, 'call' => true, )));
+        $date = date('F d, Y') . ' at ' . date('h:i a') ;
+        $requestDates = array(array('start' => $date, 'end' => $date, 'reason' => $message));
+
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request.html.twig', array(
+            'data' => $requestDates,
+            'title' => 'Request for Access',
+            'greetings' => 'Hi Admin,',
+            'type' => 'access-request',
+            'doerName' => $empName,
+            'links' => array('View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true))
+        ));
+
+        $email = self::sendEmail($class, $subject, $from, $to,$emailContent);
 
         return $email ? 1: 0;
     }
@@ -62,6 +68,7 @@ class EmailController extends Controller
     {
         $empid  = $req->request->get('empId');
         $reqName =   $req->request->get('requestname');
+        $reqId   =   $req->request->get('reqid');
         $user   = $class->getUser();
         $id     = $user->getId();
         $email  = 0;
@@ -90,18 +97,22 @@ class EmailController extends Controller
             $from    = array('no-reply@searchoptmedia.com', 'PROLS');
             $to      = array($empemail);
 
-            $inputMessage = "<h2>Hi " . $empname . "!</h2><br><br>Your <b>" . $reqName .
-                "</b> request was <b>" . $status . "</b> by <b>". $name . "</b>.";
+            $requestDates = array(
+                array('start' => date('F d, Y', strtotime($req->request->get('datestart'))), 'end' => date('F d, Y', strtotime($req->request->get('dateend'))), 'reason' => $reason)
+            );
 
-            if ($note != '') {
-                $inputMessage .= "<br>He/She left you a note: ". $note;
-            }
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request-response.html.twig', array(
+                'data' => $requestDates,
+                'title' => ucwords(strtolower($req->request->get('requestname'))),
+                'greetings' => 'Hi '.$empname.',',
+                'type' => strtolower($status),
+                'links' => array('View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)),
+                'approval_date' => date('F d, Y').' at '. date('h:i a'),
+                'approval_note' => $note,
+                'doerName' => $name
+            ));
 
-            $inputMessage .= "</b><br><br><b>Request Info: </b><br>". "Reason: " . $reason ."<br>Date started: " . $req->request->get('datestart') .
-                "<br>Date ended: ". $req->request->get('dateend');
-
-            $email = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',  array('message' => $inputMessage)));
+            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
         }
 
         return $email ? 1: 0;
@@ -145,11 +156,19 @@ class EmailController extends Controller
 
     }
 
-    public function requestTypeEmail($req, $class)
+    public function requestTypeEmail($req, $class, $reqId = null)
     {
         $email = 0;
         $user = $class->getUser();
         $id   = $user->getId();
+
+        //lets get the request details
+        $obj = $req->request->get('obj');
+        $requestDates = array();
+
+        foreach($obj as $o) {
+            $requestDates[] = array('start' => date('F d, Y', strtotime($o["start_date"])), 'end' => date('F d, Y', strtotime($o["end_date"])), 'reason' => $o["reason"]);
+        }
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
@@ -169,16 +188,19 @@ class EmailController extends Controller
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $adminEmailList = $this->getAdminEmails($admins);
 
-//        print_r($adminEmailList);exit;
-
         if(count($adminEmailList)) {
             $to = $adminEmailList;
 
-            $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has requested for a <b>" . $requesttype . "</b>." .
-                "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request.html.twig', array(
+                'data' => $requestDates,
+                'title' => $requesttype,
+                'greetings' => 'Hi Admin,',
+                'type' => 'leave-request',
+                'doerName' => $empname,
+                'links' => array(count($requestDates)==1 ? 'View Request':'View All Requests' =>  $class->generateUrl('view_request',  array('id' => count($requestDates)==1? $reqId: ''), true))
+            ));
 
-            $response = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            $response = self::sendEmail($class, $subject, $from, $to, $emailContent);
 
             if ($response)
                 $email++;
@@ -196,21 +218,47 @@ class EmailController extends Controller
         $empusername = $req->request->get('usernameinput');
         $emppassword = $req->request->get('passwordinput');
 
-        $subject = "PROLS » Your Account Was Created";
+        $subject = "PROLS » Your Account Was Successfully Created";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($employeeemail);
 
-        $inputMessage = "<h2>Hi " .$empname. "</h2>
-         Your account was successfully created.<br><br> Username: <b>" . $empusername . "</b>
-        <br>Password: <b>" . $emppassword . "</b><br>You can change your password in your profile page once you log in.<br><br>
-        <a href='http://login.propelrr.com/'>Login Here</a>";
-        $email = self::sendEmail($class, $subject, $from, $to,
-            $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-account-create.html.twig', array(
+            'title' => 'Propelrr Login System',
+            'greetings' => 'Hi '.$empname.',',
+            'username' => $empusername,
+            'password' => $emppassword,
+            'type' => 'employee-email'
+        ));
+
+        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+        //check if doer is an admin
+        $admins = EmpAccPeer::getAdminInfo();
+        $adminemails = array();
+        foreach ($admins as $admin){
+            $adminemails[] = $admin->getEmail();
+        }
+
+        $currentUserEmail = $class->getUser()->getEmail();
+
+        if(!in_array($currentUserEmail, $adminemails)) {
+            $name = $profile->getFname() . ' ' . $profile->getLname();
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-account-create.html.twig', array(
+                'title' => 'Propelrr Login System',
+                'greetings' => 'Hi Admin,',
+                'accountName' =>$empname,
+                'doerName' => $name,
+                'type' => 'admin-email'
+            ));
+
+            $to    = array($adminemails);
+            self::sendEmail($class, "PROLS » Account Successfully Created", $from, $to, $emailContent);
+        }
 
         return $email ? 1: 0;
     }
 
-    public function adminEditEmployeeProfileEmail($req, $class){
+    public function adminEditEmployeeProfileEmail($req, $class, $changes = array()){
         $user = $class->getUser();
         $id   = $user->getId();
 
@@ -227,19 +275,25 @@ class EmailController extends Controller
         $subject = "PROLS » Account Updated";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $to      = array($employeeemail);
-
-        $inputMessage = "<h2>Hi ". $empname . "!</h2><br> Your account was updated by ". $adminname .".<br><br> Visit the profile by clicking <a href='http://login.propelrr.com/main/emp/$empId'>here</a>.";
-        $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+        $email   = 0;
 
         $admins = EmpAccPeer::getAdminInfo();
-        $subject = "PROLS » Employee Account Updated";
+        $subject = "PROLS » Employee Profile Updated";
         $adminEmailList = $this->getAdminEmails($admins);
 
-        if(count($adminEmailList)) {
+        if(count($adminEmailList) && !in_array($user->getEmail(), $adminEmailList)) {
             $to = $adminEmailList;
 
-            $inputMessage = "<h2>Hi Admin!</h2><br>". $empname ."'s account was updated by ". $adminname .".<br><br> Visit the profile by clicking <a href='http://login.propelrr.com/main/emp/$empId'>here</a>.";
-            $email = self::sendEmail($class, $subject, $from, $to,  $class->renderView('AdminBundle:Templates/Email:email-template.html.twig',array('message' => $inputMessage)));
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-account-update.html.twig', array(
+                'title' => 'Profile Update',
+                'greetings' => 'Hi Admin,',
+                'name' => $empname,
+                'doerName' => $adminname,
+                'type' => 'admin-email',
+                'data' => $changes
+            ));
+
+           $email = self::sendEmail($class, $subject, $from, $to,  $emailContent);
         }
 
         return $email ? 1: 0;
@@ -395,14 +449,21 @@ class EmailController extends Controller
             $to = $adminEmailList;
 
             if ($action == "UPDATED") {
-                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request." .
-                    "<br><br><br><a style='text-decoration:none;border:0px; padding: 15px 30px; background:#3498DB;color:#fff;font-weight:bold;font-size:14px;display:inline-block;' href='http://login.propelrr.com/main/requests'>View Request</a>" . "<br>";
+                $inputMessage = "<b>".$empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request.";
             } else {
-                $inputMessage = "<h2>Hi admin!" . "</h2><b>" . $empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request. <br><br>";
+                $inputMessage = "<b>".$empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request. <br><br>";
             }
 
-            $email = self::sendEmail($class, $subject, $from, $to,
-                $class->renderView('AdminBundle:Templates/Email:email-template.html.twig', array('message' => $inputMessage)));
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request-update.html.twig', array(
+                'title' => ucwords(strtolower($category)),
+                'greetings' => 'Hi Admin,',
+                'type' => 'update-request',
+                'message' => $inputMessage,
+                'link' => $class->generateUrl('view_request',  array('id' => $param->getId()), true),
+                'action' => $action
+            ));
+
+            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
 
             if($email)
                 $emailCtr++;

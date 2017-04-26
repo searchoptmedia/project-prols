@@ -99,16 +99,16 @@
                                 <div class="req_inner">
                                     <div class="col-md-6 reqleave-lbl">
                                         <span class="reqleave-p">From</span>
-                                        <input type = "text" name="start-date" readonly placeholder="Start Date" class="start-date datepicker" id="start_date">
+                                        <input type = "text" name="start-date-0" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_0">
                                     </div>
                                     <div class="col-md-6 reqleave-lbl">
                                         <span class="reqleave-p">To</span>
-                                        <input type = "text" name="end-date" readonly placeholder="End Date" class="end-date datepicker"  id="end_date" >
+                                        <input type = "text" name="end-date-0" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_0" >
                                     </div>
                                 </div>
 
                                 <div class="col-md-12">
-                                    <textarea id="reason-leave-sbt" class="materialize-textarea" placeholder="Reason..." required></textarea>
+                                    <textarea id="reason-leave-sbt-0" class="materialize-textarea reason" placeholder="Reason..." required></textarea>
                                 </div>
                             </div>
                         </div>
@@ -153,12 +153,14 @@
         var submitMeetingButton = $('.btn-submitmeeting');
         var submitLeaveButton = $('.btn-submitleave');
         var closeDailyAgendaModal = $('.close-modal-agenda');
+        var btnRemoveLeaveFormEntry = '.btn-remove-leave-form-entry';
 
         // Main Variables
         var typeleave = '';
         var date_meeting = null;
         var endDatePicker = null;
-
+        var startDatePicker = null;
+        var currentYear = (new Date()).getFullYear();
 
         $(document).on("click", ".btn-reqmeeting", function () {
             hideForms();
@@ -178,18 +180,25 @@
         $(document).on("click", ".btn-reqleave", function () {
             hideForms();
             requestLeaveForm.show();
-            $('#start_date').val(agendaDateDiffFormat.text());
-            if(endDatePicker != null)
-                endDatePicker.destroy();
-            endDatePicker = new Pikaday(
-                    {
-                        field: document.getElementById('end_date'),
-                        firstDay: 1,
-                        minDate: new Date(),
-                        maxDate: new Date(2020, 12, 31),
-                        yearRange: [2000, 2020],
-                        format: 'YYYY-MM-DD'
-                    });
+
+            var startValue = agendaDateDiffFormat.text();
+
+            $('#start_date_0').val(startValue);
+
+            initPicker('start_date_0', new Date(), new Date(currentYear+20, 12, 31), function() {
+                setTimeout( function() {
+                    var startVal = $('#start_date_0').val();
+                    setPikadayData('start-range', 'end_date_0', new Date(startVal)).show();
+                }, 200);
+            });
+
+            initPicker('end_date_0', new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+                setTimeout( function() {
+                    var endVal =  $('#end_date_0').val();
+                    setPikadayData('end-range', 'start_date_0', new Date(endVal));
+                }, 200);
+            });
+
             submitLeaveButton.show();
         });
 
@@ -203,6 +212,10 @@
             agendaList.show();
             dailyAgendaModal.closeModal();
             if(date_meeting != null) date_meeting.destroy();
+        });
+
+        $(document).on('click', btnRemoveLeaveFormEntry, function() {
+             $(this).closest('.multi_reqleaveform').remove();
         });
 
         function hideForms() {
@@ -323,6 +336,36 @@
                 $('.modal-birthday-notify-container').hide();
             });
         }
+
+        /** init Date Picker */
+        function initPicker(el, minDate, maxDate, onselect) {
+            var pikael = 'pik_'+el;
+            if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
+                window[pikael].destroy();
+            }
+
+            window[pikael] = new Pikaday({
+                field: document.getElementById(el),
+                firstDay: 1,
+                minDate: minDate,
+                maxDate: maxDate,
+                yearRange: [currentYear - 20, currentYear + 20],
+                format: 'YYYY-MM-DD',
+                onSelect: onselect
+            });
+
+            return window[pikael];
+        }
+
+        function setPikadayData(param, el, value) {
+            var pikael = 'pik_'+el;
+            if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
+                if(param=='end-range') window[pikael].setMaxDate(value);
+                if(param=='start-range') window[pikael].setMinDate(value);
+
+                return window[pikael];
+            }
+        }
     </script>
 
     <script> // SCRIPT FOR MULTIPLE DATES REQUEST LEAVE
@@ -339,9 +382,14 @@
         });
 
         function cloneRequestLeaveFields(){
-            unique_id++;
+            var formSect = requestLeaveForm.find('.multi_reqleaveform');
+            var unique_id = requestLeaveForm.find('.multi_reqleaveform:last').data('endid') ?
+                    requestLeaveForm.find('.multi_reqleaveform:last').data('endid')+1 : formSect.length;
+
             var form_container = document.createElement("div");                         // <div class = "multi_reqleaveform">
+            form_container.setAttribute("data-endid", unique_id);
             form_container.className = "multi_reqleaveform newForm";
+            form_container.innerHTML = '<div class="col-md-12" style="margin-bottom: 20px;"><hr style="border: 1px dashed #ccc;"></div>';
 
             var container = document.createElement("div");                              // <div class = "req_inner"> -> Container
             container.className = "req_inner";
@@ -353,9 +401,9 @@
             from_lbl.className = "reqleave-p";
 
             var from_input = document.createElement("input");                           // <input> start date
-            from_input.setAttribute("name", "start-date" + unique_id);
+            from_input.setAttribute("name", "start-date-" + unique_id);
             from_input.setAttribute("placeholder", "Start Date");
-            from_input.setAttribute("id", "start_date" + unique_id);
+            from_input.setAttribute("id", "start_date_" + unique_id);
             from_input.setAttribute("readonly", "true");
             from_input.setAttribute("required", "true");
             from_input.className = "start-date datepicker";
@@ -367,9 +415,9 @@
             to_lbl.className = "reqleave-p";
 
             var to_input = document.createElement("input");                             // <input> end date
-            to_input.setAttribute("name", "end-date" + unique_id);
+            to_input.setAttribute("name", "end-date-" + unique_id);
             to_input.setAttribute("placeholder", "End Date");
-            to_input.setAttribute("id", "end_date" + unique_id);
+            to_input.setAttribute("id", "end_date_" + unique_id);
             to_input.setAttribute("readonly", "true");
             to_input.setAttribute("required", "true");
             to_input.className = "end-date datepicker";
@@ -378,13 +426,21 @@
             reason_cont.className = "col-md-12";
 
             var reason = document.createElement("textarea");                            // <textarea> -> REASON
-            reason.className = "materialize-textarea";
-            reason.setAttribute("id", "reason-leave-sbt" + unique_id);
+            reason.className = "materialize-textarea reason";
+            reason.setAttribute("id", "reason-leave-sbt-" + unique_id);
             reason.setAttribute("placeholder", "Reason...");
             reason.setAttribute("required", "true");
 
+            var deleteButton = document.createElement('button');
+            deleteButton.className = "btn-floating btn-medium red text-center btn-remove-leave-form-entry";
+            deleteButton.innerHTML = '<i class="medium material-icons">delete</i>';
+            var delFrame = document.createElement('div');
+            delFrame.className = 'text-center';
+            delFrame.append(deleteButton);
+
             form_container.append(container);
             form_container.append(reason_cont);
+            form_container.append(delFrame);
             reason_cont.append(reason);
             container.append(from_cont);
             from_cont.append(from_lbl);
@@ -393,40 +449,45 @@
             to_cont.append(to_lbl);
             to_cont.append(to_input);
             $(".form-container").append(form_container);
-            pickDay(unique_id);
+
+            //initialize pikaday
+            var startValue = agendaDateDiffFormat.text();
+            var strtEl = 'start_date_'+unique_id;
+            var endEL = 'end_date_'+unique_id;
+
+            initPicker(strtEl, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+                setTimeout( function() {
+                    setPikadayData('start-range', endEL, new Date($('#'+strtEl).val())).show();
+                }, 200);
+            });
+
+            initPicker(endEL, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+                setTimeout( function() {
+                    setPikadayData('end-range', strtEl, new Date($('#'+endEL).val()))
+                }, 200);
+            });
         }
 
-        var submitLeaveButton = $('.btn-submitleave');
-
-        $('.btn-submitleave').click(function(){
+        submitLeaveButton.click(function(){
             // validate first
             var validate = checkFields();
             if(validate == true) // true == there are errors
                 return;
             // else continue
-            var obj = {};
+            var obj = [];
             typeleave = 2;
 
-            var leavestartdate  = $('#start_date').val();
-            var leaveenddate    = $('#end_date').val();
-            var reasonleave = $('#reason-leave-sbt').val();
+            requestLeaveForm.find('.multi_reqleaveform').each( function() {
+                var start = $(this).find('.start-date').val();
+                var end = $(this).find('.end-date').val();
+                var reason = $(this).find('.reason').val();
 
-            // push to array
-            obj["start_date0"] = leavestartdate;
-            obj["end_date0"] = leaveenddate;
-            obj["reasonleave0"] = reasonleave;
-
-            for (var i = 1; i <= unique_id; i++) {
-                obj["start_date" + i] = $("#start_date" + i).val();
-                obj["end_date" + i] = $("#end_date" + i).val();
-                obj["reasonleave" + i] = $("#reason-leave-sbt" + i).val();
-            }
-
-            obj["unique_id"] = unique_id;
+                obj.push({start_date: start, end_date: end, reason: reason});
+            });
 
             data = {
                 typeleave: typeleave,
-                obj: JSON.stringify(obj)
+                obj: obj
             };
 
             callback = function(data){
@@ -453,51 +514,25 @@
         });
 
         function checkFields() {      // Checking if there are any inputs on the required fields
-            var hasRequired = 0;
-            var start_date, end_date, reason;
+            var error = 0;
 
-            for(var i = 0; i <= unique_id; i++) {
-                if (i != 0){
-                    start_date = $('#start_date' + i);
-                    end_date = $('#end_date' + i);
-                    reason = $('#reason-leave-sbt' +  i);
-                } else {
-                    start_date = $('#start_date');
-                    end_date = $('#end_date');
-                    reason = $('#reason-leave-sbt');
-                }
+            requestLeaveForm.find('.multi_reqleaveform').each( function() {
+                $(this).find('input, textarea').each( function() {
 
-                if(start_date.val() == '') {
-                    start_date.css({'border-color': 'red'});
-                    setTimeout(function(){
-                        start_date.css({'border-color': 'gray'})
-                    }, 1000);
+                    if($(this).val()=='') {
+                        if(error==0) {
+                            $(this).select();
+                        }
 
-                    hasRequired++;
-                }
+                        $(this).css({'border-color': 'red'});
+                        error++;
+                    } else {
+                        $(this).css({'border-color': 'gray'})
+                    }
+                });
+            });
 
-                if(end_date.val() == '') {
-                    end_date.css({'border-color': 'red'});
-                    setTimeout(function(){
-                        end_date.css({'border-color': 'gray'})
-                    }, 1000);
-
-                    hasRequired++;
-                }
-
-                if(reason.val() == '') {
-                    reason.css({'border-color': 'red'});
-                    setTimeout(function(){
-                        reason.css({'border-color': 'gray'})
-                    }, 1000);
-
-                    hasRequired++;
-                }
-            }
-
-            if(hasRequired > 0)
-                return true;
-            else return false;
+            return error ? true : false;
         }
 
         function removeClonedFields() {         // basically removes all the cloned fields
