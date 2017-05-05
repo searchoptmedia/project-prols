@@ -127,7 +127,7 @@ class EmailController extends Controller
 
             $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
                 'data' => $requestDates,
-                'title' => strtolower($requestName)!='work out of office' ? ucwords(strtolower($requestName)) : 'Request Access',
+                'title' => !in_array(strtolower($requestName), array('work out of office', 'work outside office')) ? ucwords(strtolower($requestName)) : 'Request Access',
                 'greetings' => 'Hi '.$empname.',',
                 'template' => 'approve-decline',
                 'message' => "<strong>$name</strong> has <strong>".strtolower($status)."</strong> your ".strtolower($requestName).".",
