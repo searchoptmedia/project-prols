@@ -68,7 +68,7 @@
                                                 {% endif %}
 
                                                 {% for cap in capabilities %}
-                                                    {% if cap.Capid == 1  %}
+                                                    {% if cap.Capid == 1 and emp.EmpAcc.id!=app.user.id %}
                                                         {% if (emp.EmpAcc.role != 'ADMIN' and user.role != 'ADMIN') %}
                                                             <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
                                                                     data-username = "{{ emp.EmpAcc.username }}"
@@ -98,7 +98,7 @@
                                                                     {% endfor %}
                                                                     data-empid="{{ emp.empAccAccId }}">Edit
                                                             </button>
-                                                        {% else %}
+                                                        {% else  %}
                                                             <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
                                                                     data-username = "{{ emp.EmpAcc.username }}"
                                                                     data-password = "{{ emp.EmpAcc.password }}"

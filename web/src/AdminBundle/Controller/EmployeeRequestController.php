@@ -520,6 +520,12 @@ class EmployeeRequestController extends Controller
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
         if(!empty($request)) {
+            $oldData = array(
+                'startDate' => $request->getDateStarted()->format('F d, Y'),
+                'endDate' => $request->getDateEnded()->format('F d, Y'),
+                'request' => $request
+            );
+
             $request->setStatus($req->request->get('status'));
             $request->setDateStarted($req->request->get('start_date'));
             $request->setDateEnded($req->request->get('end_date'));
@@ -529,8 +535,9 @@ class EmployeeRequestController extends Controller
 
             if(!empty($lastid)) {
                 $result = array('result' => 'Success');
+
                 $email = new EmailController();
-                $sendemail = $email->notifyRequestEmail($req, $this, "UPDATED", $request);
+                $sendemail = $email->notifyRequestEmail($req, $this, "UPDATED", $oldData);
 
                 if($sendemail == 0) {
                     //$this->deleteAction($req);
@@ -554,12 +561,18 @@ class EmployeeRequestController extends Controller
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
         if(!empty($request)) {
+            $oldData = array(
+                'startDate' => $request->getDateStarted()->format('F d, Y'),
+                'endDate' => $request->getDateEnded()->format('F d, Y'),
+                'reason' => $request->getRequest(),
+                'request' => $request
+            );
 
             $empTimeId = $request->getEmpTimeId();
             $empTime = EmpTimePeer::retrieveByPK($empTimeId);
 
             $email = new EmailController();
-            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $request);
+            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $oldData);
 
             if(! $sendemail) {
                 //$this->deleteRequestAction($req);
