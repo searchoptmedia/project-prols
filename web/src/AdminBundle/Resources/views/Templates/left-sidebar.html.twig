@@ -6,8 +6,8 @@
             <i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <a href="{{ path('manage_employee') }}" class="collection-item manage-page">
             <i class="material-icons nav-icon">list</i> Manage Employees</a>
-        <a href="{{ path('manage_events') }}" class="collection-item manage-events-page">
-            <i class="material-icons nav-icon">list</i> Manage Events</a>
+        {#<a href="{{ path('manage_events') }}" class="collection-item manage-events-page">#}
+            {#<i class="material-icons nav-icon">list</i> Manage Events</a>#}
         <a href="{{ path('view_request') }}" class="collection-item view-request-page">
             <i class="material-icons nav-icon">view_agenda</i> View Requests {% if requestcount != 0 %}
                 <span class="new badge reqcount">
