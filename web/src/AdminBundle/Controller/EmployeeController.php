@@ -65,7 +65,7 @@ class EmployeeController extends Controller
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$ip_add 		= ListIpPeer::getValidIP($matchedip);
-
+        $emailresp      = 0;
 		//Compare last time in date with date today
 		if(!empty($timedata))
 		{

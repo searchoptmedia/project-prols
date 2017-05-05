@@ -25,38 +25,52 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class EmailController extends Controller
 {
-
+    /**
+     * Request out of office email
+     * @param $req
+     * @param $class
+     * @param null $reqId
+     * @return int
+     */
     public function sendTimeInRequest($req, $class, $reqId = null)
     {
         $user = $class->getUser();
-        $id   = $user->getId();
+        $id = $user->getId();
 
         //employee profile information
         $data = EmpProfilePeer::getInformation($id);
-        $name = $data->getFname(). " " .$data->getLname();
 
         $admins = EmpAccPeer::getAdminInfo();
-        $adminemails = array();
-        $subject = 'PROLS » Request for Access';
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
+        $empName = $data->getFname() . ' ' . $data->getLname();
         $message = $req->request->get('message');
+        $adminemails = array();
+
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+        $subject = 'PROLS » Request for Access';
 
         foreach ($admins as $admin){
             $adminemails[] = $admin->getEmail();
         }
-        $to      = array($adminemails);
-        $empName = $data->getFname() . ' ' . $data->getLname();
 
+        $to = array($adminemails);
         $date = date('F d, Y') . ' at ' . date('h:i a') ;
-        $requestDates = array(array('start' => $date, 'end' => $date, 'reason' => $message));
+        $requestDates = array(
+            array(
+                'start' => $date,
+                'end' => $date,
+                'reason' => $message
+            )
+        );
 
-        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request.html.twig', array(
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
             'data' => $requestDates,
-            'title' => 'Request for Access',
+            'title' => 'Request Access',
             'greetings' => 'Hi Admin,',
-            'type' => 'access-request',
-            'doerName' => $empName,
-            'links' => array('View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true))
+            'template' => 'request-access',
+            'message' => $empName . ' timed in outside the office.',
+            'links' => array(
+                'View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)
+            )
         ));
 
         $email = self::sendEmail($class, $subject, $from, $to,$emailContent);
@@ -64,25 +78,32 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
+    /**
+     * Approve/Decline requests
+     * @param $req
+     * @param $class
+     * @return int
+     */
     public function acceptRequestEmail($req, $class)
     {
-        $empid  = $req->request->get('empId');
-        $reqName =   $req->request->get('requestname');
-        $reqId   =   $req->request->get('reqid');
-        $user   = $class->getUser();
-        $id     = $user->getId();
-        $email  = 0;
+        $empid = $req->request->get('empId');
+        $reqId =   $req->request->get('reqid');
+        $user = $class->getUser();
+        $id = $user->getId();
+        $email = 0;
 
         $employee = EmpAccPeer::retrieveByPK($empid);
-        $changed = $req->request->get('isChanged');
         $note = $req->request->get('comment');
         $status = $req->request->get('status');
-        if($status == 3) $status = "Approved";
-        else $status = "Declined";
         $reason = $req->request->get('reason');
+        $changed = $req->request->get('isChanged');
 
-        if(! empty($employee))
-        {
+        if($status == 3)
+            $status = "Approved";
+        else
+            $status = "Declined";
+
+        if(! empty($employee)) {
             $empemail = $employee->getEmail();
             $empinfo = EmpProfilePeer::getInformation($employee->getId());
             $empname = $empinfo->getFname() . " " .$empinfo->getLname();
@@ -90,26 +111,30 @@ class EmailController extends Controller
             //admin profile information
             $data = EmpProfilePeer::getInformation($id);
             $name = $data->getFname(). " " .$data->getLname();
+            $requestName = $req->request->get('requestname');
 
             if ($changed == "CHANGED")
-                $subject = "PROLS » " . $req->request->get('requestname') . " " . " Request Changed";
-            else $subject = "PROLS » " . $req->request->get('requestname') . " " . " Request " . $status;
-            $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-            $to      = array($empemail);
+                $subject = "PROLS » " . ucwords(strtolower($requestName)) . " " . " Request Changed";
+            else
+                $subject = "PROLS » " . ucwords(strtolower($requestName)) . " " . " Request " . $status;
+
+            $from = array('no-reply@searchoptmedia.com', 'PROLS');
+            $to = array($empemail);
 
             $requestDates = array(
                 array('start' => date('F d, Y', strtotime($req->request->get('datestart'))), 'end' => date('F d, Y', strtotime($req->request->get('dateend'))), 'reason' => $reason)
             );
 
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request-response.html.twig', array(
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
                 'data' => $requestDates,
-                'title' => ucwords(strtolower($req->request->get('requestname'))),
+                'title' => strtolower($requestName)!='work out of office' ? ucwords(strtolower($requestName)) : 'Request Access',
                 'greetings' => 'Hi '.$empname.',',
-                'type' => strtolower($status),
-                'links' => array('View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)),
-                'approval_date' => date('F d, Y').' at '. date('h:i a'),
-                'approval_note' => $note,
-                'doerName' => $name
+                'template' => 'approve-decline',
+                'message' => "<strong>$name</strong> has <strong>".strtolower($status)."</strong> your ".strtolower($requestName).".",
+                'links' => array(
+                    'View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)
+                ),
+                'approval_reason' => $note,
             ));
 
             $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
@@ -118,20 +143,236 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
+    /**
+     * Adding new employee - send credentials|Notify admin
+     * @param $req
+     * @param $class
+     * @return int
+     */
+    public function addEmployeeEmail($req, $class){
+        $user = $class->getUser();
+        $id = $user->getId();
+
+        $profile = EmpProfilePeer::getInformation($id);
+        $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
+        $employeeemail = $req->request->get('emailinput');
+        $empusername = $req->request->get('usernameinput');
+        $emppassword = $req->request->get('passwordinput');
+
+        $subject = "PROLS » Your Account Was Successfully Created";
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to = array($employeeemail);
+
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+            'title' => 'Login System',
+            'greetings' => 'Hi '.$empname.',',
+            'username' => $empusername,
+            'password' => $emppassword,
+            'template' => 'account-create-employee',
+            'message' => 'Your account was successfully created. Use the following details to login at <a href="'.$class->generateUrl('login', array(), true).'">login.propelrr.com</a>.',
+            'links' => array(
+                'Login Now!' => $class->generateUrl('login', array(), true)
+            )
+        ));
+
+        //-------- email employee
+        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+        //check if doer is an admin
+        $admins = EmpAccPeer::getAdminInfo();
+        $adminemails = array();
+
+        foreach ($admins as $admin){
+            $adminemails[] = $admin->getEmail();
+        }
+
+        $to = array($adminemails);
+        $currentUserEmail = $class->getUser()->getEmail();
+
+        if(!in_array($currentUserEmail, $adminemails)) {
+            $name = $profile->getFname() . ' ' . $profile->getLname();
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                'title' => 'Login System',
+                'greetings' => 'Hi Admin,',
+                'message'  => 'Account for <strong>'.$empname.'</strong> was successfully created by <strong>'.$name.'</strong>.',
+                'template' => 'account-create-admin',
+                'links' => array(
+                    'Manage Employees' => $class->generateUrl('manage_employee', array(), true)
+                )
+            ));
+
+            //-------- email admin
+            $email = self::sendEmail($class, "PROLS » Account Successfully Created", $from, $to, $emailContent);
+        }
+
+        return $email ? 1: 0;
+    }
+
+    /**
+     * Update employee details - notify admin
+     * @param $req
+     * @param $class
+     * @param array $changes
+     * @return int
+     */
+    public function adminEditEmployeeProfileEmail($req, $class, $changes = array()){
+        $user = $class->getUser();
+        $id = $user->getId();
+
+        $userProfile = EmpProfilePeer::getInformation($id);
+        $userFullName = $userProfile->getFname() . " " . $userProfile->getLname();
+        $employeeName = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
+
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+        $email = 0;
+
+        $admins = EmpAccPeer::getAdminInfo();
+        $subject = "PROLS » Employee Profile Updated";
+        $adminEmailList = $this->getAdminEmails($admins);
+
+        if(count($adminEmailList) && !in_array($user->getEmail(), $adminEmailList)) {
+            $to = $adminEmailList;
+
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                'title' => 'Profile Update',
+                'greetings' => 'Hi Admin,',
+                'message' => "<strong>$userFullName</strong> has updated <strong>$employeeName</strong>'s profile.",
+                'template' => 'profile-update',
+                'data' => $changes
+            ));
+
+            $email = self::sendEmail($class, $subject, $from, $to,  $emailContent);
+        }
+
+        return $email ? 1: 0;
+    }
+
+    /**
+     * Notify admin if request has been updated/cancelled by employee
+     * @param $req
+     * @param $class
+     * @param $action
+     * @param array $param
+     * @return int
+     */
+    public function notifyRequestEmail($req, $class, $action, $param = array()) {
+        $user = $class->getUser();
+        $id = $user->getId();
+
+        $empinfo = EmpProfilePeer::getInformation($id);
+        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+        $gender  = strtolower($empinfo->getGender());
+        $genderPref = ($gender=='male') ? 'his' : ($gender=='female' ? 'her' : 'his/her');
+        $category = $req->request->get('category');
+        $admins = EmpAccPeer::getAdminInfo();
+        $emailCtr = 0;
+
+        $subject = "PROLS » " . ucwords(strtolower($action)) . " " . ucwords(strtolower($category)) . " Request";
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+
+        $adminEmailList = $this->getAdminEmails($admins);
+
+        $newStartDate = $req->request->get('start_date');
+        $newEndDate = $req->request->get('end_date');
+        $newReason = $req->request->get('reason');
+        $oldData = array();
+
+        $data = array(
+            array(
+                'start' => date('F d, Y', strtotime($newStartDate)),
+                'end' => date('F d, Y', strtotime($newEndDate)),
+                'reason' => $newReason
+            )
+        );
+
+        if($action!='CANCELLED') {
+            $oldData = $param ? array(
+                array(
+                    'start' => $param['startDate'],
+                    'end' => $param['endDate']
+                )
+            ) : null;
+        } else {
+            $data = array(
+                array(
+                    'start' => $param['startDate'],
+                    'end' => $param['endDate'],
+                    'reason' => $param['reason']
+                )
+            );
+        }
+
+        //check if changes on date
+        if($oldData) {
+            foreach($oldData as $d) {
+                if($d['start']==date('F d, Y', strtotime($newStartDate)) && $d['end']==date('F d, Y', strtotime($newEndDate))) {
+                    $oldData = null;
+                }
+            }
+        }
+
+        if(count($adminEmailList)) {
+            $to = $adminEmailList;
+            $message = "<strong>".$empname . "</strong> has ". strtolower($action) ." $genderPref <strong>" . strtolower($category) . "</strong>.";
+
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                'title'     => strtolower($category)!='work out of office' ? ucwords(strtolower($category)) : 'Request Access',
+                'greetings' => 'Hi Admin,',
+                'template'  => 'update-request',
+                'message'   => $message,
+                'links'     => ($action!='CANCELLED') ? array('View Request' => $class->generateUrl('view_request',  array('id' => $param ? $param['request']->getId() : null), true)) : null,
+                'data'      => $data,
+                'old_data'  => $oldData
+            ));
+
+            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+            if($email)
+                $emailCtr++;
+        }
+
+        return $emailCtr;
+    }
+
+    /**
+     * Get admin email list
+     * @param array $adminList
+     * @return array
+     */
+    public function getAdminEmails($adminList = array())
+    {
+        $adminEmails = array();
+
+        if($adminList) {
+            foreach($adminList as $e) {
+                $email = $e->getEmail();
+                $name  = $e->getUsername();
+                $profile  = EmpProfileQuery::create()->filterByEmpAccAccId($e->getId())->findOne();
+
+                if($profile) $name = $profile->getFname() . " " . $profile->getLname();
+
+                if(! empty($email)) $adminEmails[0][$email] = "$name";
+            }
+        }
+
+        return $adminEmails;
+    }
+
     public function RequestMeetingEmail($req, $class)
     {
         $user = $class->getUser();
-        $id   = $user->getId();
+        $id = $user->getId();
         $empemail = $req->request->get('taggedemail');
         $empinfo = EmpProfilePeer::getInformation($req->request->get('empId'));
         $empname = $empinfo->getFname() . " " .$empinfo->getLname();
+
         //admin profile information
         $data = EmpProfilePeer::getInformation($id);
         $name = $data->getFname(). " " .$data->getLname();
 
         $subject = $req->request->get('requestname') . " " . " Request Accepted";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($empemail);
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+        $to = array($empemail);
 
         $inputMessage = "<h2>Hi " . $empname . "!</h2><br><br>Your <b>" . $req->request->get('requestname') .
             "</b> request was accepted by <b>". $name .
@@ -167,11 +408,15 @@ class EmailController extends Controller
         $requestDates = array();
 
         foreach($obj as $o) {
-            $requestDates[] = array('start' => date('F d, Y', strtotime($o["start_date"])), 'end' => date('F d, Y', strtotime($o["end_date"])), 'reason' => $o["reason"]);
+            $requestDates[] = array(
+                'start' => date('F d, Y', strtotime($o["start_date"])),
+                'end' => date('F d, Y', strtotime($o["end_date"])),
+                'reason' => $o["reason"]
+            );
         }
 
         $empinfo = EmpProfilePeer::getInformation($id);
-        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
+        $empName = $empinfo->getFname() . " " . $empinfo->getLname();
 
         $typeOfLeave = $req->request->get('typeleave');
 
@@ -181,22 +426,22 @@ class EmailController extends Controller
             $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
         }
 
-        $requesttype = $requestlist->getRequestType();
+        $requestType = $requestlist->getRequestType();
 
         $admins = EmpAccPeer::getAdminInfo();
-        $subject = "PROLS » " . $requesttype . " Request";
+        $subject = "PROLS » " . $requestType . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $adminEmailList = $this->getAdminEmails($admins);
 
         if(count($adminEmailList)) {
             $to = $adminEmailList;
 
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request.html.twig', array(
+            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
                 'data' => $requestDates,
-                'title' => $requesttype,
+                'title' => $requestType,
                 'greetings' => 'Hi Admin,',
-                'type' => 'leave-request',
-                'doerName' => $empname,
+                'message' => "<strong>$empName</strong> has requested for a <strong>$requestType</strong>.",
+                'template' => 'leave-request',
                 'links' => array(count($requestDates)==1 ? 'View Request':'View All Requests' =>  $class->generateUrl('view_request',  array('id' => count($requestDates)==1? $reqId: ''), true))
             ));
 
@@ -207,96 +452,6 @@ class EmailController extends Controller
         }
 
         return $email;
-    }
-
-    public function addEmployeeEmail($req, $class){
-        $user = $class->getUser();
-        $id   = $user->getId();
-        $profile = EmpProfilePeer::getInformation($id);
-        $employeeemail = $req->request->get('emailinput');
-        $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
-        $empusername = $req->request->get('usernameinput');
-        $emppassword = $req->request->get('passwordinput');
-
-        $subject = "PROLS » Your Account Was Successfully Created";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($employeeemail);
-
-        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-account-create.html.twig', array(
-            'title' => 'Propelrr Login System',
-            'greetings' => 'Hi '.$empname.',',
-            'username' => $empusername,
-            'password' => $emppassword,
-            'type' => 'employee-email'
-        ));
-
-        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
-
-        //check if doer is an admin
-        $admins = EmpAccPeer::getAdminInfo();
-        $adminemails = array();
-        foreach ($admins as $admin){
-            $adminemails[] = $admin->getEmail();
-        }
-
-        $currentUserEmail = $class->getUser()->getEmail();
-
-        if(!in_array($currentUserEmail, $adminemails)) {
-            $name = $profile->getFname() . ' ' . $profile->getLname();
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-account-create.html.twig', array(
-                'title' => 'Propelrr Login System',
-                'greetings' => 'Hi Admin,',
-                'accountName' =>$empname,
-                'doerName' => $name,
-                'type' => 'admin-email'
-            ));
-
-            $to    = array($adminemails);
-            self::sendEmail($class, "PROLS » Account Successfully Created", $from, $to, $emailContent);
-        }
-
-        return $email ? 1: 0;
-    }
-
-    public function adminEditEmployeeProfileEmail($req, $class, $changes = array()){
-        $user = $class->getUser();
-        $id   = $user->getId();
-
-        $empId = $req->request->get('empid');
-
-        $adminprofile = EmpProfilePeer::getInformation($id);
-        $adminname = $adminprofile->getFname() . " " . $adminprofile->getLname();
-
-        $employeeemail = $req->request->get('emailinput');
-        $empname = $req->request->get('fnameinput') . " " . $req->request->get('lnameinput');
-        $empusername = $req->request->get('usernameinput');
-        $emppassword = $req->request->get('passwordinput');
-
-        $subject = "PROLS » Account Updated";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $to      = array($employeeemail);
-        $email   = 0;
-
-        $admins = EmpAccPeer::getAdminInfo();
-        $subject = "PROLS » Employee Profile Updated";
-        $adminEmailList = $this->getAdminEmails($admins);
-
-        if(count($adminEmailList) && !in_array($user->getEmail(), $adminEmailList)) {
-            $to = $adminEmailList;
-
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-account-update.html.twig', array(
-                'title' => 'Profile Update',
-                'greetings' => 'Hi Admin,',
-                'name' => $empname,
-                'doerName' => $adminname,
-                'type' => 'admin-email',
-                'data' => $changes
-            ));
-
-           $email = self::sendEmail($class, $subject, $from, $to,  $emailContent);
-        }
-
-        return $email ? 1: 0;
     }
 
     static public function sendEmail($class, $subject, $from, $to, $content)
@@ -427,70 +582,7 @@ class EmailController extends Controller
         return $email ? 1: 0;
     }
 
-    public function notifyRequestEmail($req, $class, $action, $param = null) {
-        $user = $class->getUser();
-        $id   = $user->getId();
 
-        $empinfo = EmpProfilePeer::getInformation($id);
-        $empname = $empinfo->getFname() . " " . $empinfo->getLname();
-
-        $category = $req->request->get('category');
-
-        $admins = EmpAccPeer::getAdminInfo();
-        $adminemails = array();
-        $emailCtr = 0;
-
-        $subject = "PROLS » " . $action . " " . $category . " Request";
-        $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-
-        $adminEmailList = $this->getAdminEmails($admins);
-
-        if(count($adminEmailList)) {
-            $to = $adminEmailList;
-
-            if ($action == "UPDATED") {
-                $inputMessage = "<b>".$empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request.";
-            } else {
-                $inputMessage = "<b>".$empname . "</b> has ". $action ." his/her <b>" . $category . "</b> Request. <br><br>";
-            }
-
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-template-admin-request-update.html.twig', array(
-                'title' => ucwords(strtolower($category)),
-                'greetings' => 'Hi Admin,',
-                'type' => 'update-request',
-                'message' => $inputMessage,
-                'link' => $class->generateUrl('view_request',  array('id' => $param->getId()), true),
-                'action' => $action
-            ));
-
-            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
-
-            if($email)
-                $emailCtr++;
-        }
-
-        return $emailCtr;
-    }
-
-
-    public function getAdminEmails($adminList = array())
-    {
-        $adminEmails = array();
-
-        if($adminList) {
-            foreach($adminList as $e) {
-                $email = $e->getEmail();
-                $name  = $e->getUsername();
-                $profile  = EmpProfileQuery::create()->filterByEmpAccAccId($e->getId())->findOne();
-
-                if($profile) $name = $profile->getFname() . " " . $profile->getLname();
-
-                if(! empty($email)) $adminEmails[0][$email] = "$name";
-            }
-        }
-
-        return $adminEmails;
-    }
 }
 
 ?>
