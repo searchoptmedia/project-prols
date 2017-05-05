@@ -1,0 +1,79 @@
+{% extends "AdminBundle:Templates/Email:email-template-admin.html.twig" %}
+
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <p style="font-size: 20px; font-weight:bold;"><b>{{ greetings }}</b></p>
+        <p>Your {{ title|upper }} request was <strong>{{ type }}</strong> by <strong>{{ doerName }}</strong>. {% if approval_reason is defined and approval_reason is not empty %}He/she left you a note below.{% endif %}</p>
+        <hr style="border-top: 1px dashed #ccc; ">
+
+        <strong>Details:</strong>
+        <table class="email-content" style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+            <tbody>
+            <tr>
+                <td>Date {{ type|capitalize }}: </td>
+                <td>{{ approval_date }}</td>
+            </tr>
+            {% if approval_note is defined and approval_note is not empty and type != 'approved' %}
+            <tr>
+                <td style="font-weight: bold;">Reason(s): </td>
+                <td>{{ approval_note }}</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <hr style="border-top: 1px dashed menu;">
+        <strong style="color: #555;">Request Details:</strong>
+        {% for k,d in data %}
+            <table class="email-content" style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px; color: #555;">
+                <tbody>
+                <tr>
+                    <td style="font-weight: bold;">Date{% if type=='leave-request' %}s{% endif %}: </td>
+                    <td>{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Reasons: </td>
+                    <td>{{ d.reason|raw }}</td>
+                </tr>
+                </tbody>
+            </table>
+            {% if data|length>=2 and k+1<data|length %}
+                <hr style="border-top: 1px dashed #ccc;">
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <br/>
+    <center style="margin-top: 20px;">
+        {% if links is defined and links|length %}
+            {% for k,l in links %}
+                <a href="{{ l }}" id="request-btn" style="
+                    background-color:#2dabf9;-moz-border-radius:6px;
+                    -webkit-border-radius:6px;
+                    border-radius:6px;
+                    border:1px solid rgba(5,5,5,0.2);
+                    display:inline-block;
+                    cursor:pointer;
+                    color:#ffffff;
+                    font-family:Arial;
+                    font-size:17px;
+                    padding:16px 31px;
+                    text-decoration:none;">
+                    {{ k }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </center>
+{% endblock %}
+
+{% block css %}
+    <style>
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 5px;
+            padding-bottom: 5px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}

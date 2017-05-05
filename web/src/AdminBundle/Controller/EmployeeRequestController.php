@@ -29,7 +29,7 @@ class EmployeeRequestController extends Controller
         return $this->redirectToRoute('view_request');
     }
 
-    public function requestAction()
+    public function requestAction(Request $req)
     {
         $user = $this->getUser();
         $name = $user->getUsername();
@@ -38,7 +38,6 @@ class EmployeeRequestController extends Controller
         $id = $user->getId();
         $admincontroller = new AdminController();
         $timename = $admincontroller->timeInOut($id);
-
 
         // redirect to index if not Admin
 
@@ -97,6 +96,10 @@ class EmployeeRequestController extends Controller
 
             $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
+            //single record - if from email
+            $activeId = $req->query->get('id');
+            $activeRequest = EmpRequestPeer::retrieveByPK($activeId);
+
             return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
                 'name' => $name,
                 'page' => $page,
@@ -116,7 +119,8 @@ class EmployeeRequestController extends Controller
                 'requestcount' => $requestcount,
                 'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
                 'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday
+                'timetoday' => $timetoday,
+                'activeRequest' => $activeRequest
             ));
     }
 
@@ -214,31 +218,30 @@ class EmployeeRequestController extends Controller
     public function requestLeaveAction(Request $req)
     {
         $obj = $req->request->get('obj');                           // get json object
-        $object = json_decode($obj, true);                          // decode json
         $typeleave = $req->request->get('typeleave');
         $userid = $this->getUser()->getId();
         $reqIds = array();
         $ref = $this;
 
-        for ($i = 0; $i <= $object["unique_id"]; $i++) {            // loop for saving all dates
-            $start = "start_date" . $i;
-            $end = "end_date" . $i;
-            $reasonleave = "reasonleave" . $i;
+        $requestId = 0;
 
+        foreach($obj as $o) {
             $leaveinput = new EmpRequest();
-            $leaveinput->setRequest($object["$reasonleave"]);
+            $leaveinput->setRequest($o['reason']);
             $leaveinput->setStatus(2);
-            $leaveinput->setDateStarted($object["$start"]);
-            $leaveinput->setDateEnded($object["$end"]);
+            $leaveinput->setDateStarted($o['start_date']);
+            $leaveinput->setDateEnded($o['end_date']);
             $leaveinput->setEmpAccId($userid);
             $leaveinput->setListRequestTypeId($typeleave);
             $leaveinput->save();
             array_push($reqIds, $leaveinput->getId());
+
+            $requestId = $leaveinput->getId();
         }
 
         try {
             $email = new EmailController();
-            $sendemail = $email->requestTypeEmail($req, $this);
+            $sendemail = $email->requestTypeEmail($req, $this, $requestId);
             if (!$sendemail) {
                 $this->deleteRequestLeave($reqIds);
                 echo json_encode(array('error' => 'Email not successfully sent'));
@@ -517,6 +520,12 @@ class EmployeeRequestController extends Controller
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
         if(!empty($request)) {
+            $oldData = array(
+                'startDate' => $request->getDateStarted()->format('F d, Y'),
+                'endDate' => $request->getDateEnded()->format('F d, Y'),
+                'request' => $request
+            );
+
             $request->setStatus($req->request->get('status'));
             $request->setDateStarted($req->request->get('start_date'));
             $request->setDateEnded($req->request->get('end_date'));
@@ -526,8 +535,9 @@ class EmployeeRequestController extends Controller
 
             if(!empty($lastid)) {
                 $result = array('result' => 'Success');
+
                 $email = new EmailController();
-                $sendemail = $email->notifyRequestEmail($req, $this, "UPDATED");
+                $sendemail = $email->notifyRequestEmail($req, $this, "UPDATED", $oldData);
 
                 if($sendemail == 0) {
                     //$this->deleteAction($req);
@@ -550,14 +560,19 @@ class EmployeeRequestController extends Controller
         $result = array('result' => 'error');
         $request = EmpRequestQuery::create()->findPk($req->request->get('req_id'));
 
-
         if(!empty($request)) {
+            $oldData = array(
+                'startDate' => $request->getDateStarted()->format('F d, Y'),
+                'endDate' => $request->getDateEnded()->format('F d, Y'),
+                'reason' => $request->getRequest(),
+                'request' => $request
+            );
 
             $empTimeId = $request->getEmpTimeId();
             $empTime = EmpTimePeer::retrieveByPK($empTimeId);
 
             $email = new EmailController();
-            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $empTime);
+            $sendemail = $email->notifyRequestEmail($req, $this, "CANCELLED", $oldData);
 
             if(! $sendemail) {
                 //$this->deleteRequestAction($req);

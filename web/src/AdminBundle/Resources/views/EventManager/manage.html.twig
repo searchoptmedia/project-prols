@@ -1,6 +1,14 @@
-{% extends 'AdminBundle::base.html.twig' %}
+{% extends "AdminBundle:base.html.twig" %}
 {% block title %}
     <title>Propelrr Log-in System| Manage Events</title>
+{% endblock %}
+
+{% block css %}
+    <style>
+    .select2-results__option[aria-selected=true] {
+        display: none;
+    }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -118,14 +126,6 @@
             <h4 class="edit-header">Edit Event</h4>
             <div class="event-form-cont">
                 <div class="row">
-                    <div class = "col-md-12" id="guest-row">
-                        <label for="tag_employees">Guests</label><br>
-                        <select class="select-emp-tag" multiple="multiple" style="width: 690px;" id="tag_employees">
-                            {% for acc in allacc %}
-                            <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
-                            {% endfor %}
-                        </select><br><br>
-                    </div>
                     <div class="col-md-5">
                         <label for="event_type_modal">Event Type</label>
                         <div class="select-wrapper"><span class="caret">?</span>
@@ -148,32 +148,45 @@
                         <textarea id="event_desc_modal" class="materialize-textarea" required autocapitalize></textarea>
                     </div>
 
-                    <div class="col-md-6" id="from-row">
-                        <label for="from_event_date_modal">From</label><br>
-                        <input type="text" name="from-event-date" readonly class="from-event-date"
-                               id="from_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
-                        &nbsp; - &nbsp;
-                        <input type="text" readonly class="from_event_time" id="from_event_time"
-                               name="from_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
-                    </div>
-                    <div class="col-md-6" id="to-row">
-                        <label for="to_event_date_modal">To</label><br>
-                        <input type="text" name="to-event-date" readonly class="to-event-date"
-                               id="to_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
-                        &nbsp; - &nbsp;
-                        <input type="text" readonly class="to_event_time" id="to_event_time"
-                               name="to_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                    <div class="meeting-request-section">
+                        <div class = "col-md-12" id="guest-row">
+                            <label for="tag_employees">Guests</label><br>
+                            <select class="select-emp-tag" multiple="multiple" style="width: 690px;" id="tag_employees">
+                                {% for acc in allacc %}
+                                    <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
+                                {% endfor %}
+                            </select><br><br>
+                        </div>
+
+                        <div class="col-md-12" id="from-row">
+                            <label for="from_event_date_modal">From</label><br>
+                            <input type="text" name="from-event-date" readonly class="from-event-date"
+                                   id="from_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
+                            &nbsp; - &nbsp;
+                            <input type="text" readonly class="from_event_time" id="from_event_time"
+                                   name="from_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                        </div>
+                        <div class="col-md-12" id="to-row">
+                            <label for="to_event_date_modal">To</label><br>
+                            <input type="text" name="to-event-date" readonly class="to-event-date"
+                                   id="to_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
+                            &nbsp; - &nbsp;
+                            <input type="text" readonly class="to_event_time" id="to_event_time"
+                                   name="to_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                        </div>
                     </div>
 
-                    <div class="col-md-6" id="from-row-holiday">
-                        <label for="from_event_date_modal">From</label><br>
-                        <input type="text" name="from-event-date" readonly class="from-event-date"
-                               id="from_event_date_modal_holiday" placeholder="mm/dd/yyyy">
-                    </div>
-                    <div class="col-md-6" id="to-row-holiday">
-                        <label for="to_event_date_modal">To</label><br>
-                        <input type="text" name="to-event-date" readonly class="to-event-date"
-                               id="to_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                    <div class="other-event-section">
+                        <div class="col-md-12" id="from-row-holiday">
+                            <label for="from_event_date_modal">From</label><br>
+                            <input type="text" name="from-event-date" readonly class="from-event-date"
+                                   id="from_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                        </div>
+                        <div class="col-md-12" id="to-row-holiday">
+                            <label for="to_event_date_modal">To</label><br>
+                            <input type="text" name="to-event-date" readonly class="to-event-date"
+                                   id="to_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                        </div>
                     </div>
 
                     <div class="col-md-12" id="notify-row">
@@ -196,7 +209,7 @@
         </div>
         <input type="hidden" id="event_id">
         <div class="modal-footer">
-            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="btn-close">Close</a>
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
             <a class="waves-effect waves-light btn amber btn-create" style="margin-right:5px;">Create</a>
             <a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>
             <div class="chip add-error-chip" style = "font-size: 12px; color: red;">
@@ -249,8 +262,7 @@
             <a class="waves-effect waves-light btn amber btn-resend" style="margin-right:5px; float:left;">
                 Resend Notification to the Employees
             </a>
-            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id="view-btn-close"
-               onclick="$('#view_event_modal').closeModal();">Close</a>
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -378,15 +390,15 @@
             add_btn_modal.css("display", "block");
             edit_btn_modal.css("display", "none");
             notify_option.css("display", "block");
-            picker = new Pikaday(
-                    {
-                        field: document.getElementById('event_date_modal'),
-                        firstDay: 1,
-                        minDate: new Date(),
-                        maxDate: new Date(2020, 12, 31),
-                        yearRange: [2000, 2020],
-                        format: 'MM/DD/YYYY'
-                    });
+//            picker = new Pikaday(
+//                    {
+//                        field: document.getElementById('event_date_modal'),
+//                        firstDay: 1,
+//                        minDate: new Date(),
+//                        maxDate: new Date(2020, 12, 31),
+//                        yearRange: [2000, 2020],
+//                        format: 'MM/DD/YYYY'
+//                    });
             add_edit_event_modal.openModal();
         });
 

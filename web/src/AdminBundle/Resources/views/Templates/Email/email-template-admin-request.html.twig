@@ -1,0 +1,67 @@
+{% extends "AdminBundle:Templates/Email:email-template-admin.html.twig" %}
+
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {% set message = (type=='leave-request' ? 'has requested for a <strong>'~title~'</strong>.' : 'timed in outside the office.') %}
+    <div style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <p style="font-size: 20px; font-weight:bold;"><b>{{ greetings|raw }}</b></p>
+        <p >{{ doerName }} {{ message|raw }}</p>
+        <hr style="border-top: 1px dashed #ccc; ">
+        {% if data|length > 1 %}
+            {% if type=='leave-request' %}
+                <strong>Requested Leave/s: {{ data|length }}</strong>
+            {% endif %}
+            <hr style="border-top: 1px dashed menu; ">
+        {% endif %}
+    </div>
+    {% for k,d in data %}
+        <table class="email-content" style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+            <tbody>
+            <tr>
+                <td style="font-weight: bold;">Date{% if type=='leave-request' %}s{% endif %}: </td>
+                <td>{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Reasons: </td>
+                <td>{{ d.reason|raw }}</td>
+            </tr>
+            </tbody>
+        </table>
+        {% if data|length>=2 and k+1<data|length %}
+            <hr style="border-top: 1px dashed #ccc;">
+        {% endif %}
+    {% endfor %}
+    <br/>
+    <center style="margin-top: 20px;">
+        {% if links is defined and links|length %}
+            {% for k,l in links %}
+                <a href="{{ l }}" id="request-btn" style="
+                    background-color:#2dabf9;-moz-border-radius:6px;
+                    -webkit-border-radius:6px;
+                    border-radius:6px;
+                    border:1px solid rgba(5,5,5,0.2);
+                    display:inline-block;
+                    cursor:pointer;
+                    color:#ffffff;
+                    font-family:Arial;
+                    font-size:17px;
+                    padding:16px 31px;
+                    text-decoration:none;">
+                    {{ k }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </center>
+{% endblock %}
+
+{% block css %}
+<style>
+    .email-content tr td {
+        vertical-align: top !important;
+        padding: 5px;
+        padding-bottom: 5px;
+        padding-left: 0px;
+    }
+</style>
+{% endblock %}

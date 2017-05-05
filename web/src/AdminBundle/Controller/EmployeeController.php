@@ -65,7 +65,7 @@ class EmployeeController extends Controller
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$ip_add 		= ListIpPeer::getValidIP($matchedip);
-
+        $emailresp      = 0;
 		//Compare last time in date with date today
 		if(!empty($timedata))
 		{
@@ -105,31 +105,33 @@ class EmployeeController extends Controller
              $is_email = false;
              if(!is_null($is_message))
              {
-                 $email = new EmailController();
-                 $sendemail = $email->sendTimeInRequest($request, $this);
-                 if (!$sendemail) {
-                     $emailresp = 'No email sent';
-                 } else {
-                     $emailresp = 'Email Sent';
-                     $requesttimein = new EmpRequest();
-                     $requesttimein->setStatus(2);
-                     $requesttimein->setRequest($request->request->get('message'));
-                     $requesttimein->setEmpAccId($this->getUser()->getId());
-                     $requesttimein->setDateStarted($datetoday);
-                     $requesttimein->setDateEnded($datetoday);
-                     $requesttimein->setListRequestTypeId(3);
+                 $emailresp = 'Email Sent';
+                 $requesttimein = new EmpRequest();
+                 $requesttimein->setStatus(2);
+                 $requesttimein->setRequest($request->request->get('message'));
+                 $requesttimein->setEmpAccId($this->getUser()->getId());
+                 $requesttimein->setDateStarted($datetoday);
+                 $requesttimein->setDateEnded($datetoday);
+                 $requesttimein->setListRequestTypeId(3);
 
-                     if($empTimeSave->save()) {
-                         $requesttimein->setEmpTimeId($empTimeSave->getId());
+                 if($empTimeSave->save()) {
+                     $requesttimein->setEmpTimeId($empTimeSave->getId());
 
-                         if($empTimeSave->isAlreadyInSave())
-                             $empTimeAlreadySaved = true;
+                     if($empTimeSave->isAlreadyInSave())
+                         $empTimeAlreadySaved = true;
 
-                         $requesttimein->save();
-                         InitController::ResetSessionValue();
-                         InitController::loginSetTimeSession($this);
-                         $message = 'Time in Successful';
+                     if($requesttimein->save()) {
+                         $email = new EmailController();
+                         $sendemail = $email->sendTimeInRequest($request, $this, $requesttimein->getId());
+
+                         if(! $sendemail) {
+                             $emailresp = 'No email sent';
+                         }
                      }
+
+                     InitController::ResetSessionValue();
+                     InitController::loginSetTimeSession($this);
+                     $message = 'Time in Successful';
                  }
              }
 
@@ -324,7 +326,7 @@ class EmployeeController extends Controller
             $ip_add = ListIpPeer::getValidIP($userip);
             $is_ip  = InitController::checkIP($userip);
 
-            $getTime = EmpTimePeer::getAllTime();
+            $getTime = EmpTimePeer::getAllTime(50);
             $getAllProfile = EmpProfilePeer::getAllProfile();
             $et = EmpTimePeer::getEmpLastTimein($id);
 

@@ -1,0 +1,73 @@
+{% extends "AdminBundle:Templates/Email:email-template-admin.html.twig" %}
+
+{% block header_title %}{{ title }}{% endblock %}
+
+{% block content %}
+    {% if type == 'employee-email' %}
+    <div style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <p style="font-size: 20px; font-weight:bold;"><b>{{ greetings }}</b></p>
+        <p>Welcome to Propelrr!</p>
+        <hr style="border-top: 1px dashed menu; "><br>
+        Your account was successfully created. Use the following details to login at <a href="{{ app.request.getSchemeAndHttpHost() }}">login.propelrr.com</a>.
+    </div>
+    <br/>
+    <table class="email-content" style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <tbody>
+            <tr>
+                <td style="font-weight:bold;">Username: </td>
+                <td>{{ username }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Password: </td>
+                <td>{{ password }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br/>
+    <br/>
+    <hr style="border-top: 1px dashed menu;">
+    <br/>
+    <br>
+    <center>
+        <a href="{{ app.request.getSchemeAndHttpHost() }}" id="request-btn" style="
+            background-color:#2dabf9;-moz-border-radius:6px;
+            -webkit-border-radius:6px;
+            border-radius:6px;
+            border:1px solid rgba(5,5,5,0.2);
+            display:inline-block;
+            cursor:pointer;
+            color:#ffffff;
+            font-family:Arial;
+            font-size:17px;
+            padding:16px 31px;
+            text-decoration:none;">
+            Login Now!
+        </a>
+    </center>
+
+    {% else %}
+    <div style="font-family:Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 16px;">
+        <p style="font-size: 20px; font-weight:bold;"><b>{{ greetings }}</b></p>
+        {#<p>Welcome to Propelrr!</p>#}
+        <hr style="border-top: 1px dashed menu; "><br><br>
+        Account for {{ accountName }} was successfully created by {{ doerName }}.
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <hr style="border-top: 1px dashed menu;">
+    <br/>
+    <br>
+    {% endif %}
+{% endblock %}
+
+{% block css %}
+    <style>
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 5px;
+            padding-bottom: 5px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}

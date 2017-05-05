@@ -1,0 +1,148 @@
+{% extends "AdminBundle:Templates/Email:email-base.html.twig" %}
+
+{% block content %}
+    <p style="font-size: 22px; font-family:'Lato', Calibri, Arial, sans-serif;">{{ greetings }}</p>
+    {% if template=='account-create-employee' %}<p style="font-size: 26px; font-weight:bold;font-family:'Lato', Calibri, Arial, sans-serif;">Welcome to Propelrr Family!</p>{% endif %}
+    <p style="font-size: 16px; font-family:'Lato', Calibri, Arial, sans-serif;">{{ message|raw }}</p>
+    <hr style="border-top: 1px dashed #ccc; margin-bottom: 20px;">
+
+    <!----------- account creation -------->
+    {% if template=='account-create-employee' %}
+        <table class="email-content" style="width: 100%;">
+            <tbody>
+            <tr>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Username: </td>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ username }}</td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Password:</td>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ password }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr style="border-top: 1px dashed menu; ">
+
+    <!----------- profile update -------->
+    {% elseif template=='profile-update' %}
+    <table class="email-content" style="width: 100%;">
+        <tbody>
+        <tr>
+            <th style="vertical-align: top;border-bottom: 1px dotted rgba(5,5,5,0.08);padding: 5px; padding-bottom: 20px;text-align: left; padding-left: 0px;font-size: 16px;width: 33.33%;font-family:'Lato', Calibri, Arial, sans-serif;">Info </th>
+            <th style="vertical-align: top;border-bottom: 1px dotted rgba(5,5,5,0.08);padding: 5px; padding-bottom: 20px;text-align: left; padding-left: 0px;font-size: 16px;font-family:'Lato', Calibri, Arial, sans-serif;">Changes</th>
+        </tr>
+        {% for k,d in data %}
+            <tr>
+                <td style="vertical-align: top;border-bottom: 1px dotted rgba(5,5,5,0.08);padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ k }}: </td>
+                <td style="vertical-align: top;border-bottom: 1px dotted rgba(5,5,5,0.08);padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!----------- vacation leave -------->
+    {% elseif template=='leave-request' or template=='request-access' %}
+        {% for k,d in data %}
+            <table class="email-content" style="width: 100%;">
+                <tbody>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Date{% if d.start!=d.end %}s{% endif %}: </td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Reason:</td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.reason|raw }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <hr style="border-top: 1px dashed menu; ">
+        {% endfor %}
+        {% if data|length>1 %}
+            Total Request: {{ data|length }}
+        {% endif %}
+
+    <!----------- approve/decline -------->
+    {% elseif template=='approve-decline' %}
+        {% if approval_reason|length %}
+        <table class="email-content" style="width: 100%;">
+            <tbody>
+            <tr>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Admin Reason: </td>
+                <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ approval_reason }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr style="border-top: 1px dashed menu; ">
+        {% endif %}
+        {% for k,d in data %}
+            <table class="email-content" style="width: 100%;">
+                <tbody>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Date{% if d.start!=d.end %}s{% endif %}: </td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Reason:</td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.reason|raw }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <hr style="border-top: 1px dashed menu; ">
+        {% endfor %}
+
+    <!----------- approve/decline -------->
+    {% elseif template=='update-request' %}
+        {% if old_data is defined and old_data is not empty %}
+            {% for k,d in old_data %}
+                <table class="email-content" style="width: 100%;">
+                    <tbody>
+                    <tr>
+                        <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Old Date{% if d.start!=d.end %}s{% endif %}: </td>
+                        <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <hr style="border-top: 1px dashed menu; ">
+            {% endfor %}
+        {% endif %}
+
+        {% for k,d in data %}
+            <table class="email-content" style="width: 100%;">
+                <tbody>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">{% if old_data is not empty %}<strong>New Date{% if d.start!=d.end %}s{% endif %}</strong>{% else %} Date{% if d.start!=d.end %}s{% endif %}{% endif %}: </td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.start }}{% if d.start!=d.end %} to {{ d.end }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif; width: 25%;">Reason:</td>
+                    <td style="vertical-align: top;padding-top: 5px;font-size: 16px;padding-bottom: 5px;font-family:'Lato', Calibri, Arial, sans-serif;">{{ d.reason|raw }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <hr style="border-top: 1px dashed menu; ">
+        {% endfor %}
+    {% endif %}
+
+
+    <br/>
+    <center style="margin-top: 20px;">
+        {% if links is defined and links|length %}
+            {% for k,l in links %}
+                <a href="{{ l }}" id="request-btn" style="
+                        margin-top: 40px;
+                        background-color:#2dabf9;-moz-border-radius:6px;
+                        -webkit-border-radius:6px;
+                        border-radius:6px;
+                        border:1px solid rgba(5,5,5,0.2);
+                        display:inline-block;
+                        cursor:pointer;
+                        color:#ffffff;
+                        font-family:arial,sans-serif;
+                        font-size:17px;
+                        padding:16px 31px;
+                        text-decoration:none;">
+                    {{ k }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </center>
+{% endblock %}

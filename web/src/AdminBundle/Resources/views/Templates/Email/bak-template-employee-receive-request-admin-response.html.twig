@@ -116,15 +116,23 @@
         =====================================================*/
         @media only screen and (min-device-width : 320px) and (max-device-width:568px) {
         }
+
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 5px;
+            padding-bottom: 20px;
+        }
+
+        .email-content tr td:first-child {
+            padding-left: 0px;
+        }
         /* end IOS targeting */
     </style>
     <!--
        Outlook Conditional CSS
-
        These two style blocks target Outlook 2007 & 2010 specifically, forcing
        columns into a single vertical stack as on mobile clients. This is
        primarily done to avoid the 'page break bug' and is optional.
-
        More information here:
        http://templates.mailchimp.com/development/css/outlook-conditional-css
    -->
@@ -146,7 +154,6 @@
        content in the middle of the email page.
        I added "table-layout: fixed;" style to force
        yahoomail which by default put the content left.
-
    2.  For hotmail and yahoomail, the contents of
        the email starts from this center, so we try to
        apply necessary styling e.g. background-color.
@@ -186,7 +193,7 @@
                                                                     <tr>
                                                                         <td align="left" class="textContent">
                                                                             <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                                The introduction of your message preview goes here. Try to make it short.
+
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -278,7 +285,9 @@
                                                                     <img style="height: 70%;" src="http://login.propelrr.com/prols2/img/propelrrlogo.png">
                                                                 </center>
                                                                 </h1>
-                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">Sick Leave Request</h2>
+                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">
+                                                                    Leave Request
+                                                                </h2>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -385,22 +394,34 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                                <p>Hi Admin</p>
-                                                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, blanditiis doloribus eius harum laboriosam maxime officiis veritatis. Atque consequuntur dolorum error est, exercitationem inventore ipsa minima nostrum officia reprehenderit totam.</p>
+                                                                            <p style="font-size: 17px; font-weight:bold;"><b>Hi Peter,</b></p>
+                                                                            <p>Your vacation leave request was <strong>approved</strong> by <strong>Mitchelle Viray</strong>. He/she left you a note below.</p>
+                                                                            <hr style="border-top: 1px dashed #ccc; ">
 
-                                                                            <table>
+                                                                            <strong>Details:</strong>
+                                                                            <table class="email-content">
                                                                                 <tbody>
                                                                                 <tr>
-                                                                                    <th>Details: </th>
-                                                                                    <th></th>
+                                                                                    <td>Date Approved: </td>
+                                                                                    <td>April 25, 2017 at 04:40 p.m.</td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td>Date: </td>
-                                                                                    <td>April 25, 2017</td>
+                                                                                    <td>Reason(s): </td>
+                                                                                    <td>We will be having an out of town with my family so I won''t be able to work in this day</td>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                            <hr style="border-top: 1px dashed #ccc;">
+                                                                            <strong style="color: #555;">Request Details:</strong>
+                                                                            <table class="email-content" style="background:; color:  #555;">
+                                                                                <tbody>
+                                                                                <tr>
+                                                                                    <td>Date(s): </td>
+                                                                                    <td>April 25, 2017 to April 25, 2017</td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td>Reason: </td>
-                                                                                    <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus autem dolore dolorem, eius eum eveniet facilis illum impedit mollitia officia provident quidem quisquam quo veritatis. Enim facere placeat veniam?</td>
+                                                                                    <td>Reason(s): </td>
+                                                                                    <td>We will be having an out of town with my family so I won''t be able to work in this day</td>
                                                                                 </tr>
                                                                                 </tbody>
                                                                             </table>
@@ -410,15 +431,14 @@
                                                                                 background-color:#2dabf9;-moz-border-radius:6px;
                                                                                 -webkit-border-radius:6px;
                                                                                 border-radius:6px;
-                                                                                border:1px solid #3a5598;
+                                                                                border:1px solid rgba(5,5,5,0.2);
                                                                                 display:inline-block;
                                                                                 cursor:pointer;
                                                                                 color:#ffffff;
                                                                                 font-family:Arial;
                                                                                 font-size:17px;
                                                                                 padding:16px 31px;
-                                                                                text-decoration:none;
-                                                                                text-shadow:0px 1px 0px #263666;">
+                                                                                text-decoration:none;">
                                                                                     View Request
                                                                                 </a>
                                                                             </center>

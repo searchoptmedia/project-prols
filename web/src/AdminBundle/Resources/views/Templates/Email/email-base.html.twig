@@ -118,13 +118,12 @@
         }
         /* end IOS targeting */
     </style>
+    {% block css %}{% endblock %}
     <!--
        Outlook Conditional CSS
-
        These two style blocks target Outlook 2007 & 2010 specifically, forcing
        columns into a single vertical stack as on mobile clients. This is
        primarily done to avoid the 'page break bug' and is optional.
-
        More information here:
        http://templates.mailchimp.com/development/css/outlook-conditional-css
    -->
@@ -146,7 +145,6 @@
        content in the middle of the email page.
        I added "table-layout: fixed;" style to force
        yahoomail which by default put the content left.
-
    2.  For hotmail and yahoomail, the contents of
        the email starts from this center, so we try to
        apply necessary styling e.g. background-color.
@@ -186,7 +184,7 @@
                                                                     <tr>
                                                                         <td align="left" class="textContent">
                                                                             <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                                The introduction of your message preview goes here. Try to make it short.
+
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -269,21 +267,23 @@
                                                            that's entirely separate from the structural
                                                            framework of the email.
                                                        -->
-                                                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
+                                                    <table border="0" cellpadding="10"  cellspacing="0" width="100%">
                                                         <tbody>
                                                         <tr>
                                                             <td align="center" valign="top" class="textContent">
-
+                                                                <br>
                                                                 <center>
-                                                                    <img style="height: 70%;" src="http://login.propelrr.com/prols2/img/propelrrlogo.png">
+                                                                    <img style="width: 110px; height: 110px;" src="http://login.propelrr.com/prols2/img/propelrrlogo.png">
                                                                 </center>
                                                                 </h1>
-                                                                <h2 style="text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">Sick Leave Request</h2>
+                                                                <h2 style="margin-top:20px;text-align:center;font-weight:normal;font-family:'Lato', Calibri, Arial, sans-serif;font-size:23px;margin-bottom:10px;color: #fff;line-height:135%;">
+                                                                    {{ title }}
+                                                                </h2>
                                                             </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
-                                                    <img class="bottomcloud1" src="https://www.propelrr.com/wp-content/themes/propelrr-parallax/img/header/cloud_blank.svg" alt="" style="width: 100%;">
+                                                    <img class="bottomcloud1" src="https://login-propelrr.herokuapp.com/images/cloud_blank.png" alt="" style="width: 100%;">
                                                     <!-- // CONTENT TABLE -->
                                                 </td>
                                             </tr>
@@ -385,43 +385,7 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                                <p>Hi Admin</p>
-                                                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, blanditiis doloribus eius harum laboriosam maxime officiis veritatis. Atque consequuntur dolorum error est, exercitationem inventore ipsa minima nostrum officia reprehenderit totam.</p>
-
-                                                                            <table>
-                                                                                <tbody>
-                                                                                <tr>
-                                                                                    <th>Details: </th>
-                                                                                    <th></th>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>Date: </td>
-                                                                                    <td>April 25, 2017</td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>Reason: </td>
-                                                                                    <td>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab accusamus autem dolore dolorem, eius eum eveniet facilis illum impedit mollitia officia provident quidem quisquam quo veritatis. Enim facere placeat veniam?</td>
-                                                                                </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                            <br/>
-                                                                            <center>
-                                                                                <a href="#" id="request-btn" style="
-                                                                                background-color:#2dabf9;-moz-border-radius:6px;
-                                                                                -webkit-border-radius:6px;
-                                                                                border-radius:6px;
-                                                                                border:1px solid #3a5598;
-                                                                                display:inline-block;
-                                                                                cursor:pointer;
-                                                                                color:#ffffff;
-                                                                                font-family:Arial;
-                                                                                font-size:17px;
-                                                                                padding:16px 31px;
-                                                                                text-decoration:none;
-                                                                                text-shadow:0px 1px 0px #263666;">
-                                                                                    View Request
-                                                                                </a>
-                                                                            </center>
+                                                                            {% block content %}{% endblock %}
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -460,18 +424,16 @@
                                                 <td align="center" valign="top" width="500" class="flexibleContainerCell">
 
 
-                                                    <table border="0" cellpadding="30" cellspacing="0" width="100%">
+                                                    <table border="0" cellpadding="5" cellspacing="0" width="100%">
                                                         <tbody>
                                                         <tr>
                                                             <td align="center" valign="top" class="textContent">
-                                                                <h1 style="color:#FFFFFF;line-height:100%;font-family:Helvetica,Arial,sans-serif;font-size:35px;font-weight:normal;margin-bottom:5px;text-align:center; margin: 0 auto;">
+                                                                <h1 style="color:#FFFFFF;line-height:0;font-family:Helvetica,Arial,sans-serif;font-size:5px;font-weight:normal;margin-bottom:5px;text-align:center; margin: 0 auto;">
                                                                     <center>
                                                                         <!-- <img class="contactBg" src="https://cdn.propelrr.com/wp-content/uploads/cloud_bg2.svg"style="
                                                                         width: 100%;
                                                                         "> -->
-                                                                        <img src="https://cdn.propelrr.com/wp-content/uploads/strategy.svg" style="
-                                                                width: 100%;
-                                                                ">
+
                                                                     </center>
                                                                 </h1>
 

@@ -116,15 +116,19 @@
         =====================================================*/
         @media only screen and (min-device-width : 320px) and (max-device-width:568px) {
         }
+
+        .email-content tr td {
+            vertical-align: top !important;
+            padding: 5px;
+            padding-bottom: 20px;
+        }
         /* end IOS targeting */
     </style>
     <!--
        Outlook Conditional CSS
-
        These two style blocks target Outlook 2007 & 2010 specifically, forcing
        columns into a single vertical stack as on mobile clients. This is
        primarily done to avoid the 'page break bug' and is optional.
-
        More information here:
        http://templates.mailchimp.com/development/css/outlook-conditional-css
    -->
@@ -146,7 +150,6 @@
        content in the middle of the email page.
        I added "table-layout: fixed;" style to force
        yahoomail which by default put the content left.
-
    2.  For hotmail and yahoomail, the contents of
        the email starts from this center, so we try to
        apply necessary styling e.g. background-color.
@@ -186,7 +189,7 @@
                                                                     <tr>
                                                                         <td align="left" class="textContent">
                                                                             <div style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#828282;text-align:center;line-height:120%;">
-                                                                                The introduction of your message preview goes here. Try to make it short.
+
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -385,10 +388,11 @@
                                                                                you to edit certain row. It makes it easy for you to quickly edit row sections.
                                                                                http://kb.mailchimp.com/templates/code/create-editable-content-areas-with-mailchimps-template-language
                                                                            -->
-                                                                                <p>Hi Admin</p>
-                                                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad, blanditiis doloribus eius harum laboriosam maxime officiis veritatis. Atque consequuntur dolorum error est, exercitationem inventore ipsa minima nostrum officia reprehenderit totam.</p>
+                                                                            <p style="font-size: 17px; font-weight:bold;"><b>Hi Admin</b></p>
+                                                                            <hr>
+                                                                            <p>Peter Smith has requested for a vacation leave.</p>
 
-                                                                            <table>
+                                                                            <table class="email-content">
                                                                                 <tbody>
                                                                                 <tr>
                                                                                     <th>Details: </th>
