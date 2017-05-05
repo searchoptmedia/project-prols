@@ -33,11 +33,14 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		return $_self ? $_self : array();
 	}
 
-	public static function getAllTime(Criteria $c = null)
+	public static function getAllTime($limit = null, Criteria $c = null)
 	{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
+
+		if($limit)
+			$c->setLimit($limit);
 
 		$c->addDescendingOrderByColumn(self::DATE);
 		$c->add(self::STATUS, array(-1, -2), Criteria::NOT_IN);
