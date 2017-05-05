@@ -83,3 +83,35 @@ function notifyInvalid(element) {
         element.css({'border-color': 'gray'})
     }, 1000);
 }
+
+/** init Date Picker */
+var currentYear = (new Date()).getFullYear();
+function initPicker(el, minDate, maxDate, onselect) {
+    var pikael = 'pik_'+el;
+    if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
+        window[pikael].destroy();
+    }
+
+    window[pikael] = new Pikaday({
+        field: document.getElementById(el),
+        firstDay: 1,
+        minDate: minDate,
+        maxDate: maxDate,
+        yearRange: [currentYear - 20, currentYear + 20],
+        format: 'YYYY-MM-DD',
+        onSelect: onselect
+    });
+
+    return window[pikael];
+}
+
+function setPikadayData(param, el, value) {
+    var pikael = 'pik_'+el;
+    if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
+        if(param=='end-range') window[pikael].setMaxDate(value);
+        if(param=='start-range') window[pikael].setMinDate(value);
+        if(param=='set-date') window[pikael].setDate(value);
+
+        return window[pikael];
+    }
+}

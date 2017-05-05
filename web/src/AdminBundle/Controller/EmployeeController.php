@@ -326,7 +326,7 @@ class EmployeeController extends Controller
             $ip_add = ListIpPeer::getValidIP($userip);
             $is_ip  = InitController::checkIP($userip);
 
-            $getTime = EmpTimePeer::getAllTime();
+            $getTime = EmpTimePeer::getAllTime(50);
             $getAllProfile = EmpProfilePeer::getAllProfile();
             $et = EmpTimePeer::getEmpLastTimein($id);
 

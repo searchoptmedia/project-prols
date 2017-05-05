@@ -184,6 +184,8 @@
             var startValue = agendaDateDiffFormat.text();
 
             $('#start_date_0').val(startValue);
+            $('#end_date_0').val('');
+            $('#reason-leave-sbt-0').val('');
 
             initPicker('start_date_0', new Date(), new Date(currentYear+20, 12, 31), function() {
                 setTimeout( function() {
@@ -337,35 +339,6 @@
             });
         }
 
-        /** init Date Picker */
-        function initPicker(el, minDate, maxDate, onselect) {
-            var pikael = 'pik_'+el;
-            if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
-                window[pikael].destroy();
-            }
-
-            window[pikael] = new Pikaday({
-                field: document.getElementById(el),
-                firstDay: 1,
-                minDate: minDate,
-                maxDate: maxDate,
-                yearRange: [currentYear - 20, currentYear + 20],
-                format: 'YYYY-MM-DD',
-                onSelect: onselect
-            });
-
-            return window[pikael];
-        }
-
-        function setPikadayData(param, el, value) {
-            var pikael = 'pik_'+el;
-            if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
-                if(param=='end-range') window[pikael].setMaxDate(value);
-                if(param=='start-range') window[pikael].setMinDate(value);
-
-                return window[pikael];
-            }
-        }
     </script>
 
     <script> // SCRIPT FOR MULTIPLE DATES REQUEST LEAVE
