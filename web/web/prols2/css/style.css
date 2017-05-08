@@ -7841,3 +7841,24 @@ span.badge.new {
         left: 95%
     }
 }
+
+.display-none { display: none; }
+.pull-left { float: left; }
+.pull-right { float: right; }
+
+.mo-header {
+    border-bottom: 1px solid #ccc;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    padding: 10px;
+    top: 0px;
+    color: #fff;
+    text-shadow: 1px 1px 0px #555;
+    background: #26b1f7;
+    font-size: 30px;
+}
+
+.mo-body {
+    padding-top: 50px;
+}

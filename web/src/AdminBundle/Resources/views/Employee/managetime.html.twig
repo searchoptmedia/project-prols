@@ -76,98 +76,107 @@
         </section>
     </section>
 
-    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
-    <div id="exportchoice" class="modal">
-        <div class="modal-content">
-            <h4>Export Employee Time</h4>
-
-            <p>Choose entity: </p>
-            <form action="#">
-                <div class="radiobtn" style="margin-bottom: 20px;">
-                    <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
-                    <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
-
-                    <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
-                    <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
-
-                    <input name="group1" type="radio" id="select-name" class="export-radio-input" data-type="emp"/>
-                    <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
-                </div>
-                <div class="department-option-sect" style="display: none;">
-                    <select id = "listdept" class="departmentselect" style="width: 100%;">
-                        <option value="" disabled selected>Choose your department</option>
-                        {% for dept in getDept %}
-                            <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="employee-option-sect" style="display: none;">
-                    <select id="empnames" class="input-name" style="width: 100%; margin-top: 50px;">
-                        <option value="" disabled selected>Type name here..</option>
-                        {% for user in getAllProfile %}
-                            <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="row" style="margin-top: 20px;">
-                    <div class="col-md-6">
-                        <label class="label">From:</label>
-                        <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label">To:</label>
-                        <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
-                    <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
-    <div id="export-leave-absences-modal" class="modal">
-        <div class="modal-content">
-            <h4>Export Employee Leave/Absences</h4>
-
-            <p>Select Employee: </p>
-            <form action="#">
-
-                <div class="employee-option-sect" style="">
-                    <select id="la-employee-id" class="select2" style="width: 100%; margin-top: 50px;">
-                        <option value="" disabled selected>Type name here..</option>
-                        <option value="all" selected>All Employees</option>
-                        {% for user in getAllProfile %}
-                            <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="row" style="margin-top: 20px;">
-                    <div class="col-md-6">
-                        <label class="label">From:</label>
-                        <input name="la-start-date" readonly placeholder="Start Date" class="start-date" id="la-datepicker">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label">To:</label>
-                        <input name="la-end-date" readonly placeholder="End Date" class="end-date" id="la-datepicker2">
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
-                    <a class="modal-action waves-effect waves-light orange btn-flat export-leave-absences-btn" style="color:white; margin-right:5px;">Export</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
 {% endblock %}
+
+{% block modal %}
+    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
+    <div id="exportchoice" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="mo-header">Export Employee Time</h4>
+
+            <div class="mo-body">
+                <p>Choose entity: </p>
+                <form action="#">
+                    <div class="radiobtn" style="margin-bottom: 20px;">
+                        <input name="group1" type="radio" id="all-emp" class="export-radio-input" data-type="all" checked/>
+                        <label for="all-emp" class="lbl-info radio-lbl">All Employees</label>
+
+                        <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
+                        <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+
+                        <input name="group1" type="radio" id="select-name" class="export-radio-input" data-type="emp"/>
+                        <label for="select-name" class="lbl-info radio-lbl">Select by Name</label>
+                    </div>
+                    <div class="department-option-sect" style="display: none;">
+                        <select id = "listdept" class="departmentselect" style="width: 100%;">
+                            <option value="" disabled selected>Choose your department</option>
+                            {% for dept in getDept %}
+                                <option value="{{dept.Id}}">{{dept.DeptNames}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="employee-option-sect" style="display: none;">
+                        <select id="empnames" class="input-name" style="width: 100%; margin-top: 50px;">
+                            <option value="" disabled selected>Type name here..</option>
+                            {% for user in getAllProfile %}
+                                <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <label class="label">From:</label>
+                            <input name="start-date" readonly placeholder="Start Date" class="start-date" id="datepicker">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="label">To:</label>
+                            <input name="end-date" readonly placeholder="End Date" class="end-date" id="datepicker2">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
+            <a class="modal-action waves-effect waves-light orange btn-flat export-submit-btn" style="color:white; margin-right:5px;">Export</a>
+        </div>
+    </div>
+
+    <!----------------------- EXPORT EMPLOYEE TIME MODAL -------------------------->
+    <div id="export-leave-absences-modal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="mo-header">Export Employee Leave/Absences</h4>
+
+            <div class="mo-body">
+                <label class="label">Select Employee: </label>
+                <form action="#">
+
+                    <div class="employee-option-sect" style="">
+                        <select id="la-employee-id" class="select2" style="width: 100%; margin-top: 50px;">
+                            <option value="" disabled selected>Type name here..</option>
+                            <option value="all" selected>All Employees</option>
+                            {% for user in getAllProfile %}
+                                <option value="{{ user.empAccAccId }}">{{ user.fname ~ ' ' ~ user.lname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <label class="label">From:</label>
+                            <input name="la-start-date" readonly placeholder="Start Date" class="start-date" id="la-datepicker">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="label">To:</label>
+                            <input name="la-end-date" readonly placeholder="End Date" class="end-date" id="la-datepicker2">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-light grey btn-flat" style="color:white;">Cancel</a>
+            <a class="modal-action waves-effect waves-light orange btn-flat export-leave-absences-btn" style="color:white; margin-right:5px;">Export</a>
+        </div>
+    </div>
+{% endblock %}
+
 {% block customjs %}
     <script type="text/javascript">
         $(document).ready(function(){

@@ -218,22 +218,28 @@
                 <br><br>
             </div>
         </div>
-        <!---------------CHANGE PASS MODAL------------------>
-        <div id="modal-changepw" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <h4>Change Password</h4>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modal %}
+    <!---------------CHANGE PASS MODAL------------------>
+    <div id="modal-changepw" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="mo-header">Change Password</h4>
+
+            <div class="mo-body">
                 <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
                 <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
                 <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
             </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
-                <button class="waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
+            <button class="waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
         </div>
     </div>
-</div>
-
 {% endblock %}
 
 {% block customjs %}

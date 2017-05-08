@@ -5,95 +5,97 @@
 {% endblock %}
 
 {% block body %}
-<section id="main-container">
-    <section id="main-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="page-content" style = "height: 100%;">
-                    <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                        <div class="responsive-nav"><a class="btn-flat">
-                                <i class="material-icons res-menu">reorder</i></a>
+    <section id="main-container">
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="page-content" style = "height: 100%;">
+                        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                            <div class="responsive-nav"><a class="btn-flat">
+                                    <i class="material-icons res-menu">reorder</i></a>
+                            </div>
+                            <div class="top-nav-vl"><h3>Request List</h3>
+                                <a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>
+                            </div>
                         </div>
-                        <div class="top-nav-vl"><h3>Request List</h3>
-                            <a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>
+                        <div class = "top-nav">
+                            <!-- Dropdown Structure -->
+                            <ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">
+                                <li><a href="#!" id="allbtn">All</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#!" id="vacleavebtn">Vacation Leave</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#!" id="sickleavebtn">Sick Leave</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#!" id="diffipbtn">IP Address</a></li>
+                            </ul>
+                            <!-- End of DS -->
                         </div>
-                    </div>
-                    <div class = "top-nav">
-                        <!-- Dropdown Structure -->
-                        <ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">
-                            <li><a href="#!" id="allbtn">All</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#!" id="vacleavebtn">Vacation Leave</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#!" id="sickleavebtn">Sick Leave</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#!" id="diffipbtn">IP Address</a></li>
-                        </ul>
-                        <!-- End of DS -->
-                    </div>
-                    <div class="col-md-12 content" style = "min-height: 300px;">
-                        <table id = "requests" class="bordered highlight">
-                            <thead>
-                            <tr>
-                                <th data-field="meeting-title">Name</th>
-                                <th data-field="price">Category</th>
-                                <th data-field="price">Start Date</th>
-                                <th data-field="price">End Date</th>
-                                <th data-field="name">Status</th>
-                            </tr>
-
-                            </thead>
-
-                            <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
-                            {% if activeRequest is not empty %}
-                                <tr class="request-row active display-none" style="display:none;" data-empid="{{ activeRequest.empAccId }}"
-                                     data-id="{{ activeRequest.id }}" data-emptime="{{ activeRequest.empTimeId }}" data-request="{{ activeRequest.listRequestTypeId }}" data-reason = "{{ activeRequest.request }}">
-                                    <td class = "name display-none">{{ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
-                                    <td class="category display-none">{{ activeRequest.listRequestType.requestType|upper }}</td>
-                                    <td class = "start-date display-none">{{ activeRequest.dateStarted|date('n/d/Y')}}</td>
-                                    <td class = "end-date display-none">{{ activeRequest.dateEnded|date('n/d/Y')}}</td>
-                                    <td class = "status display-none">
-                                        {% if activeRequest.status == 2 %}
-                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
-                                        {% elseif activeRequest.status == 3 %}
-                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
-                                        {% elseif activeRequest.status == 4 %}
-                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
-                                        {% endif %}
-                                    </td>
+                        <div class="col-md-12 content" style = "min-height: 300px;">
+                            <table id = "requests" class="bordered highlight">
+                                <thead>
+                                <tr>
+                                    <th data-field="meeting-title">Name</th>
+                                    <th data-field="price">Category</th>
+                                    <th data-field="price">Start Date</th>
+                                    <th data-field="price">End Date</th>
+                                    <th data-field="name">Status</th>
                                 </tr>
-                            {% endif %}
-                            {% for request in allrequest %}
-                                <tr class = "request-row" data-empid="{{ request.empAccId }}"
-                                    data-id="{{ request.id }}" data-emptime="{{ request.empTimeId }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
-                                    <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
-                                    <td class="category">{{ request.listRequestType.requestType|upper }}</td>
-                                    <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
-                                    <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
-                                    <td class = "status">
-                                        {% if request.status == 2 %}
-                                            <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
-                                        {% elseif request.status == 3 %}
-                                            <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
-                                        {% elseif request.status == 4 %}
-                                            <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+
+                                </thead>
+
+                                <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
+                                {% if activeRequest is not empty %}
+                                    <tr class="request-row active display-none" style="display:none;" data-empid="{{ activeRequest.empAccId }}"
+                                         data-id="{{ activeRequest.id }}" data-emptime="{{ activeRequest.empTimeId }}" data-request="{{ activeRequest.listRequestTypeId }}" data-reason = "{{ activeRequest.request }}">
+                                        <td class = "name display-none">{{ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ activeRequest.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                        <td class="category display-none">{{ activeRequest.listRequestType.requestType|upper }}</td>
+                                        <td class = "start-date display-none">{{ activeRequest.dateStarted|date('n/d/Y')}}</td>
+                                        <td class = "end-date display-none">{{ activeRequest.dateEnded|date('n/d/Y')}}</td>
+                                        <td class = "status display-none">
+                                            {% if activeRequest.status == 2 %}
+                                                <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                            {% elseif activeRequest.status == 3 %}
+                                                <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                            {% elseif activeRequest.status == 4 %}
+                                                <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                                {% for request in allrequest %}
+                                    <tr class = "request-row" data-empid="{{ request.empAccId }}"
+                                        data-id="{{ request.id }}" data-emptime="{{ request.empTimeId }}" data-request="{{ request.listRequestTypeId }}" data-reason = "{{ request.request }}">
+                                        <td class = "name">{{ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].fname ~ ' ' ~ request.getEmpAccRelatedByEmpAccId.getEmpProfiles[0].lname }}</td>
+                                        <td class="category">{{ request.listRequestType.requestType|upper }}</td>
+                                        <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
+                                        <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
+                                        <td class = "status">
+                                            {% if request.status == 2 %}
+                                                <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
+                                            {% elseif request.status == 3 %}
+                                                <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
+                                            {% elseif request.status == 4 %}
+                                                <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     </section>
-</section>
+{% endblock %}
 
+{% block modal %}
     <!----------------------- VIEW EVENT MODAL -------------------------->
     <div id="view_request_modal" class="modal modal-fixed-footer"  data-dismiss="false">
         <div class="modal-content">
-            <h4 class="agenda-date">
+            <h4 class="agenda-date mo-header">
                 Request &nbsp;&nbsp;
                 <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
                 <span class="btn" style="font-size: 16px;" id="request_type_status">Pending</span>&nbsp;
@@ -106,8 +108,7 @@
                     </a>
                 </div>
             </h4>
-            <br>
-            <div class="event-form-cont">
+            <div class="event-form-cont mo-body">
                 <div class="row">
                     <div class="col-md-6">
                         <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
@@ -154,7 +155,7 @@
                 <h4 class="modal-delete-header">
                     Are you sure you want to delete this request?&nbsp;
                 </h4>
-                <a href="#!" class="waves-effect waves-light red custombtn btn-flat close-modal-agenda" id="delete-btn">Delete</a>
+                <a href="#!" class="waves-effect waves-light red custombtn btn-flat close-modal-agenda" data-loading-text="Deleting..." id="delete-btn">Delete</a>
                 &nbsp;&nbsp;&nbsp;
                 <a href="#!" class="waves-effect waves-light green custombtn btn-flat close-modal-agenda" id="delete-btn-retain"
                    onclick="$('#delete_event_modal').closeModal();">Retain</a>
@@ -166,13 +167,12 @@
     <!----------------------- ADMIN REQUEST MODAL -------------------------->
     <div id="admin_view_modal" class="modal modal-fixed-footer" data-dismissible="false">
         <div class="modal-content">
-            <h4 class="agenda-date">
+            <h4 class="agenda-date mo-header">
                 Request &nbsp;&nbsp;
                 <span class="btn btn-default" style="font-size: 16px;" id="admin_request_type"></span>
                 <span class="btn" style="font-size: 16px;" id="admin_request_type_status">Pending</span>&nbsp;
             </h4>
-            <br>
-            <div class="event-form-cont">
+            <div class="event-form-cont mo-body">
                 <div class="row">
                     <div class="col-md-6">
                         <span class="event-lbl" style = "font-weight: 500;">Employee Name</span>
@@ -221,8 +221,6 @@
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
-
-
 {% endblock %}
 
 {% block customjs %}
@@ -391,7 +389,7 @@
          };
 
          always = function (data) {};
-         post(deleteBtn, "{{ path('delete_request') }}", data, callback, done, always);
+         post($('#delete-btn'), "{{ path('delete_request') }}", data, callback, done, always);
      });
 
      $(document).on("click", ".request-row", function () {

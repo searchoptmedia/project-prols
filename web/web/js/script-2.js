@@ -2,6 +2,11 @@
  * Created by Hazel on 22/02/2017.
  */
 // SCRIPT VARIABLES
+const DOC = $(document);
+const EVENT_TYPE_MEETING  = 3;
+const EVENT_TYPE_HOLIDAY  = 1;
+const EVENT_TYPE_INTERNAL = 2;
+
 var data, callback, done, always;
 
 // LOADER VARIABLES
@@ -38,19 +43,41 @@ function showErrorBar(message) {
 
 // AJAX POST
 function post(button, path, data, callback, done, always) {
-    console.log("enter post");
     showLoadingBar();
-    console.log("done loading   ");
-    disableEnableButton(button, true);
-    $.post(path, data, callback, "json").done(done).always(always)
-        .fail(function(data, err) {
-            if(data.status == 401) {
+    var btnText = button.text();
+
+    if(buttonIsReadyPlr(button)) {
+        buttonLoadingPlr(button);
+
+        $.post(path, data, callback, "json").done(function (data) {
+            if (typeof done === 'function') done(data);
+        }).always(function (data) {
+            if (typeof always === 'function') always(data);
+            buttonRemoveLoadPlr(button, btnText);
+        }).fail(function (data, err) {
+            if (data.status == 401) {
                 alert("You're not login!");
-                window.location='/';
+                window.location = '/';
             }
             showErrorBar("Server Error. Please try again.");
         });
-    disableEnableButton(button, false);
+    }
+}
+
+function buttonIsReadyPlr(btn) {
+    return btn.hasClass('post-loading') ? false : true;
+}
+
+function buttonLoadingPlr(btn, text) {
+    var btnText = text ? text : btn.data('loading-text');
+
+    disableEnableButton(btn, true);
+    btn.addClass('disabled').text(btnText||'Saving...');
+}
+
+function buttonRemoveLoadPlr(btn, text) {
+    disableEnableButton(btn, false);
+    btn.removeClass('disabled').text(text||'Create');
 }
 
 function disableEnableButton(button, val) {
