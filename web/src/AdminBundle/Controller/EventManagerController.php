@@ -4,15 +4,17 @@ namespace AdminBundle\Controller;
 
 use AdminBundle\Controller\AdminController;
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EventTaggedPersons;
 use CoreBundle\Model\EventTaggedPersonsQuery;
 use CoreBundle\Model\ListEventsTypePeer;
-use CoreBundle\Model\RequestMeetingsTag;
-use CoreBundle\Model\RequestMeetingsTagPeer;
-use CoreBundle\Model\RequestMeetingsTagsPeer;
+use CoreBundle\Utilities\Constant as C;
+use CoreBundle\Utilities\Utils as U;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
@@ -23,26 +25,153 @@ use CoreBundle\Model\ListEventsQuery;
 
 class EventManagerController extends Controller
 {
-    public function ManageAction()
+    protected $email;
+    public function __construct()
     {
-        $user = $this->getUser();
-        $page = 'Manage Events';
-        $id = $user->getId();
-        $admincontroller = new AdminController();
-        $timename = $admincontroller->timeInOut($id);
+        $this->email = new EmailController();
 
-        $getEvents = ListEventsPeer::getAllEvents($id);
-//        echo "<pre>";
-//        var_dump($getEvents);
-//        exit;
-//        echo "<pre>";
-//        var_dump($getEvents);
-//        exit;
-//        $getEvents = null;
+        date_default_timezone_set('Asia/Manila');
+    }
+
+    /**
+     * Save
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function saveAction(Request $request)
+    {
+        $method = $request->getMethod();
+        $userId = U::getUserDetails('id', $this);
+        $response = U::getForbiddenResponse();
+
+        if($method=='POST') {
+            $params = $request->request->all();
+            $response['error'] = 'Event was failed to save!';
+
+            $event = new ListEvents();
+            $eventQry = null;
+
+            if(!empty($params['event_id']))
+                $eventQry = ListEventsQuery::_findById($params['event_id']);
+
+            if(!$eventQry) {
+                $params['status'] = C::STATUS_ACTIVE;
+                $params['created_by'] = $userId;
+                $params['date_created'] = U::getDate();
+            }
+
+            $params['from_date'] = date('Y-m-d H:i:s', strtotime($params['from_date']));
+            $params['to_date'] = date('Y-m-d H:i:s', strtotime($params['to_date']));
+
+            $event = $event->_save($params, $eventQry);
+
+            if($event) {
+                $response = U::getSuccessResponse();
+
+                $params['owner_email'] = U::getUserDetails('email', $this);
+
+                if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
+                    if(!empty($params['tags'])) {
+                        $empTagIds = array();
+                        $params['event_tag_names'] = array();
+
+                        foreach($params['tags'] as $email) {
+                            $empAcc = EmpAccQuery::_findByEmail($email);
+                            $empProfile = EmpProfileQuery::_findByAccId($empAcc->getId());
+
+                            $params['event_tag_names'][$empAcc->getEmail()] = trim($empProfile->getFname() . ' ' .$empProfile->getLname());
+                        }
+
+                        foreach($params['tags'] as $email) {
+                            $empAcc = EmpAccQuery::_findByEmail($email);
+                            $eventTag = new EventTaggedPersons();
+                            $empTagIds[] = $empAcc->getId();
+
+                            $eventTagQry = EventTaggedPersonsQuery::_findOneByEventAndEmployee($event->getId(), $empAcc->getId());
+                            $eventTagged = $eventTag->_save(array(
+                                'emp_id' => $empAcc->getId(),
+                                'event_id' => $event->getId(),
+                                'status' => $eventTagQry ? C::STATUS_ACTIVE : C::STATUS_PENDING
+                            ), $eventTagQry);
+
+                            if($eventTagged) {
+                                if(! $eventTagQry && $params['notify_email']) {
+                                    if($event->getEventType()==C::EVENT_TYPE_HOLIDAY) {
+                                        $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
+                                        $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
+                                    } else {
+                                        $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
+                                        $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
+                                    }
+
+                                    $params['user_id'] = $empAcc->getId();
+                                    $this->email->notifyEmployeeOnEvent($params, $this);
+                                }
+                            } else {
+                                $response = array('error' => 'Oops! Encountered problem while tagging. Please try again!');
+                            }
+                        }
+
+                        $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+                        foreach($eventTags as $et) {
+                            if(!in_array($et->getEmpId(), $empTagIds)) {
+                                $eventTag = new EventTaggedPersons();
+                                $eventTagQry = EventTaggedPersonsQuery::_findById($et->getId());
+
+                                if($eventTagQry)
+                                    $eventTag->_save(array(
+                                        'status' =>  C::STATUS_INACTIVE
+                                    ), $eventTagQry);
+                            }
+                        }
+                    }
+                } else if($event->getEventType()==C::EVENT_TYPE_HOLIDAY &&  $params['notify_email']){
+                    $empList = EmpAccQuery::_findAll();
+
+                    if($empList) {
+                        $params['from_date'] = date('F d, Y', strtotime($params['from_date']));
+                        $params['to_date'] = date('F d, Y', strtotime($params['to_date']));
+                        $toList = array();
+
+                        foreach($empList as $e) {
+                            $em = $e->getEmail();
+                            if(!empty($em))
+                                $toList[] = $em;
+                        }
+
+                        if(count($toList))
+                            $params['to_list'] = array($toList);
+
+                        $params['user_id'] = $e->getId();
+                        $this->email->notifyEmployeeOnEvent($params, $this);
+                    }
+                }
+            }
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function listAction(Request $request)
+    {
+        $method = $request->getMethod();
+        $user = $this->getUser();
+        $id = $user->getId();
+
+        if($method=='POST') {
+            $getEvents = ListEventsPeer::getAllEvents($id);
+            $response = array();
+
+            $response['list'] = $this->renderView('AdminBundle:EventManager:ajax-list.html.twig', array(
+                'allEvents' => $getEvents
+            ));
+
+            return new JsonResponse($response);
+        }
+
         $timedata = EmpTimePeer::getTime($id);
 
         $currenttimein = 0;
-        $currenttimeout = 0;
         $timeflag = 0;
 
         //get last timed in
@@ -56,19 +185,17 @@ class EventManagerController extends Controller
             }else
             {
                 $currenttimein = 0;
-                $currenttimeout = $checktimeout->format('h:i A');
             }
         }
+
         $checkipdata = null;
+        $datetoday = null;
         //check if already timed in today
         if(!empty($timedata))
         {
-            $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
             $datetoday = date('Y-m-d');
             $emp_time = EmpTimePeer::getTime($id);
             $currenttime = sizeof($emp_time) - 1;
-            $timein_data = $emp_time[$currenttime]->getTimeIn();
-            $timeout_data = $emp_time[$currenttime]->getTimeOut();
             $checkipdata = $emp_time[$currenttime]->getCheckIp();
         }
 
@@ -80,8 +207,6 @@ class EventManagerController extends Controller
         $ip_add = ListIpPeer::getValidIP($userip);
         $is_ip  = InitController::checkIP($userip);
 
-        $getTime = EmpTimePeer::getAllTime();
-        $getAllProfile = EmpProfilePeer::getAllProfile();
         $et = EmpTimePeer::getEmpLastTimein($id);
         if(!empty($et))
         {
@@ -91,7 +216,9 @@ class EventManagerController extends Controller
             {
                 $timeflag = 1;
             }
-            if(! empty($et->getTimeOut()))
+
+            $timeOut = $et->getTimeOut();
+            if(! empty($timeOut))
                 $isTimeOut = 'true';
         }
 
@@ -101,10 +228,6 @@ class EventManagerController extends Controller
         $allacc = EmpAccPeer::getAllUser();
 
         return $this->render('AdminBundle:EventManager:manage.html.twig', array(
-            'page' => $page,
-            'user' => $user,
-            'timename' => $timename,
-            'allEvents' => $getEvents,
             'userip' => $userip,
             'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
             'checkipdata' => $checkipdata,
@@ -120,118 +243,6 @@ class EventManagerController extends Controller
             'eventTypes' => $eventTypes,
             'allacc' => $allacc
         ));
-    }
-
-    public function addAction(Request $req) {
-        date_default_timezone_set('Asia/Manila');
-        $datetimetoday 	= date('Y-m-d H:i:s');
-        $user = $this->getUser();
-        $id = $user->getId();
-        $eventType = $req->request->get('event_type');
-
-        if($eventType == 1) {
-            // HOLIDAY
-            $event = new ListEvents();
-            $event->setStatus(1);
-            $event->setDateCreated($datetimetoday);
-            $event->setFromDate($req->request->get('from_date'));
-            $event->setToDate($req->request->get('to_date'));
-            $event->setEventName($req->request->get('event_name'));
-            $event->setEventDescription("");
-            $event->setEventType($eventType);
-            $event->setCreatedBy($id);
-
-            if($event->save()) {
-                $event_id = $event->getId();
-                try {
-                    $success = $this->notify($req, $datetimetoday, null);
-                    if ($success) {
-                        // email successfully sent
-                        echo json_encode(array('result' => 'Event Successfully Added', 'event_id' => $event_id));
-                        exit;
-                    } else {
-                        // email not successfully sent
-                        echo json_encode(array('error' => 'Event not Successfully Added'));
-                        exit;
-                    }
-                } catch(Exception $e) {
-                    //
-                } finally {
-                    $deleted = $this->deleteById($event_id);
-                    echo json_encode(array('error' => 'Server Error'));
-                    exit;
-                }
-            } else {
-                echo json_encode(array('error' => 'Event not Successfully Added'));
-                exit;
-            }
-        } else {
-            $taggedEmail = $req->request->get('taggedPersons');
-            $event = new ListEvents();
-            $event->setStatus(1);
-            $event->setDateCreated($datetimetoday);
-            $event->setFromDate($req->request->get('parse_from_date'));
-            $event->setToDate($req->request->get('parse_to_date'));
-            $event->setEventName($req->request->get('event_name'));
-            $event->setEventDescription($req->request->get('event_desc'));
-            $event->setEventType($eventType);
-            $event->setCreatedBy($id);
-
-            $tag_names = array();
-            $tag_request_ids = array();
-
-            if($event->save()) {
-                $event_id = $event->getId();
-                try {
-                    foreach($taggedEmail as $tagemail)
-                    {
-                        $emp = EmpAccPeer::getUserInfo($tagemail);
-                        $tag_record = EmpAccPeer::getUserInfo($tagemail);
-                        $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
-                        $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
-                        if(!empty($emp))
-                        {
-                            $empTag = new EventTaggedPersons();
-                            $empTag->setEventId($event_id);
-                            $empTag->setEmpId($emp->getId());
-                            $empTag->setStatus(2);
-                            $empTag->save();
-
-                            array_push($tag_request_ids, $empTag->getId());
-                            $send = $this->notify($req, $datetimetoday, array("type" => 1, "guestEmail" => $emp->getEmail()));
-
-                            if (!$send) {
-                                $this->deleteEventTagged($event_id, $tag_request_ids);
-                                echo json_encode(array('error' => 'Email not successfully sent'));
-                                exit;
-                            }
-                        }
-                    }
-
-                    $tagnames = implode(", " ,$tag_names);
-                    $send = $this->notify($req, $datetimetoday, array("names" =>$tagnames, "type" => 2, "guestEmail" => $this->getUser()->getEmail()));
-
-                    if (!$send) {
-                        $this->deleteEventTagged($event_id, $tag_request_ids);
-                        echo json_encode(array('error' => 'Email not successfully sent'));
-                        exit;
-                    }
-                    else {
-                        echo json_encode(array('result' => 'Request for Meeting has been successfully sent'));
-                        exit;
-                    }
-                } catch (Exception $e){
-                    echo $e->getMessage();
-                } finally {
-                    $this->deleteEventTagged($event_id, $tag_request_ids);
-                    echo json_encode(array('error' => 'Server Error'));
-                    exit;
-                }
-            } else {
-                echo json_encode(array('error' => 'Event not Successfully Added'));
-                exit;
-            }
-        }
     }
 
     public function deleteEventTagged($reqId, $reqTagIds) {

@@ -46,7 +46,7 @@
 
                         <div class="col-md-12 content manageemployees-content" style="display: block; min-height: 700px;">
                             <div class="row" style="margin-left:5px;">
-                                <table class="bordered highlight emp-list">
+                                <table class="bordered highlight tb-emp-list">
                                     <thead>
                                     <tr>
                                         <th>Event Name</th>
@@ -60,54 +60,7 @@
                                     </thead>
 
                                     <tbody>
-                                    {% for event in allEvents %}
-                                        <tr data-id="{{ event.getId }}" class="event-tr">
-                                            <td class="event-name">{{ event.getEventName }}</td>
-                                            <td class="event-type" id="{{ event.listEventsType.id }}">{{ event.listEventsType.name|upper }}</td>
-                                            <td class="event-from-date">{{ event.getFromDate|date('n/d/Y') }}</td>
-                                            <td class="event-to-date">{{ event.getToDate|date('n/d/Y') }}</td>
-                                            <td class="role">
-                                                {% if (user.getId != event.getCreatedBy) %}Guest
-                                                {% else %}Creator{% endif %}
-                                            </td>
-                                            <td class="status">
-                                                {% if (user.getId != event.getCreatedBy) %}
-                                                    {% for tag in event.getEventTaggedPersonss %}
-                                                        {% if(user.getId == tag.empid) %}
-                                                            {% if(tag.status == 2) %}
-                                                                <div class="event-status pending" id = "pending">Pending</div>
-                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>#}
 
-                                                                <div class="pending-form" style="display:none;">
-                                                                    <div class="event-status approved admin_accept" style="margin-right:5px; width: 45px; display:inline-block;"><i class="fa fa-check" aria-hidden="true"></i></div>
-                                                                    <div class="event-status declined admin_decline" style="margin-right:5px; width: 45px; display:inline-block;"><i class="fa fa-times" aria-hidden="true"></i></div>
-                                                                </div>
-                                                            {% elseif(tag.status == 3) %}
-                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Approved</button>#}
-                                                                <div class="event-status approved">Approved</div>
-                                                            {% else %}
-                                                                {#<button class="btn grey pending" id = "pending" style = "width: 130px;">Declined</button>#}
-                                                                <div class="event-status declined">Declined</div>
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                {% else %}<div class="event-status created">Created</div>{% endif %}
-                                            </td>
-                                            <td class="event-desc"
-                                                style="display: none;">{{ event.getEventDescription|raw }}
-                                            </td>
-                                            <td>
-                                                <a class='dropdown-button btn btn-select1' href='#' data-activates='dropdown-more' style="background-color:#26a69a;">More</a>
-                                                <div>
-                                                    <ul id='dropdown-more' class='dropdown-content dd1' style = "z-index: 9999; width: auto !important;">
-                                                        <li><a href="#!" id="viewdetailsbtn">Details</a></li>
-                                                        <li class="divider"></li>
-                                                        <li><a href="#!" id="viewnotesbtn">Notes</a></li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -121,14 +74,20 @@
 
 {% block modal %}
     <!----------------------- CREATE/EDIT EVENT MODAL -------------------------->
-    <div id="mo-create-event" class="modal modal-fixed-footer">
+    <div id="mo-create-event" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Create Event
+            <div class="pull-right">
+                <a class="btn green" style="font-size: 16px;" id="view_event_type">Going</a>
+                <a class="waves-effect waves-light btn amber" style="font-size: 16px;" id="view_event_type">Not Going</a>
+            </div>
+        </h4>
         <div class="modal-content">
-            <h4 class="mo-header">Create Event</h4>
             <div class="event-form-cont mo-body">
-                <div class="row">
-                    <div class="col-md-5">
-                        <label for="event_type_modal">Event Type</label>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                <form>
+                    <input type="hidden" class="txt-event-id">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="event_type_modal">Event Type</label>
                             <select name="event_type" id="event_type_modal" class="browser-default event-type cmb-select-event-type">
                                 <option value="" disabled selected >Select Event Type</option>
                                 {% for eventtype in eventTypes %}
@@ -136,82 +95,81 @@
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
 
-                    <div class="col-md-7">
-                        <label for="event_name_modal">Event Name</label>
-                        <input type="text" name="event-name" class="event-name" id="event_name_modal" required>
-                    </div>
-
-                    <div class="col-md-12" id="desc-row">
-                        <label for="event_desc_modal">Event Description</label>
-                        <textarea id="event_desc_modal" class="materialize-textarea" required autocapitalize></textarea>
-                    </div>
-
-                    <div class="meeting-request-section sect-event-tag-type display-none">
-                        <div class = "col-md-12" id="guest-row">
-                            <label for="tag_employees">Guests</label><br>
-                            <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
-                                {% for acc in allacc %}
-                                    <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.getEmpProfiles[0].id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}</option>
-                                {% endfor %}
-                            </select><br><br>
+                        <div class="col-md-7">
+                            <label for="event_name_modal">Event Name</label>
+                            <input type="text" name="event-name" class="event-name txt-event-name" required>
                         </div>
 
-                        <div class="col-md-12" id="from-row">
-                            <label for="from_event_date_modal">From</label><br>
-                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="from_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
-                            &nbsp; - &nbsp;
-                            <input type="text" readonly class="from_event_time" id="from_event_time"
-                                   name="from_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
+                        <div class="col-md-12" id="desc-row">
+                            <label for="event_desc_modal">Event Description</label>
+                            <textarea id="event_desc_modal" class="materialize-textarea txt-event-description" required autocapitalize></textarea>
                         </div>
-                        <div class="col-md-12" id="to-row">
-                            <label for="to_event_date_modal">To</label><br>
-                            <input type="text" name="to-event-date" readonly class="to-event-date"
-                                   id="to_event_date_modal" placeholder="mm/dd/yyyy" style="width: 150px; text-align: center;">
-                            &nbsp; - &nbsp;
-                            <input type="text" readonly class="to_event_time" id="to_event_time"
-                                   name="to_event_time"  placeholder="hh : mm AM" style="width: 150px; text-align: center;">
-                        </div>
-                    </div>
 
-                    <div class="other-event-section sect-event-nontag-type display-none">
-                        <div class="col-md-12" id="from-row-holiday">
-                            <label for="from_event_date_modal">From</label><br>
-                            <input type="text" name="from-event-date" readonly class="from-event-date"
-                                   id="from_event_date_modal_holiday" placeholder="mm/dd/yyyy">
+                        <div class="col-md-12">
+                            <label for="event_desc_modal">Venue</label>
+                            <input type="text" name="event-venue" class="txt-event-venue" required>
                         </div>
-                        <div class="col-md-12" id="to-row-holiday">
-                            <label for="to_event_date_modal">To</label><br>
-                            <input type="text" name="to-event-date" readonly class="to-event-date"
-                                   id="to_event_date_modal_holiday" placeholder="mm/dd/yyyy">
-                        </div>
-                    </div>
 
-                    <div class="col-md-12" id="notify-row">
-                        <p class="notify-email-event">
-                            <input type="checkbox" id="notify-email" value="1"/>
-                            <label for="notify-email" class="black-text">
-                                Notify the employees via Email?
-                            </label>
-                        </p>
-                        <p class="notify-sms-event">
-                            <input type="checkbox" id="notify-sms" value="1"/>
-                            <label for="notify-sms" class="black-text">
-                                Notify the employees via SMS?
-                            </label>
-                        </p>
+                        <!-- meeting field -->
+                        <div class="meeting-request-section sect-event-tag-type display-none">
+                            <div class = "col-md-12" id="guest-row">
+                                <label for="tag_employees">Guests <span class="ml2"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
+                                <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
+                                    {% for acc in allacc %}
+                                        <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                    {% endfor %}
+                                </select><br><br>
+                            </div>
+
+                            <div class="col-md-12" id="from-row">
+                                <label>From</label><br>
+                                <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
+                            </div>
+                            <div class="col-md-12" id="to-row">
+                                <label>To</label><br>
+                                <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
+                            </div>
+                        </div>
+
+                        <!-- other type -->
+                        <div class="other-event-section sect-event-nontag-type display-none">
+                            <div class="col-md-12" id="from-row-holiday">
+                                <label>From</label><br>
+                                <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
+                                       id="txt_from_event_holiday" placeholder="mm/dd/yyyy">
+                            </div>
+                            <div class="col-md-12" id="to-row-holiday">
+                                <label>To</label><br>
+                                <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_holiday" placeholder="mm/dd/yyyy">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" id="notify-row">
+                            <p class="notify-email-event">
+                                <input type="checkbox" id="chk-notify-email" value="1"/>
+                                <label for="chk-notify-email" class="black-text">
+                                    Notify the employees via Email?
+                                </label>
+                            </p>
+                            <p class="notify-sms-event">
+                                <input type="checkbox" id="notify-sms" value="1"/>
+                                <label for="notify-sms" class="black-text">
+                                    Notify the employees via SMS?
+                                </label>
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
             <br>
         </div>
         <input type="hidden" id="event_id">
         <div class="modal-footer">
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
-            <a class="waves-effect waves-light btn amber btn-create" style="margin-right:5px;">Create</a>
-            <a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>
-            <div class="chip add-error-chip pull-left" style = "font-size: 12px; color: red;">
+            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Create</a>
+            {#<a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>#}
+            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
                 <i class="close material-icons">info_outline</i>
                 Please Input All Fields
             </div>
@@ -220,12 +178,11 @@
     <!-----------------------END OF MODAL -------------------------->
 
     <!----------------------- VIEW EVENT MODAL -------------------------->
-    <div id="view_event_modal" class="modal modal-fixed-footer">
-
+    <div id="mo-event-view-details" class="modal modal-fixed-footer">
         <div class="modal-content">
             <h4 class="agenda-date">
                 View Event &nbsp;&nbsp;
-                <span class="btn btn-default" style="font-size: 16px;" id="view_event_type"></span>
+                <span class="btn btn-default" style="font-size: 16px;" id="view_event_type">Pending</span>
             </h4>
             <br>
             <div class="event-form-cont">
@@ -287,22 +244,181 @@
 
 {% block customjs %}
     <script type="text/javascript">
+        var moCreateEvent = '#mo-create-event';
+        var moViewEventDetails = '#mo-event-view-details';
         var cmbEmpTag = $('.select-emp-tag');
         var cmbEventType = '.cmb-select-event-type';
-        var moCreateEvent = '#mo-create-event';
         var btnOpenCreateModal = '.btn-open-create-modal';
+        var btnCreateEvent = '.btn-create-event';
+        var btnOpenEvent = '.btn-view-event';
         var sectTagFields = '.sect-event-tag-type';
         var sectNonTagFields = '.sect-event-nontag-type';
+        var chkNotifyOnEmail = '#chk-notify-email';
+        var tbEventList = '.tb-emp-list';
 
-        var txtEventName;
-        var txtEventDesc;
-        var txtEventFrom;
-        var txtEventTo;
+        var txtEventId = '.txt-event-id';
+        var txtEventName = '.txt-event-name';
+        var txtEventDesc = '.txt-event-description';
+        var txtEventVenue = '.txt-event-venue';
+        var txtEventHolidayFrom = 'txt_from_event_holiday';
+        var txtEventHolidayTo = 'txt_to_event_holiday';
+        var txtEventOtherFrom = 'txt_from_event_other';
+        var txtEventOtherTo   = 'txt_to_event_other';
+        var currentEmpId = parseInt('{{ app.user.id }}');
 
         bindEvents();
+        getList();
+
+        function getList() {
+            post($('.noButton'), '{{ path('manage_events') }}', {}, function(data) {
+                $(tbEventList).find('tbody').html(data.list);
+                initDropDown();
+            });
+        }
+
+        function saveEvent(id) {
+            var eventType = $(cmbEventType).val(), error = false;
+            var data = {
+                event_id: id,
+                event_name: $(txtEventName).val(),
+                event_desc: $(txtEventDesc).val(),
+                event_venue: $(txtEventVenue).val(),
+                event_type: eventType,
+                tags: cmbEmpTag.select2('val'),
+                notify_email: $(chkNotifyOnEmail).is(':checked') ? 1 : 0
+            };
+            var dateFromEl =  $('#'+txtEventHolidayFrom);
+            var dateToEl = $('#'+txtEventHolidayTo);
+
+            if(EVENT_TYPE_HOLIDAY!=eventType) {
+                dateFromEl = $('#'+txtEventOtherFrom);
+                dateToEl = $('#'+txtEventOtherTo);
+            }
+
+            data.from_date = dateFromEl.val();
+            data.to_date = dateToEl.val();
+
+            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(txtEventVenue) ]);
+            if(eventType==null) {
+                errorBorder([ $(cmbEventType) ]);
+                error = true;
+            } else if(! removeSpace(data.event_name).length) {
+                $(moCreateEvent).find(txtEventName).focus();
+                errorBorder([ $(txtEventName) ]);
+                error = true;
+            } else if(! removeSpace(data.event_desc).length) {
+                $(moCreateEvent).find(txtEventDesc).focus();
+                errorBorder([ $(txtEventDesc) ]);
+                error = true;
+            }  else if(! removeSpace(data.event_venue).length) {
+                $(moCreateEvent).find(txtEventVenue).focus();
+                errorBorder([ $(txtEventVenue) ]);
+                error = true;
+            } else if(! removeSpace(data.from_date)) {
+                errorBorder([ $(dateFromEl) ]);
+                dateFromEl.focus();
+                error = true;
+            } else if(! removeSpace(data.to_date)) {
+                errorBorder([ $(dateToEl) ]);
+                dateToEl.focus();
+                error = true;
+            }
+
+            if(error) {
+                $(moCreateEvent).find('.add-error-chip').show();
+                return false;
+            }
+
+            post($(btnCreateEvent), '{{ path('manage_event_add') }}', data, function(data) {
+                if(data.error) {
+                    showErrorBar(data.error);
+                } else if(data.success) {
+                    getList();
+                    resetCreateForm();
+                    showSuccessBar(data.success);
+
+                    $(moCreateEvent).closeModal();
+                }
+            });
+        }
+
+        function resetCreateForm() {
+            var dateFromEl =  $('#'+txtEventHolidayFrom);
+            var dateToEl = $('#'+txtEventHolidayTo);
+            var dateFromEl2 = $('#'+txtEventOtherFrom);
+            var dateToEl2 = $('#'+txtEventOtherTo);
+
+            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(dateFromEl2), $(dateToEl2), $(txtEventVenue) ]);
+
+            $(txtEventId).val('');
+            $(moCreateEvent).find('form').trigger('reset');
+            $('select').trigger('change');
+            $(sectTagFields).hide();
+            $(sectNonTagFields).hide();
+        }
 
         function bindEvents() {
             DOC.on('click', btnOpenCreateModal, function(e) {
+                resetCreateForm();
+                $(moCreateEvent).openModal();
+            });
+
+            DOC.on('click', btnCreateEvent, function(e) {
+                var id = $(txtEventId).val();
+                saveEvent(id);
+            });
+
+            DOC.on('click', '.link-add-tags', function() {
+                var act = $(this).data('action');
+                if(act=='add')
+                    cmbEmpTag.find('option').prop("selected","selected");
+                else
+                    cmbEmpTag.find('option').removeAttr("selected");
+
+                cmbEmpTag.trigger('change');
+            });
+
+            DOC.on('click', btnOpenEvent, function() {
+                var data = {
+                    event_id:  $(this).data('id'),
+                    event_name: $(this).data('event-name'),
+                    event_desc: $(this).data('event-desc'),
+                    event_venue: $(this).data('event-venue'),
+                    event_type: $(this).data('type'),
+                    tags: ($(this).data('event-tags').toString()).split(','),
+                    from: $(this).data('event-from'),
+                    to: $(this).data('event-to')
+                };
+                var createdBy = $(this).data('created-by');
+
+                resetCreateForm();
+
+                var fromEl = txtEventHolidayFrom;
+                var toEl   = txtEventHolidayTo;
+                if(data.event_type!=EVENT_TYPE_HOLIDAY) {
+                    fromEl = txtEventOtherFrom;
+                    toEl   = txtEventOtherTo;
+                }
+
+                $(txtEventId).val(data.event_id);
+                $(txtEventName).val(data.event_name);
+                $(txtEventDesc).val(data.event_desc);
+                $(txtEventVenue).val(data.event_venue);
+                $(cmbEventType).val(data.event_type).trigger('change');
+
+                setPikadayData('set-date', fromEl, data.from);
+                setPikadayData('set-date', toEl, data.to);
+
+                for(i in data.tags) {
+                    cmbEmpTag.find('option[data-employee-id="'+data.tags[i]+'"]').prop('selected', 'selected');
+                }
+
+                cmbEmpTag.trigger('change');
+
+                if(createdBy!=currentEmpId) {
+
+                }
+
                 $(moCreateEvent).openModal();
             });
 
@@ -321,6 +437,44 @@
             cmbEmpTag.select2({
                 placeholder: 'Type name here'
             });
+
+            initPicker(txtEventHolidayFrom, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+                setTimeout( function() {
+                    var val = $('#'+txtEventHolidayFrom).val();
+                    var pd = setPikadayData('start-range', txtEventHolidayTo, new Date(val));
+
+                    if(!removeSpace($('#'+txtEventHolidayTo).val()).length) pd.show();
+                }, 200);
+            });
+
+            initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+                setTimeout( function() {
+                    var val = $('#'+txtEventHolidayTo).val();
+                    var pd = setPikadayData('end-range', txtEventHolidayFrom, new Date(val));
+
+                    if(!removeSpace($('#'+txtEventHolidayFrom).val()).length) pd.show();
+                }, 200);
+            });
+
+            var param = { showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+
+            initPicker(txtEventOtherFrom, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+                setTimeout( function() {
+                    var val = $('#'+txtEventOtherFrom).val();
+                    var pd = setPikadayData('start-range', txtEventOtherTo, new Date(val));
+
+                    if(!removeSpace($('#'+txtEventOtherTo).val()).length) pd.show();
+                }, 200);
+            }, param);
+
+            initPicker(txtEventOtherTo, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+                setTimeout( function() {
+                    var val = $('#'+txtEventOtherTo).val();
+                    var pd = setPikadayData('end-range', txtEventOtherFrom, new Date(val));
+
+                    if(!removeSpace($('#'+txtEventOtherFrom).val()).length) pd.show();
+                }, 200);
+            }, param);
         }
 
 
@@ -517,7 +671,7 @@
                 //
             };
 
-            post(add_btn_modal, "{{ path('add_event') }}", data, callback, done, always);
+            post(add_btn_modal, "{{ path('manage_event_add') }}", data, callback, done, always);
         });
 
         $(document).on("click", "#editeventbtn", function () {

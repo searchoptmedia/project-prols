@@ -120,8 +120,42 @@
             </table>
             <hr style="border-top: 1px dashed menu; ">
         {% endfor %}
-    {% endif %}
 
+
+    <!---------- event create ----------->
+    {% elseif template=='event-create' %}
+        <table class="email-content" style="width: 100%;">
+            <tbody>
+            <tr>
+                <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;" colspan="2"><strong style="font-size:22px;">{{ event_name }}</strong></td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;" colspan="2">{{ event_desc|raw }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr style="border-top: 1px dashed menu; ">
+
+        <table class="email-content" style="width: 100%;">
+            <tbody>
+                <tr>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>hen: </td>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">{{ from_date }}{% if from_date!=to_date %} to {{ to_date }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>here: </td>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">{{ event_venue }}</td>
+                </tr>
+                {% if event_tag_names is defined and event_tag_names is not empty %}
+                <tr>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>ho: </td>
+                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">{% for k,n in event_tag_names %}• {{ n }} {% if owner_email==k %}(Organizer){% endif %}<br>{% endfor %}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <hr style="border-top: 1px dashed menu; ">
+    {% endif %}
 
     <br/>
     <center style="margin-top: 20px;">

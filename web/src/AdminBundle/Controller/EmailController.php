@@ -10,11 +10,14 @@ namespace AdminBundle\Controller;
 
 
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\ListRequestTypePeer;
+use CoreBundle\Utilities\Constant as C;
+use CoreBundle\Utilities\Utils as U;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Swift_Mailer;
@@ -334,6 +337,39 @@ class EmailController extends Controller
         return $emailCtr;
     }
 
+    public function notifyEmployeeOnEvent($params = array(), Controller $class)
+    {
+        $ownerId = U::getUserDetails('id', $class);
+        $ownerAcc = EmpProfilePeer::getInformation($ownerId);
+        $ownerName = trim($ownerAcc->getLname() . " " . $ownerAcc->getLname());
+
+        $empAcc = EmpAccQuery::_findById($params['user_id']);
+        $empInfo = EmpProfilePeer::getInformation($params['user_id']);
+        $employeeName = trim($empInfo->getFname() . ' ' . $empInfo->getLname());
+
+        $title = 'Holiday';
+        $message = "A new holiday was marked on Propelrr Calendar. See the details below.";
+
+        if($params['event_type']!=C::EVENT_TYPE_HOLIDAY) {
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation';
+            $action = $params['event_type']==C::EVENT_TYPE_MEETING ? 'a meeting' : 'a company event';
+            $message = "<strong>".$ownerName . "</strong> invited you to join <strong>". strtolower($action) ."</strong>. See the details below.";
+        }
+
+        $to = !empty($params['to_list']) ? $params['to_list'] : array(array($empAcc->getEmail() => $employeeName));
+        $from = array('no-reply@searchoptmedia.com', 'PROLS');
+        $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_HOLIDAY ? 'A New Holiday Was Added' : ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation'));
+
+        $params['title'] = $title;
+        $params['greetings'] = 'Hi '.$employeeName.',';
+        $params['template'] = 'event-create';
+        $params['message'] = $message;
+
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+
+        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+    }
+
     /**
      * Get admin email list
      * @param array $adminList
@@ -357,6 +393,8 @@ class EmailController extends Controller
 
         return $adminEmails;
     }
+
+
 
     public function RequestMeetingEmail($req, $class)
     {
@@ -389,7 +427,8 @@ class EmailController extends Controller
     public function notifyEmployeeRequest($req, $class)
     {
         $user = $class->getUser();
-        $id = $user->getId();
+        $userId = $user->getId();
+
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();

@@ -161,12 +161,12 @@ admin_employee_leave_absences_report:
 
 
 manage_events:
-    path: /manageevent
-    defaults: { _controller: AdminBundle:EventManager:Manage }
+    path: /events
+    defaults: { _controller: AdminBundle:EventManager:list }
 
-add_event:
-    path: /manageevent/add
-    defaults: { _controller: AdminBundle:EventManager:add }
+manage_event_add:
+    path: /event/save
+    defaults: { _controller: AdminBundle:EventManager:save }
 
 notify_event:
     path: /manageevent/notify

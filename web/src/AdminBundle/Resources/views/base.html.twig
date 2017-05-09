@@ -68,7 +68,7 @@
                     </div>
                     <div class="clr"></div>
                     {% block nav %}
-                        {% if user.role == 'ADMIN' %}
+                        {% if app.user.role == 'ADMIN' %}
                             {{ sidenav.admin_navbar(requestcount) }}
                         {% else %}
                             {{ sidenav.emp_navbar() }}

@@ -1,0 +1,46 @@
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
+{% for event in allEvents %}
+    <tr data-id="{{ event.getId }}" class="event-tr">
+        <td class="event-name">{{ event.getEventName }}</td>
+        <td class="event-type" id="{{ event.listEventsType.id }}">{{ event.listEventsType.name|upper }}</td>
+        <td class="event-from-date">{{ event.fromDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.fromDate|date('h:i a') }}{% endif %}</td>
+        <td class="event-to-date">{{ event.toDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.toDate|date('h:i a') }}{% endif %}</td>
+        <td class="role">
+            {% if (app.user.id != event.getCreatedBy) %}Guest
+            {% else %}Creator{% endif %}
+        </td>
+        <td class="status">
+            {% if (app.user.id!=event.getCreatedBy) %}
+                {% for tag in event.getEventTaggedPersonss %}
+                    {% if(app.user.id==tag.empid) %}
+                        {% if(tag.status==constant(CONST~'STATUS_PENDING')) %}
+                            <div class="event-status pending" id = "pending">Pending</div>
+                        {% elseif(tag.status == 3) %}
+                            <div class="event-status approved">Approved</div>
+                        {% else %}
+                            <div class="event-status declined">Declined</div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="event-status created">Created</div>
+            {% endif %}
+        </td>
+        <td class="event-desc"
+            style="display: none;">{{ event.getEventDescription|raw }}
+        </td>
+        <td>
+            <a class='btn btn-default btn-view-event' href="javascript:void(0);"
+               data-id="{{ event.id }}"
+               data-type="{{ event.eventType }}"
+               data-event-name="{{ event.eventName }}"
+               data-event-desc="{{ event.getEventDescription }}"
+               data-event-venue="{{ event.eventVenue }}"
+               data-event-from="{{ event.fromDate|date('Y-m-d h:i: A') }}"
+               data-event-to="{{ event.toDate|date('Y-m-d h:i: A') }}"
+               data-event-tags="{% for tag in event.getEventTaggedPersonss %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endfor %}"
+               data-created-by="{{ event.createdBy }}"
+            >View</a>
+        </td>
+    </tr>
+{% endfor %}

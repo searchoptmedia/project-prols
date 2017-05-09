@@ -6,6 +6,7 @@ const DOC = $(document);
 const EVENT_TYPE_MEETING  = 3;
 const EVENT_TYPE_HOLIDAY  = 1;
 const EVENT_TYPE_INTERNAL = 2;
+const CURRENT_YEAR  = (new Date()).getFullYear();
 
 var data, callback, done, always;
 
@@ -53,12 +54,15 @@ function post(button, path, data, callback, done, always) {
             if (typeof done === 'function') done(data);
         }).always(function (data) {
             if (typeof always === 'function') always(data);
+
             buttonRemoveLoadPlr(button, btnText);
+            hideLoadingBar();
         }).fail(function (data, err) {
             if (data.status == 401) {
                 alert("You're not login!");
                 window.location = '/';
             }
+
             showErrorBar("Server Error. Please try again.");
         });
     }
@@ -77,10 +81,13 @@ function buttonLoadingPlr(btn, text) {
 
 function buttonRemoveLoadPlr(btn, text) {
     disableEnableButton(btn, false);
-    btn.removeClass('disabled').text(text||'Create');
+    btn.text(text||'Create');
 }
 
 function disableEnableButton(button, val) {
+    if(val) button.addClass('disabled');
+    else button.removeClass('disabled');
+
     button.prop("disabled", val);
 }
 
@@ -111,9 +118,26 @@ function notifyInvalid(element) {
     }, 1000);
 }
 
+function errorBorder(el) {
+    for(var i in el) el[i].attr('style', 'border-color:red');
+}
+
+function defaultBorder(el) {
+    for(var i in el) el[i].attr('style', 'border-color:gray');
+}
+
+/** filters */
+function removeSpace(str) {
+    return str.replace(/\s/g, '');
+}
+
+/**
+ * PLUGINS
+ * ------------------------------
+ */
 /** init Date Picker */
 var currentYear = (new Date()).getFullYear();
-function initPicker(el, minDate, maxDate, onselect) {
+function initPicker(el, minDate, maxDate, onselect, param) {
     var pikael = 'pik_'+el;
     if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
         window[pikael].destroy();
@@ -125,20 +149,38 @@ function initPicker(el, minDate, maxDate, onselect) {
         minDate: minDate,
         maxDate: maxDate,
         yearRange: [currentYear - 20, currentYear + 20],
-        format: 'YYYY-MM-DD',
-        onSelect: onselect
+        format: param && param.format ? param.format : 'YYYY-MM-DD',
+        onSelect: onselect,
+        showTime: param && param.showTime ? param.showTime : false,
+        autoClose:  param && param.autoClose ? param.autoClose : true,
+        use24hour: param && param.use24hour ? param.use24hour : false
     });
 
     return window[pikael];
 }
 
-function setPikadayData(param, el, value) {
+function setPikadayData(info, el, value) {
     var pikael = 'pik_'+el;
     if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
-        if(param=='end-range') window[pikael].setMaxDate(value);
-        if(param=='start-range') window[pikael].setMinDate(value);
-        if(param=='set-date') window[pikael].setDate(value);
+        if(info=='end-range') window[pikael].setMaxDate(value);
+        if(info=='start-range') window[pikael].setMinDate(value);
+        if(info=='set-date') window[pikael].setDate(value);
 
         return window[pikael];
     }
+}
+
+function initDropDown(param) {
+    param = param ? param: {};
+    $('.dropdown-button').dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            constrainWidth: false, // Does not change width of dropdown to that of the activator
+            hover: param.hover||false, // Activate on hover
+            gutter: 0, // Spacing from edge
+            belowOrigin: false, // Displays dropdown below the button
+            alignment: 'left', // Displays dropdown with edge aligned to the left of button
+            stopPropagation: false // Stops event propagation
+        }
+    );
 }

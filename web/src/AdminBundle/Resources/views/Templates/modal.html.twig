@@ -66,7 +66,7 @@
                     {% endif %}
                     <div class="btn-block">
                         <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
+                           id="time-in-button" data-action="timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
                             <i class="material-icons left icon-timein">query_builder</i>Time in</a>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
 
                     <div class="btn-block">
                         <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
+                           id="time-in-button" data-action = "timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
                             <i class="material-icons left icon-timein">query_builder</i>Time in</a>
                         <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
                         <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
@@ -118,7 +118,7 @@
 
                 <div class="btn-block">
                     <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn"
-                       id="time-out-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a> &nbsp;
+                       id="time-out-button" data-action="timeout" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">Yes</a> &nbsp;
                     <a class="waves-effect waves-light red btn-flat btn-large btn-cancel timeout-cancel">Cancel</a>
                 </div>
             </div>
@@ -173,7 +173,6 @@
 <div class="modal-container auto-timeout-notice" style="display:none;">
     <div class="center-align" style="position: relative; top: 20%;">
         <div class="valign-wrapper">
-
             <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
                 <p class="confirm-timein">You have been timed out automatically!</p>
                 <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="auto-timeout-time-message">{{ app.session.get('autoTimeOutDate')|date('M d, Y') }} 12:00 AM</span></p>

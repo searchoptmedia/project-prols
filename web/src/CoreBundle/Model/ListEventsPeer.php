@@ -23,7 +23,7 @@ class ListEventsPeer extends BaseListEventsPeer
         $c1->addOr($c2);
         $c->add($c1);
 
-        $c->addAscendingOrderByColumn(self::FROM_DATE);
+        $c->addDescendingOrderByColumn(self::DATE_CREATED);
 
         $_self = self::doSelect($c);
 

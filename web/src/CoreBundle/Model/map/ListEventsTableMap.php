@@ -48,6 +48,7 @@ class ListEventsTableMap extends TableMap
         $this->addColumn('from_date', 'FromDate', 'TIMESTAMP', true, null, null);
         $this->addColumn('to_date', 'ToDate', 'TIMESTAMP', true, null, null);
         $this->addColumn('event_name', 'EventName', 'VARCHAR', true, 45, null);
+        $this->addColumn('event_venue', 'EventVenue', 'VARCHAR', false, 255, null);
         $this->addColumn('event_desc', 'EventDescription', 'LONGVARCHAR', true, 32700, null);
         $this->addForeignKey('event_type', 'EventType', 'INTEGER', 'list_events_type', 'id', true, null, null);
         $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
