@@ -46,6 +46,7 @@ class EventTaggedPersonsTableMap extends TableMap
         $this->addForeignKey('event_id', 'EventId', 'INTEGER', 'list_events', 'id', true, null, null);
         $this->addForeignKey('emp_id', 'EmpId', 'INTEGER', 'emp_acc', 'id', true, null, null);
         $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
+        $this->addColumn('reason', 'Reason', 'LONGVARCHAR', true, null, null);
         // validators
     } // initialize()
 

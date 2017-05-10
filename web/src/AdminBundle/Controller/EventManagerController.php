@@ -91,11 +91,11 @@ class EventManagerController extends Controller
                             $eventTagged = $eventTag->_save(array(
                                 'emp_id' => $empAcc->getId(),
                                 'event_id' => $event->getId(),
-                                'status' => $eventTagQry ? C::STATUS_ACTIVE : C::STATUS_PENDING
+                                'status' => $eventTagQry ? $eventTagQry->getStatus() : C::STATUS_PENDING
                             ), $eventTagQry);
 
                             if($eventTagged) {
-                                if(! $eventTagQry && $params['notify_email']) {
+                                if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
                                     if($event->getEventType()==C::EVENT_TYPE_HOLIDAY) {
                                         $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
                                         $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
@@ -159,11 +159,18 @@ class EventManagerController extends Controller
         $id = $user->getId();
 
         if($method=='POST') {
+            $params = $request->request->all();
             $getEvents = ListEventsPeer::getAllEvents($id);
+            $activeEvent = null;
             $response = array();
 
+            if(!empty($params['id'])) {
+                $activeEvent = ListEventsQuery::_findById($params['id']);
+            }
+
             $response['list'] = $this->renderView('AdminBundle:EventManager:ajax-list.html.twig', array(
-                'allEvents' => $getEvents
+                'allEvents' => $getEvents,
+                'event' => $activeEvent
             ));
 
             return new JsonResponse($response);
@@ -243,6 +250,44 @@ class EventManagerController extends Controller
             'eventTypes' => $eventTypes,
             'allacc' => $allacc
         ));
+    }
+
+    public function updateTagStatusAction(Request $request)
+    {
+        $response = U::getForbiddenResponse();
+        $method = $request->getMethod();
+
+        if($method=='POST') {
+            $params = $request->request->all();
+
+            if(!empty($params['event_id']) && !empty($params['user_id'])) {
+                $statusId = $params['status'];
+                $eventTagQry = EventTaggedPersonsQuery::_findOneByEventAndEmployee($params['event_id'], $params['user_id']);
+
+                $eventTag = new EventTaggedPersons();
+
+                if($eventTagQry) {
+                    $eventTagData = array(
+                        'event_id' => $params['event_id'],
+                        'emp_id' => $params['user_id'],
+                        'status' => $statusId
+                    );
+
+                    if(isset($params['reason']))
+                        $eventTagData['reason'] = $params['reason'];
+
+                    $eventTag = $eventTag->_save($eventTagData, $eventTagQry);
+
+                    if($eventTag) {
+                        $response = U::getSuccessResponse();
+                        //send notification
+                        $this->email->notifyEmployeeOnEvent($params, $this);
+                    }
+                }
+            }
+        }
+
+        return new JsonResponse($response);
     }
 
     public function deleteEventTagged($reqId, $reqTagIds) {
@@ -350,40 +395,49 @@ class EventManagerController extends Controller
     }
 
     public function showEventsAction($request, $userId = 0, $userLevel) {
-        $allEvents = ListEventsPeer::getAllEvents($userId, $userLevel);
-        foreach ($allEvents as $event) {
-            $eventdate = $event->getDate();
-            $eventType = $event->getType();
-            $eventId = $event->getId();
-            $eventName = $event->getName();
 
-            if ($eventType == "HOLIDAY") {
-                $event = array(
-                    'date' => 'From: ' . $eventdate->format('Y-m-d') . "<br>" . "To: " . $eventdate->format('Y-m-d 23:59:00'),
-                    'id' => $eventId,
-                    'title' => $eventName,
-                    'start' => $eventdate->format('Y-m-d'),
-                    'end' => $eventdate->format('Y-m-d 23:59:00'),
-                    'editable' => false,
-                    'color' => '#64b5f6',
-                    'eventName' => $eventName,
-                    'eventType' => "Holiday Event",
-                    'type' => "event"
-                );
-            } else {
-                $event = array(
-                    'date' => 'From: ' . $eventdate->format('Y-m-d') . "<br>" . "To: " . $eventdate->format('Y-m-d 23:59:00'),
-                    'id' => $eventId,
-                    'title' => $eventName,
-                    'start' => $eventdate->format('Y-m-d'),
-                    'end' => $eventdate->format('Y-m-d 23:59:00'),
-                    'editable' => false,
-                    'color' => '#e57373',
-                    'eventName' => $eventName,
-                    'eventType' => "Regular Event",
-                    'type' => "event"
-                );
+        $allEvents = ListEventsPeer::getCalendarEvents();
+        foreach ($allEvents as $event) {
+            $eventFromDate = $event->getFromDate();
+            $eventToDate =  $event->getToDate();
+
+            if(!is_null($eventFromDate)) {
+                $eventFromDate = $eventFromDate->format('Y-m-d h:i:s');
+
+                if(!is_null($eventToDate)) {
+                    $eventToDate = $eventToDate->format('Y-m-d h:i:s');
+                } else {
+                    $eventToDate = $eventFromDate;
+                }
             }
+
+            $eventType = $event->getEventType();
+            $eventId = $event->getId();
+            $eventName = $event->getEventName();
+
+            $color = '#64b5f6';
+            $eventTypeName = 'Holiday';
+
+            if ($eventType == C::EVENT_TYPE_MEETING) {
+                $eventTypeName = 'Meeting';
+                $color = '#e57373';
+            } else if ($eventType == C::EVENT_TYPE_INTERNAL) {
+                $eventTypeName = 'Internal Event';
+                $color = '#17a282';
+            }
+
+            $event = array(
+                'date' => 'From: ' . $eventFromDate . "<br>" . "To: " . $eventToDate,
+                'id' => $eventId,
+                'title' => $eventName,
+                'start' => $eventFromDate,
+                'end' => $eventToDate,
+                'editable' => false,
+                'color' => $color,
+                'eventName' => $eventName,
+                'eventType' => $eventTypeName,
+                'type' => "event"
+            );
 
             array_push($request, $event);
         }

@@ -3,9 +3,6 @@
  */
 // SCRIPT VARIABLES
 const DOC = $(document);
-const EVENT_TYPE_MEETING  = 3;
-const EVENT_TYPE_HOLIDAY  = 1;
-const EVENT_TYPE_INTERNAL = 2;
 const CURRENT_YEAR  = (new Date()).getFullYear();
 
 var data, callback, done, always;
@@ -124,6 +121,31 @@ function errorBorder(el) {
 
 function defaultBorder(el) {
     for(var i in el) el[i].attr('style', 'border-color:gray');
+}
+
+function hideElements(els) {
+    for( i in els) {
+        els[i].hide();
+    }
+}
+function showElements(els) {
+    for( i in els) {
+        els[i].show();
+    }
+}
+
+function convertStatusToString(statusId) {
+    if(statusId==STATUS_PENDING) {
+        return 'pending';
+    } else if(statusId==STATUS_ACTIVE) {
+        return 'active';
+    } else if(statusId==STATUS_INACTIVE) {
+        return 'inactive';
+    } else if(statusId==STATUS_APPROVED) {
+        return 'approved';
+    } else if(statusId==STATUS_DECLINED) {
+        return 'declined';
+    }
 }
 
 /** filters */

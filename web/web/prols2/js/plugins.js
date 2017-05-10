@@ -1,27 +1,6 @@
 $(function() {
 
     var formElements = function(){
-        // Bootstrap datepicker
-        // var feDatepicker = function(){
-        //     if($(".datepicker").length > 0){
-        //         $(".datepicker").datepicker({format: 'yyyy-mm-dd'});
-        //         $("#dp-2,#dp-3,#dp-4").datepicker(); // Sample
-        //     }
-
-        // }// END Bootstrap datepicker
-
-        ////Bootstrap timepicker
-        //var feTimepicker = function(){
-        //    // Default timepicker
-        //    if($(".timepicker").length > 0)
-        //        $('.timepicker').timepicker();
-        //
-        //    // 24 hours mode timepicker
-        //    if($(".timepicker24").length > 0)
-        //        $(".timepicker24").timepicker({minuteStep: 5,showSeconds: true,showMeridian: false});
-        //
-        //}// END Bootstrap timepicker
-
         //Daterangepicker
         var feDaterangepicker = function(){
             if($(".daterange").length > 0)
@@ -75,13 +54,14 @@ $(function() {
                 });
 
                 // Validation Engine init
-                $("form[id^='validate']").validationEngine('attach', {promptPosition : "bottomLeft", scroll: false,
-                                                                        onValidationComplete: function(form, status){
-                                                                            form.validationEngine("updatePromptsPosition");
-                                                                        },
-                                                                        prettySelect : true,
-                                                                        usePrefix: prefix
-                                                                     });
+                $("form[id^='validate']").validationEngine('attach',
+                    {promptPosition : "bottomLeft", scroll: false,
+                        onValidationComplete: function(form, status){
+                            form.validationEngine("updatePromptsPosition");
+                        },
+                        prettySelect : true,
+                        usePrefix: prefix
+                    });
             }
         }//END Validation Engine
 
@@ -98,17 +78,6 @@ $(function() {
                 $("input.mask_percent").mask('99%');
             }
         }//END Masked Inputs
-
-        //Bootstrap tooltip
-        // var feTooltips = function(){
-        //     $("body").tooltip({selector:'[data-toggle="tooltip"]',container:"body"});
-        // }//END Bootstrap tooltip
-
-        //Bootstrap Popover
-        // var fePopover = function(){
-        //     $("[data-toggle=popover]").popover();
-        //     $(".popover-dismiss").popover({trigger: 'focus'});
-        // }//END Bootstrap Popover
 
         //Tagsinput
         var feTagsinput = function(){
@@ -148,19 +117,19 @@ $(function() {
 
         return {// Init all form element features
 		init: function(){
-                    //feDatepicker();
-                    //feTimepicker();
-                    feColorpicker();
-                    feSelect();
-                    feValidation();
-                    feMasked();
-                    // feTooltips();
-                    // fePopover();
-                    feTagsinput();
-                    feiCheckbox();
-                    feBsFileInput();
-                    feDaterangepicker();
-                }
+                //feDatepicker();
+                //feTimepicker();
+                feColorpicker();
+                feSelect();
+                feValidation();
+                feMasked();
+                // feTooltips();
+                // fePopover();
+                feTagsinput();
+                feiCheckbox();
+                feBsFileInput();
+                feDaterangepicker();
+            }
         }
     }();
 

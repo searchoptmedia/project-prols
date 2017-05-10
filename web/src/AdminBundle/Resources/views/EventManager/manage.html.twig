@@ -75,12 +75,7 @@
 {% block modal %}
     <!----------------------- CREATE/EDIT EVENT MODAL -------------------------->
     <div id="mo-create-event" class="modal modal-fixed-footer overflow-hidden">
-        <h4 class="mo-header">Create Event
-            <div class="pull-right">
-                <a class="btn green" style="font-size: 16px;" id="view_event_type">Going</a>
-                <a class="waves-effect waves-light btn amber" style="font-size: 16px;" id="view_event_type">Not Going</a>
-            </div>
-        </h4>
+        <h4 class="mo-header">Create Event</h4>
         <div class="modal-content">
             <div class="event-form-cont mo-body">
                 <form>
@@ -91,7 +86,9 @@
                             <select name="event_type" id="event_type_modal" class="browser-default event-type cmb-select-event-type">
                                 <option value="" disabled selected >Select Event Type</option>
                                 {% for eventtype in eventTypes %}
-                                    <option value="{{ eventtype.id }}">{{ eventtype.name }}</option>
+                                    {% if app.user.role==constant(CONST~'ROLE_ADMIN') or (constant(CONST~'EVENT_TYPE_MEETING')==eventtype.id and app.user.role!=constant(CONST~'ROLE_ADMIN')) %}
+                                        <option value="{{ eventtype.id }}">{{ eventtype.name }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             </select>
                         </div>
@@ -114,10 +111,10 @@
                         <!-- meeting field -->
                         <div class="meeting-request-section sect-event-tag-type display-none">
                             <div class = "col-md-12" id="guest-row">
-                                <label for="tag_employees">Guests <span class="ml2"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
+                                <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
                                 <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
                                     {% for acc in allacc %}
-                                        <option name="select2[]" value="{{ acc.email }}" data-employee-id="{{ acc.id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
                                     {% endfor %}
                                 </select><br><br>
                             </div>
@@ -149,7 +146,7 @@
                             <p class="notify-email-event">
                                 <input type="checkbox" id="chk-notify-email" value="1"/>
                                 <label for="chk-notify-email" class="black-text">
-                                    Notify the employees via Email?
+                                    Send Invitation on Employees via Email?
                                 </label>
                             </p>
                             <p class="notify-sms-event">
@@ -170,37 +167,83 @@
             <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Create</a>
             {#<a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>#}
             <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
-                <i class="close material-icons">info_outline</i>
-                Please Input All Fields
+                Required Fields!
             </div>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
 
     <!----------------------- VIEW EVENT MODAL -------------------------->
-    <div id="mo-event-view-details" class="modal modal-fixed-footer">
+    <div id="mo-event-view-details" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header"><span class="mo-header-title">Meeting</span>
+            <div class="pull-right sect-guest-response-area display-none">
+                <a class="waves-effect btn-guest-response waves-light btn green font16" data-status="{{ constant(CONST~'STATUS_APPROVED') }}" >Going</a>
+                <a class="waves-effect btn-guest-response waves-light btn amber font16"  data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>
+            </div>
+            <div class="pull-right sect-user-action-area display-none">
+                <a class="waves-effect waves-light btn amber btn-show-consider-section font16">Reconsider</a>
+            </div>
+
+            <div class="form-group display-none sect-reason-area mt1 pt2 pb2 pr2 pl2" style="background: #fff; ">
+                <label style="text-shadow: 0px 0px 0px;">ADD COMMENT (<span class="span-reason-status">I'm not going</span>)</label>
+                <textarea style="color: #555;" class="materialize-textarea txt-view-reason"></textarea>
+                <a class="waves-effect btn-guest-response-save waves-light btn amber font16" data-loading-text="Saving..." data-status="">Save</a>
+            </div>
+        </h4>
         <div class="modal-content">
-            <h4 class="agenda-date">
-                View Event &nbsp;&nbsp;
-                <span class="btn btn-default" style="font-size: 16px;" id="view_event_type">Pending</span>
-            </h4>
-            <br>
-            <div class="event-form-cont">
-                <div class="row">
-                    <div class="col-md-4">
-                        <span class="event-lbl">Event Date</span>
-                        <input type="text" name="event-date" readonly class="event-date" id="view_event_date">
+            <div class="mo-body">
+                <div class="row mb2">
+                    <div class="col-md-2">
+                        <span class="font20 pt2">WHAT:</span>
                     </div>
-                    <div class="col-md-8">
-                        <span class="event-lbl">Event Name </span>
-                        <input type="text" name="event-name" class="event-name" id="view_event_name" readonly>
+                    <div class="col-md-10">
+                        <h6 class="font28 p-view-title mt0">Glide Session With Mike</h6>
+                        <p class="p-view-desc">This is the description of this event. This is the description of this event. This is the description of this event. This is the description of this event.</p>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="desc-cont">
-                            <span id="view_event_desc"></span>
+                <div class="row mb2">
+                    <div class="col-md-2">
+                        <span class="font20 pt1">WHERE:</span>
+                    </div>
+                    <div class="col-md-10">
+                        <h6 class="font22 p-view-venue mt0">Propelrr Conference</h6>
+                    </div>
+                </div>
+
+                <div class="row mb2">
+                    <div class="col-md-2">
+                        <span class="font20">WHEN:</span>
+                    </div>
+                    <div class="col-md-10">
+                        <h6 class="font22 p-view-date mt0">Jun 22, 2017 at 04:00pm to <br>Jun 22, 2017 at 05:00pm</h6>
+                    </div>
+                </div>
+
+                <div class="row sect-event-tagged-area">
+                    <div class="col-md-2">
+                        <span class="font20">WHO:</span>
+                    </div>
+                    <div class="col-md-10 sect-view-tags-list-area">
+                        <div class="mb1">
+                            <a href="javascript:void(0)">
+                                <div class="chip">
+                                    Denmark Jay Mago (Organizer) - PENDING
+                                </div>
+                            </a>
+                            <ul class="collection mt2">
+                                <li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>
+                            </ul>
+                        </div>
+                        <div class="mb1">
+                            <div class="chip green">
+                                Denmark Jay Mago - GOING
+                            </div>
+                        </div>
+                        <div class="mb1">
+                            <div class="chip orange">
+                                Denmark Jay Mago - NOT GOING
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -211,14 +254,16 @@
                     </div>
                 </div>
             </div>
-            <br>
         </div>
 
         <div class="modal-footer">
-            <a class="waves-effect waves-light btn amber btn-resend" style="margin-right:5px; float:left;">
-                Resend Notification to the Employees
-            </a>
+            <div style="margin-right:5px; float:left;">
+                <div class="pull-left sect-view-status-area display-none">
+                    Your current status is: <a class="" style="font-size: 16px;">Pending</a>
+                </div>
+            </div>
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
+            <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Edit</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -251,10 +296,30 @@
         var btnOpenCreateModal = '.btn-open-create-modal';
         var btnCreateEvent = '.btn-create-event';
         var btnOpenEvent = '.btn-view-event';
+        var btnTagExpandReason = '.btn-tag-list-expand-reason';
+        var btnViewOpenEditModal = '.btn-view-open-edit-event-mo';
+        var btnGuestResponse = '.btn-guest-response';
+        var btnGuestResponseSave = '.btn-guest-response-save';
+        var btnShowConsiderArea = '.btn-show-consider-section';
         var sectTagFields = '.sect-event-tag-type';
         var sectNonTagFields = '.sect-event-nontag-type';
+        var sectGuestResponse = '.sect-guest-response-area';
+        var sectUserAction = '.sect-user-action-area';
+        var sectViewStatusArea = '.sect-view-status-area';
+        var sectViewTagsListArea = '.sect-view-tags-list-area';
+        var sectGuestSelect = '.sect-guest-selection-area';
+        var sectViewTagsArea = '.sect-event-tagged-area';
+        var sectViewOwnerAction = '.sect-view-owner-action-area';
+        var sectReasonSection = '.sect-reason-area';
         var chkNotifyOnEmail = '#chk-notify-email';
         var tbEventList = '.tb-emp-list';
+        var txtHeaderTitle = '.mo-header-title';
+
+        var txtViewName = '.p-view-title';
+        var txtViewDesc = '.p-view-desc';
+        var txtViewVenue = '.p-view-venue';
+        var txtViewDate = '.p-view-date';
+        var txtViewReason = '.txt-view-reason';
 
         var txtEventId = '.txt-event-id';
         var txtEventName = '.txt-event-name';
@@ -265,13 +330,35 @@
         var txtEventOtherFrom = 'txt_from_event_other';
         var txtEventOtherTo   = 'txt_to_event_other';
         var currentEmpId = parseInt('{{ app.user.id }}');
+        var employees = [];
+        var activeEventId = parseInt('{{ app.request.query.get('id') }}');
+        var contentReady = false;
 
         bindEvents();
         getList();
+        initData();
+
+        function initData() {
+            cmbEmpTag.find('option').each( function() {
+                var id = $(this).data('employee-id');
+                var name = $(this).data('name');
+                employees.push({id: id, name: name});
+            });
+        }
 
         function getList() {
-            post($('.noButton'), '{{ path('manage_events') }}', {}, function(data) {
+            post($('.noButton'), '{{ path('manage_events') }}', {id: activeEventId>0? activeEventId:null}, function(data) {
                 $(tbEventList).find('tbody').html(data.list);
+
+                if(activeEventId>0 && !contentReady) {
+                    var tr = $('.event-tr[data-id='+activeEventId+']');
+                    if(tr.length) {
+                        tr.find('.btn-view-event').trigger('click');
+                    }
+                }
+
+                contentReady = true;
+
                 initDropDown();
             });
         }
@@ -287,6 +374,7 @@
                 tags: cmbEmpTag.select2('val'),
                 notify_email: $(chkNotifyOnEmail).is(':checked') ? 1 : 0
             };
+
             var dateFromEl =  $('#'+txtEventHolidayFrom);
             var dateToEl = $('#'+txtEventHolidayTo);
 
@@ -357,9 +445,188 @@
             $(sectNonTagFields).hide();
         }
 
+        function viewEventDetails(el, action) {
+            var tagsViewTemp = '<div class="mb1">'+
+                    '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">'+
+                    '      <div class="chip [CLASS]">'+
+                    '         [NAME]'+
+                    '      </div>[ACTION]'+
+                    '   </a> [REASON]'
+                    '</div>';
+            var tagsViewReasonTemp = '<ul class="collection mt2 display-none">'+
+                    '      <li class="collection-item">[REASON]</li>'+
+                    '   </ul>';
+
+            var data = {
+                event_id:  el.data('id'),
+                event_name: el.data('event-name'),
+                event_desc: el.data('event-desc'),
+                event_venue: el.data('event-venue'),
+                event_type: el.data('type'),
+                tags: (el.data('event-tags').toString()).split(','),
+                from: el.data('event-from'),
+                to: el.data('event-to')
+            };
+            var createdBy = parseInt(el.data('created-by'));
+            var myStatus = parseInt(el.data('event-tag-status'));
+
+            resetCreateForm();
+
+            var fromHoliday = el.data('event-from-holiday');
+            var toHoliday = el.data('event-to-holiday');
+            var fromNonHoliday = el.data('event-from-nonholiday');
+            var toNonHoliday = el.data('event-to-nonholiday');
+
+            var fromEl = txtEventHolidayFrom;
+            var toEl   = txtEventHolidayTo;
+            if(data.event_type!=EVENT_TYPE_HOLIDAY) {
+                fromEl = txtEventOtherFrom;
+                toEl   = txtEventOtherTo;
+            }
+
+            $(txtEventId).val(data.event_id);
+            $(txtEventName).val(data.event_name);
+            $(txtEventDesc).val(data.event_desc);
+            $(txtEventVenue).val(data.event_venue);
+            $(cmbEventType).val(data.event_type).trigger('change');
+
+            $(txtViewName).text(data.event_name);
+            $(txtViewDesc).text(data.event_desc);
+            $(txtViewVenue).text(data.event_venue);
+            $(txtViewReason).val(el.data('event-tag-reason'));
+            $(moViewEventDetails).attr('data-id', data.event_id);
+
+            setPikadayData('set-date', fromEl, data.from);
+            setPikadayData('set-date', toEl, data.to);
+
+            for(i in data.tags) {
+                cmbEmpTag.find('option[data-employee-id="'+data.tags[i]+'"]').prop('selected', 'selected');
+            }
+
+            cmbEmpTag.trigger('change');
+
+            var statusClass, statusName, headerTitle;
+
+            if(data.event_type==EVENT_TYPE_HOLIDAY) {
+                hideElements([$(sectViewTagsArea), $(sectGuestResponse), $(sectUserAction), $(sectViewStatusArea)]);
+                $(txtViewDate).html(fromHoliday+(fromHoliday!=toHoliday?' to '+toHoliday:''));
+
+                headerTitle = 'Holiday';
+            } else {
+                hideElements( [$(sectGuestResponse), $(sectUserAction), $(sectReasonSection)] );
+
+                if(myStatus==STATUS_PENDING) {
+                    statusClass = 'grey';
+                    statusName = 'Pending';
+                    showElements( [$(sectGuestResponse)] );
+                } else {
+                    if(myStatus==STATUS_APPROVED) {
+                        statusClass = 'green';
+                        statusName = 'I\'m going';
+                    } else if(myStatus==STATUS_DECLINED) {
+                        statusClass = 'red';
+                        statusName = 'I\'m not going';
+                    }
+                    showElements( [$(sectUserAction)] );
+                }
+
+                if(data.event_type==EVENT_TYPE_INTERNAL) {
+                    headerTitle = 'Internal Event';
+                }
+                if(data.event_type==EVENT_TYPE_MEETING) {
+                    headerTitle = 'Meeting';
+                }
+
+                $(txtViewDate).html(fromNonHoliday+(fromNonHoliday!=toNonHoliday?' to <br>'+toNonHoliday:''));
+
+                //render tags
+                var tagIds = (el.data('event-tags')).toString().split(',');
+                var tagStatus = (el.data('event-tags-status')).toString().split(',');
+                var tagReasons = (el.data('event-tags-reasons')).toString().split('[[[break]]]');
+
+                $(sectViewTagsListArea).empty();
+                for(i in tagIds) {
+                    var empData = _.findWhere(employees, {id:parseInt(tagIds[i])});
+                    var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;
+                    var clss = '';
+
+                    if(stat==STATUS_APPROVED) {
+                        clss = 'green';
+                    } else if(stat==STATUS_DECLINED) {
+                        clss = 'amber';
+                    }
+                    stat = convertStatusToString(stat);
+
+                    $(sectViewTagsListArea).append(tagsViewTemp
+                        .replace('[NAME]', empData.name + (empData.id==createdBy?' (Organizer)':'') + ' - ' + (stat=='approved' ? 'GOING' : (stat=='declined' ? 'NOT GOING' : stat.toUpperCase())) )
+                        .replace('[CLASS]', clss)
+                        .replace('[ACTION]', _.size(tagReasons[i]) ? '<span class="badge blue mt3" style="color: #fff;">View Reason</span>':'')
+                        .replace('[REASON]', _.size(tagReasons[i]) ? tagsViewReasonTemp.replace('[REASON]', tagReasons[i]) : '' )
+                    );
+                }
+
+                $(sectViewStatusArea).find('a').text(statusName);
+                showElements( [$(sectViewTagsArea), $(sectViewStatusArea)] );
+            }
+
+            if(createdBy==currentEmpId) {
+                showElements( [ $(sectViewOwnerAction) ] );
+                hideElements( [ $(sectViewStatusArea),$(sectGuestResponse),$(sectUserAction) ] );
+            } else {
+                hideElements( [ $(sectViewOwnerAction) ] );
+            }
+
+            $(txtHeaderTitle).text(headerTitle);
+
+            if(action=='view')
+                $(moViewEventDetails).openModal();
+            else if(action=='edit') {
+                $(btnCreateEvent).text('Save Changes');
+                $(moCreateEvent).openModal();
+            }
+        }
+
+        function updateGuestStatus(data) {
+            if(buttonIsReadyPlr($(btnGuestResponseSave))) {
+                var btn = $(btnGuestResponseSave).eq(0);
+                var btnText = $(btnGuestResponseSave).text();
+
+                post(btn, '{{ path('manage_event_tag_change_status') }}', data, function (data) {
+                    if (data.error) {
+                        showErrorBar(data.error);
+                    } else if (data.success) {
+                        getList();
+                        resetCreateForm();
+                        showSuccessBar(data.success);
+
+                        $(moViewEventDetails).closeModal();
+                    }
+                });
+            }
+        }
+
+        function disableForm() {
+            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each( function() {
+                $(this).attr('disabled', 'disabled');
+            });
+
+            $(sectGuestSelect).hide();
+        }
+
+        function enableForm() {
+            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each( function() {
+                $(this).removeAttr('disabled');
+            });
+
+            $(sectGuestSelect).show();
+        }
+
         function bindEvents() {
             DOC.on('click', btnOpenCreateModal, function(e) {
+                enableForm();
                 resetCreateForm();
+
+                $(btnCreateEvent).text('Create');
                 $(moCreateEvent).openModal();
             });
 
@@ -379,47 +646,50 @@
             });
 
             DOC.on('click', btnOpenEvent, function() {
-                var data = {
-                    event_id:  $(this).data('id'),
-                    event_name: $(this).data('event-name'),
-                    event_desc: $(this).data('event-desc'),
-                    event_venue: $(this).data('event-venue'),
-                    event_type: $(this).data('type'),
-                    tags: ($(this).data('event-tags').toString()).split(','),
-                    from: $(this).data('event-from'),
-                    to: $(this).data('event-to')
-                };
-                var createdBy = $(this).data('created-by');
+                viewEventDetails($(this), 'view');
+            });
 
-                resetCreateForm();
+            DOC.on('click', btnViewOpenEditModal, function() {
+                var eventId = $(moViewEventDetails).attr('data-id');
 
-                var fromEl = txtEventHolidayFrom;
-                var toEl   = txtEventHolidayTo;
-                if(data.event_type!=EVENT_TYPE_HOLIDAY) {
-                    fromEl = txtEventOtherFrom;
-                    toEl   = txtEventOtherTo;
-                }
+                enableForm();
+                viewEventDetails($('.btn-view-event[data-id='+eventId+']'), 'edit');
+                $(moViewEventDetails).closeModal();
 
-                $(txtEventId).val(data.event_id);
-                $(txtEventName).val(data.event_name);
-                $(txtEventDesc).val(data.event_desc);
-                $(txtEventVenue).val(data.event_venue);
-                $(cmbEventType).val(data.event_type).trigger('change');
+            });
 
-                setPikadayData('set-date', fromEl, data.from);
-                setPikadayData('set-date', toEl, data.to);
+            DOC.on('click', btnTagExpandReason, function() {
+                var reason = $(this).parent().find('.collection');
+                if(reason.is(':visible'))
+                    reason.hide();
+                else
+                    reason.show();
+            });
 
-                for(i in data.tags) {
-                    cmbEmpTag.find('option[data-employee-id="'+data.tags[i]+'"]').prop('selected', 'selected');
-                }
+            var ResponseStatus = 0;
+            DOC.on('click', btnGuestResponse, function() {
+                ResponseStatus = parseInt($(this).data('status'));
 
-                cmbEmpTag.trigger('change');
+                if(ResponseStatus==STATUS_DECLINED)
+                    $('span.span-reason-status').html('I\'m not going!');
+                else if(ResponseStatus==STATUS_APPROVED)
+                    $('span.span-reason-status').html('I\'m going!');
 
-                if(createdBy!=currentEmpId) {
+                showElements( [$(sectReasonSection)] );
+            });
 
-                }
+            DOC.on('click', btnGuestResponseSave, function() {
+                var status = ResponseStatus;
+                var eventId = $(moViewEventDetails).data('id');
+                var reason = $(txtViewReason).val();
 
-                $(moCreateEvent).openModal();
+                hideElements( [$(sectReasonSection)] );
+                updateGuestStatus({event_id: eventId, user_id: {{ app.user.id}}, status:status, reason:reason });
+            });
+
+            DOC.on('click', btnShowConsiderArea, function() {
+                showElements( [$(sectGuestResponse)] );
+                hideElements( [$(sectUserAction)] );
             });
 
             DOC.on('change', cmbEventType, function() {

@@ -16,6 +16,7 @@ class EventTaggedPersons extends BaseEventTaggedPersons
         if(isset($data['event_id'])) $class->setEventId($data['event_id']);
         if(isset($data['emp_id'])) $class->setEmpId($data['emp_id']);
         if(isset($data['status'])) $class->setStatus($data['status']);
+        if(isset($data['reason'])) $class->setReason($data['reason']);
 
         if($class->save())
             return $class;

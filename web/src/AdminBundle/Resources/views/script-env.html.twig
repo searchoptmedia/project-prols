@@ -1,0 +1,12 @@
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
+<script>
+    const STATUS_PENDING = {{ constant(CONST~'STATUS_PENDING') }};
+    const STATUS_ACTIVE = {{ constant(CONST~'STATUS_ACTIVE') }};
+    const STATUS_INACTIVE = {{ constant(CONST~'STATUS_INACTIVE') }};
+    const STATUS_APPROVED = {{ constant(CONST~'STATUS_APPROVED') }};
+    const STATUS_DECLINED = {{ constant(CONST~'STATUS_DECLINED') }};
+
+    const EVENT_TYPE_INTERNAL = {{ constant(CONST~'EVENT_TYPE_INTERNAL') }};
+    const EVENT_TYPE_HOLIDAY  = {{ constant(CONST~'EVENT_TYPE_HOLIDAY') }};
+    const EVENT_TYPE_MEETING  = {{ constant(CONST~'EVENT_TYPE_MEETING') }};
+</script>

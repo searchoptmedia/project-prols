@@ -267,6 +267,7 @@
         <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
         <column name="emp_id" phpName="EmpId" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="reason" phpName="Reason" type="LONGVARCHAR" required="true"/>
         <foreign-key foreignTable="emp_acc">
             <reference local="emp_id" foreign="id"/>
         </foreign-key>

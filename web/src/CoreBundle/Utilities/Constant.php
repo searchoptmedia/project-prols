@@ -13,6 +13,10 @@ class Constant
 
     const STATUS_ACTIVE             = 1;
     const STATUS_INACTIVE           = -1;
-    const STATUS_PENDING            = 0;
+    const STATUS_PENDING            = 2;
+    const STATUS_APPROVED           = 3;
+    const STATUS_DECLINED           = 4;
+
+    const ROLE_ADMIN                = 'ADMIN';
 
 }

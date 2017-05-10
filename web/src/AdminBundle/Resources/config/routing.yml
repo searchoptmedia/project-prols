@@ -168,6 +168,10 @@ manage_event_add:
     path: /event/save
     defaults: { _controller: AdminBundle:EventManager:save }
 
+manage_event_tag_change_status:
+    path: /event/save/tag/status
+    defaults: { _controller: AdminBundle:EventManager:updateTagStatus }
+
 notify_event:
     path: /manageevent/notify
     defaults: { _controller: AdminBundle:EventManager:notify }

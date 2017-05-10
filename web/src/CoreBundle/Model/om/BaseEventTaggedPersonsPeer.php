@@ -31,13 +31,13 @@ abstract class BaseEventTaggedPersonsPeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\EventTaggedPersonsTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 4;
+    const NUM_COLUMNS = 5;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 4;
+    const NUM_HYDRATE_COLUMNS = 5;
 
     /** the column name for the id field */
     const ID = 'event_tagged_persons.id';
@@ -50,6 +50,9 @@ abstract class BaseEventTaggedPersonsPeer
 
     /** the column name for the status field */
     const STATUS = 'event_tagged_persons.status';
+
+    /** the column name for the reason field */
+    const REASON = 'event_tagged_persons.reason';
 
     /** The default string format for model objects of the related table **/
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -70,12 +73,12 @@ abstract class BaseEventTaggedPersonsPeer
      * e.g. EventTaggedPersonsPeer::$fieldNames[EventTaggedPersonsPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'EventId', 'EmpId', 'Status', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'eventId', 'empId', 'status', ),
-        BasePeer::TYPE_COLNAME => array (EventTaggedPersonsPeer::ID, EventTaggedPersonsPeer::EVENT_ID, EventTaggedPersonsPeer::EMP_ID, EventTaggedPersonsPeer::STATUS, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'EVENT_ID', 'EMP_ID', 'STATUS', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'event_id', 'emp_id', 'status', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'EventId', 'EmpId', 'Status', 'Reason', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'eventId', 'empId', 'status', 'reason', ),
+        BasePeer::TYPE_COLNAME => array (EventTaggedPersonsPeer::ID, EventTaggedPersonsPeer::EVENT_ID, EventTaggedPersonsPeer::EMP_ID, EventTaggedPersonsPeer::STATUS, EventTaggedPersonsPeer::REASON, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'EVENT_ID', 'EMP_ID', 'STATUS', 'REASON', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'event_id', 'emp_id', 'status', 'reason', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
     );
 
     /**
@@ -85,12 +88,12 @@ abstract class BaseEventTaggedPersonsPeer
      * e.g. EventTaggedPersonsPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'EventId' => 1, 'EmpId' => 2, 'Status' => 3, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'eventId' => 1, 'empId' => 2, 'status' => 3, ),
-        BasePeer::TYPE_COLNAME => array (EventTaggedPersonsPeer::ID => 0, EventTaggedPersonsPeer::EVENT_ID => 1, EventTaggedPersonsPeer::EMP_ID => 2, EventTaggedPersonsPeer::STATUS => 3, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'EVENT_ID' => 1, 'EMP_ID' => 2, 'STATUS' => 3, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'event_id' => 1, 'emp_id' => 2, 'status' => 3, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'EventId' => 1, 'EmpId' => 2, 'Status' => 3, 'Reason' => 4, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'eventId' => 1, 'empId' => 2, 'status' => 3, 'reason' => 4, ),
+        BasePeer::TYPE_COLNAME => array (EventTaggedPersonsPeer::ID => 0, EventTaggedPersonsPeer::EVENT_ID => 1, EventTaggedPersonsPeer::EMP_ID => 2, EventTaggedPersonsPeer::STATUS => 3, EventTaggedPersonsPeer::REASON => 4, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'EVENT_ID' => 1, 'EMP_ID' => 2, 'STATUS' => 3, 'REASON' => 4, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'event_id' => 1, 'emp_id' => 2, 'status' => 3, 'reason' => 4, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, )
     );
 
     /**
@@ -168,11 +171,13 @@ abstract class BaseEventTaggedPersonsPeer
             $criteria->addSelectColumn(EventTaggedPersonsPeer::EVENT_ID);
             $criteria->addSelectColumn(EventTaggedPersonsPeer::EMP_ID);
             $criteria->addSelectColumn(EventTaggedPersonsPeer::STATUS);
+            $criteria->addSelectColumn(EventTaggedPersonsPeer::REASON);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.event_id');
             $criteria->addSelectColumn($alias . '.emp_id');
             $criteria->addSelectColumn($alias . '.status');
+            $criteria->addSelectColumn($alias . '.reason');
         }
     }
 

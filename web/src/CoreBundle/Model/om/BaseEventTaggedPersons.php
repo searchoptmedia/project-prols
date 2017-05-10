@@ -65,6 +65,12 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     protected $status;
 
     /**
+     * The value for the reason field.
+     * @var        string
+     */
+    protected $reason;
+
+    /**
      * @var        EmpAcc
      */
     protected $aEmpAcc;
@@ -136,6 +142,17 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     {
 
         return $this->status;
+    }
+
+    /**
+     * Get the [reason] column value.
+     *
+     * @return string
+     */
+    public function getReason()
+    {
+
+        return $this->reason;
     }
 
     /**
@@ -231,6 +248,27 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     } // setStatus()
 
     /**
+     * Set the value of [reason] column.
+     *
+     * @param  string $v new value
+     * @return EventTaggedPersons The current object (for fluent API support)
+     */
+    public function setReason($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->reason !== $v) {
+            $this->reason = $v;
+            $this->modifiedColumns[] = EventTaggedPersonsPeer::REASON;
+        }
+
+
+        return $this;
+    } // setReason()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -266,6 +304,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $this->event_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
             $this->emp_id = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
             $this->status = ($row[$startcol + 3] !== null) ? (int) $row[$startcol + 3] : null;
+            $this->reason = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -275,7 +314,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 4; // 4 = EventTaggedPersonsPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = EventTaggedPersonsPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EventTaggedPersons object", $e);
@@ -526,6 +565,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if ($this->isColumnModified(EventTaggedPersonsPeer::STATUS)) {
             $modifiedColumns[':p' . $index++]  = '`status`';
         }
+        if ($this->isColumnModified(EventTaggedPersonsPeer::REASON)) {
+            $modifiedColumns[':p' . $index++]  = '`reason`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `event_tagged_persons` (%s) VALUES (%s)',
@@ -548,6 +590,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
                         break;
                     case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
+                        break;
+                    case '`reason`':
+                        $stmt->bindValue($identifier, $this->reason, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -713,6 +758,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             case 3:
                 return $this->getStatus();
                 break;
+            case 4:
+                return $this->getReason();
+                break;
             default:
                 return null;
                 break;
@@ -746,6 +794,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $keys[1] => $this->getEventId(),
             $keys[2] => $this->getEmpId(),
             $keys[3] => $this->getStatus(),
+            $keys[4] => $this->getReason(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -805,6 +854,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             case 3:
                 $this->setStatus($value);
                 break;
+            case 4:
+                $this->setReason($value);
+                break;
         } // switch()
     }
 
@@ -833,6 +885,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if (array_key_exists($keys[1], $arr)) $this->setEventId($arr[$keys[1]]);
         if (array_key_exists($keys[2], $arr)) $this->setEmpId($arr[$keys[2]]);
         if (array_key_exists($keys[3], $arr)) $this->setStatus($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setReason($arr[$keys[4]]);
     }
 
     /**
@@ -848,6 +901,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if ($this->isColumnModified(EventTaggedPersonsPeer::EVENT_ID)) $criteria->add(EventTaggedPersonsPeer::EVENT_ID, $this->event_id);
         if ($this->isColumnModified(EventTaggedPersonsPeer::EMP_ID)) $criteria->add(EventTaggedPersonsPeer::EMP_ID, $this->emp_id);
         if ($this->isColumnModified(EventTaggedPersonsPeer::STATUS)) $criteria->add(EventTaggedPersonsPeer::STATUS, $this->status);
+        if ($this->isColumnModified(EventTaggedPersonsPeer::REASON)) $criteria->add(EventTaggedPersonsPeer::REASON, $this->reason);
 
         return $criteria;
     }
@@ -914,6 +968,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         $copyObj->setEventId($this->getEventId());
         $copyObj->setEmpId($this->getEmpId());
         $copyObj->setStatus($this->getStatus());
+        $copyObj->setReason($this->getReason());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -1085,6 +1140,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         $this->event_id = null;
         $this->emp_id = null;
         $this->status = null;
+        $this->reason = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;

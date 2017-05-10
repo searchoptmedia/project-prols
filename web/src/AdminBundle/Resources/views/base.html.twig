@@ -1,6 +1,9 @@
 {% import 'AdminBundle:Templates:notification.html.twig' as notif %}
 {% import 'AdminBundle:Templates:left-sidebar.html.twig' as sidenav %}
+{% include 'AdminBundle::script-env.html.twig' %}
 {% set userbdaynames = userbdaynames|default([]) %}
+
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
 
 <!DOCTYPE HTML>
 <html class="no-js" lang="">
@@ -90,6 +93,7 @@
 <script src="{{asset('prols2/js/html5.js')}}"></script>
 <script src="{{asset('prols2/js/modernizr-2.8.3.min.js')}}"></script>
 <script src="{{asset('prols2/js/materialize.js')}}"></script>
+<script src="{{asset('prols2/js/underscore.js')}}"></script>
 <script src="{{asset('prols2/js/script.js')}}"></script>
 <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>

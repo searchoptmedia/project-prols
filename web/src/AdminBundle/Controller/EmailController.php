@@ -341,7 +341,7 @@ class EmailController extends Controller
     {
         $ownerId = U::getUserDetails('id', $class);
         $ownerAcc = EmpProfilePeer::getInformation($ownerId);
-        $ownerName = trim($ownerAcc->getLname() . " " . $ownerAcc->getLname());
+        $ownerName = trim($ownerAcc->getFname() . " " . $ownerAcc->getLname());
 
         $empAcc = EmpAccQuery::_findById($params['user_id']);
         $empInfo = EmpProfilePeer::getInformation($params['user_id']);
@@ -368,6 +368,11 @@ class EmailController extends Controller
         $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
 
         $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+    }
+
+    public function notifyEmployeeOnEventUpdateTagStatus($params = array(), Controller $class)
+    {
+
     }
 
     /**
