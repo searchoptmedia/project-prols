@@ -93,21 +93,21 @@
 
 {% block modal %}
     <!----------------------- VIEW EVENT MODAL -------------------------->
-    <div id="view_request_modal" class="modal modal-fixed-footer"  data-dismiss="false">
+    <div id="view_request_modal" class="modal modal-fixed-footer overflow-hidden"  data-dismiss="false">
+        <h4 class="agenda-date mo-header">
+            Request &nbsp;&nbsp;
+            <div class="pull-right ml2">
+                <a class="btn-floating btn-medium orange" id = "edit">
+                    <i class="medium material-icons">mode_edit</i>
+                </a>
+                <a class="btn-floating btn-medium red" id = "delete">
+                    <i class="medium material-icons">delete</i>
+                </a>
+            </div>
+            <span class="btn btn-default pull-right font16 ml2" id="request_type"></span>&nbsp;
+            <span class="btn pull-right font16" id="request_type_status">Pending</span>&nbsp;
+        </h4>
         <div class="modal-content">
-            <h4 class="agenda-date mo-header">
-                Request &nbsp;&nbsp;
-                <span class="btn btn-default" style="font-size: 16px;" id="request_type"></span>&nbsp;
-                <span class="btn" style="font-size: 16px;" id="request_type_status">Pending</span>&nbsp;
-                <div style = "float: right;">
-                    <a class="btn-floating btn-medium orange" id = "edit">
-                        <i class="medium material-icons">mode_edit</i>
-                    </a>
-                    <a class="btn-floating btn-medium red" id = "delete">
-                        <i class="medium material-icons">delete</i>
-                    </a>
-                </div>
-            </h4>
             <div class="event-form-cont mo-body">
                 <div class="row">
                     <div class="col-md-6">

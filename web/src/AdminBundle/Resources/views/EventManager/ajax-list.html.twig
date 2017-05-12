@@ -43,9 +43,9 @@
                data-event-to-holiday="{{ event.toDate|date('M d, Y') }}"
                data-event-from-nonholiday="{{ event.fromDate|date('M d, Y h:i a') }}"
                data-event-to-nonholiday="{{ event.toDate|date('M d, Y h:i a') }}"
-               data-event-tags='{% for tag in event.getEventTaggedPersonss %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endfor %}'
-               data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endfor %}'
-               data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endfor %}'
+               data-event-tags='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endif %}{% endfor %}'
 
                data-event-tag-userid="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.empid }}{% endif %}{% endfor %}"
                data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
@@ -66,15 +66,15 @@
             {% if (app.user.id != event.getCreatedBy) %}Guest
             {% else %}Creator{% endif %}
         </td>
-        <td class="status">
+        <td>
             {% if (app.user.id!=event.getCreatedBy) %}
                 {% for tag in event.getEventTaggedPersonss %}
                     {% if(app.user.id==tag.empid) %}
-                        {% if(tag.status==constant(CONST~'STATUS_PENDING')) %}
-                            <div class="event-status pending" id = "pending">Pending</div>
-                        {% elseif(tag.status == 3) %}
+                        {% if tag.status==constant(CONST~'STATUS_PENDING') %}
+                            <div class="event-status pending">Pending</div>
+                        {% elseif tag.status==constant(CONST~'STATUS_APPROVED') %}
                             <div class="event-status approved">Going</div>
-                        {% else %}
+                        {% elseif tag.status==constant(CONST~'STATUS_DECLINED') %}
                             <div class="event-status declined">Not Going</div>
                         {% endif %}
                     {% endif %}
@@ -100,9 +100,9 @@
                data-event-to-holiday="{{ event.toDate|date('M d, Y') }}"
                data-event-from-nonholiday="{{ event.fromDate|date('M d, Y h:i a') }}"
                data-event-to-nonholiday="{{ event.toDate|date('M d, Y h:i a') }}"
-               data-event-tags='{% for tag in event.getEventTaggedPersonss %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endfor %}'
-               data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endfor %}'
-               data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endfor %}'
+               data-event-tags='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endif %}{% endfor %}'
 
                data-event-tag-userid="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.empid }}{% endif %}{% endfor %}"
                data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"

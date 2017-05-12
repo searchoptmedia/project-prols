@@ -2,6 +2,10 @@ admin_homepage:
     path:     /
     defaults: { _controller: AdminBundle:Admin:index }
 
+admin_dashboard_get_events:
+    path:     /dashboard/events/get
+    defaults: { _controller: AdminBundle:Dashboard:getCalendarEvents }
+
 admin_time_in:
     path:     /admin/time_in/{id}/{passw}
     defaults: { _controller: AdminBundle:Admin:timeIn }

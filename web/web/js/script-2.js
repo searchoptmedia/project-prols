@@ -88,6 +88,14 @@ function disableEnableButton(button, val) {
     button.prop("disabled", val);
 }
 
+function enableElement(el) {
+    el.removeClass('disabled').prop("disabled", false);
+}
+
+function disableElement(el) {
+    el.addClass('disabled').prop("disabled", true);
+}
+
 // INPUT FIELD CHECKER
 function checkFields(elements) {
     var hasRequired = 0;
@@ -116,11 +124,11 @@ function notifyInvalid(element) {
 }
 
 function errorBorder(el) {
-    for(var i in el) el[i].attr('style', 'border-color:red');
+    for(var i in el) el[i].addClass('border-red').removeClass('border-gray');
 }
 
 function defaultBorder(el) {
-    for(var i in el) el[i].attr('style', 'border-color:gray');
+    for(var i in el) el[i].addClass('border-gray').removeClass('border-red');
 }
 
 function hideElements(els) {

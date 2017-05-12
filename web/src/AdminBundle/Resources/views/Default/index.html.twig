@@ -8,11 +8,41 @@
         </div>
         <div class="col-md-12 content">
             <!-- <div class="row"> -->
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <div id="alert_holder"></div>
                 <div class="calendar">
                     <div id="calendar"></div>
                 </div>
+            </div>
+
+            <div class="col-md-3 pt5">
+                <button class="waves-effect waves-light btn orange btn-open-request-leave-modal" style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem">
+                    Request Leave
+                </button>
+
+                <h5 class="colorBlack fontLight">Events</h5>
+                <ul class="collection">
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>Glide Session</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                </ul>
             </div>
             <!-- </div> -->
         </div>
@@ -36,7 +66,35 @@
                 </div>
             </h4>
 
-            <div class="agenda-list">
+            <!------------REQUEST LEAVE FORM------------->
+            <div class="form-reqleave frm-request-leave frm-request">
+                <div class="input-field">
+                    <a class="btn-floating btn-small waves-effect waves-light amber btn-hide-request-form" style="float:right;"><span style="position: relative;left: 35%;font-size: 23px;">X</span></a>
+                    <div class="row">
+                        <div class = "form-container">
+                            <div class="multi_reqleaveform">
+                                <div class="req_inner">
+                                    <div class="col-md-6 reqleave-lbl">
+                                        <span class="reqleave-p">From</span>
+                                        <input type = "text" name="start-date-0" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_0">
+                                    </div>
+                                    <div class="col-md-6 reqleave-lbl">
+                                        <span class="reqleave-p">To</span>
+                                        <input type = "text" name="end-date-0" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_0" >
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <textarea id="reason-leave-sbt-0" class="materialize-textarea reason" placeholder="Reason..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="btn-floating btn-large waves-effect waves-light red" id="add-request-form" style = "float:right; margin-right: 10px;"><i class="material-icons">add</i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agenda-list sect-mo-agenda-list mt3">
                 <ul class="collection agenda-list">
                     <li class="collection-item avatar" id="li-append"><i class="material-icons circle">perm_identity</i><span id="head-title"></span> <p id="daterange"></p></li>
                 </ul>
@@ -89,33 +147,6 @@
                     </div>
                 </div>
             </div>
-
-            <!------------REQUEST LEAVE FORM------------->
-            <div class="form-reqleave">
-                <div class="input-field">
-                    <div class="row">
-                        <div class = "form-container">
-                            <div class="multi_reqleaveform">
-                                <div class="req_inner">
-                                    <div class="col-md-6 reqleave-lbl">
-                                        <span class="reqleave-p">From</span>
-                                        <input type = "text" name="start-date-0" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_0">
-                                    </div>
-                                    <div class="col-md-6 reqleave-lbl">
-                                        <span class="reqleave-p">To</span>
-                                        <input type = "text" name="end-date-0" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_0" >
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <textarea id="reason-leave-sbt-0" class="materialize-textarea reason" placeholder="Reason..." required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="btn-floating btn-large waves-effect waves-light red" id="add-request-form" style = "float:right; margin-right: 10px;"><i class="material-icons">add</i></a>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="modal-footer">
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id = "btn-close">Close</a>
@@ -132,6 +163,30 @@
         // ---------------- VARIABLES --------------- //
         // Modals
         var dailyAgendaModal = $('#daily_agenda');
+
+        var btnViewLeaveRequest = '.btn-open-request-leave-modal';
+        var btnHideRequestForm = '.btn-hide-request-form';
+        var frmMoViewRequestLeave = '.frm-request-leave';
+        var sectMoViewAgenda = '.sect-mo-agenda-list';
+
+        bindEvents();
+
+        function bindEvents() {
+            DOC.on('click', btnViewLeaveRequest, function() {
+                var date = new Date();
+
+                _fullCalendar.showEventsModal(moment(date.getTime()));
+
+                showElements([ $(frmMoViewRequestLeave) ]);
+            });
+
+            DOC.on('click', btnHideRequestForm, function() {
+                var form  = $(this).closest('.frm-request');
+                hideElements([ form ]);
+            });
+        }
+
+
 
         // Forms
         var agendaDate = $('.agenda-date');

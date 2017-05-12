@@ -7927,5 +7927,24 @@ span.badge.new {
 .font34 { font-size: 32px!important; }
 .font36 { font-size: 34px!important; }
 
-/** overide */
+.border-red { border-color: red!important; }
+.border-gray { border-color: gray!important; }
+
+.colorBlack { color: #555!important; }
+.colorGrey { color: gray!important; }
+.colorLightGrey { color: #808080!important; }
+.fontBold { font-weight: bold !important; }
+.fontLight { font-weight: normal !important; }
+
+/** ---------- overide ------------- */
 .pika-time { background: #f7bc51; }
+
+/* calendar */
+a.fc-day-grid-event.fc-event {
+    cursor: hand !important;
+}
+
+.fc-unthemed .fc-popover {
+    box-shadow: 0px 0px 7px 2px grey;
+    -moz-box-shadow: 0px 0px 7px 2px grey;
+}

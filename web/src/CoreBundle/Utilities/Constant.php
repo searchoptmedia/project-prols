@@ -19,4 +19,10 @@ class Constant
 
     const ROLE_ADMIN                = 'ADMIN';
 
+    const GMAIL_EMAIL_ADDRESS       = 'no-reply@searchoptmedia.com';
+
+    /** Date Format */
+    const DATE_FORMAT_MID          = 'Y-m-d 00:00:00';
+    const DATE_FORMAT_NIGHT        = 'Y-m-d 23:59:59';
+
 }

@@ -45,16 +45,16 @@
                         </div>
 
                         <div class="col-md-12 content manageemployees-content" style="display: block; min-height: 700px;">
-                            <div class="row" style="margin-left:5px;">
-                                <table class="bordered highlight tb-emp-list">
+                            <div class="row" >
+                                <table class="bordered highlight tb-emp-list" style="width: 97%; margin: 0 auto;">
                                     <thead>
                                     <tr>
-                                        <th>Event Name</th>
-                                        <th>Event Type</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
+                                        <th>EVENT NAME</th>
+                                        <th>TYPE</th>
+                                        <th>FROM</th>
+                                        <th>TO</th>
+                                        <th>ROLE</th>
+                                        <th>STATUS</th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -114,11 +114,10 @@
                                 <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
                                 <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
                                     {% for acc in allacc %}
-                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" {% if acc.id==app.user.id %}disabled{% endif %} > {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
                                     {% endfor %}
                                 </select><br><br>
                             </div>
-
                             <div class="col-md-12" id="from-row">
                                 <label>From</label><br>
                                 <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
@@ -146,8 +145,19 @@
                             <p class="notify-email-event">
                                 <input type="checkbox" id="chk-notify-email" value="1"/>
                                 <label for="chk-notify-email" class="black-text">
-                                    Send Invitation on Employees via Email?
+                                    Send Invitation on Employees via Email? <a href="javascript:void(0)" class="btn-create-show-email-about">Details</a>
                                 </label>
+
+                                <div class="row display-none email-o-about">
+                                    <div class="col-md-12">
+                                        <strong>If this is enabled?</strong>
+                                        <ul class="collection">
+                                            <li class="collection-item">Email will be resent to the employees with pending status.</li>
+                                            <li class="collection-item">If there are changes, employees will be notified with the details.</li>
+                                            <li class="collection-item">If there are new tagged employees, an invitation will be sent.</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </p>
                             <p class="notify-sms-event">
                                 <input type="checkbox" id="notify-sms" value="1"/>
@@ -186,7 +196,7 @@
 
             <div class="form-group display-none sect-reason-area mt1 pt2 pb2 pr2 pl2" style="background: #fff; ">
                 <label style="text-shadow: 0px 0px 0px;">ADD COMMENT (<span class="span-reason-status">I'm not going</span>)</label>
-                <textarea style="color: #555;" class="materialize-textarea txt-view-reason"></textarea>
+                <textarea style="color: #555;!important" class="materialize-textarea txt-view-reason"></textarea>
                 <a class="waves-effect btn-guest-response-save waves-light btn amber font16" data-loading-text="Saving..." data-status="">Save</a>
             </div>
         </h4>
@@ -256,7 +266,7 @@
             </div>
         </div>
 
-        <div class="modal-footer">
+        <div class="modal-footer" style="z-index: 111;">
             <div style="margin-right:5px; float:left;">
                 <div class="pull-left sect-view-status-area display-none">
                     Your current status is: <a class="" style="font-size: 16px;">Pending</a>
@@ -264,6 +274,7 @@
             </div>
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
             <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Edit</a>
+            <a class="waves-effect waves-light btn red btn-view-open-canel-verify-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Cancel Event</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -301,6 +312,7 @@
         var btnGuestResponse = '.btn-guest-response';
         var btnGuestResponseSave = '.btn-guest-response-save';
         var btnShowConsiderArea = '.btn-show-consider-section';
+        var btnShowEmailAbout = '.btn-create-show-email-about';
         var sectTagFields = '.sect-event-tag-type';
         var sectNonTagFields = '.sect-event-nontag-type';
         var sectGuestResponse = '.sect-guest-response-area';
@@ -436,6 +448,7 @@
             var dateFromEl2 = $('#'+txtEventOtherFrom);
             var dateToEl2 = $('#'+txtEventOtherTo);
 
+            enableElement($(cmbEventType));
             defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(dateFromEl2), $(dateToEl2), $(txtEventVenue) ]);
 
             $(txtEventId).val('');
@@ -448,8 +461,11 @@
         function viewEventDetails(el, action) {
             var tagsViewTemp = '<div class="mb1">'+
                     '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">'+
-                    '      <div class="chip [CLASS]">'+
+                    '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">'+
                     '         [NAME]'+
+                    '      </div>'+
+                    '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">'+
+                    '         [STATUS]'+
                     '      </div>[ACTION]'+
                     '   </a> [REASON]'
                     '</div>';
@@ -505,7 +521,9 @@
 
             cmbEmpTag.trigger('change');
 
-            var statusClass, statusName, headerTitle;
+            var statusName, headerTitle;
+
+            disableElement($(cmbEventType));
 
             if(data.event_type==EVENT_TYPE_HOLIDAY) {
                 hideElements([$(sectViewTagsArea), $(sectGuestResponse), $(sectUserAction), $(sectViewStatusArea)]);
@@ -516,15 +534,12 @@
                 hideElements( [$(sectGuestResponse), $(sectUserAction), $(sectReasonSection)] );
 
                 if(myStatus==STATUS_PENDING) {
-                    statusClass = 'grey';
                     statusName = 'Pending';
                     showElements( [$(sectGuestResponse)] );
                 } else {
                     if(myStatus==STATUS_APPROVED) {
-                        statusClass = 'green';
                         statusName = 'I\'m going';
                     } else if(myStatus==STATUS_DECLINED) {
-                        statusClass = 'red';
                         statusName = 'I\'m not going';
                     }
                     showElements( [$(sectUserAction)] );
@@ -553,16 +568,19 @@
                     if(stat==STATUS_APPROVED) {
                         clss = 'green';
                     } else if(stat==STATUS_DECLINED) {
-                        clss = 'amber';
+                        clss = 'red';
                     }
                     stat = convertStatusToString(stat);
 
-                    $(sectViewTagsListArea).append(tagsViewTemp
-                        .replace('[NAME]', empData.name + (empData.id==createdBy?' (Organizer)':'') + ' - ' + (stat=='approved' ? 'GOING' : (stat=='declined' ? 'NOT GOING' : stat.toUpperCase())) )
-                        .replace('[CLASS]', clss)
-                        .replace('[ACTION]', _.size(tagReasons[i]) ? '<span class="badge blue mt3" style="color: #fff;">View Reason</span>':'')
-                        .replace('[REASON]', _.size(tagReasons[i]) ? tagsViewReasonTemp.replace('[REASON]', tagReasons[i]) : '' )
-                    );
+                    if(_.size(empData)) {
+                        $(sectViewTagsListArea).append(tagsViewTemp
+                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (Organizer)' : ''))
+                            .replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
+                            .replace('[CLASS]', clss)
+                            .replace('[ACTION]', _.size(removeSpace(tagReasons[i])) ? '<span class="badge blue mt3" style="color: #fff;">View Comment</span>' : '')
+                            .replace('[REASON]', _.size(removeSpace(tagReasons[i])) ? tagsViewReasonTemp.replace('[REASON]', tagReasons[i]) : '')
+                        );
+                    }
                 }
 
                 $(sectViewStatusArea).find('a').text(statusName);
@@ -683,6 +701,13 @@
                 var eventId = $(moViewEventDetails).data('id');
                 var reason = $(txtViewReason).val();
 
+                defaultBorder([ $(txtViewReason) ]);
+                if(removeSpace(reason)=='' && status==STATUS_DECLINED) {
+                    errorBorder([ $(txtViewReason) ]);
+                    $(txtViewReason).focus();
+                    return false;
+                }
+
                 hideElements( [$(sectReasonSection)] );
                 updateGuestStatus({event_id: eventId, user_id: {{ app.user.id}}, status:status, reason:reason });
             });
@@ -690,6 +715,17 @@
             DOC.on('click', btnShowConsiderArea, function() {
                 showElements( [$(sectGuestResponse)] );
                 hideElements( [$(sectUserAction)] );
+            });
+
+            DOC.on('click', btnShowEmailAbout, function() {
+
+                if($(this).hasClass('btn-open')) {
+                    $(this).removeClass('btn-open');
+                    $('.email-o-about').hide();
+                } else {console.log('not')
+                    $(this).addClass('btn-open');
+                    $('.email-o-about').show();
+                }
             });
 
             DOC.on('change', cmbEventType, function() {
@@ -745,424 +781,6 @@
                     if(!removeSpace($('#'+txtEventOtherFrom).val()).length) pd.show();
                 }, 200);
             }, param);
-        }
-
-
-        var meetingPersonsInvolved = cmbEmpTag;
-
-    </script>
-    <script type="text/javascript">
-        /*--------Variables---------*/
-        // Row elements
-        var event_row, event_date, event_name;
-        var event_id, event_type, event_desc;
-
-        // create & edit
-        var add_header = $(".create-header");
-        var edit_header = $(".edit-header");
-        var add_btn_modal = $(".btn-create");
-        var edit_btn_modal = $(".btn-edit");
-        var notify_option = $(".notify-event");
-        var add_edit_event_modal = $('#add_event_modal');
-        var add_edit_date = $('#event_date_modal');
-        var add_edit_name = $('#event_name_modal');
-        var add_edit_desc = $('#event_desc_modal');
-        var add_edit_type = $('#event_type_modal');
-        var add_edit_id = $('#event_id');
-        var meetingPersonsInvolved = $('.select-emp-tag');
-        var picker = null;
-        var edit_event_modal = $('#edit_event_modal');
-
-        // view & delete
-        var view_date = $('#view_event_date');
-        var view_name = $('#view_event_name');
-        var view_type = $('#view_event_type');
-        var view_desc = $('#view_event_desc');
-        var view_modal = $('#view_event_modal');
-        var resend_btn = $('.btn-resend');
-        var delete_id = $("#delete-event-id");
-        var delete_modal = $("#delete_event_modal");
-        var delete_button = $("#delete-btn-delete");
-
-        // add note
-        var addnote_modal = $('#add_note_modal');
-        var notelist_table = $('.note-list');
-        var addnote_form = $('.addnote-content');
-        var createnote_button = $('.btn-create-note');
-        var addnote_button = $('#btn-add-note');
-        var cancel_button = $('.cancel-modal-agenda');
-        var close_button = $('.close-modal-agenda');
-
-        var pending_button = $("#pending");
-        var pending_form = $(".pending-form");
-        pending_button.css("display", "block");
-        pending_form.css("display", "none");
-
-        $(document).on("click", "#pending", function(){
-            pending_button.css("display", "none");
-            pending_form.css("display", "block");
-        });
-
-        /*-----------End-----------*/
-
-        /*----------- add note function -------------*/
-        $(document).on("click", "#viewnotesbtn", function(){
-            addnote_button.css("display", "block");
-            notelist_table.css("display", "table");
-            createnote_button.css("display", "none");
-            addnote_form.css("display", "none");
-            cancel_button.css("display", "none");
-            close_button.css("display", "block");
-            addnote_modal.openModal();
-        });
-
-        $(document).on("click", "#btn-add-note", function(){
-            addnote_button.css("display", "none");
-            notelist_table.css("display", "none");
-            createnote_button.css("display", "block");
-            cancel_button.css("display", "block");
-            close_button.css("display", "none");
-            addnote_form.css("display", "block");
-        });
-
-        $(document).on("click", ".cancel-modal-agenda", function(){
-            addnote_button.css("display", "block");
-            notelist_table.css("display", "table");
-            cancel_button.css("display", "none");
-            close_button.css("display", "block");
-            createnote_button.css("display", "none");
-            addnote_form.css("display", "none");
-        });
-
-        /*----------- view note function -------------*/
-        $(document).on("click", ".note-tr", function(){
-
-        });
-
-        /*----------- add & edit functions -----------*/
-        $(document).on("click", "#btn-add-event", function () {
-            add_header.css("display", "block");
-            edit_header.css("display", "none");
-            add_btn_modal.css("display", "block");
-            edit_btn_modal.css("display", "none");
-            notify_option.css("display", "block");
-//            picker = new Pikaday(
-//                    {
-//                        field: document.getElementById('event_date_modal'),
-//                        firstDay: 1,
-//                        minDate: new Date(),
-//                        maxDate: new Date(2020, 12, 31),
-//                        yearRange: [2000, 2020],
-//                        format: 'MM/DD/YYYY'
-//                    });
-            add_edit_event_modal.openModal();
-        });
-
-        $(document).on("click", "#btn-close", function () {
-            removeFields();
-            add_edit_event_modal.closeModal();
-            edit_event_modal.closeModal();
-        });
-
-        $(document).on("click", ".btn-edit", function () {
-            elements = [add_edit_date, add_edit_desc, add_edit_desc, add_edit_type];
-            var validate = checkFields(elements);
-            if (validate == true) // true == there are errors
-                return;
-
-            event_id = add_edit_id.val();
-            date = add_edit_date.val();
-            name = add_edit_name.val();
-            type = add_edit_type.val();
-            desc = add_edit_desc.val();
-            data = {
-                event_date: date,
-                event_name: name,
-                event_desc: desc,
-                event_type: type,
-                event_id: event_id
-            };
-            callback = function(data) {
-                removeFields();
-                add_edit_event_modal.closeModal();
-            };
-            done = function(data) {
-                if (data["result"]) {
-                    changeInfoView(event_id, date, name, desc, type);
-                    showSuccessBar(data["result"]);
-                } else if (data["error"]) {
-                    showErrorBar(data["error"]);
-                }
-            };
-            always = function(data) {
-                //
-            };
-            post(edit_btn_modal, "{{ path('edit_event') }}", data, callback, done, always);
-        });
-
-        $(document).on("click", ".btn-create", function () {
-            elements = [add_edit_date, add_edit_desc, add_edit_desc, add_edit_type];
-            var validate = checkFields(elements);
-            if (validate == true) // true == there are errors
-                return;
-
-            date = add_edit_date.val();
-            name = add_edit_name.val();
-            type = add_edit_type.val();
-            desc = add_edit_desc.val();
-
-            if ($('#notify').is(":checked")) notify = 1;
-            else notify = 0;
-
-            data = {
-                event_date: date,
-                event_name: name,
-                event_desc: desc,
-                event_type: type,
-                notify: notify
-            };
-
-            callback = function (data) {
-                removeFields();
-                add_edit_event_modal.closeModal();
-            };
-
-            done = function (data) {
-                if (data["result"]) {
-                    changeInfoView(event_id, date, name, desc, type);
-                    showSuccessBar(data["result"]);
-                    addEvent(date, name, desc, type, data["id"]);
-                } else if (data["error"]) {
-                    showErrorBar(data["error"]);
-                }
-            };
-
-            always = function (data) {
-                //
-            };
-
-            post(add_btn_modal, "{{ path('manage_event_add') }}", data, callback, done, always);
-        });
-
-        $(document).on("click", "#editeventbtn", function () {
-            event_row = $(this).closest("tr.event-tr");
-            event_id = event_row.data("id");
-            event_date = event_row.find("td.event-date").html();
-            event_name = event_row.find("td.event-name").html();
-            event_type = event_row.find("td.event-type").html();
-            event_desc = event_row.find("td.event-desc").html();
-            edit(event_type, event_date, event_name, event_desc, event_id);
-        });
-
-        /*$(document).on("click", ".btnEditEvent", function () {
-         event_row = $(this).closest("tr.event-tr");
-         event_id = event_row.data("id");
-         event_date = event_row.find("td.event-date").html();
-         event_name = event_row.find("td.event-name").html();
-         event_type = event_row.find("td.event-type").html();
-         event_desc = event_row.find("td.event-desc").html();
-         edit(event_type, event_date, event_name, event_desc, event_id);
-         });*/
-
-        function edit(type, date, name, desc, id) {
-            add_edit_date.val(date);
-            if(type == "Holiday")
-                add_edit_type.val(1);
-            else add_edit_type.val(2);
-            add_edit_name.val(name);
-            add_edit_desc.val(desc);
-            add_edit_id.val(id);
-            add_header.css("display", "none");
-            edit_header.css("display", "block");
-            add_btn_modal.css("display", "none");
-            edit_btn_modal.css("display", "block");
-            notify_option.css("display", "none");
-            picker = new Pikaday(
-                    {
-                        field: document.getElementById('event_date_modal'),
-                        firstDay: 1,
-                        minDate: new Date(),
-                        maxDate: new Date(2020, 12, 31),
-                        yearRange: [2000, 2020],
-                        format: 'MM/DD/YYYY'
-                    });
-            edit_event_modal.openModal();
-        }
-
-        function removeFields() {
-            picker.destroy();
-            event_date = add_edit_date.val('');
-            event_name = add_edit_name.val('');
-            event_desc = add_edit_desc.val('');
-            event_type = add_edit_type.val('');
-        }
-
-        function changeInfoView(event_id, date, name, desc, type) {
-            event_row = $('tr.event-tr[data-id="' + event_id + '"]');
-            event_date = event_row.find("td.event-date");
-            event_name = event_row.find("td.event-name");
-            event_type = event_row.find("td.event-type");
-            event_desc = event_row.find("td.event-desc");
-            event_date.html(date);
-            event_name.html(name);
-            event_desc.html(desc);
-            if(type == 1) event_type.html("Holiday");
-            else event_type.html("Regular");
-        }
-
-        /*-------------- View & Delete ---------------*/
-
-        $(document).on("click", ".btn-resend", function () {
-            date = view_date.val();
-            name = view_name.val();
-            type = view_type.text();
-            desc = view_desc.text();
-
-            data = {
-                event_date: date,
-                event_name: name,
-                event_desc: desc,
-                event_type: type
-            };
-
-            callback = function (data) {
-                removeFields();
-                view_modal.closeModal();
-            };
-
-            done = function (data) {
-                if (data["result"]) {
-                    showSuccessBar(data["result"]);
-                } else if (data["error"]) {
-                    showErrorBar(data["error"]);
-                }
-            };
-
-            always = function (data) {
-                //
-            };
-
-            post(resend_btn, "{{ path('notify_event') }}", data, callback, done, always);
-        });
-
-        $(document).on("click", "#viewdetailsbtn", function(){
-            event_row = $(this).closest("tr.event-tr");
-            event_id = event_row.data("id");
-            event_date = event_row.find("td.event-date").html();
-            event_name = event_row.find("td.event-name").html();
-            event_type = event_row.find("td.event-type").html();
-            event_desc = event_row.find("td.event-desc").html();
-            view(event_type, event_date, event_name, event_desc);
-        });
-
-        /*$(document).on("click", ".btnViewEvent", function () {
-         event_row = $(this).closest("tr.event-tr");
-         event_id = event_row.data("id");
-         event_date = event_row.find("td.event-date").html();
-         event_name = event_row.find("td.event-name").html();
-         event_type = event_row.find("td.event-type").html();
-         event_desc = event_row.find("td.event-desc").html();
-         view(event_type, event_date, event_name, event_desc);
-         });*/
-
-        $(document).on("click", "#canceleventbtn", function () {
-            event_row = $(this).closest("tr.event-tr");
-            event_id = event_row.data("id");
-            delete_id.val(event_id);
-            delete_modal.openModal();
-        });
-
-        /*$(document).on("click", ".btnDeleteEvent", function () {
-         event_row = $(this).closest("tr.event-tr");
-         event_id = event_row.data("id");
-         delete_id.val(event_id);
-         delete_modal.openModal();
-         });*/
-
-        $(document).on("click", "#delete-btn-delete", function () {
-            event_id = delete_id.val();
-            data = { event_id: event_id };
-            callback = function (data) {
-                delete_modal.closeModal();
-            };
-            done = function (data) {
-                if (data["result"]) {
-                    $('tr.event-tr[data-id="' + event_id + '"]').remove();
-                    showSuccessBar(data["result"]);
-                } else if (data["error"]) {
-                    showErrorBar(data["error"]);
-                }
-            };
-            always = function (data) {
-                //
-            };
-            post(delete_button, "{{ path('delete_event') }}", data, callback, done, always);
-        });
-
-        function view(type, date, name, desc) {
-            view_date.val(date);
-            view_type.text(type);
-            view_name.val(name);
-            view_desc.text(desc);
-            view_modal.openModal();
-        }
-
-
-        function addEvent(date, name, desc, type, id) {
-            var row = document.createElement("tr");
-            row.className = "event-tr";
-            row.dataset.id = id;
-
-            var td_name = document.createElement("td");
-            td_name.className = "event-name";
-            td_name.textContent = name;
-
-            var td_date = document.createElement("td");
-            td_date.className = "event-date";
-            td_date.textContent = date;
-
-            var td_type = document.createElement("td");
-            td_type.className = "event-type";
-            if(type == 1) td_type.textContent = "Holiday";
-            else td_type.textContent = "Regular";
-
-            var td_desc = document.createElement("td");
-            td_desc.className = "event-desc";
-            td_desc.style.display = "none";
-            td_desc.textContent = desc;
-
-            var td_view = document.createElement("td");
-            td_view.style.float = "right";
-
-            var btn_view = document.createElement("button");
-            btn_view.className = "waves-effect waves-light btn green btnViewEvent";
-            btn_view.textContent = "View";
-            btn_view.style.marginRight = "14px";
-            td_view.append(btn_view);
-
-            var btn_edit = document.createElement("button");
-            btn_edit.className = "waves-effect waves-light btn orange btnEditEvent";
-            btn_edit.textContent = "Edit";
-            btn_edit.style.marginRight = "14px";
-            td_view.append(btn_edit);
-
-            var btn_del = document.createElement("button");
-            btn_del.className = "waves-effect waves-light btn red btnDeleteEvent";
-            btn_del.style.marginRight = "10px";
-
-            var delcontent = document.createElement("i");
-            delcontent.className = "material-icons";
-            delcontent.textContent = "delete";
-            btn_del.append(delcontent);
-            td_view.append(btn_del);
-
-            row.append(td_name);
-            row.append(td_date);
-            row.append(td_type);
-            row.append(td_desc);
-            row.append(td_view);
-
-            $("tbody").append(row);
         }
     </script>
 {% endblock %}

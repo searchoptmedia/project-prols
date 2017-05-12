@@ -91,21 +91,27 @@ class EventManagerController extends Controller
                             $eventTagged = $eventTag->_save(array(
                                 'emp_id' => $empAcc->getId(),
                                 'event_id' => $event->getId(),
-                                'status' => $eventTagQry ? $eventTagQry->getStatus() : C::STATUS_PENDING
+                                'status' => $eventTagQry ? ( $eventTagQry->getStatus()!=C::STATUS_INACTIVE ? $eventTagQry->getStatus() : C::STATUS_PENDING ) : C::STATUS_PENDING
                             ), $eventTagQry);
+
+                            $params['user_id'] = $empAcc->getId();
+                            $params['links'] = array('View Event' => $this->generateUrl('manage_events', array('id' => $event->getId()), true));
 
                             if($eventTagged) {
                                 if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
-                                    if($event->getEventType()==C::EVENT_TYPE_HOLIDAY) {
-                                        $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
-                                        $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
-                                    } else {
-                                        $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
-                                        $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
-                                    }
+                                    $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
+                                    $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
 
-                                    $params['user_id'] = $empAcc->getId();
                                     $this->email->notifyEmployeeOnEvent($params, $this);
+                                } else if($eventTagQry) {
+                                    $params['has-update'] = true;
+
+                                    if($eventQry->getEventName()!=$event->getEventName() ||
+                                        ($eventQry->getFromDate()->format('m-d-Y h:i a')!=$event->getFromDate()->format('m-d-Y h:i a')) ||
+                                        ($eventQry->getToDate()->format('m-d-Y h:i a')!=$event->getToDate()->format('m-d-Y h:i a')) ||
+                                        ($eventQry->getEventVenue()!=$event->getEventVenue()) ||
+                                        ($eventQry->getEventType()!=$event->getEventType()) )
+                                            $this->email->notifyEmployeeOnEvent($params, $this);
                                 }
                             } else {
                                 $response = array('error' => 'Oops! Encountered problem while tagging. Please try again!');
@@ -267,6 +273,7 @@ class EventManagerController extends Controller
                 $eventTag = new EventTaggedPersons();
 
                 if($eventTagQry) {
+                    $origStatus = $eventTagQry->getStatus();
                     $eventTagData = array(
                         'event_id' => $params['event_id'],
                         'emp_id' => $params['user_id'],
@@ -281,7 +288,8 @@ class EventManagerController extends Controller
                     if($eventTag) {
                         $response = U::getSuccessResponse();
                         //send notification
-                        $this->email->notifyEmployeeOnEvent($params, $this);
+                        if($origStatus != $statusId)
+                            $this->email->notifyEmployeeOnEventUpdateTagStatus($params, $this);
                     }
                 }
             }
@@ -394,9 +402,13 @@ class EventManagerController extends Controller
         exit;
     }
 
-    public function showEventsAction($request, $userId = 0, $userLevel) {
+    public function getCalendarEvents($request, $params = array())
+    {
+        $allEvents = ListEventsQuery::_findAll(array(
+            'date_started' => $params['date_started'],
+            'date_ended' => $params['date_ended']
+        ));
 
-        $allEvents = ListEventsPeer::getCalendarEvents();
         foreach ($allEvents as $event) {
             $eventFromDate = $event->getFromDate();
             $eventToDate =  $event->getToDate();
@@ -414,6 +426,10 @@ class EventManagerController extends Controller
             $eventType = $event->getEventType();
             $eventId = $event->getId();
             $eventName = $event->getEventName();
+            $eventOwnerId = $event->getCreatedBy();
+
+            $eventOwner = EmpProfileQuery::_findByAccId($eventOwnerId);
+            $eventOwnerName = trim($eventOwner->getFname() . ' ' . $eventOwner->getLname());
 
             $color = '#64b5f6';
             $eventTypeName = 'Holiday';
@@ -426,7 +442,21 @@ class EventManagerController extends Controller
                 $color = '#17a282';
             }
 
-            $event = array(
+            $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+            $eventTagsList = '';
+            $totalTags = 0;
+
+            foreach($eventTags as $et) {
+                if($et->getStatus()!=C::STATUS_INACTIVE) {
+                    $class = $et->getStatus()==C::STATUS_APPROVED ? 'green' : ($et->getStatus()==C::STATUS_DECLINED ? 'red' : '');
+                    $empId = $et->getEmpId();
+                    $userProfile = EmpProfileQuery::_findByAccId($empId);
+                    $eventTagsList .= '<div class="chip mr1 '.$class.'">'.( $userProfile->getFname(). ' ' . $userProfile->getLname() ).'</div>';
+                    $totalTags++;
+                }
+            }
+
+            $eventData = array(
                 'date' => 'From: ' . $eventFromDate . "<br>" . "To: " . $eventToDate,
                 'id' => $eventId,
                 'title' => $eventName,
@@ -435,11 +465,18 @@ class EventManagerController extends Controller
                 'editable' => false,
                 'color' => $color,
                 'eventName' => $eventName,
+                'eventOwnerName' => $eventOwnerName,
                 'eventType' => $eventTypeName,
+                'eventTypeId' => $eventType,
+                'eventDesc' => $event->getEventDescription(),
+                'eventVenue' => $event->getEventVenue(),
+                'eventFromDate' => date('F d, Y h:i a', strtotime($eventFromDate)),
+                'eventToDate' => date('F d, Y h:i a', strtotime($eventToDate)),
+                'eventTags' => $eventTagsList,
                 'type' => "event"
             );
 
-            array_push($request, $event);
+            array_push($request, $eventData);
         }
 
         return $request;
