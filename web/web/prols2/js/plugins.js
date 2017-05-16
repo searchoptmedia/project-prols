@@ -46,8 +46,10 @@ var _fullCalendar = function(){
                 loading: function(isLoading) {
                     if(isLoading)
                         showLoadingBar();
-                    else
+                    else {
+                        enableElement($(btnViewLeaveRequest));
                         hideLoadingBar();
+                    }
                 },
                 eventLimit: 10,
 
@@ -126,8 +128,8 @@ var _fullCalendar = function(){
                             $(".agenda-list ul").append('<li class="collection-item avatar"><i class="material-icons circle">perm_identity</i><span>' + event.requesttype + '</span><p>' + event.empname + '</p></li>');
                         } else if (event.type = "event") {
                             var details = '   <div class="mb2 display-none sect-event-details-mo">  ' +
-                                '      <h5 class="colorBlack">[TITLE]</h5>  ' +
-                                '      [DESC]<br>  ' +
+                                '      <h5 class="colorBlack"><img src="/images/qoute.png" height="20" width="25"> [TITLE]</h5>  ' +
+                                '      <span style="padding: 4px 0;color: #333;display: inline;"><span style="padding: 30px;-webkit-box-decoration-break: clone;box-decoration-break: clone;">[DESC]</span></span><br>  ' +
                                 '      <hr style="border-top:1px dotted #ccc;margin-bottom:10px">  ' +
                                 '      <strong class="font20 mr2">When:&nbsp;</strong> [DATE]<br>  ' +
                                 '      <strong class="font20 mr2">Where:</strong> [VENUE]<br>  ' +
@@ -159,16 +161,8 @@ var _fullCalendar = function(){
                 }
             });
 
-            hideForms();
-            agendaList.show();
-            dailyAgendaModal.openModal();
-            agendaDate.html(date.format('MMMM DD, YYYY'));
-            var currDate = moment().format('YYYY-MM-DD');
-
-            if(date.format('YYYY-MM-DD') > currDate)
-                agendaDateDiffFormat.html(date.format('YYYY-MM-DD'));
-            else
-                agendaDateDiffFormat.html(currDate);
+            _dashboardModal
+                .openAgendaModal(date);
 
             return this;
         }

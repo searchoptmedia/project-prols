@@ -274,7 +274,7 @@
             </div>
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
             <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Edit</a>
-            <a class="waves-effect waves-light btn red btn-view-open-canel-verify-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Cancel Event</a>
+            <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Cancel Event</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -313,6 +313,7 @@
         var btnGuestResponseSave = '.btn-guest-response-save';
         var btnShowConsiderArea = '.btn-show-consider-section';
         var btnShowEmailAbout = '.btn-create-show-email-about';
+        var btnCancelEvent = '.btn-view-open-cancel-verify-mo';
         var sectTagFields = '.sect-event-tag-type';
         var sectNonTagFields = '.sect-event-nontag-type';
         var sectGuestResponse = '.sect-guest-response-area';
@@ -574,7 +575,7 @@
 
                     if(_.size(empData)) {
                         $(sectViewTagsListArea).append(tagsViewTemp
-                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (Organizer)' : ''))
+                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))
                             .replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
                             .replace('[CLASS]', clss)
                             .replace('[ACTION]', _.size(removeSpace(tagReasons[i])) ? '<span class="badge blue mt3" style="color: #fff;">View Comment</span>' : '')
@@ -607,7 +608,6 @@
         function updateGuestStatus(data) {
             if(buttonIsReadyPlr($(btnGuestResponseSave))) {
                 var btn = $(btnGuestResponseSave).eq(0);
-                var btnText = $(btnGuestResponseSave).text();
 
                 post(btn, '{{ path('manage_event_tag_change_status') }}', data, function (data) {
                     if (data.error) {

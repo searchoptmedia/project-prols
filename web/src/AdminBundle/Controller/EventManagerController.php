@@ -451,7 +451,7 @@ class EventManagerController extends Controller
                     $class = $et->getStatus()==C::STATUS_APPROVED ? 'green' : ($et->getStatus()==C::STATUS_DECLINED ? 'red' : '');
                     $empId = $et->getEmpId();
                     $userProfile = EmpProfileQuery::_findByAccId($empId);
-                    $eventTagsList .= '<div class="chip mr1 '.$class.'">'.( $userProfile->getFname(). ' ' . $userProfile->getLname() ).'</div>';
+                    $eventTagsList .= '<div class="chip mr1 mb1 '.$class.'">'.( $userProfile->getFname(). ' ' . $userProfile->getLname() ).'</div>';
                     $totalTags++;
                 }
             }
