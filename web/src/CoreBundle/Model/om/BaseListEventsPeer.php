@@ -31,13 +31,13 @@ abstract class BaseListEventsPeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\ListEventsTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 11;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 11;
 
     /** the column name for the id field */
     const ID = 'list_events.id';
@@ -56,6 +56,9 @@ abstract class BaseListEventsPeer
 
     /** the column name for the event_name field */
     const EVENT_NAME = 'list_events.event_name';
+
+    /** the column name for the event_venue field */
+    const EVENT_VENUE = 'list_events.event_venue';
 
     /** the column name for the event_desc field */
     const EVENT_DESC = 'list_events.event_desc';
@@ -88,12 +91,12 @@ abstract class BaseListEventsPeer
      * e.g. ListEventsPeer::$fieldNames[ListEventsPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'CreatedBy', 'DateCreated', 'FromDate', 'ToDate', 'EventName', 'EventDescription', 'EventType', 'Status', 'SmsResponse', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'createdBy', 'dateCreated', 'fromDate', 'toDate', 'eventName', 'eventDescription', 'eventType', 'status', 'smsResponse', ),
-        BasePeer::TYPE_COLNAME => array (ListEventsPeer::ID, ListEventsPeer::CREATED_BY, ListEventsPeer::DATE_CREATED, ListEventsPeer::FROM_DATE, ListEventsPeer::TO_DATE, ListEventsPeer::EVENT_NAME, ListEventsPeer::EVENT_DESC, ListEventsPeer::EVENT_TYPE, ListEventsPeer::STATUS, ListEventsPeer::SMS_RESPONSE, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'CREATED_BY', 'DATE_CREATED', 'FROM_DATE', 'TO_DATE', 'EVENT_NAME', 'EVENT_DESC', 'EVENT_TYPE', 'STATUS', 'SMS_RESPONSE', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'created_by', 'date_created', 'from_date', 'to_date', 'event_name', 'event_desc', 'event_type', 'status', 'sms_response', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'CreatedBy', 'DateCreated', 'FromDate', 'ToDate', 'EventName', 'EventVenue', 'EventDescription', 'EventType', 'Status', 'SmsResponse', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'createdBy', 'dateCreated', 'fromDate', 'toDate', 'eventName', 'eventVenue', 'eventDescription', 'eventType', 'status', 'smsResponse', ),
+        BasePeer::TYPE_COLNAME => array (ListEventsPeer::ID, ListEventsPeer::CREATED_BY, ListEventsPeer::DATE_CREATED, ListEventsPeer::FROM_DATE, ListEventsPeer::TO_DATE, ListEventsPeer::EVENT_NAME, ListEventsPeer::EVENT_VENUE, ListEventsPeer::EVENT_DESC, ListEventsPeer::EVENT_TYPE, ListEventsPeer::STATUS, ListEventsPeer::SMS_RESPONSE, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'CREATED_BY', 'DATE_CREATED', 'FROM_DATE', 'TO_DATE', 'EVENT_NAME', 'EVENT_VENUE', 'EVENT_DESC', 'EVENT_TYPE', 'STATUS', 'SMS_RESPONSE', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'created_by', 'date_created', 'from_date', 'to_date', 'event_name', 'event_venue', 'event_desc', 'event_type', 'status', 'sms_response', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
     );
 
     /**
@@ -103,12 +106,12 @@ abstract class BaseListEventsPeer
      * e.g. ListEventsPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'CreatedBy' => 1, 'DateCreated' => 2, 'FromDate' => 3, 'ToDate' => 4, 'EventName' => 5, 'EventDescription' => 6, 'EventType' => 7, 'Status' => 8, 'SmsResponse' => 9, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'createdBy' => 1, 'dateCreated' => 2, 'fromDate' => 3, 'toDate' => 4, 'eventName' => 5, 'eventDescription' => 6, 'eventType' => 7, 'status' => 8, 'smsResponse' => 9, ),
-        BasePeer::TYPE_COLNAME => array (ListEventsPeer::ID => 0, ListEventsPeer::CREATED_BY => 1, ListEventsPeer::DATE_CREATED => 2, ListEventsPeer::FROM_DATE => 3, ListEventsPeer::TO_DATE => 4, ListEventsPeer::EVENT_NAME => 5, ListEventsPeer::EVENT_DESC => 6, ListEventsPeer::EVENT_TYPE => 7, ListEventsPeer::STATUS => 8, ListEventsPeer::SMS_RESPONSE => 9, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'CREATED_BY' => 1, 'DATE_CREATED' => 2, 'FROM_DATE' => 3, 'TO_DATE' => 4, 'EVENT_NAME' => 5, 'EVENT_DESC' => 6, 'EVENT_TYPE' => 7, 'STATUS' => 8, 'SMS_RESPONSE' => 9, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'created_by' => 1, 'date_created' => 2, 'from_date' => 3, 'to_date' => 4, 'event_name' => 5, 'event_desc' => 6, 'event_type' => 7, 'status' => 8, 'sms_response' => 9, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'CreatedBy' => 1, 'DateCreated' => 2, 'FromDate' => 3, 'ToDate' => 4, 'EventName' => 5, 'EventVenue' => 6, 'EventDescription' => 7, 'EventType' => 8, 'Status' => 9, 'SmsResponse' => 10, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'createdBy' => 1, 'dateCreated' => 2, 'fromDate' => 3, 'toDate' => 4, 'eventName' => 5, 'eventVenue' => 6, 'eventDescription' => 7, 'eventType' => 8, 'status' => 9, 'smsResponse' => 10, ),
+        BasePeer::TYPE_COLNAME => array (ListEventsPeer::ID => 0, ListEventsPeer::CREATED_BY => 1, ListEventsPeer::DATE_CREATED => 2, ListEventsPeer::FROM_DATE => 3, ListEventsPeer::TO_DATE => 4, ListEventsPeer::EVENT_NAME => 5, ListEventsPeer::EVENT_VENUE => 6, ListEventsPeer::EVENT_DESC => 7, ListEventsPeer::EVENT_TYPE => 8, ListEventsPeer::STATUS => 9, ListEventsPeer::SMS_RESPONSE => 10, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'CREATED_BY' => 1, 'DATE_CREATED' => 2, 'FROM_DATE' => 3, 'TO_DATE' => 4, 'EVENT_NAME' => 5, 'EVENT_VENUE' => 6, 'EVENT_DESC' => 7, 'EVENT_TYPE' => 8, 'STATUS' => 9, 'SMS_RESPONSE' => 10, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'created_by' => 1, 'date_created' => 2, 'from_date' => 3, 'to_date' => 4, 'event_name' => 5, 'event_venue' => 6, 'event_desc' => 7, 'event_type' => 8, 'status' => 9, 'sms_response' => 10, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
     );
 
     /**
@@ -188,6 +191,7 @@ abstract class BaseListEventsPeer
             $criteria->addSelectColumn(ListEventsPeer::FROM_DATE);
             $criteria->addSelectColumn(ListEventsPeer::TO_DATE);
             $criteria->addSelectColumn(ListEventsPeer::EVENT_NAME);
+            $criteria->addSelectColumn(ListEventsPeer::EVENT_VENUE);
             $criteria->addSelectColumn(ListEventsPeer::EVENT_DESC);
             $criteria->addSelectColumn(ListEventsPeer::EVENT_TYPE);
             $criteria->addSelectColumn(ListEventsPeer::STATUS);
@@ -199,6 +203,7 @@ abstract class BaseListEventsPeer
             $criteria->addSelectColumn($alias . '.from_date');
             $criteria->addSelectColumn($alias . '.to_date');
             $criteria->addSelectColumn($alias . '.event_name');
+            $criteria->addSelectColumn($alias . '.event_venue');
             $criteria->addSelectColumn($alias . '.event_desc');
             $criteria->addSelectColumn($alias . '.event_type');
             $criteria->addSelectColumn($alias . '.status');

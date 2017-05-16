@@ -28,6 +28,7 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEventsQuery orderByFromDate($order = Criteria::ASC) Order by the from_date column
  * @method ListEventsQuery orderByToDate($order = Criteria::ASC) Order by the to_date column
  * @method ListEventsQuery orderByEventName($order = Criteria::ASC) Order by the event_name column
+ * @method ListEventsQuery orderByEventVenue($order = Criteria::ASC) Order by the event_venue column
  * @method ListEventsQuery orderByEventDescription($order = Criteria::ASC) Order by the event_desc column
  * @method ListEventsQuery orderByEventType($order = Criteria::ASC) Order by the event_type column
  * @method ListEventsQuery orderByStatus($order = Criteria::ASC) Order by the status column
@@ -39,6 +40,7 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEventsQuery groupByFromDate() Group by the from_date column
  * @method ListEventsQuery groupByToDate() Group by the to_date column
  * @method ListEventsQuery groupByEventName() Group by the event_name column
+ * @method ListEventsQuery groupByEventVenue() Group by the event_venue column
  * @method ListEventsQuery groupByEventDescription() Group by the event_desc column
  * @method ListEventsQuery groupByEventType() Group by the event_type column
  * @method ListEventsQuery groupByStatus() Group by the status column
@@ -76,6 +78,7 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEvents findOneByFromDate(string $from_date) Return the first ListEvents filtered by the from_date column
  * @method ListEvents findOneByToDate(string $to_date) Return the first ListEvents filtered by the to_date column
  * @method ListEvents findOneByEventName(string $event_name) Return the first ListEvents filtered by the event_name column
+ * @method ListEvents findOneByEventVenue(string $event_venue) Return the first ListEvents filtered by the event_venue column
  * @method ListEvents findOneByEventDescription(string $event_desc) Return the first ListEvents filtered by the event_desc column
  * @method ListEvents findOneByEventType(int $event_type) Return the first ListEvents filtered by the event_type column
  * @method ListEvents findOneByStatus(int $status) Return the first ListEvents filtered by the status column
@@ -87,6 +90,7 @@ use CoreBundle\Model\ListEventsType;
  * @method array findByFromDate(string $from_date) Return ListEvents objects filtered by the from_date column
  * @method array findByToDate(string $to_date) Return ListEvents objects filtered by the to_date column
  * @method array findByEventName(string $event_name) Return ListEvents objects filtered by the event_name column
+ * @method array findByEventVenue(string $event_venue) Return ListEvents objects filtered by the event_venue column
  * @method array findByEventDescription(string $event_desc) Return ListEvents objects filtered by the event_desc column
  * @method array findByEventType(int $event_type) Return ListEvents objects filtered by the event_type column
  * @method array findByStatus(int $status) Return ListEvents objects filtered by the status column
@@ -196,7 +200,7 @@ abstract class BaseListEventsQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_desc`, `event_type`, `status`, `sms_response` FROM `list_events` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_venue`, `event_desc`, `event_type`, `status`, `sms_response` FROM `list_events` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -527,6 +531,35 @@ abstract class BaseListEventsQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ListEventsPeer::EVENT_NAME, $eventName, $comparison);
+    }
+
+    /**
+     * Filter the query on the event_venue column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEventVenue('fooValue');   // WHERE event_venue = 'fooValue'
+     * $query->filterByEventVenue('%fooValue%'); // WHERE event_venue LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $eventVenue The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByEventVenue($eventVenue = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($eventVenue)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $eventVenue)) {
+                $eventVenue = str_replace('*', '%', $eventVenue);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::EVENT_VENUE, $eventVenue, $comparison);
     }
 
     /**

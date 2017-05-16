@@ -23,11 +23,13 @@ use CoreBundle\Model\ListEvents;
  * @method EventTaggedPersonsQuery orderByEventId($order = Criteria::ASC) Order by the event_id column
  * @method EventTaggedPersonsQuery orderByEmpId($order = Criteria::ASC) Order by the emp_id column
  * @method EventTaggedPersonsQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method EventTaggedPersonsQuery orderByReason($order = Criteria::ASC) Order by the reason column
  *
  * @method EventTaggedPersonsQuery groupById() Group by the id column
  * @method EventTaggedPersonsQuery groupByEventId() Group by the event_id column
  * @method EventTaggedPersonsQuery groupByEmpId() Group by the emp_id column
  * @method EventTaggedPersonsQuery groupByStatus() Group by the status column
+ * @method EventTaggedPersonsQuery groupByReason() Group by the reason column
  *
  * @method EventTaggedPersonsQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EventTaggedPersonsQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -47,11 +49,13 @@ use CoreBundle\Model\ListEvents;
  * @method EventTaggedPersons findOneByEventId(int $event_id) Return the first EventTaggedPersons filtered by the event_id column
  * @method EventTaggedPersons findOneByEmpId(int $emp_id) Return the first EventTaggedPersons filtered by the emp_id column
  * @method EventTaggedPersons findOneByStatus(int $status) Return the first EventTaggedPersons filtered by the status column
+ * @method EventTaggedPersons findOneByReason(string $reason) Return the first EventTaggedPersons filtered by the reason column
  *
  * @method array findById(int $id) Return EventTaggedPersons objects filtered by the id column
  * @method array findByEventId(int $event_id) Return EventTaggedPersons objects filtered by the event_id column
  * @method array findByEmpId(int $emp_id) Return EventTaggedPersons objects filtered by the emp_id column
  * @method array findByStatus(int $status) Return EventTaggedPersons objects filtered by the status column
+ * @method array findByReason(string $reason) Return EventTaggedPersons objects filtered by the reason column
  */
 abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
 {
@@ -157,7 +161,7 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `event_id`, `emp_id`, `status` FROM `event_tagged_persons` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `event_id`, `emp_id`, `status`, `reason` FROM `event_tagged_persons` WHERE `id` = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -416,6 +420,35 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EventTaggedPersonsPeer::STATUS, $status, $comparison);
+    }
+
+    /**
+     * Filter the query on the reason column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReason('fooValue');   // WHERE reason = 'fooValue'
+     * $query->filterByReason('%fooValue%'); // WHERE reason LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $reason The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EventTaggedPersonsQuery The current query, for fluid interface
+     */
+    public function filterByReason($reason = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($reason)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $reason)) {
+                $reason = str_replace('*', '%', $reason);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EventTaggedPersonsPeer::REASON, $reason, $comparison);
     }
 
     /**

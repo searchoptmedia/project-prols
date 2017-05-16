@@ -87,6 +87,12 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     protected $event_name;
 
     /**
+     * The value for the event_venue field.
+     * @var        string
+     */
+    protected $event_venue;
+
+    /**
      * The value for the event_desc field.
      * @var        string
      */
@@ -330,6 +336,17 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [event_venue] column value.
+     *
+     * @return string
+     */
+    public function getEventVenue()
+    {
+
+        return $this->event_venue;
+    }
+
+    /**
      * Get the [event_desc] column value.
      *
      * @return string
@@ -510,6 +527,27 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     } // setEventName()
 
     /**
+     * Set the value of [event_venue] column.
+     *
+     * @param  string $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setEventVenue($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->event_venue !== $v) {
+            $this->event_venue = $v;
+            $this->modifiedColumns[] = ListEventsPeer::EVENT_VENUE;
+        }
+
+
+        return $this;
+    } // setEventVenue()
+
+    /**
      * Set the value of [event_desc] column.
      *
      * @param  string $v new value
@@ -635,10 +673,11 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $this->from_date = ($row[$startcol + 3] !== null) ? (string) $row[$startcol + 3] : null;
             $this->to_date = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
             $this->event_name = ($row[$startcol + 5] !== null) ? (string) $row[$startcol + 5] : null;
-            $this->event_desc = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
-            $this->event_type = ($row[$startcol + 7] !== null) ? (int) $row[$startcol + 7] : null;
-            $this->status = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
-            $this->sms_response = ($row[$startcol + 9] !== null) ? (string) $row[$startcol + 9] : null;
+            $this->event_venue = ($row[$startcol + 6] !== null) ? (string) $row[$startcol + 6] : null;
+            $this->event_desc = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
+            $this->event_type = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
+            $this->status = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
+            $this->sms_response = ($row[$startcol + 10] !== null) ? (string) $row[$startcol + 10] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -648,7 +687,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 10; // 10 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 11; // 11 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating ListEvents object", $e);
@@ -962,6 +1001,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($this->isColumnModified(ListEventsPeer::EVENT_NAME)) {
             $modifiedColumns[':p' . $index++]  = '`event_name`';
         }
+        if ($this->isColumnModified(ListEventsPeer::EVENT_VENUE)) {
+            $modifiedColumns[':p' . $index++]  = '`event_venue`';
+        }
         if ($this->isColumnModified(ListEventsPeer::EVENT_DESC)) {
             $modifiedColumns[':p' . $index++]  = '`event_desc`';
         }
@@ -1002,6 +1044,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                         break;
                     case '`event_name`':
                         $stmt->bindValue($identifier, $this->event_name, PDO::PARAM_STR);
+                        break;
+                    case '`event_venue`':
+                        $stmt->bindValue($identifier, $this->event_venue, PDO::PARAM_STR);
                         break;
                     case '`event_desc`':
                         $stmt->bindValue($identifier, $this->event_desc, PDO::PARAM_STR);
@@ -1210,15 +1255,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 return $this->getEventName();
                 break;
             case 6:
-                return $this->getEventDescription();
+                return $this->getEventVenue();
                 break;
             case 7:
-                return $this->getEventType();
+                return $this->getEventDescription();
                 break;
             case 8:
-                return $this->getStatus();
+                return $this->getEventType();
                 break;
             case 9:
+                return $this->getStatus();
+                break;
+            case 10:
                 return $this->getSmsResponse();
                 break;
             default:
@@ -1256,10 +1304,11 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $keys[3] => $this->getFromDate(),
             $keys[4] => $this->getToDate(),
             $keys[5] => $this->getEventName(),
-            $keys[6] => $this->getEventDescription(),
-            $keys[7] => $this->getEventType(),
-            $keys[8] => $this->getStatus(),
-            $keys[9] => $this->getSmsResponse(),
+            $keys[6] => $this->getEventVenue(),
+            $keys[7] => $this->getEventDescription(),
+            $keys[8] => $this->getEventType(),
+            $keys[9] => $this->getStatus(),
+            $keys[10] => $this->getSmsResponse(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1335,15 +1384,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 $this->setEventName($value);
                 break;
             case 6:
-                $this->setEventDescription($value);
+                $this->setEventVenue($value);
                 break;
             case 7:
-                $this->setEventType($value);
+                $this->setEventDescription($value);
                 break;
             case 8:
-                $this->setStatus($value);
+                $this->setEventType($value);
                 break;
             case 9:
+                $this->setStatus($value);
+                break;
+            case 10:
                 $this->setSmsResponse($value);
                 break;
         } // switch()
@@ -1376,10 +1428,11 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if (array_key_exists($keys[3], $arr)) $this->setFromDate($arr[$keys[3]]);
         if (array_key_exists($keys[4], $arr)) $this->setToDate($arr[$keys[4]]);
         if (array_key_exists($keys[5], $arr)) $this->setEventName($arr[$keys[5]]);
-        if (array_key_exists($keys[6], $arr)) $this->setEventDescription($arr[$keys[6]]);
-        if (array_key_exists($keys[7], $arr)) $this->setEventType($arr[$keys[7]]);
-        if (array_key_exists($keys[8], $arr)) $this->setStatus($arr[$keys[8]]);
-        if (array_key_exists($keys[9], $arr)) $this->setSmsResponse($arr[$keys[9]]);
+        if (array_key_exists($keys[6], $arr)) $this->setEventVenue($arr[$keys[6]]);
+        if (array_key_exists($keys[7], $arr)) $this->setEventDescription($arr[$keys[7]]);
+        if (array_key_exists($keys[8], $arr)) $this->setEventType($arr[$keys[8]]);
+        if (array_key_exists($keys[9], $arr)) $this->setStatus($arr[$keys[9]]);
+        if (array_key_exists($keys[10], $arr)) $this->setSmsResponse($arr[$keys[10]]);
     }
 
     /**
@@ -1397,6 +1450,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($this->isColumnModified(ListEventsPeer::FROM_DATE)) $criteria->add(ListEventsPeer::FROM_DATE, $this->from_date);
         if ($this->isColumnModified(ListEventsPeer::TO_DATE)) $criteria->add(ListEventsPeer::TO_DATE, $this->to_date);
         if ($this->isColumnModified(ListEventsPeer::EVENT_NAME)) $criteria->add(ListEventsPeer::EVENT_NAME, $this->event_name);
+        if ($this->isColumnModified(ListEventsPeer::EVENT_VENUE)) $criteria->add(ListEventsPeer::EVENT_VENUE, $this->event_venue);
         if ($this->isColumnModified(ListEventsPeer::EVENT_DESC)) $criteria->add(ListEventsPeer::EVENT_DESC, $this->event_desc);
         if ($this->isColumnModified(ListEventsPeer::EVENT_TYPE)) $criteria->add(ListEventsPeer::EVENT_TYPE, $this->event_type);
         if ($this->isColumnModified(ListEventsPeer::STATUS)) $criteria->add(ListEventsPeer::STATUS, $this->status);
@@ -1469,6 +1523,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $copyObj->setFromDate($this->getFromDate());
         $copyObj->setToDate($this->getToDate());
         $copyObj->setEventName($this->getEventName());
+        $copyObj->setEventVenue($this->getEventVenue());
         $copyObj->setEventDescription($this->getEventDescription());
         $copyObj->setEventType($this->getEventType());
         $copyObj->setStatus($this->getStatus());
@@ -2411,6 +2466,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $this->from_date = null;
         $this->to_date = null;
         $this->event_name = null;
+        $this->event_venue = null;
         $this->event_desc = null;
         $this->event_type = null;
         $this->status = null;

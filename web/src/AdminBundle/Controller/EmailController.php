@@ -10,11 +10,17 @@ namespace AdminBundle\Controller;
 
 
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\ListEvents;
 use CoreBundle\Model\ListEventsPeer;
+use CoreBundle\Model\ListEventsQuery;
 use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\ListRequestTypePeer;
+use CoreBundle\Utilities\Constant as C;
+use CoreBundle\Utilities\Utils as U;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Swift_Mailer;
@@ -334,6 +340,136 @@ class EmailController extends Controller
         return $emailCtr;
     }
 
+    public function notifyEmployeeOnEvent($params = array(), Controller $class)
+    {
+        $ownerId = U::getUserDetails('id', $class);
+        $ownerAcc = EmpProfilePeer::getInformation($ownerId);
+        $ownerName = trim($ownerAcc->getFname() . " " . $ownerAcc->getLname());
+
+        $empAcc = EmpAccQuery::_findById($params['user_id']);
+        $empInfo = EmpProfilePeer::getInformation($params['user_id']);
+        $employeeName = trim($empInfo->getFname() . ' ' . $empInfo->getLname());
+
+        $title = 'Holiday';
+        $message = "A new holiday was marked on Propelrr Calendar. See the details below.";
+
+        if($params['event_type']!=C::EVENT_TYPE_HOLIDAY) {
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation';
+            $action = $params['event_type']==C::EVENT_TYPE_MEETING ? 'a meeting: ' : 'a company event: ';
+            $message = "<strong>".$ownerName . "</strong> invited you to join ". strtolower($action) ."<strong>". $params['event_name'] ."</strong>. See the details below.";
+        }
+
+        $to = !empty($params['to_list']) ? $params['to_list'] : array(array($empAcc->getEmail() => $employeeName));
+        $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
+        $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_HOLIDAY ? 'A New Holiday Was Added' : ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation'));
+
+        if(isset($params['has-update']) && $params['has-update']) {
+            $message = "<strong>".$ownerName . "</strong> has updated <strong>". $params['event_name'] ."</strong>. See the details below.";
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting' : 'Internal Event';
+            $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Was Updated' : ($params['event_type']==C::EVENT_TYPE_INTERNAL ? 'Internal Event Was Updated' : 'Holiday Was Updated'));
+        }
+
+        $params['title'] = $title;
+        $params['greetings'] = 'Hi '.$employeeName.',';
+        $params['template'] = 'event-create';
+        $params['message'] = $message;
+
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+
+        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+    }
+
+    public function notifyEmployeeOnEventUpdateTagStatus($params = array(), Controller $class)
+    {
+
+        if(isset($params['event_id'])) {
+            $event = ListEventsQuery::_findById($params['event_id']);
+            $user = EmpProfileQuery::_findByAccId($params['user_id']);
+
+            if($event && $user) {
+                $eventType = $event->getEventType();
+
+                $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+                $title = 'Holiday';
+                $message = '';
+                $GuestIndicator = $params['status']==C::STATUS_APPROVED ? '':'not';
+
+                if ($eventType!=C::EVENT_TYPE_HOLIDAY) {
+                    $title = $eventType == C::EVENT_TYPE_MEETING ? 'Meeting' : 'Internal Event';
+                    $action = $eventType == C::EVENT_TYPE_MEETING ? 'the meeting' : $event->getEventName();
+                    $message = "<strong>[NAME]</strong> will $GuestIndicator be attending <strong>" . strtolower($action) . "</strong>. See the details below.[REASON]";
+                }
+
+                $owner = EmpProfileQuery::_findByAccId($event->getCreatedBy());
+                $ownerName = trim($owner->getFname() .' '. $owner->getLname());
+
+                $doerName = trim($user->getFname() . ' ' . $user->getLname());
+                $doerEmail = $user->getEmpAcc()->getEmail();
+                $doerAction = ucfirst($GuestIndicator) . ' be Attending';
+
+                $params['title'] = $title;
+                $params['event_name'] = $event->getEventName();
+                $params['event_desc'] = $event->getEventDescription();
+                $params['event_venue'] = $event->getEventVenue();
+                $params['to_date'] = $event->getToDate()->format('F d, Y h:i a');
+                $params['from_date'] = $event->getFromDate()->format('F d, Y h:i a');
+                $params['owner_email'] = $event->getEmpAcc()->getEmail();
+                $params['event_tag_names'] = array();
+                $params['template'] = 'event-status-change';
+                $params['links'] = array('View Event' => $class->generateUrl('manage_events', array('id' => $event->getId()), true));
+
+                $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
+                $subject = "PROLS » " . $doerName . ' will ' . $doerAction . ' to ' . $event->getEventName();
+
+                if(count($eventTags)) {
+                    $emailTaggedList = array();
+                    foreach ($eventTags as $et) {
+                        $etStatus = $et->getStatus();
+
+                        if($etStatus!=C::STATUS_INACTIVE) {
+                            $employee = EmpProfileQuery::_findByAccId($et->getEmpId());
+                            $params['event_tag_names'][$et->getEmpAcc()->getEmail()] = trim($employee->getFname() . ' ' . $employee->getLname());
+                            $emailTaggedList[] = $et->getEmpAcc()->getEmail();
+                        }
+                    }
+
+                    if(! in_array($event->getEmpAcc()->getEmail(), $emailTaggedList)) {
+                        $params['event_tag_names'][$event->getEmpAcc()->getEmail()] = trim($owner->getFname() . ' ' . $owner->getLname());
+
+                        $params['greetings'] = 'Hi ' . $ownerName . ',';
+                        $params['message'] = strtr($message, array(
+                            '[NAME]' => $doerName,
+                            '[REASON]' => strlen($params['reason']) ? "<br><br><hr style='border-top:1px dotted #ccc;margin-bottom:10px'><strong>Comment:</strong><br><br>".$params['reason']:""
+                        ));
+
+                        $to = array(array($event->getEmpAcc()->getEmail() => $ownerName));
+                        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+                        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                    }
+
+                    foreach ($eventTags as $et) {
+                        $employee = EmpProfileQuery::_findByAccId($et->getEmpId());
+                        $etEmail = $et->getEmpAcc()->getEmail();
+                        $etName = trim($employee->getFname() . " " . $employee->getLname());
+
+                        $to = array(array($etEmail => $etName));
+                        $params['greetings'] = 'Hi ' . $etName . ',';
+
+                        if($doerEmail!=$etEmail && $et->getStatus()!=C::STATUS_INACTIVE) {
+                            $params['message'] = strtr($message, array(
+                                '[NAME]' => $doerName,
+                                '[REASON]' => (strlen($params['reason'])) ? "<br><br><strong>Comment:</strong><br>".$params['reason']:""
+                            ));
+
+                            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+                            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Get admin email list
      * @param array $adminList
@@ -357,6 +493,8 @@ class EmailController extends Controller
 
         return $adminEmails;
     }
+
+
 
     public function RequestMeetingEmail($req, $class)
     {
@@ -389,7 +527,8 @@ class EmailController extends Controller
     public function notifyEmployeeRequest($req, $class)
     {
         $user = $class->getUser();
-        $id = $user->getId();
+        $userId = $user->getId();
+
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();

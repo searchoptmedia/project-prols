@@ -221,6 +221,7 @@
         <column name="from_date" phpName="FromDate" type="TIMESTAMP" required="true"/>
         <column name="to_date" phpName="ToDate" type="TIMESTAMP" required="true"/>
         <column name="event_name" phpName="EventName" type="VARCHAR" size="45" required="true"/>
+        <column name="event_venue" phpName="EventVenue" type="VARCHAR" size="255"/>
         <column name="event_desc" phpName="EventDescription" type="LONGVARCHAR" size="32700" required="true"/>
         <column name="event_type" phpName="EventType" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
@@ -266,6 +267,7 @@
         <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
         <column name="emp_id" phpName="EmpId" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="reason" phpName="Reason" type="LONGVARCHAR" required="true"/>
         <foreign-key foreignTable="emp_acc">
             <reference local="emp_id" foreign="id"/>
         </foreign-key>

@@ -2,6 +2,9 @@
  * Created by Hazel on 22/02/2017.
  */
 // SCRIPT VARIABLES
+const DOC = $(document);
+const CURRENT_YEAR  = (new Date()).getFullYear();
+
 var data, callback, done, always;
 
 // LOADER VARIABLES
@@ -38,23 +41,59 @@ function showErrorBar(message) {
 
 // AJAX POST
 function post(button, path, data, callback, done, always) {
-    console.log("enter post");
     showLoadingBar();
-    console.log("done loading   ");
-    disableEnableButton(button, true);
-    $.post(path, data, callback, "json").done(done).always(always)
-        .fail(function(data, err) {
-            if(data.status == 401) {
+    var btnText = button.text();
+
+    if(buttonIsReadyPlr(button)) {
+        buttonLoadingPlr(button);
+
+        $.post(path, data, callback, "json").done(function (data) {
+            if (typeof done === 'function') done(data);
+        }).always(function (data) {
+            if (typeof always === 'function') always(data);
+
+            buttonRemoveLoadPlr(button, btnText);
+            hideLoadingBar();
+        }).fail(function (data, err) {
+            if (data.status == 401) {
                 alert("You're not login!");
-                window.location='/';
+                window.location = '/';
             }
+
             showErrorBar("Server Error. Please try again.");
         });
-    disableEnableButton(button, false);
+    }
+}
+
+function buttonIsReadyPlr(btn) {
+    return btn.hasClass('post-loading') ? false : true;
+}
+
+function buttonLoadingPlr(btn, text) {
+    var btnText = text ? text : btn.data('loading-text');
+
+    disableEnableButton(btn, true);
+    btn.addClass('disabled').text(btnText||'Saving...');
+}
+
+function buttonRemoveLoadPlr(btn, text) {
+    disableEnableButton(btn, false);
+    btn.text(text||'Create');
 }
 
 function disableEnableButton(button, val) {
+    if(val) button.addClass('disabled');
+    else button.removeClass('disabled');
+
     button.prop("disabled", val);
+}
+
+function enableElement(el) {
+    el.removeClass('disabled').prop("disabled", false);
+}
+
+function disableElement(el) {
+    el.addClass('disabled').prop("disabled", true);
 }
 
 // INPUT FIELD CHECKER
@@ -84,9 +123,51 @@ function notifyInvalid(element) {
     }, 1000);
 }
 
+function errorBorder(el) {
+    for(var i in el) el[i].addClass('border-red').removeClass('border-gray');
+}
+
+function defaultBorder(el) {
+    for(var i in el) el[i].addClass('border-gray').removeClass('border-red');
+}
+
+function hideElements(els) {
+    for( i in els) {
+        els[i].hide();
+    }
+}
+function showElements(els) {
+    for( i in els) {
+        els[i].show();
+    }
+}
+
+function convertStatusToString(statusId) {
+    if(statusId==STATUS_PENDING) {
+        return 'pending';
+    } else if(statusId==STATUS_ACTIVE) {
+        return 'active';
+    } else if(statusId==STATUS_INACTIVE) {
+        return 'inactive';
+    } else if(statusId==STATUS_APPROVED) {
+        return 'approved';
+    } else if(statusId==STATUS_DECLINED) {
+        return 'declined';
+    }
+}
+
+/** filters */
+function removeSpace(str) {
+    return str.replace(/\s/g, '');
+}
+
+/**
+ * PLUGINS
+ * ------------------------------
+ */
 /** init Date Picker */
 var currentYear = (new Date()).getFullYear();
-function initPicker(el, minDate, maxDate, onselect) {
+function initPicker(el, minDate, maxDate, onselect, param) {
     var pikael = 'pik_'+el;
     if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
         window[pikael].destroy();
@@ -98,20 +179,38 @@ function initPicker(el, minDate, maxDate, onselect) {
         minDate: minDate,
         maxDate: maxDate,
         yearRange: [currentYear - 20, currentYear + 20],
-        format: 'YYYY-MM-DD',
-        onSelect: onselect
+        format: param && param.format ? param.format : 'YYYY-MM-DD',
+        onSelect: onselect,
+        showTime: param && param.showTime ? param.showTime : false,
+        autoClose:  param && param.autoClose ? param.autoClose : true,
+        use24hour: param && param.use24hour ? param.use24hour : false
     });
 
     return window[pikael];
 }
 
-function setPikadayData(param, el, value) {
+function setPikadayData(info, el, value) {
     var pikael = 'pik_'+el;
     if(window[pikael] !== undefined && window[pikael].calendars !== undefined) {
-        if(param=='end-range') window[pikael].setMaxDate(value);
-        if(param=='start-range') window[pikael].setMinDate(value);
-        if(param=='set-date') window[pikael].setDate(value);
+        if(info=='end-range') window[pikael].setMaxDate(value);
+        if(info=='start-range') window[pikael].setMinDate(value);
+        if(info=='set-date') window[pikael].setDate(value);
 
         return window[pikael];
     }
+}
+
+function initDropDown(param) {
+    param = param ? param: {};
+    $('.dropdown-button').dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            constrainWidth: false, // Does not change width of dropdown to that of the activator
+            hover: param.hover||false, // Activate on hover
+            gutter: 0, // Spacing from edge
+            belowOrigin: false, // Displays dropdown below the button
+            alignment: 'left', // Displays dropdown with edge aligned to the left of button
+            stopPropagation: false // Stops event propagation
+        }
+    );
 }

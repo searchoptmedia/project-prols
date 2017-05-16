@@ -8,11 +8,41 @@
         </div>
         <div class="col-md-12 content">
             <!-- <div class="row"> -->
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <div id="alert_holder"></div>
                 <div class="calendar">
                     <div id="calendar"></div>
                 </div>
+            </div>
+
+            <div class="col-md-3 pt5">
+                <button class="waves-effect waves-light btn orange btn-open-request-leave-modal disabled" disabled style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem">
+                    Request Leave
+                </button>
+
+                <h5 class="colorBlack fontLight">Events</h5>
+                <ul class="collection">
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>Glide Session</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">today</i>
+                        <span class="title">Title</span>
+                        <p>First Line</p>
+                    </li>
+                </ul>
             </div>
             <!-- </div> -->
         </div>
@@ -23,20 +53,48 @@
 
         <div class="modal-content">
             <h4>
-                <i class="small material-icons" id = "agenda" onmouseover="this.style.cursor='pointer'">today</i>&nbsp;
-                <span class = "agenda-date" style = "font-size: 32px;">Daily Agenda</span>
-                <span class = "agenda-date-hidden" style = "display:none;">Daily Agenda</span>
+                <i class="small material-icons">today</i>&nbsp;
+                <span class="span-mo-agenda-date">Daily Agenda</span>
+                <span class="agenda-date-hidden display-none">Daily Agenda</span>
                 <div style = "float: right">
                     <button class="waves-effect waves-light btn btn-reqmeeting" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem; display:none;">
                         Request Meeting
                     </button>
-                    <button class="waves-effect waves-light btn orange btn-reqleave" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem">
+                    <button class="waves-effect waves-light btn orange {#btn-reqleave#} btn-show-request-leave-form" style = "font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: normal; padding: 0 1rem">
                         Request Leave
                     </button>
                 </div>
             </h4>
 
-            <div class="agenda-list">
+            <!------------REQUEST LEAVE FORM------------->
+            <div class="form-reqleave frm-request-leave frm-request">
+                <div class="input-field">
+                    <a class="btn-floating btn-small waves-effect waves-light amber btn-hide-request-form" style="float:right;"><span style="position: relative;left: 35%;font-size: 23px;">X</span></a>
+                    <div class="row">
+                        <div class="form-container">
+                            <div class="multi_reqleaveform">
+                                <div class="req_inner">
+                                    <div class="col-md-6 reqleave-lbl">
+                                        <span class="reqleave-p">From</span>
+                                        <input type = "text" data-id="0" name="start-date-0" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_0">
+                                    </div>
+                                    <div class="col-md-6 reqleave-lbl">
+                                        <span class="reqleave-p">To</span>
+                                        <input type = "text" name="end-date-0" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_0" >
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <textarea id="reason-leave-sbt-0" class="materialize-textarea reason" placeholder="Reason..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="btn-floating btn-large waves-effect waves-light red btn-mo-add-request-form" id="add-request-form" style = "float:right; margin-right: 10px;"><i class="material-icons">add</i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agenda-list sect-mo-agenda-list mt3">
                 <ul class="collection agenda-list">
                     <li class="collection-item avatar" id="li-append"><i class="material-icons circle">perm_identity</i><span id="head-title"></span> <p id="daterange"></p></li>
                 </ul>
@@ -89,38 +147,11 @@
                     </div>
                 </div>
             </div>
-
-            <!------------REQUEST LEAVE FORM------------->
-            <div class="form-reqleave">
-                <div class="input-field">
-                    <div class="row">
-                        <div class = "form-container">
-                            <div class="multi_reqleaveform">
-                                <div class="req_inner">
-                                    <div class="col-md-6 reqleave-lbl">
-                                        <span class="reqleave-p">From</span>
-                                        <input type = "text" name="start-date-0" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_0">
-                                    </div>
-                                    <div class="col-md-6 reqleave-lbl">
-                                        <span class="reqleave-p">To</span>
-                                        <input type = "text" name="end-date-0" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_0" >
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <textarea id="reason-leave-sbt-0" class="materialize-textarea reason" placeholder="Reason..." required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="btn-floating btn-large waves-effect waves-light red" id="add-request-form" style = "float:right; margin-right: 10px;"><i class="material-icons">add</i></a>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="modal-footer">
-            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat close-modal-agenda" id = "btn-close">Close</a>
-            <a href="#!" class="waves-effect waves-light amber custombtn btn-flat btn-submitleave" style="margin-right:5px;">Submit Leave</a>
-            <a href="#!" class="waves-effect waves-light amber custombtn btn-flat btn-submitmeeting" style="margin-right:5px;">Submit Meeting</a>
+            <a href="javascript:void(0);" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
+            <a href="javascript:void(0);" class="waves-effect waves-light amber custombtn btn-flat {#btn-submitleave#} btn-submit-request leave" style="margin-right:5px;">Submit Request</a>
+            <a href="javascript:void(0);" class="waves-effect waves-light amber custombtn btn-flat btn-submit-request btn-submitmeeting" style="margin-right:5px;">Submit Meeting</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -133,387 +164,562 @@
         // Modals
         var dailyAgendaModal = $('#daily_agenda');
 
-        // Forms
-        var agendaDate = $('.agenda-date');
-        var agendaDateDiffFormat = $('.agenda-date-hidden');
-        var agendaList = $('.agenda-list');
-        var requestMeetingForm = $('.form-reqmeeting');
-        var requestLeaveForm = $('.form-reqleave');
-        var meetingTitleInput = $('#meeting_title');
-        var meetingDateInput = $('#meeting_date');
-        var fromMeetingTimeInput = $('#time-from');
-        var toMeetingTimeInput = $('#time-to');
-        var meetingNoteInput = $('#meeting_note');
-        var meetingPersonsInvolved = $('.select-emp-tag');
-
-        // Functional Buttons
-        var requestMeetingButton = $('.btn-reqmeeting');
-        var requestLeaveButton = $('.btn-reqleave');
-        var agendaButton = $('#agenda');
-        var submitMeetingButton = $('.btn-submitmeeting');
-        var submitLeaveButton = $('.btn-submitleave');
-        var closeDailyAgendaModal = $('.close-modal-agenda');
+        var btnViewLeaveRequest = '.btn-open-request-leave-modal';
+        var btnHideRequestForm = '.btn-hide-request-form';
+        var btnShowRequestForm = '.btn-show-request-leave-form';
+        var btnSubmitLeaveRequest = '.btn-submit-request.leave';
+        var btnSubmitRequest = '.btn-submit-request';
+        var btnMoAddForm = '.btn-mo-add-request-form';
         var btnRemoveLeaveFormEntry = '.btn-remove-leave-form-entry';
+        var spanAgendaDateHidden = '.agenda-date-hidden';
+        var spanMoAgendaDate = '.span-mo-agenda-date';
 
-        // Main Variables
-        var typeleave = '';
-        var date_meeting = null;
-        var endDatePicker = null;
-        var startDatePicker = null;
+        var txtStartDate0 = 'start_date_0';
+        var txtEndDate0 = 'end_date_0';
+        var txtReason0 = 'reason-leave-sbt-0';
+
+        var frmMoViewRequestLeave = '.frm-request-leave';
+        var sectMoViewAgenda = '.sect-mo-agenda-list';
+
         var currentYear = (new Date()).getFullYear();
 
-        $(document).on("click", ".btn-reqmeeting", function () {
-            hideForms();
-            requestMeetingForm.show();
-            submitMeetingButton.show();
-            date_meeting = new Pikaday(
-                {
-                    field: document.getElementById('meeting_date'),
-                    firstDay: 1,
-                    minDate: new Date(),
-                    maxDate: new Date(2020, 12, 31),
-                    yearRange: [2000, 2020],
-//                format: 'MM/DD/YYYY'
-                });
-        });
+        var frmFormTemp =
+        '       <div class="multi_reqleaveform">  '  +
+        '           <div class="col-md-12 sect-divider"><hr class="mb5 mt5" style="border: 1px dashed #ccc;"></div>'+
+        '                                   <div class="req_inner">  '  +
+        '                                       <div class="col-md-6 reqleave-lbl">  '  +
+        '                                           <span class="reqleave-p">From</span>  '  +
+        '                                           <input type = "text" name="start-date-[ID]" data-id="[ID]" readonly placeholder="Start Date" class="start-date datepicker" id="start_date_[ID]">  '  +
+        '                                       </div>  '  +
+        '                                       <div class="col-md-6 reqleave-lbl">  '  +
+        '                                           <span class="reqleave-p">To</span>  '  +
+        '                                           <input type = "text" name="end-date-[ID]" readonly placeholder="End Date" class="end-date datepicker"  id="end_date_[ID]" >  '  +
+        '                                       </div>  '  +
+        '                                   </div>  '  +
+        '                                   <div class="col-md-12">  '  +
+        '                                       <textarea id="reason-leave-sbt-[ID]" class="materialize-textarea reason" placeholder="Reason..." required></textarea>  '  +
+        '                                   </div>  '  +
+        '                               <center><button class="btn-floating btn-medium red text-center btn-remove-leave-form-entry"><i class="medium material-icons">delete</i></button></center>    '+
+        '                              </div>  ';
+         ;
 
-        $(document).on("click", ".btn-reqleave", function () {
-            hideForms();
-            requestLeaveForm.show();
+        var _dashboardModal = function() {
+            var _d = this;
+            return {
+                setDate: function(date) {
+                    this.date = date;
+                },
+                getDate: function() {
+                    return this.date;
+                },
+                saveLeaveRequest: function() {
+                    if(!this.isValidForm())
+                        return false;
 
-            var startValue = agendaDateDiffFormat.text();
+                    var obj = [];
+                    typeleave = 2;
 
-            $('#start_date_0').val(startValue);
-            $('#end_date_0').val('');
-            $('#reason-leave-sbt-0').val('');
+                    $(frmMoViewRequestLeave).find('.multi_reqleaveform').each( function() {
+                        var start = $(this).find('.start-date').val();
+                        var end = $(this).find('.end-date').val();
+                        var reason = $(this).find('.reason').val();
 
-            initPicker('start_date_0', new Date(), new Date(currentYear+20, 12, 31), function() {
-                setTimeout( function() {
-                    var startVal = $('#start_date_0').val();
-                    setPikadayData('start-range', 'end_date_0', new Date(startVal)).show();
-                }, 200);
-            });
+                        obj.push({start_date: start, end_date: end, reason: reason});
+                    });
 
-            initPicker('end_date_0', new Date(startValue), new Date(currentYear+20, 12, 31), function() {
-                setTimeout( function() {
-                    var endVal =  $('#end_date_0').val();
-                    setPikadayData('end-range', 'start_date_0', new Date(endVal));
-                }, 200);
-            });
+                    post($(btnSubmitLeaveRequest), "{{path('request_leave')}}", {
+                        typeleave: typeleave,
+                        obj: obj
+                    }, function () {
+                    }, function (data) {
+                        if (data["result"]) {
+                            dailyAgendaModal.closeModal();
+                            showSuccessBar(data["result"]);
+                        } else if (data["error"]) {
+                            showErrorBar(data["error"]);
+                        }
+                    });
+                },
 
-            submitLeaveButton.show();
-        });
+                openAgendaModal: function(date) {
+                    showElements([ $(sectMoViewAgenda) ]);
 
-        $(document).on("click", "#agenda", function () {
-            hideForms();
-            agendaList.show();
-        });
+                    $(spanMoAgendaDate).html(date.format('MMMM DD, YYYY'));
+                    var currDate = moment().format('YYYY-MM-DD');
 
-        $(document).on("click", ".close-modal-agenda", function () {
-            hideForms();
-            agendaList.show();
-            dailyAgendaModal.closeModal();
-            if(date_meeting != null) date_meeting.destroy();
-        });
+                    if(date.format('YYYY-MM-DD') > currDate) {
+                        $(spanAgendaDateHidden).html(date.format('YYYY-MM-DD'));
+                        this.setDate(date.format('YYYY-MM-DD'));
+                    } else {
+                        $(spanAgendaDateHidden).html(currDate);
+                        this.setDate(currDate);
+                    }
 
-        $(document).on('click', btnRemoveLeaveFormEntry, function() {
-             $(this).closest('.multi_reqleaveform').remove();
-        });
+                    this.initRequestPikaDay(0)
+                        .resetForm()
+                    ;
 
-        function hideForms() {
-            removeFields();
-            agendaList.hide();
-            requestMeetingForm.hide();
-            requestLeaveForm.hide();
-            submitLeaveButton.hide();
-            submitMeetingButton.hide();
-        }
+                    dailyAgendaModal.openModal();
 
-        function removeFields() {
-            if(date_meeting != null) date_meeting.destroy();
-            $('.select2-selection__choice').remove();
-            meetingTitleInput.val('');
-            meetingNoteInput.val('');
-            meetingDateInput.val('');
-            fromMeetingTimeInput.val('');
-            toMeetingTimeInput.val('');
-        }
+                    return this;
+                },
 
-        $(document).on("click", ".btn-submitmeeting", function () {
-            console.log("test");
-            meetingTitle = meetingTitleInput.val();
-            meetingNote = meetingNoteInput.val();
-            taggedPersons = meetingPersonsInvolved.select2("val");
-            meetingDate = meetingDateInput.val();
-            fromMeetingTime = fromMeetingTimeInput.val();
-            toMeetingTime = toMeetingTimeInput.val();
-            meeting_from = meetingDate + " " + fromMeetingTime;
-            meeting_to = meetingDate + " " + toMeetingTime;
-            meeting_from_unix = new Date(meeting_from).getTime();
-            meeting_to_unix = new Date(meeting_to).getTime();
+                init: function() {
 
-            elements = [meetingTitleInput, meetingNoteInput];
-            if(checkNullFields())
-                return;
-//            if (checkFields(elements)) // true == there are errors
-//                return;
-//            if(checkNullFields(taggedPersons, fromMeetingTime, toMeetingTime))
-//                return;
+                    return this;
+                },
 
-            data = {
-                meetingTitle:meetingTitle,
-                meetingNote:meetingNote,
-                taggedemail:taggedPersons,
-                meetingDate:meetingDate,
-                meetingTimeFrom:meeting_from,
-                meetingTimeTo:meeting_to
-            };
+                bindEvents: function() {
+                    DOC.on('click', btnViewLeaveRequest, function() {
+                        var date = new Date();
 
-            callback = function(data){
-                date_meeting.destroy();
-                dailyAgendaModal.closeModal();
-            };
+                        _fullCalendar.showEventsModal(moment(date.getTime()));
 
-            done = function (data) {
-                if (data["result"]) {
-                    showSuccessBar(data["result"]);
-                } else if (data["error"]) {
-                    showErrorBar(data["error"]);
+                        showElements([ $(frmMoViewRequestLeave),$(btnSubmitLeaveRequest) ]);
+                    });
+
+                    DOC.on('click', btnHideRequestForm, function() {
+                        var form  = $(this).closest('.frm-request');
+                        hideElements([ form,$(btnSubmitLeaveRequest) ]);
+                    });
+
+                    DOC.on('click', btnShowRequestForm, function() {
+                        showElements([ $(frmMoViewRequestLeave),$(btnSubmitLeaveRequest) ]);
+                    });
+
+                    DOC.on('click', btnSubmitLeaveRequest, function() {
+                        _dashboardModal.saveLeaveRequest();
+                    });
+
+                    DOC.on('click', btnMoAddForm, function() {
+                        var last = $(frmMoViewRequestLeave).find('.form-container').find('.multi_reqleaveform:last-child').find('.start-date').data('id')+1;
+                         $(frmMoViewRequestLeave).find('.form-container')
+                             .append( $(frmFormTemp.replace(/\[ID]/gi, last)) );
+
+                        _dashboardModal.initRequestPikaDay(last);
+                        setPikadayData('set-date', 'start_date_'+last, _dashboardModal.getDate()).show();
+                    });
+
+                    DOC.on('click', btnRemoveLeaveFormEntry, function() {
+                        $(this).closest('.multi_reqleaveform').remove();
+                    });
+                },
+
+                resetForm: function() {
+                    setPikadayData('set-date', 'start_date_0', this.getDate());
+                    setPikadayData('set-date', 'end_date_0', null);
+                    $(frmMoViewRequestLeave).find('.multi_reqleaveform').not(':eq(0)').remove();
+
+                    defaultBorder([ $('#'+txtStartDate0),$('#'+txtEndDate0),$('#'+txtReason0) ]);
+
+                    hideElements([ $(frmMoViewRequestLeave),$(btnSubmitRequest) ]);
+
+                    return this;
+                },
+
+                initRequestPikaDay: function (id){
+                    var startValue = $(spanMoAgendaDate).text();
+                    var strt = $('#start_date_'+id);
+                    var end = $('#end_date_'+id);
+                    initPicker('start_date_'+id, new Date(), new Date(currentYear+20, 12, 31), function() {
+                        setTimeout( function() {
+                            var startVal = strt.val();
+                            var endPika = setPikadayData('start-range', 'end_date_'+id, new Date(startVal));
+
+                            if(removeSpace(end.val())==''&&id!=0)
+                                endPika.show();
+                        }, 200);
+                    });
+
+                    initPicker('end_date_'+id, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+                        setTimeout( function() {
+                            var endVal =  end.val();
+                            setPikadayData('end-range', 'start_date_'+id, new Date(endVal));
+                        }, 200);
+                    });
+
+                    return this;
+                },
+
+                isValidForm: function() {
+                    var err = true;
+                    var frmList = $(frmMoViewRequestLeave).find('.multi_reqleaveform');
+                    frmList.each( function() {
+                        var input =  $(this).find('input, textarea').reverse();
+                        input.each( function() {
+                            var isPicker = $(this).hasClass('datepicker');
+                            if(removeSpace($(this).val())=='') {
+                                err = false;
+                                if(!isPicker)
+                                    $(this).focus();
+                                else if(isPicker)
+                                    setPikadayData('set-date', $(this).attr('id'), '').show();
+                                errorBorder([ $(this) ]);
+                            } else {
+                                defaultBorder([ $(this) ]);
+                            }
+                        });
+                    });
+
+                    return err;
                 }
-            };
-
-            always = function (data) {};
-            post(submitMeetingButton, "{{ path('request_meeting') }}", data, callback, done, always);
-        });
-
-        function checkNullFields() {
-            var hasRequired = 0;
-
-            if(meetingTitleInput.val() == ''){
-                notifyInvalid(meetingTitleInput);
-                hasRequired++;
             }
-            if(meetingNoteInput.val() == ''){
-                notifyInvalid(meetingNoteInput);
-                hasRequired++;
-            }
+        }();
 
-            if(!taggedPersons){
-                notifyInvalid(meetingPersonsInvolved);
-                hasRequired++;
-            }
-            if(!fromMeetingTime){
-                notifyInvalid(fromMeetingTimeInput);
-                hasRequired++;
-            }
-            if(!toMeetingTime){
-                notifyInvalid(toMeetingTimeInput);
-                hasRequired++;
-            }
+        _dashboardModal
+                .bindEvents();
 
-            if (hasRequired > 0)
-                return true;
-            else return false;
-        }
-
-        $('.btn-ip-cancel').click(function(e){
-            e.preventDefault();
-            $('.diff-ip-container').hide();
-        });
-        $('.btn-ip-yes').click(function(e){
-            e.preventDefault();
-            $('.diff-ip-reason').show();
-        });
-        $('.modal-trigger').leanModal();
-        function showBirthday() {
-            var bdaynames = [];
-            {% for names in userbdaynames %}
-            bdaynames.push("{{ names }}");
-            {% endfor %}
-            console.log(bdaynames);
-            if(bdaynames.length) {
-                $('.modal-birthday-notify-container').show();
-            }
-            $('.btn-bdayclose').click( function() {
-                $('.modal-birthday-notify-container').hide();
+        function validateForm() {
+            var err = false;
+            $(frmMoViewRequestLeave).find('.multi_reqleaveform').reverse().each( function() {
+                $(this).find('input, textarea').each( function() {
+                    if(removeSpace($(this).val())=='') {
+                        err = true;
+                        $(this).focus();
+                        errorBorder([ $(this) ]);
+                    } else {
+                        defaultBorder([ $(this) ]);
+                    }
+                });
             });
+
+            return err;
         }
+
+    </script>
+    <script type = "text/javascript">
+
+
+        {#// Forms#}
+        {#var agendaDate = $('.agenda-date');#}
+        {#var agendaDateDiffFormat = $('.agenda-date-hidden');#}
+        {#var agendaList = $('.agenda-list');#}
+        {#var requestMeetingForm = $('.form-reqmeeting');#}
+        {#var requestLeaveForm = $('.form-reqleave');#}
+        {#var meetingTitleInput = $('#meeting_title');#}
+        {#var meetingDateInput = $('#meeting_date');#}
+        {#var fromMeetingTimeInput = $('#time-from');#}
+        {#var toMeetingTimeInput = $('#time-to');#}
+        {#var meetingNoteInput = $('#meeting_note');#}
+        {#var meetingPersonsInvolved = $('.select-emp-tag');#}
+
+        {#// Functional Buttons#}
+        {#var requestMeetingButton = $('.btn-reqmeeting');#}
+        {#var requestLeaveButton = $('.btn-reqleave');#}
+        {#var agendaButton = $('#agenda');#}
+        {#var submitMeetingButton = $('.btn-submitmeeting');#}
+        {#var submitLeaveButton = $('.btn-submitleave');#}
+        {#var closeDailyAgendaModal = $('.close-modal-agenda');#}
+        {#var btnRemoveLeaveFormEntry = '.btn-remove-leave-form-entry';#}
+
+        {#// Main Variables#}
+        {#var typeleave = '';#}
+        {#var date_meeting = null;#}
+        {#var endDatePicker = null;#}
+        {#var startDatePicker = null;#}
+        {#var currentYear = (new Date()).getFullYear();#}
+
+        {#$(document).on("click", ".btn-reqmeeting", function () {#}
+            {#hideForms();#}
+            {#requestMeetingForm.show();#}
+            {#submitMeetingButton.show();#}
+            {#date_meeting = new Pikaday(#}
+                {#{#}
+                    {#field: document.getElementById('meeting_date'),#}
+                    {#firstDay: 1,#}
+                    {#minDate: new Date(),#}
+                    {#maxDate: new Date(2020, 12, 31),#}
+                    {#yearRange: [2000, 2020],#}
+{#//                format: 'MM/DD/YYYY'#}
+                {#});#}
+        {#});#}
+
+        {#$(document).on("click", ".btn-reqleave", function () {#}
+            {#hideForms();#}
+            {#requestLeaveForm.show();#}
+
+            {#var startValue = agendaDateDiffFormat.text();#}
+
+            {#$('#start_date_0').val(startValue);#}
+            {#$('#end_date_0').val('');#}
+            {#$('#reason-leave-sbt-0').val('');#}
+
+            {#initPicker('start_date_0', new Date(), new Date(currentYear+20, 12, 31), function() {#}
+                {#setTimeout( function() {#}
+                    {#var startVal = $('#start_date_0').val();#}
+                    {#setPikadayData('start-range', 'end_date_0', new Date(startVal)).show();#}
+                {#}, 200);#}
+            {#});#}
+
+            {#initPicker('end_date_0', new Date(startValue), new Date(currentYear+20, 12, 31), function() {#}
+                {#setTimeout( function() {#}
+                    {#var endVal =  $('#end_date_0').val();#}
+                    {#setPikadayData('end-range', 'start_date_0', new Date(endVal));#}
+                {#}, 200);#}
+            {#});#}
+
+            {#submitLeaveButton.show();#}
+        {#});#}
+
+        {#$(document).on("click", "#agenda", function () {#}
+            {#hideForms();#}
+            {#agendaList.show();#}
+        {#});#}
+
+        {#$(document).on("click", ".close-modal-agenda", function () {#}
+            {#hideForms();#}
+            {#agendaList.show();#}
+            {#dailyAgendaModal.closeModal();#}
+            {#if(date_meeting != null) date_meeting.destroy();#}
+        {#});#}
+
+        {#$(document).on('click', btnRemoveLeaveFormEntry, function() {#}
+             {#$(this).closest('.multi_reqleaveform').remove();#}
+        {#});#}
+
+
+
+        {#function removeFields() {#}
+            {#if(date_meeting != null) date_meeting.destroy();#}
+            {#$('.select2-selection__choice').remove();#}
+            {#meetingTitleInput.val('');#}
+            {#meetingNoteInput.val('');#}
+            {#meetingDateInput.val('');#}
+            {#fromMeetingTimeInput.val('');#}
+            {#toMeetingTimeInput.val('');#}
+        {#}#}
+
+        {#$(document).on("click", ".btn-submitmeeting", function () {#}
+            {#console.log("test");#}
+            {#meetingTitle = meetingTitleInput.val();#}
+            {#meetingNote = meetingNoteInput.val();#}
+            {#taggedPersons = meetingPersonsInvolved.select2("val");#}
+            {#meetingDate = meetingDateInput.val();#}
+            {#fromMeetingTime = fromMeetingTimeInput.val();#}
+            {#toMeetingTime = toMeetingTimeInput.val();#}
+            {#meeting_from = meetingDate + " " + fromMeetingTime;#}
+            {#meeting_to = meetingDate + " " + toMeetingTime;#}
+            {#meeting_from_unix = new Date(meeting_from).getTime();#}
+            {#meeting_to_unix = new Date(meeting_to).getTime();#}
+
+            {#elements = [meetingTitleInput, meetingNoteInput];#}
+            {#if(checkNullFields())#}
+                {#return;#}
+{#//            if (checkFields(elements)) // true == there are errors#}
+{#//                return;#}
+{#//            if(checkNullFields(taggedPersons, fromMeetingTime, toMeetingTime))#}
+{#//                return;#}
+
+            {#data = {#}
+                {#meetingTitle:meetingTitle,#}
+                {#meetingNote:meetingNote,#}
+                {#taggedemail:taggedPersons,#}
+                {#meetingDate:meetingDate,#}
+                {#meetingTimeFrom:meeting_from,#}
+                {#meetingTimeTo:meeting_to#}
+            {#};#}
+
+            {#callback = function(data){#}
+                {#date_meeting.destroy();#}
+                {#dailyAgendaModal.closeModal();#}
+            {#};#}
+
+            {#done = function (data) {#}
+                {#if (data["result"]) {#}
+                    {#showSuccessBar(data["result"]);#}
+                {#} else if (data["error"]) {#}
+                    {#showErrorBar(data["error"]);#}
+                {#}#}
+            {#};#}
+
+            {#always = function (data) {};#}
+            {#post(submitMeetingButton, "{{ path('request_meeting') }}", data, callback, done, always);#}
+        {#});#}
+
+        {#function checkNullFields() {#}
+            {#var hasRequired = 0;#}
+
+            {#if(meetingTitleInput.val() == ''){#}
+                {#notifyInvalid(meetingTitleInput);#}
+                {#hasRequired++;#}
+            {#}#}
+            {#if(meetingNoteInput.val() == ''){#}
+                {#notifyInvalid(meetingNoteInput);#}
+                {#hasRequired++;#}
+            {#}#}
+
+            {#if(!taggedPersons){#}
+                {#notifyInvalid(meetingPersonsInvolved);#}
+                {#hasRequired++;#}
+            {#}#}
+            {#if(!fromMeetingTime){#}
+                {#notifyInvalid(fromMeetingTimeInput);#}
+                {#hasRequired++;#}
+            {#}#}
+            {#if(!toMeetingTime){#}
+                {#notifyInvalid(toMeetingTimeInput);#}
+                {#hasRequired++;#}
+            {#}#}
+
+            {#if (hasRequired > 0)#}
+                {#return true;#}
+            {#else return false;#}
+        {#}#}
+
+        {#$('.btn-ip-cancel').click(function(e){#}
+            {#e.preventDefault();#}
+            {#$('.diff-ip-container').hide();#}
+        {#});#}
+        {#$('.btn-ip-yes').click(function(e){#}
+            {#e.preventDefault();#}
+            {#$('.diff-ip-reason').show();#}
+        {#});#}
+        {#$('.modal-trigger').leanModal();#}
+        {#function showBirthday() {#}
+            {#var bdaynames = [];#}
+            {#{% for names in userbdaynames %}#}
+            {#bdaynames.push("{{ names }}");#}
+            {#{% endfor %}#}
+            {#console.log(bdaynames);#}
+            {#if(bdaynames.length) {#}
+                {#$('.modal-birthday-notify-container').show();#}
+            {#}#}
+            {#$('.btn-bdayclose').click( function() {#}
+                {#$('.modal-birthday-notify-container').hide();#}
+            {#});#}
+        {#}#}
 
     </script>
 
     <script> // SCRIPT FOR MULTIPLE DATES REQUEST LEAVE
         var unique_id = 0;
 
-        $(document).ready(function(){
-            $("#add-request-form").click(function (){
-                cloneRequestLeaveFields();
-            });
-
-            $("#btn-close").click(function() {
-                removeClonedFields();
-            });
-        });
-
-        function cloneRequestLeaveFields(){
-            var formSect = requestLeaveForm.find('.multi_reqleaveform');
-            var unique_id = requestLeaveForm.find('.multi_reqleaveform:last').data('endid') ?
-                    requestLeaveForm.find('.multi_reqleaveform:last').data('endid')+1 : formSect.length;
-
-            var form_container = document.createElement("div");                         // <div class = "multi_reqleaveform">
-            form_container.setAttribute("data-endid", unique_id);
-            form_container.className = "multi_reqleaveform newForm";
-            form_container.innerHTML = '<div class="col-md-12" style="margin-bottom: 20px;"><hr style="border: 1px dashed #ccc;"></div>';
-
-            var container = document.createElement("div");                              // <div class = "req_inner"> -> Container
-            container.className = "req_inner";
-
-            var from_cont = document.createElement("div");                              // <div class = "col-md-6..."> for FROM
-            from_cont.className = "col-md-6 reqleave-lbl";
-
-            var from_lbl = document.createElement("span").textContent = "From";         // <span> FROM </span> just label
-            from_lbl.className = "reqleave-p";
-
-            var from_input = document.createElement("input");                           // <input> start date
-            from_input.setAttribute("name", "start-date-" + unique_id);
-            from_input.setAttribute("placeholder", "Start Date");
-            from_input.setAttribute("id", "start_date_" + unique_id);
-            from_input.setAttribute("readonly", "true");
-            from_input.setAttribute("required", "true");
-            from_input.className = "start-date datepicker";
-
-            var to_cont = document.createElement("div");                                // to container
-            to_cont.className = "col-md-6 reqleave-lbl";
-
-            var to_lbl = document.createElement("span").textContent = "To";             // To label (span class)
-            to_lbl.className = "reqleave-p";
-
-            var to_input = document.createElement("input");                             // <input> end date
-            to_input.setAttribute("name", "end-date-" + unique_id);
-            to_input.setAttribute("placeholder", "End Date");
-            to_input.setAttribute("id", "end_date_" + unique_id);
-            to_input.setAttribute("readonly", "true");
-            to_input.setAttribute("required", "true");
-            to_input.className = "end-date datepicker";
-
-            var reason_cont = document.createElement("div");                            // <div class = "col-md-12"> for REASON
-            reason_cont.className = "col-md-12";
-
-            var reason = document.createElement("textarea");                            // <textarea> -> REASON
-            reason.className = "materialize-textarea reason";
-            reason.setAttribute("id", "reason-leave-sbt-" + unique_id);
-            reason.setAttribute("placeholder", "Reason...");
-            reason.setAttribute("required", "true");
-
-            var deleteButton = document.createElement('button');
-            deleteButton.className = "btn-floating btn-medium red text-center btn-remove-leave-form-entry";
-            deleteButton.innerHTML = '<i class="medium material-icons">delete</i>';
-            var delFrame = document.createElement('div');
-            delFrame.className = 'text-center';
-            delFrame.append(deleteButton);
-
-            form_container.append(container);
-            form_container.append(reason_cont);
-            form_container.append(delFrame);
-            reason_cont.append(reason);
-            container.append(from_cont);
-            from_cont.append(from_lbl);
-            from_cont.append(from_input);
-            container.append(to_cont);
-            to_cont.append(to_lbl);
-            to_cont.append(to_input);
-            $(".form-container").append(form_container);
-
-            //initialize pikaday
-            var startValue = agendaDateDiffFormat.text();
-            var strtEl = 'start_date_'+unique_id;
-            var endEL = 'end_date_'+unique_id;
-
-            initPicker(strtEl, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
-                setTimeout( function() {
-                    setPikadayData('start-range', endEL, new Date($('#'+strtEl).val())).show();
-                }, 200);
-            });
-
-            initPicker(endEL, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
-                setTimeout( function() {
-                    setPikadayData('end-range', strtEl, new Date($('#'+endEL).val()))
-                }, 200);
-            });
-        }
-
-        submitLeaveButton.click(function(){
-            // validate first
-            var validate = checkFields();
-            if(validate == true) // true == there are errors
-                return;
-            // else continue
-            var obj = [];
-            typeleave = 2;
-
-            requestLeaveForm.find('.multi_reqleaveform').each( function() {
-                var start = $(this).find('.start-date').val();
-                var end = $(this).find('.end-date').val();
-                var reason = $(this).find('.reason').val();
-
-                obj.push({start_date: start, end_date: end, reason: reason});
-            });
-
-            data = {
-                typeleave: typeleave,
-                obj: obj
-            };
-
-            callback = function(data){
-                //
-            };
-
-            done = function(data){
-                if (data["result"]) {
-                    removeClonedFields();
-                    $('#daily_agenda').closeModal();
-                    showSuccessBar(data["result"]);
-                } else if (data["error"]) {
-                    // error
-                    showErrorBar(data["error"]);
-                }
-            };
-
-            always = function(data){
-                if(endDatePicker != null)
-                    endDatePicker.destroy();
-            };
-
-            post(submitLeaveButton, "{{path('request_leave')}}", data, callback, done, always);
-        });
-
-        function checkFields() {      // Checking if there are any inputs on the required fields
-            var error = 0;
-
-            requestLeaveForm.find('.multi_reqleaveform').each( function() {
-                $(this).find('input, textarea').each( function() {
-
-                    if($(this).val()=='') {
-                        if(error==0) {
-                            $(this).select();
-                        }
-
-                        $(this).css({'border-color': 'red'});
-                        error++;
-                    } else {
-                        $(this).css({'border-color': 'gray'})
-                    }
-                });
-            });
-
-            return error ? true : false;
-        }
-
-        function removeClonedFields() {         // basically removes all the cloned fields
-            $('#start_date').val('');
-            $('#end_date').val('');
-            $('#reason-leave-sbt').val('');
-            $('.newForm').remove();
-        }
+//        $(document).ready(function(){
+//            $("#add-request-form").click(function (){
+//                cloneRequestLeaveFields();
+//            });
+//
+//            $("#btn-close").click(function() {
+//                removeClonedFields();
+//            });
+//        });
+//
+//        function cloneRequestLeaveFields(){
+//            var formSect = requestLeaveForm.find('.multi_reqleaveform');
+//            var unique_id = requestLeaveForm.find('.multi_reqleaveform:last').data('endid') ?
+//                    requestLeaveForm.find('.multi_reqleaveform:last').data('endid')+1 : formSect.length;
+//
+//            var form_container = document.createElement("div");                         // <div class = "multi_reqleaveform">
+//            form_container.setAttribute("data-endid", unique_id);
+//            form_container.className = "multi_reqleaveform newForm";
+//            form_container.innerHTML = '<div class="col-md-12" style="margin-bottom: 20px;"><hr style="border: 1px dashed #ccc;"></div>';
+//
+//            var container = document.createElement("div");                              // <div class = "req_inner"> -> Container
+//            container.className = "req_inner";
+//
+//            var from_cont = document.createElement("div");                              // <div class = "col-md-6..."> for FROM
+//            from_cont.className = "col-md-6 reqleave-lbl";
+//
+//            var from_lbl = document.createElement("span").textContent = "From";         // <span> FROM </span> just label
+//            from_lbl.className = "reqleave-p";
+//
+//            var from_input = document.createElement("input");                           // <input> start date
+//            from_input.setAttribute("name", "start-date-" + unique_id);
+//            from_input.setAttribute("placeholder", "Start Date");
+//            from_input.setAttribute("id", "start_date_" + unique_id);
+//            from_input.setAttribute("readonly", "true");
+//            from_input.setAttribute("required", "true");
+//            from_input.className = "start-date datepicker";
+//
+//            var to_cont = document.createElement("div");                                // to container
+//            to_cont.className = "col-md-6 reqleave-lbl";
+//
+//            var to_lbl = document.createElement("span").textContent = "To";             // To label (span class)
+//            to_lbl.className = "reqleave-p";
+//
+//            var to_input = document.createElement("input");                             // <input> end date
+//            to_input.setAttribute("name", "end-date-" + unique_id);
+//            to_input.setAttribute("placeholder", "End Date");
+//            to_input.setAttribute("id", "end_date_" + unique_id);
+//            to_input.setAttribute("readonly", "true");
+//            to_input.setAttribute("required", "true");
+//            to_input.className = "end-date datepicker";
+//
+//            var reason_cont = document.createElement("div");                            // <div class = "col-md-12"> for REASON
+//            reason_cont.className = "col-md-12";
+//
+//            var reason = document.createElement("textarea");                            // <textarea> -> REASON
+//            reason.className = "materialize-textarea reason";
+//            reason.setAttribute("id", "reason-leave-sbt-" + unique_id);
+//            reason.setAttribute("placeholder", "Reason...");
+//            reason.setAttribute("required", "true");
+//
+//            var deleteButton = document.createElement('button');
+//            deleteButton.className = "btn-floating btn-medium red text-center btn-remove-leave-form-entry";
+//            deleteButton.innerHTML = '<i class="medium material-icons">delete</i>';
+//            var delFrame = document.createElement('div');
+//            delFrame.className = 'text-center';
+//            delFrame.append(deleteButton);
+//
+//            form_container.append(container);
+//            form_container.append(reason_cont);
+//            form_container.append(delFrame);
+//            reason_cont.append(reason);
+//            container.append(from_cont);
+//            from_cont.append(from_lbl);
+//            from_cont.append(from_input);
+//            container.append(to_cont);
+//            to_cont.append(to_lbl);
+//            to_cont.append(to_input);
+//            $(".form-container").append(form_container);
+//
+//            //initialize pikaday
+//            var startValue = agendaDateDiffFormat.text();
+//            var strtEl = 'start_date_'+unique_id;
+//            var endEL = 'end_date_'+unique_id;
+//
+//            initPicker(strtEl, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+//                setTimeout( function() {
+//                    setPikadayData('start-range', endEL, new Date($('#'+strtEl).val())).show();
+//                }, 200);
+//            });
+//
+//            initPicker(endEL, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
+//                setTimeout( function() {
+//                    setPikadayData('end-range', strtEl, new Date($('#'+endEL).val()))
+//                }, 200);
+//            });
+//        }
+//
+//
+//        function checkFields() {      // Checking if there are any inputs on the required fields
+//            var error = 0;
+//
+//            requestLeaveForm.find('.multi_reqleaveform').each( function() {
+//                $(this).find('input, textarea').each( function() {
+//
+//                    if($(this).val()=='') {
+//                        if(error==0) {
+//                            $(this).select();
+//                        }
+//
+//                        $(this).css({'border-color': 'red'});
+//                        error++;
+//                    } else {
+//                        $(this).css({'border-color': 'gray'})
+//                    }
+//                });
+//            });
+//
+//            return error ? true : false;
+//        }
+//
+//        function removeClonedFields() {         // basically removes all the cloned fields
+//            $('#start_date').val('');
+//            $('#end_date').val('');
+//            $('#reason-leave-sbt').val('');
+//            $('.newForm').remove();
+//        }
     </script>
 
 {% endblock %}
