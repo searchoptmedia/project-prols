@@ -369,6 +369,12 @@ class EmailController extends Controller
             $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Was Updated' : ($params['event_type']==C::EVENT_TYPE_INTERNAL ? 'Internal Event Was Updated' : 'Holiday Was Updated'));
         }
 
+        if(isset($params['has-cancel'])) {
+            $message = "<strong>".$ownerName . "</strong> has cancelled <strong>". $params['event_name'] ."</strong>.";
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Cancelled Meeting' : 'Cancelled Internal Event';
+            $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_MEETING ? ' Meeting Was Cancelled' : ($params['event_type']==C::EVENT_TYPE_INTERNAL ? ' The Internal Event Was Cancelled' : 'Holiday Was Cancelled'));
+        }
+
         $params['title'] = $title;
         $params['greetings'] = 'Hi '.$employeeName.',';
         $params['template'] = 'event-create';
