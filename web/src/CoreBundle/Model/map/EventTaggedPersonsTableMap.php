@@ -57,6 +57,7 @@ class EventTaggedPersonsTableMap extends TableMap
     {
         $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('emp_id' => 'id', ), null, null);
         $this->addRelation('ListEvents', 'CoreBundle\\Model\\ListEvents', RelationMap::MANY_TO_ONE, array('event_id' => 'id', ), null, null);
+        $this->addRelation('EventTagHistory', 'CoreBundle\\Model\\EventTagHistory', RelationMap::ONE_TO_MANY, array('id' => 'event_tag_id', ), null, null, 'EventTagHistories');
     } // buildRelations()
 
 } // EventTaggedPersonsTableMap
