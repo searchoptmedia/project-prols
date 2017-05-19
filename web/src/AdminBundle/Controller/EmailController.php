@@ -376,7 +376,7 @@ class EmailController extends Controller
 
         $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
 
-        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+        return self::sendEmail($class, $subject, $from, $to, $emailContent);
     }
 
     public function notifyEmployeeOnEventUpdateTagStatus($params = array(), Controller $class)

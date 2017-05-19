@@ -9,6 +9,10 @@ use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EventTaggedPersons;
 use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\EventTagHistory;
+use CoreBundle\Model\EventTagHistoryQuery;
+use CoreBundle\Model\History;
+use CoreBundle\Model\HistoryQuery;
 use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Utilities\Constant as C;
 use CoreBundle\Utilities\Utils as U;
@@ -54,6 +58,12 @@ class EventManagerController extends Controller
             if(!empty($params['event_id']))
                 $eventQry = ListEventsQuery::_findById($params['event_id']);
 
+            $oldEventName = $eventQry ? $eventQry->getEventName() : Null;
+            $oldEventVenue = $eventQry ? $eventQry->getEventVenue() : Null;
+            $oldEventFrom = $eventQry ? $eventQry->getFromDate() : Null;
+            $oldEventTo = $eventQry ? $eventQry->getToDate() : Null;
+            $oldEventType = $eventQry ? $eventQry->getEventType() : Null;
+
             if(!$eventQry) {
                 $params['status'] = C::STATUS_ACTIVE;
                 $params['created_by'] = $userId;
@@ -98,20 +108,41 @@ class EventManagerController extends Controller
                             $params['links'] = array('View Event' => $this->generateUrl('manage_events', array('id' => $event->getId()), true));
 
                             if($eventTagged) {
-                                if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
-                                    $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
-                                    $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
+                                $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
+                                $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
 
-                                    $this->email->notifyEmployeeOnEvent($params, $this);
-                                } else if($eventTagQry) {
+                                $historyCreate = EventTagHistoryQuery::_findByActionAndTag( $eventTagged->getId(), 'tag-create');
+
+                                if(!$historyCreate) {
+                                    $this->saveHistory(array(
+                                        'event_tag_id' => $eventTagged->getId()
+                                    ), C::HA_EVENT_TAG_ADD);
+                                }
+
+                                if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
+                                    $params['has-update'] = false;
+
+                                    $email = $this->email->notifyEmployeeOnEvent($params, $this);
+
+                                    if($email)
+                                        $this->saveHistory(array(
+                                            'event_tag_id' => $eventTagged->getId()
+                                        ), C::HA_EVENT_TAG_EMAIL);
+                                } else if($eventTagQry  && $params['notify_email']) {
                                     $params['has-update'] = true;
 
-                                    if($eventQry->getEventName()!=$event->getEventName() ||
-                                        ($eventQry->getFromDate()->format('m-d-Y h:i a')!=$event->getFromDate()->format('m-d-Y h:i a')) ||
-                                        ($eventQry->getToDate()->format('m-d-Y h:i a')!=$event->getToDate()->format('m-d-Y h:i a')) ||
-                                        ($eventQry->getEventVenue()!=$event->getEventVenue()) ||
-                                        ($eventQry->getEventType()!=$event->getEventType()) )
-                                            $this->email->notifyEmployeeOnEvent($params, $this);
+                                    if($oldEventName!=$event->getEventName() ||
+                                        ($oldEventFrom->format('m-d-Y h:i a')!=$event->getFromDate()->format('m-d-Y h:i a')) ||
+                                        ($oldEventTo->format('m-d-Y h:i a')!=$event->getToDate()->format('m-d-Y h:i a')) ||
+                                        ($oldEventVenue!=$event->getEventVenue()) ||
+                                        ($oldEventType!=$event->getEventType()) ) {
+                                        $email = $this->email->notifyEmployeeOnEvent($params, $this);
+
+                                        if($email)
+                                            $this->saveHistory(array(
+                                                'event_tag_id' => $eventTagged->getId()
+                                            ), C::HA_EVENT_TAG_EMAIL);
+                                    }
                                 }
                             } else {
                                 $response = array('error' => 'Oops! Encountered problem while tagging. Please try again!');
@@ -166,12 +197,46 @@ class EventManagerController extends Controller
 
         if($method=='POST') {
             $params = $request->request->all();
-            $getEvents = ListEventsPeer::getAllEvents($id);
+//            $getEvents = ListEventsPeer::getAllEvents($id);
+            $getEvents = ListEventsQuery::_findAll(array(
+                'tag_ids' => array(
+                    'data' => $id
+                ),
+                'event_type' => array(
+                    'data' => C::EVENT_TYPE_HOLIDAY, '_or' => true
+                ),
+                'created_by' => array(
+                    'data' => $id, '_or' => true
+                ),
+                'order' => array(
+                    'data' => 'date_created', 'criteria' => \Criteria::DESC
+                )
+            ));
             $activeEvent = null;
             $response = array();
 
             if(!empty($params['id'])) {
                 $activeEvent = ListEventsQuery::_findById($params['id']);
+            }
+
+            foreach($getEvents as $k=>$e) {
+                $etags = $e->getEventTaggedPersonss();
+
+                if($etags) {
+                    foreach($etags as $k2=>$et) {
+                        $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
+                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
+                            'TagID' => array(
+                                'value' => $et->getId()
+                            ),
+                            'order' => array(
+                                'value' => 'date_created',
+                                'criteria' => \Criteria::DESC
+                            )
+                        ));
+                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
+                    }
+                }
             }
 
             $response['list'] = $this->renderView('AdminBundle:EventManager:ajax-list.html.twig', array(
@@ -288,14 +353,48 @@ class EventManagerController extends Controller
                     if($eventTag) {
                         $response = U::getSuccessResponse();
                         //send notification
-                        if($origStatus != $statusId)
+                        if($origStatus != $statusId) {
                             $this->email->notifyEmployeeOnEventUpdateTagStatus($params, $this);
+                            $historyData = array(
+                                'event_tag_id' => $eventTag->getId(),
+                                'status' => $statusId,
+                                'date_created' => U::getDate()
+                            );
+                            if(isset($params['reason']))
+                                $historyData['message'] = $params['reason'];
+
+                            $this->saveHistory($historyData, C::HA_EVENT_TAG_STAT_UPDATE);
+                        }
                     }
                 }
             }
         }
 
         return new JsonResponse($response);
+    }
+
+    public function cancelEventAction(Request $request)
+    {
+        $method = $request->getMethod();
+        $result = array('error' => 'Cancelling Event Failed!');
+
+        if($method=='POST') {
+            $params = $request->request->all();
+
+            if(isset($params['event_id'])) {
+                $eventQry = ListEventsQuery::_findById($params['event_id']);
+
+                if($eventQry) {
+                    $eventQry->setStatus(C::STATUS_INACTIVE);
+
+                    if($eventQry->save() || $eventQry) {
+                        $result = array('success' => 'Event Successfully Cancelled!');
+                    }
+                }
+            }
+        }
+
+        return new JsonResponse($result);
     }
 
     public function deleteEventTagged($reqId, $reqTagIds) {
@@ -400,6 +499,30 @@ class EventManagerController extends Controller
 
         echo json_encode($result);
         exit;
+    }
+
+    public function saveHistory($params = array(), $action = '')
+    {
+        $historyQry = HistoryQuery::_findModuleAction('event', $action);
+        $history = new History();
+
+        if(!$historyQry)
+            $history = $history->_save(array(
+                'module' => 'event',
+                'action' => $action
+            ));
+        else
+            $history = $historyQry;
+
+        if($history) {
+            if(in_array($action, array('tag-create', 'tag-send-email', 'tag-update-status'))) {
+                $historyTag = new EventTagHistory();
+                $params['history_id'] = $history->getId();
+                $params['date_created'] = U::getDate();
+
+                $historyTag->_save($params);
+            }
+        }
     }
 
     public function getCalendarEvents($request, $params = array())

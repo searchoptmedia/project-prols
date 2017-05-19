@@ -25,4 +25,8 @@ class Constant
     const DATE_FORMAT_MID          = 'Y-m-d 00:00:00';
     const DATE_FORMAT_NIGHT        = 'Y-m-d 23:59:59';
 
+    const HA_EVENT_TAG_ADD              = 'tag-create';
+    const HA_EVENT_TAG_EMAIL            = 'tag-send-email';
+    const HA_EVENT_TAG_STAT_UPDATE      = 'tag-update-status';
+
 }

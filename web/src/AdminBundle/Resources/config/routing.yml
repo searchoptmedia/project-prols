@@ -180,6 +180,10 @@ notify_event:
     path: /manageevent/notify
     defaults: { _controller: AdminBundle:EventManager:notify }
 
+manage_event_cancel:
+    path: /event/cancel
+    defaults: { _controller: AdminBundle:EventManager:cancelEvent }
+
 edit_event:
     path: /manageevent/edit
     defaults: { _controller: AdminBundle:EventManager:edit }

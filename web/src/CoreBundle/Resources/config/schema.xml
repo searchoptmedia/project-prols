@@ -291,4 +291,33 @@
         </vendor>
     </table>
 
+    <table name="history" phpName="History" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="module" phpName="Module" type="VARCHAR" size="255" />
+        <column name="action" phpName="Action" type="VARCHAR" size="255" />
+
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="event_tag_history" phpName="EventTagHistory" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="history_id" phpName="HistoryId" type="INTEGER" required="true" />
+        <column name="event_tag_id" phpName="EventTagId" type="INTEGER" required="true" />
+        <column name="status" phpName="Status" type="INTEGER" />
+        <column name="message" phpName="Message" type="LONGVARCHAR" />
+        <column name="date_created" phpName="DateCreated" type="TIMESTAMP" required="true" />
+
+        <foreign-key foreignTable="history">
+            <reference local="history_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="event_tagged_persons">
+            <reference local="event_tag_id" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
 </database>
