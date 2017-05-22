@@ -578,7 +578,8 @@ class EventManagerController extends Controller
     {
         $allEvents = ListEventsQuery::_findAll(array(
             'date_started' => $params['date_started'],
-            'date_ended' => $params['date_ended']
+            'date_ended' => $params['date_ended'],
+            'status' => array('data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL)
         ));
 
         foreach ($allEvents as $event) {
