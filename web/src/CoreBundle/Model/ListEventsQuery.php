@@ -47,15 +47,15 @@ class ListEventsQuery extends BaseListEventsQuery
             $data->filterByCreatedBy($params['created_by']['data'], isset($params['created_by']['criteria']) ? $params['created_by']['criteria'] : \Criteria::EQUAL);
         }
 
-        if(!empty($params['order']['data'])) {
-            $data->orderBy($params['order']['data'], isset($params['order']['criteria']) ? $params['order']['criteria'] : \Criteria::ASC);
-        }
-
         if(!empty($params['status']['data'])) {
             if(isset($params['status']['_or']))
                 $data->_or();
 
-            $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::ASC);
+            $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
+        }
+
+        if(!empty($params['order']['data'])) {
+            $data->orderBy($params['order']['data'], isset($params['order']['criteria']) ? $params['order']['criteria'] : \Criteria::ASC);
         }
 
         $data->setDistinct();
