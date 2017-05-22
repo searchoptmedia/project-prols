@@ -7948,3 +7948,4 @@ a.fc-day-grid-event.fc-event {
     box-shadow: 0px 0px 7px 2px grey;
     -moz-box-shadow: 0px 0px 7px 2px grey;
 }
+.modal { right: 1px !important; }

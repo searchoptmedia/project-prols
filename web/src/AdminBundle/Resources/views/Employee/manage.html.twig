@@ -196,15 +196,16 @@
 
 {% block modal %}
     <!----------------------- ADD/EDIT EMPLOYEE MODAL -------------------------->
-    <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
+    <div id="modal-emp" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Employee</h4>
         <div class="modal-content add-employee-modal" >
-            <h4 class="mo-header">Employee</h4>
-            <input type="hidden" name="employee-id" id = "employee-id"/>
-            <div class="row mo-body">
-                {% if user.role == 'ADMIN' %}
-                <div class="col-md-7 col-lg-8">
-                    {% else %}
-                    <div class="col-md-12 col-lg-12">
+            <div class="mo-body">
+                <input type="hidden" name="employee-id" id = "employee-id"/>
+                <div class="row mo-body">
+                    {% if user.role == 'ADMIN' %}
+                    <div class="col-md-7 col-lg-8">
+                        {% else %}
+                        <div class="col-md-12 col-lg-12">
                         {% endif %}
                         <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field" style="margin-bottom: 0;"><br>
                             <span id = "username-error" style = "padding: 0; font-size: 10px; color: red;">Username already exists</span></p>
@@ -282,26 +283,24 @@
                     <input type = "hidden" id = "celnumid">
                 </div>
             </div>
-
-            <div class="modal-footer">
-                <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
-                <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
-                <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
-                <div class="chip add-error-chip pull-left display-none" style = "font-size: 12px; color: red;">
-                    <i class="close material-icons">info_outline</i>
-                    Please Input All Fields
-                </div>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
+            <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
+            <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
+            <div class="chip add-error-chip pull-left display-none" style = "font-size: 12px; color: red;">
+                <i class="close material-icons">info_outline</i>
+                Please Input All Fields
             </div>
         </div>
     </div>
     <!----------------------------- END -------------------------------->
 
     <!----------------------- ADD POSITION/DEPARTMENT MODAL -------------------------->
-    <div id="modal-pos-dept" class="modal">
+    <div id="modal-pos-dept" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header" id="position_hdr">Position</h4>
+        <h4 class="mo-header" id="department_hdr">Department</h4>
         <div class="modal-content">
-            <h4 class="mo-header" id="position_hdr">Position</h4>
-            <h4 class="mo-header" id="department_hdr">Department</h4>
-
             <div class="mo-body">
                 <input id="input-pos-dept" type="text" placeholder="Type name here...">
             </div>
@@ -317,9 +316,8 @@
 
     <!----------------------- EXPORT MODAL -------------------------->
     <div id="exportchoice" class="modal">
+        <h4 class="mo-header">Export</h4>
         <div class="modal-content">
-            <h4 class="mo-header">Export</h4>
-
             <div class="mo-body">
                 <p>Choose entity: </p>
                 <div class="radiobtn" style="margin-bottom: 20px;">
@@ -338,11 +336,11 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
-                    <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
-                </div>
             </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
+            <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
         </div>
     </div>
     <!----------------------------- END -------------------------------->

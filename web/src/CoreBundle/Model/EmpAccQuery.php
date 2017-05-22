@@ -23,11 +23,21 @@ class EmpAccQuery extends BaseEmpAccQuery
             ->findOne();
     }
 
-    static function _findAll($status = Constant::STATUS_ACTIVE)
+    static function _findAll($params = array())
     {
-        return
-            self::create()
-                ->filterByStatus($status)
-            ->find();
+        $data = self::create();
+
+        foreach($params as $k=>$d) {
+            if($k=='status' && isset($d['data'])) {
+                if(isset($d['_or']) && $d['_or'])
+                    $data->_or();
+                else if(isset($d['_and']) && $d['_and'])
+                    $data->_and();
+
+                $data->filterByStatus($d['data'], isset($d['criteria']) ? $d['criteria'] : \Criteria::EQUAL);
+            }
+        }
+
+        return $data->find();
     }
 }

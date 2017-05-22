@@ -163,7 +163,9 @@ class EventManagerController extends Controller
                         }
                     }
                 } else if($event->getEventType()==C::EVENT_TYPE_HOLIDAY &&  $params['notify_email']){
-                    $empList = EmpAccQuery::_findAll();
+                    $empList = EmpAccQuery::_findAll(array(
+                        'status' => array('data' => -1, 'criteria' => \Criteria::NOT_EQUAL)
+                    ));
 
                     if($empList) {
                         $params['from_date'] = date('F d, Y', strtotime($params['from_date']));
@@ -223,6 +225,24 @@ class EventManagerController extends Controller
 
                 if($activeEvent && $activeEvent->getStatus()==C::STATUS_INACTIVE)
                     $activeEvent = null;
+                else {
+                    $etags = $activeEvent->getEventTaggedPersonss();
+                    if($etags) {
+                        foreach($etags as $k2=>$et) {
+                            $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
+                            $activeEvent->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
+                                'TagID' => array(
+                                    'value' => $et->getId()
+                                ),
+                                'order' => array(
+                                    'value' => 'date_created',
+                                    'criteria' => \Criteria::DESC
+                                )
+                            ));
+                            $activeEvent->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
+                        }
+                    }
+                }
             }
 
             foreach($getEvents as $k=>$e) {
@@ -396,44 +416,71 @@ class EventManagerController extends Controller
                     $eventQry->setStatus(C::STATUS_INACTIVE);
 
                     if($eventQry->save() || $eventQry) {
-                        $empTagList = array();
-                        $empTags = array();
+                        if($eventQry->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
+                            $empTagList = array();
+                            $empTags = array();
 
-                        $tags = $eventQry->getEventTaggedPersonss();
-                        if($tags) {
-                            foreach($tags as $t) {
-                                $eventTagHistory = EventTagHistoryQuery::_findByActionAndTag($t->getId(), C::HA_EVENT_TAG_EMAIL);
-                                $email = $t->getEmpAcc()->getEmail();
-                                $profile = EmpProfileQuery::_findByAccId($t->getEmpId());
-                                $empTags[$email] = trim($profile->getFname().' '.$profile->getLname());
+                            $tags = $eventQry->getEventTaggedPersonss();
+                            if ($tags) {
+                                foreach ($tags as $t) {
+                                    $eventTagHistory = EventTagHistoryQuery::_findByActionAndTag($t->getId(), C::HA_EVENT_TAG_EMAIL);
+                                    $email = $t->getEmpAcc()->getEmail();
+                                    $profile = EmpProfileQuery::_findByAccId($t->getEmpId());
+                                    $empTags[$email] = trim($profile->getFname() . ' ' . $profile->getLname());
 
-                                if($eventTagHistory && $t->getStatus()!=C::STATUS_INACTIVE) {
-                                    if(!filter_var($email, FILTER_VALIDATE_EMAIL) === false)
-                                        $empTagList[$email] = $t->getEmpId();
+                                    if ($eventTagHistory && $t->getStatus() != C::STATUS_INACTIVE) {
+                                        if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false)
+                                            $empTagList[$email] = $t->getEmpId();
+                                    }
                                 }
                             }
-                        }
 
-                        if(count($empTagList)) {
-                            foreach($empTagList as $emp) {
-                                $fromDate = $eventQry->getFromDate();
-                                $toDate = $eventQry->getFromDate();
+                            if (count($empTagList)) {
+                                foreach ($empTagList as $emp) {
+                                    $fromDate = $eventQry->getFromDate();
+                                    $toDate = $eventQry->getFromDate();
 
-                                $emailParams = array(
-                                    'user_id' => $emp,
-                                    'event_type' => $eventQry->getEventType(),
-                                    'event_name' => $eventQry->getEventName(),
-                                    'event_desc' => $eventQry->getEventDescription(),
-                                    'event_venue' => $eventQry->getEventVenue(),
-                                    'from_date' => !empty($fromDate) ? $fromDate->format('F d, Y h:i a') : '',
-                                    'to_date' => !empty($toDate) ? $toDate->format('F d, Y h:i a') : '',
-                                    'has-cancel' => false,
-                                    'event_tag_names' => $empTags,
-                                    'owner_email' => $ownerEmail
-                                );
+                                    $emailParams = array(
+                                        'user_id' => $emp,
+                                        'event_type' => $eventQry->getEventType(),
+                                        'event_name' => $eventQry->getEventName(),
+                                        'event_desc' => $eventQry->getEventDescription(),
+                                        'event_venue' => $eventQry->getEventVenue(),
+                                        'from_date' => !empty($fromDate) ? $fromDate->format('F d, Y h:i a') : '',
+                                        'to_date' => !empty($toDate) ? $toDate->format('F d, Y h:i a') : '',
+                                        'has-cancel' => false,
+                                        'event_tag_names' => $empTags,
+                                        'owner_email' => $ownerEmail
+                                    );
 
-                                $email = new EmailController();
-                                $email->notifyEmployeeOnEvent($emailParams, $this);
+                                    $email = new EmailController();
+                                    $email->notifyEmployeeOnEvent($emailParams, $this);
+                                }
+                            }
+                        } else {
+                            $employees = EmpAccQuery::_findAll(array(
+                                'status' => array('data' => -1, 'criteria'=> \Criteria::NOT_EQUAL)
+                            ));
+
+                            if($employees) {
+                                foreach($employees as $emp) {
+                                    $fromDate = $eventQry->getFromDate();
+                                    $toDate = $eventQry->getFromDate();
+
+                                    $emailParams = array(
+                                        'user_id' => $emp->getId(),
+                                        'event_type' => $eventQry->getEventType(),
+                                        'event_name' => $eventQry->getEventName(),
+                                        'event_desc' => $eventQry->getEventDescription(),
+                                        'event_venue' => $eventQry->getEventVenue(),
+                                        'from_date' => !empty($fromDate) ? $fromDate->format('F d, Y') : '',
+                                        'to_date' => !empty($toDate) ? $toDate->format('F d, Y') : '',
+                                        'has-cancel' => false
+                                    );
+
+                                    $email = new EmailController();
+                                    $email->notifyEmployeeOnEvent($emailParams, $this);
+                                }
                             }
                         }
 
