@@ -51,6 +51,7 @@
                data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
                data-event-tag-reason="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.reason }}{% endif %}{% endfor %}"
                data-created-by="{{ event.createdBy }}"
+               data-event-tags-timeline='[ {% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}[{% if tag.tagHistory is defined %}{% for h in tag.tagHistory %}{ "date": "{{ h.dateCreated|date('M d, Y') }}", "time":"{{ h.dateCreated|date('h:i a') }}","message":"{{ h.message|e('js') }}", "status":"{{ h.status }}", "action":"{{ h.history.action }}", "name":"{{ tag.tagName }}" }, {% endfor %}{% endif %}],{% endif %}{% endfor %} ]'
                     >View</a>
         </td>
     </tr>
