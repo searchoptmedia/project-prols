@@ -67,7 +67,7 @@ class DashboardController extends Controller
                         $r->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
                     'start' => $r->getDateStarted()->format('Y-m-d'),
                     'end' => $r->getDateEnded()->format('Y-m-d, 23:59:00'),
-                    'color' => '#ff9800',
+                    'color' => '#0072B1',
                     'editable' => false,
                     'empname' => $r->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
                         $r->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
