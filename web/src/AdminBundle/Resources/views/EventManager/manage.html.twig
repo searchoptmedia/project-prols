@@ -784,8 +784,8 @@
             });
 
             DOC.on('click', btnCreateEvent, function(e) {
-                var id = $(txtEventId).val();
-                saveEvent(id);
+                console.log(clickedEventId);
+                saveEvent(clickedEventId);
             });
 
             DOC.on('click', '.link-add-tags', function() {
@@ -832,7 +832,7 @@
 
             DOC.on('click', btnGuestResponseSave, function() {
                 var status = ResponseStatus;
-                var eventId = $(moViewEventDetails).data('id');
+                var eventId = clickedEventId;
                 var reason = $(txtViewReason).val();
 
                 defaultBorder([ $(txtViewReason) ]);
