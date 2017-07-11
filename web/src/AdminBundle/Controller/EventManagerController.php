@@ -651,15 +651,15 @@ class EventManagerController extends Controller
             $eventOwner = EmpProfileQuery::_findByAccId($eventOwnerId);
             $eventOwnerName = trim($eventOwner->getFname() . ' ' . $eventOwner->getLname());
 
-            $color = '#64b5f6';
+            $color = '#E90133';
             $eventTypeName = 'Holiday';
 
             if ($eventType == C::EVENT_TYPE_MEETING) {
                 $eventTypeName = 'Meeting';
-                $color = '#e57373';
+                $color = '#FFC82D';
             } else if ($eventType == C::EVENT_TYPE_INTERNAL) {
                 $eventTypeName = 'Internal Event';
-                $color = '#17a282';
+                $color = '#EB7124';
             }
 
             $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());

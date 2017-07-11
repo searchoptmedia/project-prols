@@ -7854,7 +7854,7 @@ span.badge.new {
     top: 0px;
     color: #fff;
     text-shadow: 1px 1px 0px #555;
-    background: #26b1f7;
+    background: #039be5 !important;
     font-size: 30px;
 }
 
