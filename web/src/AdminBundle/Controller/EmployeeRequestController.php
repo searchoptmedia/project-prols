@@ -225,7 +225,9 @@ class EmployeeRequestController extends Controller
 
         $requestId = 0;
 
-        foreach($obj as $o) {
+        $addedRequestList = array();
+
+        foreach($obj as $k=>$o) {
             $leaveinput = new EmpRequest();
             $leaveinput->setRequest($o['reason']);
             $leaveinput->setStatus(2);
@@ -237,7 +239,15 @@ class EmployeeRequestController extends Controller
             array_push($reqIds, $leaveinput->getId());
 
             $requestId = $leaveinput->getId();
+            $addedRequestList[] = array(
+                'reason' => $o['reason'],
+                'start_date' => $o['start_date'],
+                'end_date' => $o['end_date'],
+                'requestId' => $requestId
+            );
         }
+
+        $req->request->set('obj', $addedRequestList);
 
         try {
             $email = new EmailController();

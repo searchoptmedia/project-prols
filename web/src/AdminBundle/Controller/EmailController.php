@@ -542,6 +542,13 @@ class EmailController extends Controller
 
     }
 
+    /**
+     * Employee Request
+     * @param $req
+     * @param $class
+     * @param null $reqId
+     * @return int
+     */
     public function requestTypeEmail($req, $class, $reqId = null)
     {
         $email = 0;
@@ -551,12 +558,19 @@ class EmailController extends Controller
         //lets get the request details
         $obj = $req->request->get('obj');
         $requestDates = array();
+        $requestLinks = array();
 
         foreach($obj as $o) {
             $requestDates[] = array(
                 'start' => date('F d, Y', strtotime($o["start_date"])),
                 'end' => date('F d, Y', strtotime($o["end_date"])),
                 'reason' => $o["reason"]
+            );
+
+            $requestLinks[] = array(
+                'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
+                'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
+                'View'    => array('bgColor' => 'rgb(13, 181, 216)', 'href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
             );
         }
 
@@ -587,7 +601,12 @@ class EmailController extends Controller
                 'greetings' => 'Hi Admin,',
                 'message' => "<strong>$empName</strong> has requested for a <strong>$requestType</strong>.",
                 'template' => 'leave-request',
-                'links' => array(count($requestDates)==1 ? 'View Request':'View All Requests' =>  $class->generateUrl('view_request',  array('id' => count($requestDates)==1? $reqId: ''), true))
+                'requestLinks' => $requestLinks,
+                'links' => array(
+                    (count($requestDates)==1 ? 'Approve':'Approve All') =>  array('href' => $class->generateUrl('view_request', array(), true), 'bgColor' => '#4CAF50'),
+                    (count($requestDates)==1 ? 'Decline':'Decline All') =>  array('href' => $class->generateUrl('view_request', array(), true), 'bgColor' => '#F44336'),
+                    'View' =>  array('href' => $class->generateUrl('view_request', array(), true), 'bgColor' => 'rgb(13, 181, 216)'),
+                )
             ));
 
             $response = self::sendEmail($class, $subject, $from, $to, $emailContent);

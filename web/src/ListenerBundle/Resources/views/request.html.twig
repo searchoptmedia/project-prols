@@ -1,0 +1,194 @@
+{% extends "ListenerBundle::base.html.twig" %}
+
+{% block style %}
+    <style>
+        .login-form-2 { padding: 0px 10px; }
+        .circle-loader {
+            margin: 0 0 30px 10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-left-color: #5cb85c;
+            animation-name: loader-spin;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            position: relative;
+            display: inline-block;
+            vertical-align: top;
+            top: 30%;
+        }
+
+        .circle-loader,
+        .circle-loader:after {
+            border-radius: 50%;
+            width: 8em;
+            height: 8em;
+        }
+
+        .load-complete {
+            -webkit-animation: none;
+            animation: none;
+            border-color: #5cb85c;
+            transition: border 500ms ease-out;
+        }
+
+        .checkmark {
+            display: none;
+        }
+        .checkmark.draw:after {
+            animation-duration: 800ms;
+            animation-timing-function: ease;
+            animation-name: checkmark;
+            transform: scaleX(-1) rotate(135deg);
+        }
+        .checkmark:after {
+            opacity: 1;
+            height: 4em;
+            width: 2em;
+            transform-origin: left top;
+            border-right: 2px solid #5cb85c;
+            border-top: 2px solid #5cb85c;
+            content: '';
+            left: 2em;
+            top: 4em;
+            position: absolute;
+        }
+
+        @keyframes loader-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes checkmark {
+            0% {
+                height: 0;
+                width: 0;
+                opacity: 1;
+            }
+            20% {
+                height: 0;
+                width: 2em;
+                opacity: 1;
+            }
+            40% {
+                height: 4em;
+                width: 2em;
+                opacity: 1;
+            }
+            100% {
+                height: 4em;
+                width: 2em;
+                opacity: 1;
+            }
+        }
+
+        .circle-wrap-loader {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: rgba(255,255,255, 0.9);
+            left: 0;
+        }
+        .login-2 { top: 50px; }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="circle-wrap-loader">
+        <div class="circle-loader">
+            <div class="checkmark draw"></div>
+        </div>
+    </div>
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tbody>
+    <tr>
+        <td align="center" valign="top" style="padding-top:0px">
+
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody>
+                <tr>
+                    <td valign="top" class="m_-4535333769822407979textContent"><span class="im">
+
+                       <hr style="border-top:1px dashed #ccc;margin-bottom:20px">
+                        <table class="m_-4535333769822407979email-content" style="width:100%">
+                            <tbody>
+                                <tr>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        Employee:
+                                    </td>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
+                                        <span class="aBn" data-term="goog_889296295" tabindex="0"><span class="aQJ">Denmark Jay Mago</span></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        Dates:
+                                    </td>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
+                                        <span class="aBn" data-term="goog_889296295" tabindex="0"><span class="aQJ">August 16, 2017 to August 17, 2017</span></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        Reason:
+                                    </td>
+                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
+                                        I will be going to my cousin
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <hr style="border-top:1px dashed menu">
+
+
+                        <br>
+                        <center style="margin-top:10px">
+                            <a href="http://local.propelrrlogin.com/main/requests"
+                               id="m_-4535333769822407979request-btn"
+                               style="margin-top:10px;margin-right:5px;background-color:#4caf50;border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
+                               target="_blank"
+                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
+                                Approve
+                            </a>
+                            <a href="http://local.propelrrlogin.com/main/requests"
+                               id="m_-4535333769822407979request-btn"
+                               style="margin-top:10px;margin-right:5px;background-color:#f44336;border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
+                               target="_blank"
+                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
+                                Decline
+                            </a>
+                            <a href="http://local.propelrrlogin.com/main/requests"
+                               id="m_-4535333769822407979request-btn"
+                               style="margin-top:10px;margin-right:5px;background-color:rgb(13,181,216);border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
+                               target="_blank"
+                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
+                                View
+                            </a>
+                        </center>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+
+        </td>
+    </tr>
+    </tbody>
+</table>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    setTimeout( function() {
+        $('.circle-loader').toggleClass('load-complete');
+        $('.checkmark').toggle();
+        setTimeout(function() {
+            $('.circle-loader').parent().remove();
+        }, 1000)
+    }, 5000);
+</script>
+{% endblock %}

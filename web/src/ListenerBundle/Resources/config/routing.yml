@@ -1,0 +1,3 @@
+listener_homepage:
+    path:     /request/approval/{type}
+    defaults: { _controller: ListenerBundle:Default:approveRequest }

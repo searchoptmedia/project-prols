@@ -71,6 +71,7 @@ security:
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/listener/*, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/error404, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/error403, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/sendemail, roles: IS_AUTHENTICATED_ANONYMOUSLY }
