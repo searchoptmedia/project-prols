@@ -191,16 +191,26 @@
                             <div class = "col-md-12" id="guest-row">
                                 <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
                                 <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
-                                    {% for acc in allacc %}
-                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" {% if acc.id==app.user.id %}disabled{% endif %} > {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                    {% for acc in allacc if acc.id!=app.user.id %}
+                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" > {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
                                     {% endfor %}
                                 </select><br><br>
                             </div>
                             <div class="col-md-12" id="from-row">
+                                <input type="checkbox" id="chk-organizer-is-going" value="1"/>
+                                <label for="chk-organizer-is-going" class="black-text">
+                                    I am going
+                                </label>
+                            </div>
+                            <div class="col-md-12" id="from-row">
+                                <label for="event_going_reason_modal">Add Notes (*required if not going)</label>
+                                <textarea id="event_going_reason_modal" class="materialize-textarea txt-event-going-notes" required autocapitalize></textarea>
+                            </div>
+                            <div class="col-md-6" id="from-row">
                                 <label>From</label><br>
                                 <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
                             </div>
-                            <div class="col-md-12" id="to-row">
+                            <div class="col-md-6" id="to-row">
                                 <label>To</label><br>
                                 <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
                             </div>
@@ -208,12 +218,12 @@
 
                         <!-- other type -->
                         <div class="other-event-section sect-event-nontag-type display-none">
-                            <div class="col-md-12" id="from-row-holiday">
+                            <div class="col-md-6" id="from-row-holiday">
                                 <label>From</label><br>
                                 <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
                                        id="txt_from_event_holiday" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-12" id="to-row-holiday">
+                            <div class="col-md-6" id="to-row-holiday">
                                 <label>To</label><br>
                                 <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_holiday" placeholder="mm/dd/yyyy">
                             </div>
@@ -414,6 +424,7 @@
         var sectViewOwnerAction = '.sect-view-owner-action-area';
         var sectReasonSection = '.sect-reason-area';
         var chkNotifyOnEmail = '#chk-notify-email';
+        var chkOrganizerIsGoing = '#chk-organizer-is-going';
         var tbEventList = '.tb-emp-list';
         var txtHeaderTitle = '.mo-header-title';
 
@@ -462,7 +473,6 @@
                 }
 
                 contentReady = true;
-
                 initDropDown();
             });
         }
@@ -476,7 +486,8 @@
                 event_venue: $(txtEventVenue).val(),
                 event_type: eventType,
                 tags: cmbEmpTag.select2('val'),
-                notify_email: $(chkNotifyOnEmail).is(':checked') ? 1 : 0
+                notify_email: $(chkNotifyOnEmail).is(':checked') ? 1 : 0,
+                is_going: $(chkOrganizerIsGoing).is(':checked') ? 1 : 0
             };
 
             var dateFromEl =  $('#'+txtEventHolidayFrom);
@@ -498,11 +509,11 @@
                 $(moCreateEvent).find(txtEventName).focus();
                 errorBorder([ $(txtEventName) ]);
                 error = true;
-            } else if(! removeSpace(data.event_desc).length) {
+            } else if(! removeSpace(data.event_desc).length && eventType!=EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtEventDesc).focus();
                 errorBorder([ $(txtEventDesc) ]);
                 error = true;
-            }  else if(! removeSpace(data.event_venue).length) {
+            }  else if(! removeSpace(data.event_venue).length && eventType!=EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtEventVenue).focus();
                 errorBorder([ $(txtEventVenue) ]);
                 error = true;
@@ -546,24 +557,26 @@
             $(txtEventId).val('');
             $(moCreateEvent).find('form').trigger('reset');
             $('select').trigger('change');
+            $(chkNotifyOnEmail).prop('checked', true);
+            $(chkOrganizerIsGoing).prop('checked', true);
             $(sectTagFields).hide();
             $(sectNonTagFields).hide();
         }
 
         function viewEventDetails(el, action) {
             var tagsViewTemp = '<div class="mb1">'+
-                    '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">'+
-                    '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">'+
-                    '         [NAME]'+
-                    '      </div>'+
-                    '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">'+
-                    '         [STATUS]'+
-                    '      </div>[ACTION]'+
-                    '   </a> [REASON]'
-                    '   </div>';
+                '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">'+
+                '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">'+
+                '         [NAME]'+
+                '      </div>'+
+                '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">'+
+                '         [STATUS]'+
+                '      </div>[ACTION]'+
+                '   </a> [REASON]'
+                '   </div>';
             var tagsViewReasonTemp = '<ul class="collection mt3 display-none">'+
-                    '      <li class="collection-item">[REASON]</li>'+
-                    '   </ul>';
+                '      <li class="collection-item">[REASON]</li>'+
+                '   </ul>';
 
             clickedEventId = el.data('id');
             var data = {
@@ -712,13 +725,18 @@
             }
 
             if(createdBy==currentEmpId) {
-                showElements( [ $(sectViewOwnerAction) ] );
+                if(new Date() < new Date(data.to))
+                    showElements( [ $(sectViewOwnerAction) ] );
+
                 hideElements( [ $(sectViewStatusArea),$(sectGuestResponse),$(sectUserAction) ] );
             } else {
                 hideElements( [ $(sectViewOwnerAction) ] );
             }
 
             $(txtHeaderTitle).text(headerTitle);
+
+            $(chkNotifyOnEmail).prop('checked', true);
+            $(chkOrganizerIsGoing).prop('checked', true);
 
             if(action=='view')
                 $(moViewEventDetails).openModal();
@@ -776,6 +794,7 @@
 
         function bindEvents() {
             DOC.on('click', btnOpenCreateModal, function(e) {
+                clickedEventId = 0;
                 enableForm();
                 resetCreateForm();
 
@@ -891,39 +910,53 @@
             initPicker(txtEventHolidayFrom, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
                 setTimeout( function() {
                     var val = $('#'+txtEventHolidayFrom).val();
+                    var valto = $('#'+txtEventHolidayTo).val();
                     var pd = setPikadayData('start-range', txtEventHolidayTo, new Date(val));
 
-                    if(!removeSpace($('#'+txtEventHolidayTo).val()).length) pd.show();
+                    if(!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                        setPikadayData('set-date', txtEventHolidayTo, new Date(val));
+                        pd.show();
+                    }
                 }, 200);
             });
 
             initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
-                setTimeout( function() {
-                    var val = $('#'+txtEventHolidayTo).val();
-                    var pd = setPikadayData('end-range', txtEventHolidayFrom, new Date(val));
-
-                    if(!removeSpace($('#'+txtEventHolidayFrom).val()).length) pd.show();
-                }, 200);
+//                setTimeout( function() {
+//                    var val = $('#'+txtEventHolidayTo).val();
+//                    var pd = setPikadayData('end-range', txtEventHolidayFrom, new Date(val));
+//
+//                    if(!removeSpace($('#'+txtEventHolidayFrom).val()).length) pd.show();
+//                }, 200);
             });
 
             var param = { showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+            var fromStart = new Date(CURRENT_YEAR, moment().format('M')-1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
 
-            initPicker(txtEventOtherFrom, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+            initPicker(txtEventOtherFrom, fromStart, new Date(CURRENT_YEAR+20, 12, 31), function() {
                 setTimeout( function() {
                     var val = $('#'+txtEventOtherFrom).val();
+                    var valto = $('#'+txtEventOtherTo).val();
                     var pd = setPikadayData('start-range', txtEventOtherTo, new Date(val));
 
-                    if(!removeSpace($('#'+txtEventOtherTo).val()).length) pd.show();
+                    if(!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                        setPikadayData('set-date', txtEventOtherTo, new Date(val));
+                        pd.show();
+                    }
                 }, 200);
             }, param);
 
-            initPicker(txtEventOtherTo, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
-                setTimeout( function() {
-                    var val = $('#'+txtEventOtherTo).val();
-                    var pd = setPikadayData('end-range', txtEventOtherFrom, new Date(val));
-
-                    if(!removeSpace($('#'+txtEventOtherFrom).val()).length) pd.show();
-                }, 200);
+            initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR+20, 12, 31), function() {
+//                setTimeout( function() {
+//                    var val = $('#'+txtEventOtherTo).val();
+//                    var valfrom = $('#'+txtEventOtherFrom).val();
+//                    //var pd = setPikadayData('end-range', txtEventOtherFrom, new Date(val));
+//
+//                    if(new Date(valfrom) > new Date(val)) {
+//
+//                    }
+//
+//                    //if(!removeSpace(valfrom).length) pd.show();
+//                }, 200);
             }, param);
         }
     </script>

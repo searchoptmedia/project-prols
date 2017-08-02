@@ -351,20 +351,20 @@ class EmailController extends Controller
         $employeeName = trim($empInfo->getFname() . ' ' . $empInfo->getLname());
 
         $title = 'Holiday';
-        $message = "A new holiday was marked on Propelrr Calendar. See the details below.";
+        $message = ($params['isNew'] ? "New Holiday was added on Propelrr Calendar" : "Holiday details was updated.")."<br>See the details below.";
 
         if($params['event_type']!=C::EVENT_TYPE_HOLIDAY) {
             $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation';
             $action = $params['event_type']==C::EVENT_TYPE_MEETING ? 'a meeting: ' : 'a company event: ';
-            $message = "<strong>".$ownerName . "</strong> invited you to join ". strtolower($action) ."<strong>". $params['event_name'] ."</strong>. See the details below.";
+            $message = "<strong>".$ownerName . "</strong> invited you to join ". strtolower($action) ."<strong>". $params['event_name'] ."</strong>.<br>See the details below.";
         }
 
         $to = !empty($params['to_list']) ? $params['to_list'] : array(array($empAcc->getEmail() => $employeeName));
         $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
-        $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_HOLIDAY ? 'A New Holiday Was Added' : ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation'));
+        $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_HOLIDAY ? ($params['isNew'] ? 'New Holiday: '.$params['event_name']:'Holiday: '.$params['event_name'].' Was Updated') : ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation'));
 
         if(isset($params['has-update']) && $params['has-update']) {
-            $message = "<strong>".$ownerName . "</strong> has updated <strong>". $params['event_name'] ."</strong>. See the details below.";
+            $message = "<strong>".$ownerName . "</strong> has updated <strong>". $params['event_name'] ."</strong>.<br>See the details below.";
             $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting' : 'Internal Event';
             $subject = "PROLS » " . ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Was Updated' : ($params['event_type']==C::EVENT_TYPE_INTERNAL ? 'Internal Event Was Updated' : 'Holiday Was Updated'));
         }
@@ -422,7 +422,9 @@ class EmailController extends Controller
                 $params['owner_email'] = $event->getEmpAcc()->getEmail();
                 $params['event_tag_names'] = array();
                 $params['template'] = 'event-status-change';
-                $params['links'] = array('View Event' => $class->generateUrl('manage_events', array('id' => $event->getId()), true));
+                $params['links'] = array('View Event' => array(
+                    'href' => $class->generateUrl('manage_events', array('id' => $event->getId()), true)
+                ));
 
                 $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
                 $subject = "PROLS » " . $doerName . ' will ' . $doerAction . ' to ' . $event->getEventName();

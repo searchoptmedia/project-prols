@@ -54,6 +54,7 @@ class EventManagerController extends Controller
 
             $event = new ListEvents();
             $eventQry = null;
+            $isNew = true;
 
             if(!empty($params['event_id']))
                 $eventQry = ListEventsQuery::_findById($params['event_id']);
@@ -68,8 +69,11 @@ class EventManagerController extends Controller
                 $params['status'] = C::STATUS_ACTIVE;
                 $params['created_by'] = $userId;
                 $params['date_created'] = U::getDate();
+            } else {
+                $isNew = false;
             }
 
+            $params['isNew'] = $isNew;
             $params['from_date'] = date('Y-m-d H:i:s', strtotime($params['from_date']));
             $params['to_date'] = date('Y-m-d H:i:s', strtotime($params['to_date']));
 
@@ -79,6 +83,9 @@ class EventManagerController extends Controller
                 $response = U::getSuccessResponse();
 
                 $params['owner_email'] = U::getUserDetails('email', $this);
+                $params['links'] = array('View Event' => array(
+                    'href' => $this->generateUrl('manage_events', array('id' => $event->getId()), true),
+                ));
 
                 if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
                     if(!empty($params['tags'])) {
@@ -105,9 +112,8 @@ class EventManagerController extends Controller
                             ), $eventTagQry);
 
                             $params['user_id'] = $empAcc->getId();
-                            $params['links'] = array('View Event' => $this->generateUrl('manage_events', array('id' => $event->getId()), true));
 
-                            if($eventTagged) {
+                            if($eventTagged && $eventTagged->getStatus()==C::STATUS_PENDING) {
                                 $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
                                 $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
 
@@ -121,13 +127,13 @@ class EventManagerController extends Controller
 
                                 if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
                                     $params['has-update'] = false;
-
                                     $email = $this->email->notifyEmployeeOnEvent($params, $this);
 
-                                    if($email)
+                                    if($email) {
                                         $this->saveHistory(array(
                                             'event_tag_id' => $eventTagged->getId()
                                         ), C::HA_EVENT_TAG_EMAIL);
+                                    }
                                 } else if($eventTagQry  && $params['notify_email']) {
                                     $params['has-update'] = true;
 
@@ -144,8 +150,6 @@ class EventManagerController extends Controller
                                             ), C::HA_EVENT_TAG_EMAIL);
                                     }
                                 }
-                            } else {
-                                $response = array('error' => 'Oops! Encountered problem while tagging. Please try again!');
                             }
                         }
 
@@ -181,7 +185,7 @@ class EventManagerController extends Controller
                         if(count($toList))
                             $params['to_list'] = array($toList);
 
-                        $params['user_id'] = $e->getId();
+                        $params['user_id'] = $this->getUser()->getId();
                         $this->email->notifyEmployeeOnEvent($params, $this);
                     }
                 }

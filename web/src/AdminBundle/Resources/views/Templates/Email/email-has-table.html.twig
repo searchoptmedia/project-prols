@@ -160,10 +160,13 @@
                     <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>hen: </td>
                     <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">{{ from_date }}{% if from_date!=to_date %} to {{ to_date }}{% endif %}</td>
                 </tr>
+                {% if event_venue|length %}
                 <tr>
                     <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>here: </td>
                     <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">{{ event_venue }}</td>
                 </tr>
+                {% endif %}
+
                 {% if event_tag_names is defined and event_tag_names is not empty %}
                 <tr>
                     <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%"><span style="font-size: 20px;">W</span>ho: </td>
