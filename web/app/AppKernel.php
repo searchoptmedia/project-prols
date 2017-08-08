@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new AdminBundle\AdminBundle(),
             new CoreBundle\CoreBundle(),
             new SmsBundle\SmsBundle(),
+            new ListenerBundle\ListenerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

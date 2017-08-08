@@ -1,4 +1,6 @@
 {% extends "ListenerBundle::base.html.twig" %}
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
+{% import 'AdminBundle:Templates:notification.html.twig' as notif %}
 
 {% block style %}
     <style>
@@ -93,6 +95,11 @@
         }
         .login-2 { top: 50px; }
 
+        .button-action { margin-top:10px;margin-right:5px;background-color:rgb(13,181,216);border-radius:4px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none; }
+        .button-action.red { background-color: #f44336; }
+        .button-action.green { background-color: #4caf50; }
+        .text-center {  text-align: center; }
+        .timer { font-size: 18px; }
     </style>
 {% endblock %}
 
@@ -106,75 +113,92 @@
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tbody>
     <tr>
-        <td align="center" valign="top" style="padding-top:0px">
+        <td align="center" valign="top" style="padding-top:0;">
 
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tbody>
-                <tr>
-                    <td valign="top" class="m_-4535333769822407979textContent"><span class="im">
+                    <tr>
+                        <td valign="top">
+                            <h6 class="text-center timer" {% if existApproval %}style="display: none;"{% endif %}><strong>This window will close in <span class="timer-counter">3</span>...</strong> <a href="javascript:window.close();">Close</a></h6>
+                            <hr style="border-top:1px dashed #ccc;margin-bottom:20px">
+                            {% for r in requests %}
+                                <table style="width:100%" class="tb-request" data-id="{{ r.id }}" data-timeid="{{ r.empTimeId }}">
+                                    <tbody>
+                                    <tr>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            Employee:
+                                        </td>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
+                                            <span><span>{{ r.employee.fname }} {{ r.employee.lname }}</span></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            Dates:
+                                        </td>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
+                                            <span tabindex="0"><span>{{ r.dateStarted|date('M d, Y') }} {{ r.dateStarted|date('M d, Y')!=r.dateEnded|date('M d, Y') ? 'to '~r.dateEnded|date('M d, Y'):''  }}</span></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            Reason:
+                                        </td>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
+                                            {{ r.request }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            Status:
+                                        </td>
+                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
+                                            <strong>
+                                                {% if r.status==constant(CONST~'STATUS_PENDING') %}Pending{% elseif r.status==constant(CONST~'STATUS_APPROVED') %}Approved{% else %}Declined{% endif %}
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    {% if type=='decline' %}
+                                        <tr>
+                                            <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                                <b>Add Reason:</b>
+                                            </td>
+                                            <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
+                                                <textarea class="materialize-textarea txt-reason"></textarea>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                                <hr style="border-top:1px dashed menu">
+                            {% endfor %}
+                            <br>
 
-                       <hr style="border-top:1px dashed #ccc;margin-bottom:20px">
-                        <table class="m_-4535333769822407979email-content" style="width:100%">
-                            <tbody>
-                                <tr>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
-                                        Employee:
-                                    </td>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
-                                        <span class="aBn" data-term="goog_889296295" tabindex="0"><span class="aQJ">Denmark Jay Mago</span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
-                                        Dates:
-                                    </td>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
-                                        <span class="aBn" data-term="goog_889296295" tabindex="0"><span class="aQJ">August 16, 2017 to August 17, 2017</span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
-                                        Reason:
-                                    </td>
-                                    <td style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif">
-                                        I will be going to my cousin
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <hr style="border-top:1px dashed menu">
+                            <div id="card-alert" class="card {{ type=='approve'?'green':'red' }} alert-message" style="display:none;">
+                                <div class="card-content white-text">
+                                    <p><i class="mdi-action-info-outline"></i> <span class="text">Successfully {{ type }}d request{{ requests|length>1?'s':'' }}!</span></p>
+                                </div>
+                            </div>
 
+                            <center style="margin-top:10px">
+                                {% if type=='approve' and existApproval %}
+                                <a href="javascript:void(0);"  class="button-action green btn-approval">
+                                    Approve
+                                </a>
+                                {% elseif type=='decline' %}
+                                <a href="javascript:void(0);" class="button-action red btn-approval">
+                                    Decline
+                                </a>
+                                {% endif %}
+                                <a href="javascript:window.close();" class="button-action">
+                                    Close
+                                </a>
+                            </center>
 
-                        <br>
-                        <center style="margin-top:10px">
-                            <a href="http://local.propelrrlogin.com/main/requests"
-                               id="m_-4535333769822407979request-btn"
-                               style="margin-top:10px;margin-right:5px;background-color:#4caf50;border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
-                               target="_blank"
-                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
-                                Approve
-                            </a>
-                            <a href="http://local.propelrrlogin.com/main/requests"
-                               id="m_-4535333769822407979request-btn"
-                               style="margin-top:10px;margin-right:5px;background-color:#f44336;border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
-                               target="_blank"
-                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
-                                Decline
-                            </a>
-                            <a href="http://local.propelrrlogin.com/main/requests"
-                               id="m_-4535333769822407979request-btn"
-                               style="margin-top:10px;margin-right:5px;background-color:rgb(13,181,216);border-radius:120px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none"
-                               target="_blank"
-                               data-saferedirecturl="https://www.google.com/url?hl=en&amp;q=http://local.propelrrlogin.com/main/requests&amp;source=gmail&amp;ust=1501578021618000&amp;usg=AFQjCNFn30RJ160QCTgAhvvmUGsy1L5uXw">
-                                View
-                            </a>
-                        </center>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-
-
         </td>
     </tr>
     </tbody>
@@ -183,12 +207,110 @@
 
 {% block javascript %}
 <script>
+    var timerSpan = 'span.timer-counter';
+    $doc = $(document);
+    var _tbRequest = $('.tb-request');
+    var _proc = false;
+    var _loader = $('.circle-loader');
+    var _loaderCheck = $('.checkmark');
+    var _loaderDiv = _loader.parent();
+    var _timer = $('.timer');
+    var _btnActions = $('.button-action');
+    var _alertMessage = $('#card-alert');
+
+    {% if not existApproval and type=='approve' %}
+    _timer.hide();
     setTimeout( function() {
-        $('.circle-loader').toggleClass('load-complete');
-        $('.checkmark').toggle();
+        tbloader();
         setTimeout(function() {
-            $('.circle-loader').parent().remove();
-        }, 1000)
-    }, 5000);
+            _alertMessage.removeClass('red').addClass('green').show();
+            _timer.show();
+            myTimer();
+        }, 1000);
+    }, 2000);
+    {% else %}
+        {% if existApproval %}
+            _alertMessage.removeClass('green').addClass('red').show();
+            _alertMessage.find('.text').text('We found that there are already approved/declined records!');
+        {% endif %}
+        _timer.hide();
+        _loaderDiv.hide();
+    {% endif %}
+
+    var start = 10;
+
+    function myTimer() {
+        $(timerSpan).text(start);
+
+        if(start >= 1) {
+            start--;
+            setTimeout(myTimer, 1000);
+        } else {
+            self.close();
+        }
+    }
+
+    function tbloader(state) {
+        if(state) {
+            _loader.removeClass('load-complete');
+            _loaderCheck.hide();
+            _loaderDiv.show();
+        } else {
+            _loader.addClass('load-complete');
+            _loaderCheck.show();
+            setTimeout(function() { _loaderDiv.hide(); }, 1000);
+        }
+    }
+
+    $doc.on('click', '.btn-approval', function() {
+        var error = false, data = {};
+        data.requests = [];
+        _tbRequest.each( function() {
+            var comment = $(this).find('.txt-reason').val();
+            var id = $(this).data('id');
+            var timeid = $(this).data('timeid');
+
+            $(this).find('.txt-reason').attr('style', 'border-color: grey;');
+
+            if(comment!=undefined && removeSpace(comment)=='') {
+                $(this).find('.txt-reason').attr('style', 'border-color: red;').focus();
+                error = true;
+            } else {
+                data.requests.push({
+                   'comment':  comment,
+                    'id': id,
+                    'emptimeid': timeid ? timeid : 0
+                });
+            }
+        });
+
+        data.requesttype = '';
+        data.prevstatus = '';
+        data.status = '{{ type }}';
+        data.adminid = '{{ app.request.get('uid') }}';
+
+        if(! error && !_proc) {
+            _alertMessage.hide();
+            tbloader(1);
+            _proc = true;
+            post($(this), "{{ path('listener_request_change_status') }}", data, function(data) {
+                _proc = false;
+                if(data.code==200) {
+                    showNotificationBar('Successfully declined requests!');
+                    _alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');
+                    _alertMessage.addClass('green').removeClass('red').show();
+                } else if(data.code==230) {
+                    showNotificationBar('No changes were made!', 'error');
+                }
+
+                _btnActions.hide();
+                _timer.show();
+                tbloader();
+                myTimer();
+            });
+        }
+    });
+
+
 </script>
 {% endblock %}

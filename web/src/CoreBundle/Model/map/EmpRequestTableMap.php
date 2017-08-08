@@ -43,7 +43,8 @@ class EmpRequestTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('request', 'Request', 'VARCHAR', false, 100, null);
+        $this->addColumn('request', 'Request', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('admin_notes', 'AdminNote', 'LONGVARCHAR', false, null, null);
         $this->addColumn('status', 'Status', 'INTEGER', false, null, null);
         $this->addColumn('date_started', 'DateStarted', 'TIMESTAMP', false, null, null);
         $this->addColumn('date_ended', 'DateEnded', 'TIMESTAMP', false, null, null);

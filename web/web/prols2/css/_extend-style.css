@@ -1,68 +1,3 @@
-.manageemployees-content{
-    padding-bottom: 140px;
-}
-.emp-list tbody{
-    cursor: default;
-}
-
-.select-wrapper input.select-dropdown{
-    padding-left: 0px;
-}
-.collection .collection-item.avatar{
-    min-height: 0px;
-}
-.fc-time{
-    display : none;
-}
-.label{
-    color: #333333;
-}
-.leave-icon{
-    margin-top: 20px;
-}
-.req-icon{
-    margin-top: 10px;
-}
-span.badge.new.pending:after{
-    content: " Pending";
-}
-
-.editprofile-btns{
-    top:-10px;
-}
-
-.btn-accept,.btn-decline{
-    color: white;
-}
-
-.top-nav-vl h3{
-    display:inline-block
-}
-.top-nav-vl .btn-select1{
-    float:right;
-    top:20px;
-    position:relative
-}
-
-.custombtn{
-    color: white;
-}
-
-.top-nav a {
-    margin: 5px;
-}
-
-.modal-container {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    z-index: 999;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.80);
-}
-
 .changepass-notif{
     position: absolute;
     width: 100%;
@@ -99,15 +34,22 @@ span.badge.new.pending:after{
     z-index: 9999;
     top: -155px;
     cursor: pointer;
-
 }
+
+.notification-modal {
+    -webkit-transition: all 0.35s ease-out;
+    -moz-transition: all 0.35s ease-out;
+    -o-transition: all 0.35s ease-out;
+    transition: all 0.35s ease-out;
+}
+
 h5{
     color: white;
     font-weight: 100;
 }
 
 .loader-notif.gray{
-      background-color:#CCCCCC !important;
+    background-color:#CCCCCC !important;
 }
 .loader-notif h5{
     color: black;
@@ -121,7 +63,7 @@ h5{
 }
 
 /*.notification-modal{*/
-    /*padding: 20px;*/
+/*padding: 20px;*/
 /*}*/
 
 

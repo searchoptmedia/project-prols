@@ -323,19 +323,18 @@
                     initPicker('start_date_'+id, new Date(), new Date(currentYear+20, 12, 31), function() {
                         setTimeout( function() {
                             var startVal = strt.val();
+                            var endVal =  end.val();
                             var endPika = setPikadayData('start-range', 'end_date_'+id, new Date(startVal));
 
-                            if(removeSpace(end.val())==''&&id!=0)
+                            if(endVal!='' && new Date(startVal) > new Date(endVal)) {
+                                setPikadayData('set-date', 'end_date_'+id, new Date(startVal));
+                                endPika.show();
+                            } else if(removeSpace(end.val())==''&&id!=0)
                                 endPika.show();
                         }, 200);
                     });
 
-                    initPicker('end_date_'+id, new Date(startValue), new Date(currentYear+20, 12, 31), function() {
-                        setTimeout( function() {
-                            var endVal =  end.val();
-                            setPikadayData('end-range', 'start_date_'+id, new Date(endVal));
-                        }, 200);
-                    });
+                    initPicker('end_date_'+id, new Date(startValue), new Date(currentYear+20, 12, 31), function() { });
 
                     return this;
                 },

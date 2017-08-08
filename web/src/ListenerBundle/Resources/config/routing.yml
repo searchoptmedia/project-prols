@@ -1,3 +1,7 @@
 listener_homepage:
-    path:     /request/approval/{type}
-    defaults: { _controller: ListenerBundle:Default:approveRequest }
+    path:     /request/{type}/approval
+    defaults: { _controller: ListenerBundle:Default:requestApproval }
+
+listener_request_change_status:
+    path:     /request/change/status
+    defaults: { _controller: ListenerBundle:Default:changeStatus }

@@ -89,6 +89,7 @@ class EventManagerController extends Controller
 
                 if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
                     if(!empty($params['tags'])) {
+                        $owner = EmpProfileQuery::_findByAccId($event->getCreatedBy());
                         $empTagIds = array();
                         $params['event_tag_names'] = array();
 
@@ -97,7 +98,21 @@ class EventManagerController extends Controller
                             $empProfile = EmpProfileQuery::_findByAccId($empAcc->getId());
 
                             $params['event_tag_names'][$empAcc->getEmail()] = trim($empProfile->getFname() . ' ' .$empProfile->getLname());
+                            $params['event_tag_status'][$empAcc->getEmail()] = C::STATUS_PENDING;
+
+                            //get status
+                            $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+                            if($eventTags) {
+                                foreach ($eventTags as $et) {
+                                    $etStatus = $et->getStatus();
+                                    $em = $et->getEmpAcc()->getEmail();
+                                    $params['event_tag_status'][$em] = $etStatus;
+                                }
+                            }
                         }
+
+                        $params['event_tag_names'][$event->getEmpAcc()->getEmail()] = trim($owner->getFname() . ' ' . $owner->getLname());
+                        $params['event_tag_status'][$event->getEmpAcc()->getEmail()] = $event->getIsGoing() ? C::STATUS_APPROVED : C::STATUS_DECLINED;
 
                         foreach($params['tags'] as $email) {
                             $empAcc = EmpAccQuery::_findByEmail($email);
@@ -633,6 +648,15 @@ class EventManagerController extends Controller
             'status' => array('data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL)
         ));
 
+        $allProfiles = EmpProfilePeer::getAllProfile();
+        $allInactiveProfiles = EmpProfilePeer::getAllProfile(-1);
+        $listProfiles = array();
+
+        if($allProfiles)
+            foreach($allProfiles as $p) { $listProfiles[$p->getEmpAccAccId()] = trim($p->getFname().' '.$p->getLname()); }
+        if($allInactiveProfiles)
+            foreach($allInactiveProfiles as $p) { $listProfiles[$p->getEmpAccAccId()] = trim($p->getFname().' '.$p->getLname()); }
+
         foreach ($allEvents as $event) {
             $eventFromDate = $event->getFromDate();
             $eventToDate =  $event->getToDate();
@@ -679,6 +703,8 @@ class EventManagerController extends Controller
                     $totalTags++;
                 }
             }
+
+            $eventTagsList .= '<div class="chip mr1 mb1 '.($event->getIsGoing() ? 'green':'red').'">'.$listProfiles[$event->getCreatedBy()] .'</div>';
 
             $eventData = array(
                 'date' => 'From: ' . $eventFromDate . "<br>" . "To: " . $eventToDate,

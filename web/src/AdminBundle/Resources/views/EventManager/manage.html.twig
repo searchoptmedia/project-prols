@@ -57,11 +57,11 @@
     }
     .custom-timeline-1 .entry .title h3 {
         margin: 0;
-        font-size: 120%;
+        font-size: 90%;
     }
     .custom-timeline-1 .entry .title p {
         margin: 0;
-        font-size: 100%;
+        font-size: 80%;
     }
     .custom-timeline-1 .entry .body {
         margin: 0 0 1em;
@@ -85,7 +85,10 @@
         content: "–";
         margin-right: .5em;
     }
-
+    .event-status {
+        padding: 3px 0px;
+        border-radius: 100px;
+    }
     </style>
 {% endblock %}
 
@@ -100,25 +103,24 @@
                                             class="material-icons res-menu">reorder</i></a></div>
                             <div class="top-nav-vl">
                                 <h3>Events List</h3>
-                                <a class='dropdown-button btn orange btn-select1' href='#' data-activates='dropdown2'>Category</a>
                                 <a class="btn amber btn-add btn-open-create-modal  btn-select1" style="color: white; margin-right: 5px;">Create Event</a>
                             </div>
                         </div>
 
                         <div class = "top-nav">
-                            <!-- Dropdown Structure -->
-                            <ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">
-                                <li><a href="#!" id="allbtn">All</a></li>
-                                <li class="divider"></li>
-                                {#<li><a href="#!" id="holidaybtn">Holiday</a></li>#}
+                            {#<!-- Dropdown Structure -->#}
+                            {#<ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">#}
+                                {#<li><a href="#!" id="allbtn">All</a></li>#}
                                 {#<li class="divider"></li>#}
-                                <li><a href="#!" id="meetingbtn">Meeting</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#!" id="companyeventbtn">Company Event</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#!" id="othersbtn">Other Events</a></li>
-                                <li class="divider"></li>
-                            </ul>
+                                {#&#123;&#35;<li><a href="#!" id="holidaybtn">Holiday</a></li>&#35;&#125;#}
+                                {#&#123;&#35;<li class="divider"></li>&#35;&#125;#}
+                                {#<li><a href="#!" id="meetingbtn">Meeting</a></li>#}
+                                {#<li class="divider"></li>#}
+                                {#<li><a href="#!" id="companyeventbtn">Company Event</a></li>#}
+                                {#<li class="divider"></li>#}
+                                {#<li><a href="#!" id="othersbtn">Other Events</a></li>#}
+                                {#<li class="divider"></li>#}
+                            {#</ul>#}
                             <!-- End of DS -->
                         </div>
 
@@ -191,8 +193,8 @@
                             <div class = "col-md-12" id="guest-row">
                                 <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
                                 <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
-                                    {% for acc in allacc if acc.id!=app.user.id %}
-                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" > {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                    {% for acc in allacc %}
+                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" {%  if acc.id==app.user.id %}disabled{% endif %}> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
                                     {% endfor %}
                                 </select><br><br>
                             </div>
@@ -240,7 +242,7 @@
                                     <div class="col-md-12">
                                         <strong>If this is enabled?</strong>
                                         <ul class="collection">
-                                            <li class="collection-item">Email will be resent to the employees with pending status.</li>
+                                            <li class="collection-item"><input type="checkbox" id="chk-notify-email" value="1"/> Email will be resent to the employees with pending status.</li>
                                             <li class="collection-item">If there are changes, employees will be notified with the details.</li>
                                             <li class="collection-item">If there are new tagged employees, an invitation will be sent.</li>
                                         </ul>
@@ -434,6 +436,7 @@
         var txtViewDate = '.p-view-date';
         var txtViewReason = '.txt-view-reason';
 
+        var txtIsGoingNote = '.txt-event-going-notes';
         var txtEventId = '.txt-event-id';
         var txtEventName = '.txt-event-name';
         var txtEventDesc = '.txt-event-description';
@@ -487,7 +490,8 @@
                 event_type: eventType,
                 tags: cmbEmpTag.select2('val'),
                 notify_email: $(chkNotifyOnEmail).is(':checked') ? 1 : 0,
-                is_going: $(chkOrganizerIsGoing).is(':checked') ? 1 : 0
+                is_going: $(chkOrganizerIsGoing).is(':checked') ? 1 : 0,
+                is_going_note: $(txtIsGoingNote).val()
             };
 
             var dateFromEl =  $('#'+txtEventHolidayFrom);
@@ -501,7 +505,7 @@
             data.from_date = dateFromEl.val();
             data.to_date = dateToEl.val();
 
-            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(txtEventVenue) ]);
+            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(txtEventVenue), $(txtIsGoingNote) ]);
             if(eventType==null) {
                 errorBorder([ $(cmbEventType) ]);
                 error = true;
@@ -516,6 +520,10 @@
             }  else if(! removeSpace(data.event_venue).length && eventType!=EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtEventVenue).focus();
                 errorBorder([ $(txtEventVenue) ]);
+                error = true;
+            }  else if(! data.is_going && ! removeSpace(data.is_going_note).length && eventType!=EVENT_TYPE_HOLIDAY) {
+                $(moCreateEvent).find(txtIsGoingNote).focus();
+                errorBorder([ $(txtIsGoingNote) ]);
                 error = true;
             } else if(! removeSpace(data.from_date)) {
                 errorBorder([ $(dateFromEl) ]);
@@ -587,7 +595,9 @@
                 event_type: el.data('type'),
                 tags: (el.data('event-tags').toString()).split(','),
                 from: el.data('event-from'),
-                to: el.data('event-to')
+                to: el.data('event-to'),
+                is_going: el.data('isgoing'),
+                is_going_note: el.data('isgoing-note')
             };
             var createdBy = parseInt(el.data('created-by'));
             var myStatus = parseInt(el.data('event-tag-status'));
@@ -610,6 +620,7 @@
             $(txtEventName).val(data.event_name);
             $(txtEventDesc).val(data.event_desc);
             $(txtEventVenue).val(data.event_venue);
+            $(txtIsGoingNote).val(data.is_going_note);
             $(cmbEventType).val(data.event_type).trigger('change');
 
             $(txtViewName).text(data.event_name);
@@ -617,6 +628,8 @@
             $(txtViewVenue).text(data.event_venue);
             $(txtViewReason).val(el.data('event-tag-reason'));
             $(moViewEventDetails).attr('data-id', data.event_id);
+
+            $(chkOrganizerIsGoing).prop('checked', data.is_going);
 
             setPikadayData('set-date', fromEl, data.from);
             setPikadayData('set-date', toEl, data.to);
@@ -669,7 +682,7 @@
                 var tagReasons = (el.data('event-tags-reasons')).toString().split('[[[break]]]');
                 var tagHistory = eval(el.data('event-tags-timeline'));
 
-                console.log(tagHistory)
+                console.log(employees)
 
                 $(sectViewTagsListArea).empty();
                 for(i in tagIds) {
@@ -736,7 +749,6 @@
             $(txtHeaderTitle).text(headerTitle);
 
             $(chkNotifyOnEmail).prop('checked', true);
-            $(chkOrganizerIsGoing).prop('checked', true);
 
             if(action=='view')
                 $(moViewEventDetails).openModal();
@@ -810,7 +822,7 @@
             DOC.on('click', '.link-add-tags', function() {
                 var act = $(this).data('action');
                 if(act=='add')
-                    cmbEmpTag.find('option').prop("selected","selected");
+                    cmbEmpTag.find('option:enabled').prop("selected","selected");
                 else
                     cmbEmpTag.find('option').removeAttr("selected");
 

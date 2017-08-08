@@ -17,7 +17,7 @@
     <link href="{{ asset('prols2/css/pikaday.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="{{asset('prols2/css/fullcalendar/fullcalendar.css')}}" media ="all"/>
     <link rel="stylesheet" href="{{asset('prols2/css/style.css')}}" media="all"/>
-    <link rel="stylesheet" href="{{asset('prols2/css/_mon.css')}}" media="all"/>
+    <link rel="stylesheet" href="{{asset('prols2/css/_extend-style.css')}}" media="all"/>
     <link rel="stylesheet" href="{{ asset('prols2/css/font-awesome/css/font-awesome.min.css') }}" media="all"/>
     <link rel="stylesheet" href="{{ asset('css/event-style.css') }}" media="all"/>
     <link rel="stylesheet" href="{{ asset('js/plugins/jquery-ui-1.12.1/jquery-ui.min.css') }}" media="all"/>
@@ -258,13 +258,13 @@
             }
 
             $.getJSON( url,
-                    function( data ) {
-                        if(type == 'working') toggleTimeWidget('show');
-                        else  toggleTimeWidget('hide');
-                    })
-                    .fail( function() {
-                        modalFailAjaxContainer.show();
-                    });
+                function( data ) {
+                    if(type == 'working') toggleTimeWidget('show');
+                    else  toggleTimeWidget('hide');
+                })
+                .fail( function() {
+                    modalFailAjaxContainer.show();
+                });
         }
 
         btnKeepWorking.bind('click', function() {

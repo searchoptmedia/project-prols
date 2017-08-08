@@ -11,6 +11,7 @@ var data, callback, done, always;
 var loadingBar = $('.loader-notif');
 var successBar = $('.successful-popup');
 var errorBar = $('.error-popup');
+var topNotificationBar = $('.top-general-notification');
 
 function showLoadingBar() {
     loadingBar.css({'top': '0px'});
@@ -37,6 +38,19 @@ function showErrorBar(message) {
         errorBar.css({'top': '-55px'});
         loadingBar.css({'top': '-55px'});
     }, 2000);
+}
+
+function showNotificationBar(message, state) {
+    topNotificationBar.addClass('green').removeClass('red');
+    if(state=='error')
+        topNotificationBar.addClass('red').removeClass('green');
+
+    topNotificationBar.find('h5').text(message);
+    topNotificationBar.css({'top': '0px'});
+    setTimeout(function () {
+        topNotificationBar.css({'top': '-55px'});
+        loadingBar.css({'top': '-55px'});
+    }, 5000);
 }
 
 // AJAX POST
