@@ -42,7 +42,8 @@
 
     <table name="emp_request" phpName="EmpRequest" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="request" phpName="Request" type="VARCHAR" size="100"/>
+        <column name="request" phpName="Request" type="LONGVARCHAR"/>
+        <column name="admin_notes" phpName="AdminNote" type="LONGVARCHAR"/>
         <column name="status" phpName="Status" type="INTEGER"/>
         <column name="date_started" phpName="DateStarted" type="TIMESTAMP"/>
         <column name="date_ended" phpName="DateEnded" type="TIMESTAMP"/>
@@ -225,6 +226,8 @@
         <column name="event_desc" phpName="EventDescription" type="LONGVARCHAR" size="32700" required="true"/>
         <column name="event_type" phpName="EventType" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="is_going" phpName="IsGoing" type="INTEGER" required="true"/>
+        <column name="is_going_note" phpName="IsGoingNote" type="LONGVARCHAR" />
         <column name="sms_response" phpName="SmsResponse" type="LONGVARCHAR" size="32700"/>
         <foreign-key foreignTable="list_events_type">
             <reference local="event_type" foreign="id"/>

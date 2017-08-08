@@ -17,6 +17,12 @@ class Constant
     const STATUS_APPROVED           = 3;
     const STATUS_DECLINED           = 4;
 
+    const REQUEST_SLEAVE             = 1;
+    const REQUEST_VLEAVE             = 2;
+    const REQUEST_ACCESS             = 3;
+    const REQUEST_MEETING            = 4;
+    const REQUEST_EMERGENCY          = 5;
+
     const ROLE_ADMIN                = 'ADMIN';
 
     const GMAIL_EMAIL_ADDRESS       = 'no-reply@searchoptmedia.com';
@@ -28,5 +34,10 @@ class Constant
     const HA_EVENT_TAG_ADD              = 'tag-create';
     const HA_EVENT_TAG_EMAIL            = 'tag-send-email';
     const HA_EVENT_TAG_STAT_UPDATE      = 'tag-update-status';
+
+    const CODE_SUCCESS               = 200;
+    const CODE_NO_CHANGE             = 230;
+    const CODE_FORBIDDEN             = 403;
+    const CODE_ERROR                 = 500;
 
 }

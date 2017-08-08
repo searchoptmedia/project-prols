@@ -31,4 +31,24 @@ class Utils
     {
         return array('success' => 'Successfully saved!');
     }
+
+    public static function getError()
+    {
+        return array('code' => Constant::CODE_ERROR, 'message' => 'Oops! Something went wrong.');
+    }
+
+    public static function getForbid()
+    {
+        return array('code' => Constant::CODE_FORBIDDEN, 'message' => 'Oops! Access forbidden.');
+    }
+
+    public static function getSuccess()
+    {
+        return array('code' => Constant::CODE_SUCCESS, 'message' => 'Successful');
+    }
+
+    public static function getNoChange()
+    {
+        return array('code' => Constant::CODE_NO_CHANGE, 'message' => 'Successful');
+    }
 }

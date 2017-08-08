@@ -22,6 +22,8 @@ class ListEvents extends BaseListEvents
         if(isset($data['date_created'])) $class->setDateCreated($data['date_created']);
         if(isset($data['from_date'])) $class->setFromDate($data['from_date']);
         if(isset($data['to_date'])) $class->setToDate($data['to_date']);
+        if(isset($data['is_going_note'])) $class->setIsGoingNote($data['is_going_note']);
+        if(isset($data['is_going'])) $class->setIsGoing($data['is_going']);
 
         if($class->save())
             return $class;

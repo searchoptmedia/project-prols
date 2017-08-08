@@ -1,4 +1,5 @@
 {% extends 'AdminBundle::base.html.twig' %}
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
 
 {% block title %}
     <title>Propelrr Log-in System| View Requests</title>
@@ -53,11 +54,11 @@
                                         <td class = "start-date display-none">{{ activeRequest.dateStarted|date('n/d/Y')}}</td>
                                         <td class = "end-date display-none">{{ activeRequest.dateEnded|date('n/d/Y')}}</td>
                                         <td class = "status display-none">
-                                            {% if activeRequest.status == 2 %}
+                                            {% if activeRequest.status==constant(CONST~'STATUS_PENDING') %}
                                                 <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
-                                            {% elseif activeRequest.status == 3 %}
+                                            {% elseif activeRequest.status==constant(CONST~'STATUS_APPROVED') %}
                                                 <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
-                                            {% elseif activeRequest.status == 4 %}
+                                            {% elseif activeRequest.status==constant(CONST~'STATUS_DECLINED') %}
                                                 <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
                                             {% endif %}
                                         </td>
@@ -71,11 +72,11 @@
                                         <td class = "start-date">{{ request.dateStarted|date('n/d/Y')}}</td>
                                         <td class = "end-date">{{ request.dateEnded|date('n/d/Y')}}</td>
                                         <td class = "status">
-                                            {% if request.status == 2 %}
+                                            {% if request.status==constant(CONST~'STATUS_PENDING') %}
                                                 <button class="btn grey pending" id = "pending" style = "width: 130px;">Pending</button>
-                                            {% elseif request.status == 3 %}
+                                            {% elseif request.status==constant(CONST~'STATUS_APPROVED') %}
                                                 <button class="btn green" id = "accepted" style = "width: 130px;">Approved</button>
-                                            {% elseif request.status == 4 %}
+                                            {% elseif request.status==constant(CONST~'STATUS_DECLINED') %}
                                                 <button class="btn red" id = "declined" style = "width: 130px;">Declined</button>
                                             {% endif %}
                                         </td>
@@ -470,7 +471,7 @@
      function changeStatus(currStatus, isChanged, button, action) {
          elements = [admin_comment_modal];
          var validate = checkFields(elements);
-         if (validate == true && action != 'accept') // true == there are errors
+         if (validate==true && action!='accept') // true == there are errors
              return;
 
          admin_comment_modal.attr("disabled", true);
@@ -484,7 +485,7 @@
          data = {
              adminid: adminId,
              empId: empId,
-             reqid: reqid,
+             reqId: reqid,
              emptimeid: emptime_id.val(),
              requestname: admin_category_modal.text(),
              requesttype: admin_category_modal.val(),

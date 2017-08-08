@@ -148,8 +148,6 @@ change_pass:
 check_timein:
     path: /check_timein
     defaults: {_controller: AdminBundle:Employee:checkTimeIn }
-
-
 # ------------ EMPLOYEE REPORT ---------------
 admin_employee_report:
     path: /employee/report
@@ -162,7 +160,6 @@ admin_employee_list_report:
 admin_employee_leave_absences_report:
     path: /employee/leave-absences/report
     defaults: { _controller:AdminBundle:EmployeeReport:generateLeaveAbsencesReport }
-
 
 manage_events:
     path: /events

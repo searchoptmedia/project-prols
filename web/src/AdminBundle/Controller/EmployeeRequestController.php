@@ -17,6 +17,7 @@ use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Utilities\Constant as C;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -215,17 +216,19 @@ class EmployeeRequestController extends Controller
         }
     }
 
-    public function requestLeaveAction(Request $req)
+    public function requestLeaveAction(Request $request)
     {
-        $obj = $req->request->get('obj');                           // get json object
-        $typeleave = $req->request->get('typeleave');
+        $params = $request->request->all();
+        $typeleave = $params['typeleave'];
         $userid = $this->getUser()->getId();
         $reqIds = array();
         $ref = $this;
 
         $requestId = 0;
 
-        foreach($obj as $o) {
+        $addedRequestList = array();
+
+        foreach($params['obj'] as $k=>$o) {
             $leaveinput = new EmpRequest();
             $leaveinput->setRequest($o['reason']);
             $leaveinput->setStatus(2);
@@ -237,11 +240,20 @@ class EmployeeRequestController extends Controller
             array_push($reqIds, $leaveinput->getId());
 
             $requestId = $leaveinput->getId();
+
+            $addedRequestList[] = array(
+                'reason' => $o['reason'],
+                'start_date' => $o['start_date'],
+                'end_date' => $o['end_date'],
+                'requestId' => $requestId
+            );
         }
+
+        $request->request->set('empRequest', $addedRequestList);
 
         try {
             $email = new EmailController();
-            $sendemail = $email->requestTypeEmail($req, $this, $requestId);
+            $sendemail = $email->requestTypeEmail($request, $this, $requestId);
             if (!$sendemail) {
                 $this->deleteRequestLeave($reqIds);
                 echo json_encode(array('error' => 'Email not successfully sent'));
@@ -266,60 +278,73 @@ class EmployeeRequestController extends Controller
         }
     }
 
-    public function statusChangeAction(Request $req)
+    public function statusChangeAction(Request $request, $refClass = null)
     {
-        $emptimeid = $req->request->get('emptimeid');
-        $requesttype = $req->request->get('requesttype');
-        $prevstatus = $req->request->get('prevstatus');
-        $response = array('error' => 'none');
-        $accept = EmpRequestPeer::retrieveByPk($req->request->get('reqid'));
-        if(isset($accept) && !empty($accept))
-        {
-            $accept->setAdminId($req->request->get('adminid'));
-            $status = $req->request->get('status');
+        $params = $request->request->all();
 
-            if($status == 3) {
-                $statusLbl = "Approved";
-                if($requesttype == 3) {
-                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
-                    $emptime->setStatus(1);
-                    $emptime->save();
+        $empTimeId = $params['emptimeid'];
+        $requesttype = $params['requesttype'];
+        $prevStatus = $params['prevstatus'];
+        $adminId   = $params['adminid'];
+        $status    = $params['status'];
+        $comment   = $params['comment'];
+
+        $empRequest  = EmpRequestPeer::retrieveByPk($params['reqId']);
+        $params['adminInfo'] = EmpProfilePeer::getInformation($adminId);
+
+        if(!empty($empRequest)) {
+            $response = "Status ";
+            $empRequest->setAdminId($adminId);
+
+            //on request is access
+            if($status==3) {
+                if($requesttype==C::REQUEST_ACCESS) {
+                    $emptime = EmpTimePeer::retrieveByPK($empTimeId);
+                    if($emptime) {
+                        $emptime->setStatus(1);
+                        $emptime->save();
+                    }
                 }
-            }
-            else{
-                $statusLbl = "Declined";
-                if($requesttype == 3) {
-                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
-                    $emptime->setStatus(-1);
-                    $emptime->save();
+
+                $response .= "Declined";
+            } else {
+                if($requesttype==3) {
+                    $emptime = EmpTimePeer::retrieveByPK($empTimeId);
+                    if($emptime) {
+                        $emptime->setStatus(-1);
+                        $emptime->save();
+                    }
                 }
+
+                $response .= "Declined";
             }
 
-            $response = "Status " . $statusLbl;
+            //if status change
+            if($prevStatus!=$status) {
+                $empRequest
+                    ->setAdminNote($comment)
+                    ->setStatus($status);
 
-            if($prevstatus != $status) {
-                $accept->setStatus($status);
                 $email = new EmailController();
-                $sendemail = $email->acceptRequestEmail($req, $this);
+                $email->acceptRequestEmail($empRequest, $params, $refClass?:$this);
             }
 
-            if($accept->save())
-            {
-                $response = array('result' => $response);
-            }
-            else
-            {
-                $response = array('error' => 'Status not changed');
+            if($empRequest->save()) {
+                $response = array('result' => $response, 'code' => C::CODE_SUCCESS);
+            } else {
+                $response = array('error' => 'Status not changed', 'code' => C::CODE_NO_CHANGE);
             }
 
-        }
-        else
-        {
+        } else {
             $response = array('error' => 'not found');
         }
 
-        echo json_encode($response);
-        exit;
+        if(! $refClass) {
+            echo json_encode($response);
+            exit;
+        } else {
+            return $response;
+        }
     }
 
     public function addRequestCalendarAction(){

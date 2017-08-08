@@ -14,16 +14,16 @@
                 {% for tag in event.getEventTaggedPersonss %}
                     {% if(app.user.id==tag.empid) %}
                         {% if(tag.status==constant(CONST~'STATUS_PENDING')) %}
-                            <div class="event-status pending" id = "pending">Pending</div>
+                            <div class="pending" id = "pending">Pending</div>
                         {% elseif(tag.status == 3) %}
-                            <div class="event-status approved">Going</div>
+                            <div class="approved">Going</div>
                         {% else %}
-                            <div class="event-status declined">Not Going</div>
+                            <div class="declined">Not Going</div>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <div class="event-status created">Created</div>
+                <div class="created">Created</div>
             {% endif %}
         </td>
         <td class="event-desc"
@@ -51,6 +51,8 @@
                data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
                data-event-tag-reason="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.reason }}{% endif %}{% endfor %}"
                data-created-by="{{ event.createdBy }}"
+               data-isgoing="{{ event.isGoing }}"
+               data-isgoing-note="{{ event.isGoingNote }}"
                data-event-tags-timeline='[ {% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}[{% if tag.tagHistory is defined %}{% for h in tag.tagHistory %}{ "date": "{{ h.dateCreated|date('M d, Y') }}", "time":"{{ h.dateCreated|date('h:i a') }}","message":"{{ h.message|e('js') }}", "status":"{{ h.status }}", "action":"{{ h.history.action }}", "name":"{{ tag.tagName }}" }, {% endfor %}{% endif %}],{% endif %}{% endfor %} ]'
                     >View</a>
         </td>
@@ -109,6 +111,9 @@
                data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
                data-event-tag-reason="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.reason }}{% endif %}{% endfor %}"
                data-created-by="{{ event.createdBy }}"
+
+               data-isgoing="{{ event.isGoing }}"
+               data-isgoing-note="{{ event.isGoingNote }}"
                data-event-tags-timeline='[ {% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}[{% if tag.tagHistory is defined %}{% for h in tag.tagHistory %}{ "date": "{{ h.dateCreated|date('M d, Y') }}", "time":"{{ h.dateCreated|date('h:i a') }}","message":"{{ h.message|e('js') }}", "status":"{{ h.status }}", "action":"{{ h.history.action }}", "name":"{{ tag.tagName }}" }, {% endfor %}{% endif %}],{% endif %}{% endfor %} ]'
             >View</a>
         </td>

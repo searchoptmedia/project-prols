@@ -52,6 +52,8 @@ class ListEventsTableMap extends TableMap
         $this->addColumn('event_desc', 'EventDescription', 'LONGVARCHAR', true, 32700, null);
         $this->addForeignKey('event_type', 'EventType', 'INTEGER', 'list_events_type', 'id', true, null, null);
         $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
+        $this->addColumn('is_going', 'IsGoing', 'INTEGER', true, null, null);
+        $this->addColumn('is_going_note', 'IsGoingNote', 'LONGVARCHAR', false, null, null);
         $this->addColumn('sms_response', 'SmsResponse', 'LONGVARCHAR', false, 32700, null);
         // validators
     } // initialize()

@@ -111,6 +111,18 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     protected $status;
 
     /**
+     * The value for the is_going field.
+     * @var        int
+     */
+    protected $is_going;
+
+    /**
+     * The value for the is_going_note field.
+     * @var        string
+     */
+    protected $is_going_note;
+
+    /**
      * The value for the sms_response field.
      * @var        string
      */
@@ -380,6 +392,28 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [is_going] column value.
+     *
+     * @return int
+     */
+    public function getIsGoing()
+    {
+
+        return $this->is_going;
+    }
+
+    /**
+     * Get the [is_going_note] column value.
+     *
+     * @return string
+     */
+    public function getIsGoingNote()
+    {
+
+        return $this->is_going_note;
+    }
+
+    /**
      * Get the [sms_response] column value.
      *
      * @return string
@@ -615,6 +649,48 @@ abstract class BaseListEvents extends BaseObject implements Persistent
     } // setStatus()
 
     /**
+     * Set the value of [is_going] column.
+     *
+     * @param  int $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setIsGoing($v)
+    {
+        if ($v !== null && is_numeric($v)) {
+            $v = (int) $v;
+        }
+
+        if ($this->is_going !== $v) {
+            $this->is_going = $v;
+            $this->modifiedColumns[] = ListEventsPeer::IS_GOING;
+        }
+
+
+        return $this;
+    } // setIsGoing()
+
+    /**
+     * Set the value of [is_going_note] column.
+     *
+     * @param  string $v new value
+     * @return ListEvents The current object (for fluent API support)
+     */
+    public function setIsGoingNote($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->is_going_note !== $v) {
+            $this->is_going_note = $v;
+            $this->modifiedColumns[] = ListEventsPeer::IS_GOING_NOTE;
+        }
+
+
+        return $this;
+    } // setIsGoingNote()
+
+    /**
      * Set the value of [sms_response] column.
      *
      * @param  string $v new value
@@ -677,7 +753,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $this->event_desc = ($row[$startcol + 7] !== null) ? (string) $row[$startcol + 7] : null;
             $this->event_type = ($row[$startcol + 8] !== null) ? (int) $row[$startcol + 8] : null;
             $this->status = ($row[$startcol + 9] !== null) ? (int) $row[$startcol + 9] : null;
-            $this->sms_response = ($row[$startcol + 10] !== null) ? (string) $row[$startcol + 10] : null;
+            $this->is_going = ($row[$startcol + 10] !== null) ? (int) $row[$startcol + 10] : null;
+            $this->is_going_note = ($row[$startcol + 11] !== null) ? (string) $row[$startcol + 11] : null;
+            $this->sms_response = ($row[$startcol + 12] !== null) ? (string) $row[$startcol + 12] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -687,7 +765,7 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 11; // 11 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 13; // 13 = ListEventsPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating ListEvents object", $e);
@@ -1013,6 +1091,12 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($this->isColumnModified(ListEventsPeer::STATUS)) {
             $modifiedColumns[':p' . $index++]  = '`status`';
         }
+        if ($this->isColumnModified(ListEventsPeer::IS_GOING)) {
+            $modifiedColumns[':p' . $index++]  = '`is_going`';
+        }
+        if ($this->isColumnModified(ListEventsPeer::IS_GOING_NOTE)) {
+            $modifiedColumns[':p' . $index++]  = '`is_going_note`';
+        }
         if ($this->isColumnModified(ListEventsPeer::SMS_RESPONSE)) {
             $modifiedColumns[':p' . $index++]  = '`sms_response`';
         }
@@ -1056,6 +1140,12 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                         break;
                     case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
+                        break;
+                    case '`is_going`':
+                        $stmt->bindValue($identifier, $this->is_going, PDO::PARAM_INT);
+                        break;
+                    case '`is_going_note`':
+                        $stmt->bindValue($identifier, $this->is_going_note, PDO::PARAM_STR);
                         break;
                     case '`sms_response`':
                         $stmt->bindValue($identifier, $this->sms_response, PDO::PARAM_STR);
@@ -1267,6 +1357,12 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 return $this->getStatus();
                 break;
             case 10:
+                return $this->getIsGoing();
+                break;
+            case 11:
+                return $this->getIsGoingNote();
+                break;
+            case 12:
                 return $this->getSmsResponse();
                 break;
             default:
@@ -1308,7 +1404,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
             $keys[7] => $this->getEventDescription(),
             $keys[8] => $this->getEventType(),
             $keys[9] => $this->getStatus(),
-            $keys[10] => $this->getSmsResponse(),
+            $keys[10] => $this->getIsGoing(),
+            $keys[11] => $this->getIsGoingNote(),
+            $keys[12] => $this->getSmsResponse(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1396,6 +1494,12 @@ abstract class BaseListEvents extends BaseObject implements Persistent
                 $this->setStatus($value);
                 break;
             case 10:
+                $this->setIsGoing($value);
+                break;
+            case 11:
+                $this->setIsGoingNote($value);
+                break;
+            case 12:
                 $this->setSmsResponse($value);
                 break;
         } // switch()
@@ -1432,7 +1536,9 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if (array_key_exists($keys[7], $arr)) $this->setEventDescription($arr[$keys[7]]);
         if (array_key_exists($keys[8], $arr)) $this->setEventType($arr[$keys[8]]);
         if (array_key_exists($keys[9], $arr)) $this->setStatus($arr[$keys[9]]);
-        if (array_key_exists($keys[10], $arr)) $this->setSmsResponse($arr[$keys[10]]);
+        if (array_key_exists($keys[10], $arr)) $this->setIsGoing($arr[$keys[10]]);
+        if (array_key_exists($keys[11], $arr)) $this->setIsGoingNote($arr[$keys[11]]);
+        if (array_key_exists($keys[12], $arr)) $this->setSmsResponse($arr[$keys[12]]);
     }
 
     /**
@@ -1454,6 +1560,8 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         if ($this->isColumnModified(ListEventsPeer::EVENT_DESC)) $criteria->add(ListEventsPeer::EVENT_DESC, $this->event_desc);
         if ($this->isColumnModified(ListEventsPeer::EVENT_TYPE)) $criteria->add(ListEventsPeer::EVENT_TYPE, $this->event_type);
         if ($this->isColumnModified(ListEventsPeer::STATUS)) $criteria->add(ListEventsPeer::STATUS, $this->status);
+        if ($this->isColumnModified(ListEventsPeer::IS_GOING)) $criteria->add(ListEventsPeer::IS_GOING, $this->is_going);
+        if ($this->isColumnModified(ListEventsPeer::IS_GOING_NOTE)) $criteria->add(ListEventsPeer::IS_GOING_NOTE, $this->is_going_note);
         if ($this->isColumnModified(ListEventsPeer::SMS_RESPONSE)) $criteria->add(ListEventsPeer::SMS_RESPONSE, $this->sms_response);
 
         return $criteria;
@@ -1527,6 +1635,8 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $copyObj->setEventDescription($this->getEventDescription());
         $copyObj->setEventType($this->getEventType());
         $copyObj->setStatus($this->getStatus());
+        $copyObj->setIsGoing($this->getIsGoing());
+        $copyObj->setIsGoingNote($this->getIsGoingNote());
         $copyObj->setSmsResponse($this->getSmsResponse());
 
         if ($deepCopy && !$this->startCopy) {
@@ -2470,6 +2580,8 @@ abstract class BaseListEvents extends BaseObject implements Persistent
         $this->event_desc = null;
         $this->event_type = null;
         $this->status = null;
+        $this->is_going = null;
+        $this->is_going_note = null;
         $this->sms_response = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;

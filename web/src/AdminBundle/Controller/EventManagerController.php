@@ -54,6 +54,7 @@ class EventManagerController extends Controller
 
             $event = new ListEvents();
             $eventQry = null;
+            $isNew = true;
 
             if(!empty($params['event_id']))
                 $eventQry = ListEventsQuery::_findById($params['event_id']);
@@ -68,8 +69,11 @@ class EventManagerController extends Controller
                 $params['status'] = C::STATUS_ACTIVE;
                 $params['created_by'] = $userId;
                 $params['date_created'] = U::getDate();
+            } else {
+                $isNew = false;
             }
 
+            $params['isNew'] = $isNew;
             $params['from_date'] = date('Y-m-d H:i:s', strtotime($params['from_date']));
             $params['to_date'] = date('Y-m-d H:i:s', strtotime($params['to_date']));
 
@@ -79,9 +83,13 @@ class EventManagerController extends Controller
                 $response = U::getSuccessResponse();
 
                 $params['owner_email'] = U::getUserDetails('email', $this);
+                $params['links'] = array('View Event' => array(
+                    'href' => $this->generateUrl('manage_events', array('id' => $event->getId()), true),
+                ));
 
                 if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
                     if(!empty($params['tags'])) {
+                        $owner = EmpProfileQuery::_findByAccId($event->getCreatedBy());
                         $empTagIds = array();
                         $params['event_tag_names'] = array();
 
@@ -90,7 +98,21 @@ class EventManagerController extends Controller
                             $empProfile = EmpProfileQuery::_findByAccId($empAcc->getId());
 
                             $params['event_tag_names'][$empAcc->getEmail()] = trim($empProfile->getFname() . ' ' .$empProfile->getLname());
+                            $params['event_tag_status'][$empAcc->getEmail()] = C::STATUS_PENDING;
+
+                            //get status
+                            $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+                            if($eventTags) {
+                                foreach ($eventTags as $et) {
+                                    $etStatus = $et->getStatus();
+                                    $em = $et->getEmpAcc()->getEmail();
+                                    $params['event_tag_status'][$em] = $etStatus;
+                                }
+                            }
                         }
+
+                        $params['event_tag_names'][$event->getEmpAcc()->getEmail()] = trim($owner->getFname() . ' ' . $owner->getLname());
+                        $params['event_tag_status'][$event->getEmpAcc()->getEmail()] = $event->getIsGoing() ? C::STATUS_APPROVED : C::STATUS_DECLINED;
 
                         foreach($params['tags'] as $email) {
                             $empAcc = EmpAccQuery::_findByEmail($email);
@@ -105,9 +127,8 @@ class EventManagerController extends Controller
                             ), $eventTagQry);
 
                             $params['user_id'] = $empAcc->getId();
-                            $params['links'] = array('View Event' => $this->generateUrl('manage_events', array('id' => $event->getId()), true));
 
-                            if($eventTagged) {
+                            if($eventTagged && $eventTagged->getStatus()==C::STATUS_PENDING) {
                                 $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
                                 $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
 
@@ -121,13 +142,13 @@ class EventManagerController extends Controller
 
                                 if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
                                     $params['has-update'] = false;
-
                                     $email = $this->email->notifyEmployeeOnEvent($params, $this);
 
-                                    if($email)
+                                    if($email) {
                                         $this->saveHistory(array(
                                             'event_tag_id' => $eventTagged->getId()
                                         ), C::HA_EVENT_TAG_EMAIL);
+                                    }
                                 } else if($eventTagQry  && $params['notify_email']) {
                                     $params['has-update'] = true;
 
@@ -144,8 +165,6 @@ class EventManagerController extends Controller
                                             ), C::HA_EVENT_TAG_EMAIL);
                                     }
                                 }
-                            } else {
-                                $response = array('error' => 'Oops! Encountered problem while tagging. Please try again!');
                             }
                         }
 
@@ -181,7 +200,7 @@ class EventManagerController extends Controller
                         if(count($toList))
                             $params['to_list'] = array($toList);
 
-                        $params['user_id'] = $e->getId();
+                        $params['user_id'] = $this->getUser()->getId();
                         $this->email->notifyEmployeeOnEvent($params, $this);
                     }
                 }
@@ -629,6 +648,15 @@ class EventManagerController extends Controller
             'status' => array('data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL)
         ));
 
+        $allProfiles = EmpProfilePeer::getAllProfile();
+        $allInactiveProfiles = EmpProfilePeer::getAllProfile(-1);
+        $listProfiles = array();
+
+        if($allProfiles)
+            foreach($allProfiles as $p) { $listProfiles[$p->getEmpAccAccId()] = trim($p->getFname().' '.$p->getLname()); }
+        if($allInactiveProfiles)
+            foreach($allInactiveProfiles as $p) { $listProfiles[$p->getEmpAccAccId()] = trim($p->getFname().' '.$p->getLname()); }
+
         foreach ($allEvents as $event) {
             $eventFromDate = $event->getFromDate();
             $eventToDate =  $event->getToDate();
@@ -675,6 +703,8 @@ class EventManagerController extends Controller
                     $totalTags++;
                 }
             }
+
+            $eventTagsList .= '<div class="chip mr1 mb1 '.($event->getIsGoing() ? 'green':'red').'">'.$listProfiles[$event->getCreatedBy()] .'</div>';
 
             $eventData = array(
                 'date' => 'From: ' . $eventFromDate . "<br>" . "To: " . $eventToDate,
