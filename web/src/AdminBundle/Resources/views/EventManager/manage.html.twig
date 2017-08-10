@@ -210,24 +210,25 @@
             color: #E11C24;
         }
 
-        .pagination a{
+        .pagination a {
             color: #000000;
         }
 
-        .event-management-select{
+        .event-management-select {
             display: inline-block;
             width: 35%;
         }
 
-        .select-row-label{
+        .select-row-label {
             display: inline-block;
         }
 
-        .management-row-selector{
+        .management-row-selector {
             margin: 15px 0px 0px 50px;
             display: inline-block;
             width: 20%;
         }
+
     </style>
 {% endblock %}
 
@@ -326,14 +327,14 @@
                             </div>
                             <div class="row">
                                 <div class="management-row-selector">
-                                <p class="select-row-label">Show Rows: </p>
-                                <select class="event-management-select">
-                                    <option value="">All</option>
-                                    <option value="row-5">5</option>
-                                    <option value="row-10">10</option>
-                                    <option value="row-20">20</option>
-                                    <option value="row-50">50</option>
-                                </select>
+                                    <p class="select-row-label">Show Rows: </p>
+                                    <select class="event-management-select">
+                                        <option value="">All</option>
+                                        <option value="row-5">5</option>
+                                        <option value="row-10">10</option>
+                                        <option value="row-20">20</option>
+                                        <option value="row-50">50</option>
+                                    </select>
                                 </div>
                                 <div class="pagination">
                                     <a href="#" class="prev">← Previous</a>
@@ -415,12 +416,12 @@
                                     I am going
                                 </label>
                             </div>
-                            <div class="col-md-12" id="from-row">
-                                <label for="event_going_reason_modal">Add Notes (*required if not going)</label>
-                                <textarea id="event_going_reason_modal"
-                                          class="materialize-textarea txt-event-going-notes" required
-                                          autocapitalize></textarea>
-                            </div>
+                            {#<div class="col-md-12" id="from-row">#}
+                            {#<label for="event_going_reason_modal">Add Notes (*required if not going)</label>#}
+                            {#<textarea id="event_going_reason_modal"#}
+                            {#class="materialize-textarea txt-event-going-notes" required#}
+                            {#autocapitalize></textarea>#}
+                            {#</div>#}
                             <div class="col-md-6" id="from-row">
                                 <label>From</label><br>
                                 <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
@@ -526,8 +527,8 @@
                     </div>
                     <div class="col-md-10">
                         <h6 class="font28 p-view-title mt0">Glide Session With Mike</h6>
-                        <p class="p-view-desc">This is the description of this event. This is the description of this
-                            event. This is the description of this event. This is the description of this event.</p>
+                        <span class="p-view-desc">This is the description of this event. This is the description of this
+                            event. This is the description of this event. This is the description of this event.</span>
                     </div>
                 </div>
 
@@ -536,7 +537,7 @@
                         <span class="font20 pt1">WHERE:</span>
                     </div>
                     <div class="col-md-10">
-                        <h6 class="font22 p-view-venue mt0">Propelrr Conference</h6>
+                        <span>Propelrr Conference</span>
                     </div>
                 </div>
 
@@ -545,48 +546,59 @@
                         <span class="font20">WHEN:</span>
                     </div>
                     <div class="col-md-10">
-                        <h6 class="font22 p-view-date mt0">Jun 22, 2017 at 04:00pm to <br>Jun 22, 2017 at 05:00pm</h6>
+                        <span>Jun 22, 2017 - 04:00pm To Jun 22, 2017 - 05:00pm</span>
                     </div>
                 </div>
 
-                <div class="row sect-event-tagged-area">
+                {#<div class="row sect-event-tagged-area">#}
+                {#<div class="col-md-2">#}
+                {#<span class="font20">WHO:</span>#}
+                {#</div>#}
+                {#<div class="col-md-10 sect-view-tags-list-area">#}
+                {#<div class="mb1">#}
+                {#<a href="javascript:void(0)">#}
+                {#<div class="chip">#}
+                {#Denmark Jay Mago (Organizer) - PENDING#}
+                {#</div>#}
+                {#</a>#}
+                {#<ul class="collection mt2">#}
+                {#<li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>#}
+                {#</ul>#}
+                {#</div>#}
+                {#<div class="mb1">#}
+                {#<div class="chip green">#}
+                {#Denmark Jay Mago - GOING#}
+                {#</div>#}
+                {#</div>#}
+                {#<div class="mb1">#}
+                {#<div class="chip orange">#}
+                {#Denmark Jay Mago - NOT GOING#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+
+                {#INTEGRATE THE FOLLOWING LINES OF CODE INSTEAD#}
+                <div class="row">
                     <div class="col-md-2">
                         <span class="font20">WHO:</span>
                     </div>
                     <div class="col-md-10 sect-view-tags-list-area">
-                        <div class="mb1">
-                            <a href="javascript:void(0)">
-                                <div class="chip">
-                                    Denmark Jay Mago (Organizer) - PENDING
-                                </div>
-                            </a>
-                            <ul class="collection mt2">
-                                <li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>
-                            </ul>
-                        </div>
-                        <div class="mb1">
-                            <div class="chip green">
-                                Denmark Jay Mago - GOING
-                            </div>
-                        </div>
-                        <div class="mb1">
-                            <div class="chip orange">
-                                Denmark Jay Mago - NOT GOING
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-
+                        <ul>
+                            <li>Denmark Jay Mago - GOING</li>
+                            <li>Vino Angelo Bolisay - GOING</li>
+                            <li>Jarniel Cataluna - GOING</li>
+                            <li>Brian Niel Bilog - NOT GOING</li>
+                            <li>Denmark Jay Mago - PENDING</li>
+                            <li>Vino Angelo Bolisay - GOING</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer" style="z-index: 111;">
-            <div style="margin-right:5px; float:left;">
+            <div style="margin-left:10px; float:left;">
                 <div class="pull-left sect-view-status-area display-none">
                     Your current status is: <a class="" style="font-size: 16px;">Pending</a>
                 </div>
@@ -655,7 +667,7 @@
         var sectGuestResponse = '.sect-guest-response-area';
         var sectUserAction = '.sect-user-action-area';
         var sectViewStatusArea = '.sect-view-status-area';
-        var sectViewTagsListArea = '.sect-view-tags-list-area';
+        //        var sectViewTagsListArea = '.sect-view-tags-list-area';
         var sectGuestSelect = '.sect-guest-selection-area';
         var sectViewTagsArea = '.sect-event-tagged-area';
         var sectViewOwnerAction = '.sect-view-owner-action-area';
@@ -919,54 +931,54 @@
 
                 console.log(employees)
 
-                $(sectViewTagsListArea).empty();
-                for (i in tagIds) {
-                    var empData = _.findWhere(employees, {id: parseInt(tagIds[i])});
-                    var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;
-                    var clss = '';
-                    var timelineTmp = '{{ timelineTemp|e('js') }}';
-                    var timeline = '';
+                {#$(sectViewTagsListArea).empty();#}
+                {#for (i in tagIds) {#}
+                {#var empData = _.findWhere(employees, {id: parseInt(tagIds[i])});#}
+                {#var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;#}
+                {#var clss = '';#}
+                {#var timelineTmp = '{{ timelineTemp|e('js') }}';#}
+                {#var timeline = '';#}
 
-                    if (stat == STATUS_APPROVED) {
-                        clss = 'green';
-                    } else if (stat == STATUS_DECLINED) {
-                        clss = 'red';
-                    }
-                    stat = convertStatusToString(stat);
+                {#if (stat == STATUS_APPROVED) {#}
+                {#clss = 'green';#}
+                {#} else if (stat == STATUS_DECLINED) {#}
+                {#clss = 'red';#}
+                {#}#}
+                {#stat = convertStatusToString(stat);#}
 
-                    if (_.size(empData)) {
-                        if (tagHistory[i]) {
-                            for (i2 in tagHistory[i]) {
-                                timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)
-                                    .replace('[TIME]', tagHistory[i][i2].time)
-                                    .replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name + ' was tagged.' :
-                                        ('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.' :
-                                            ('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ? tagHistory[i][i2].name + ' updated status to <b>' + ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'going' : 'not going') + '</b>.' + (tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>' + tagHistory[i][i2].message + '</blockquote></p>' : '') : ''))
-                                    );
-                            }
-                        }
+                {#if (_.size(empData)) {#}
+                {#if (tagHistory[i]) {#}
+                {#for (i2 in tagHistory[i]) {#}
+                {#timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)#}
+                {#.replace('[TIME]', tagHistory[i][i2].time)#}
+                {#.replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name + ' was tagged.' :#}
+                {#('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.' :#}
+                {#('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ? tagHistory[i][i2].name + ' updated status to <b>' + ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'going' : 'not going') + '</b>.' + (tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>' + tagHistory[i][i2].message + '</blockquote></p>' : '') : ''))#}
+                {#);#}
+                {#}#}
+                {#}#}
 
-                        if (timeline.length) {
-                            timeline = '<div class="custom-timeline-1">' + timeline + '</div>';
-                        }
+                {#if (timeline.length) {#}
+                {#timeline = '<div class="custom-timeline-1">' + timeline + '</div>';#}
+                {#}#}
 
-                        var Reason = '';
-                        if (timeline.length || (tagReasons[i] && tagReasons[i].length)) {
-                            if (createdBy == currentEmpId && timeline.length)
-                                Reason = tagsViewReasonTemp.replace('[REASON]', timeline);
-                            else if (createdBy != currentEmpId && tagReasons[i].length)
-                                Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);
-                        }
+                {#var Reason = '';#}
+                {#if (timeline.length || (tagReasons[i] && tagReasons[i].length)) {#}
+                {#if (createdBy == currentEmpId && timeline.length)#}
+                {#Reason = tagsViewReasonTemp.replace('[REASON]', timeline);#}
+                {#else if (createdBy != currentEmpId && tagReasons[i].length)#}
+                {#Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);#}
+                {#}#}
 
-                        $(sectViewTagsListArea).append(tagsViewTemp
-                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))
-                            .replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
-                            .replace('[CLASS]', clss)
-                            .replace('[ACTION]', ((timeline.length && createdBy == currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy != currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>' : '')
-                            .replace('[REASON]', Reason)
-                        );
-                    }
-                }
+                {#$(sectViewTagsListArea).append(tagsViewTemp#}
+                {#.replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))#}
+                {#.replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))#}
+                {#.replace('[CLASS]', clss)#}
+                {#.replace('[ACTION]', ((timeline.length && createdBy == currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy != currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>' : '')#}
+                {#.replace('[REASON]', Reason)#}
+                {#);#}
+                {#}#}
+                {#}#}
 
                 $(sectViewStatusArea).find('a').text(statusName);
                 showElements([$(sectViewTagsArea), $(sectViewStatusArea)]);
