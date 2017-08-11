@@ -229,6 +229,9 @@
             width: 20%;
         }
 
+        .not-going{
+            text-decoration: line-through;
+        }
     </style>
 {% endblock %}
 
@@ -585,12 +588,14 @@
                     </div>
                     <div class="col-md-10 sect-view-tags-list-area">
                         <ul>
-                            <li>Denmark Jay Mago - GOING</li>
-                            <li>Vino Angelo Bolisay - GOING</li>
-                            <li>Jarniel Cataluna - GOING</li>
-                            <li>Brian Niel Bilog - NOT GOING</li>
-                            <li>Denmark Jay Mago - PENDING</li>
-                            <li>Vino Angelo Bolisay - GOING</li>
+                            <li><a href="#">Denmark Jay Mago - GOING</a></li>
+                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
+                            <li><a href="#">Jarniel Cataluna - GOING</a></li>
+                            <li class="not-going">
+                                <a href="#">Brian Niel Bilog - NOT GOING</a>
+                            </li>
+                            <li><a href="#">Denmark Jay Mago - PENDING</a></li>
+                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
                         </ul>
                     </div>
                 </div>
