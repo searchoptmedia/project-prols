@@ -128,7 +128,7 @@
             position: relative;
         }
 
-        .searchTerm {
+        .search-term {
             float: left;
             width: 100%;
             border: 3px solid #ffffff;
@@ -139,14 +139,28 @@
             color: #ffffff;
         }
 
-        .searchTerm:focus {
+        .search-term:focus {
             color: #ffffff;
             background: rgba(225, 225, 225, 0.11);
         }
 
-        .searchButton {
+        .search-button {
             position: absolute;
-            right: -50px;
+            right: 45px;
+            width: 40px;
+            height: 36px;
+            border: 1px solid #ffffff;
+            background: #ff9800;
+            text-align: center;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .advanced-search-button {
+            position: absolute;
+            right: 0px;
             width: 40px;
             height: 36px;
             border: 1px solid #ffffff;
@@ -162,7 +176,7 @@
             width: 30%;
             position: absolute;
             top: 68%;
-            left: 60%;
+            left: 65%;
             float: right;
             transform: translate(-50%, -50%);
         }
@@ -212,6 +226,9 @@
 
         .pagination a {
             color: #000000;
+            border: 1px solid #000000;
+            background: #039be5;
+            color: #ffffff;
         }
 
         .event-management-select {
@@ -219,18 +236,50 @@
             width: 35%;
         }
 
+        .event-management-text {
+            display: inline-block;
+            width: 35% !important;
+            border: 1px solid #000000 !important;
+            padding: 5px !important;
+        }
+
         .select-row-label {
             display: inline-block;
         }
 
         .management-row-selector {
-            margin: 15px 0px 0px 50px;
+            margin: 10px 0px 0px 50px;
             display: inline-block;
             width: 20%;
+            float: right;
         }
 
-        .not-going{
+        .select-page-label {
+            display: inline-block;
+        }
+
+        .management-page-selector {
+            margin: 10px 0px 0px 0px;
+            display: inline-block;
+            width: 10%;
+            float: right;
+
+        }
+
+        .not-going {
             text-decoration: line-through;
+        }
+
+        .btn-view-event {
+            background: #ff9800;
+        }
+
+        .btn-view-event:hover {
+            background: #039be5;
+        }
+
+        .table-header-link {
+            color: #000;
         }
     </style>
 {% endblock %}
@@ -248,10 +297,13 @@
                                 <h3>Events List</h3>
                                 <div class="wrap">
                                     <div class="search">
-                                        <input type="text" class="searchTerm"
+                                        <input type="text" class="search-term"
                                                placeholder="What are you looking for?">
-                                        <button type="submit" class="searchButton">
+                                        <button type="submit" class="search-button">
                                             <i class="fa fa-search"></i>
+                                        </button>
+                                        <button type="submit" id="advanced-search-button" data-action="advanced-search">
+                                            <i class="fa fa-cog"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -283,41 +335,53 @@
                                 <table class="bordered highlight tb-emp-list" style="width: 97%; margin: 0 auto;">
                                     <thead>
                                     <tr>
-                                        <th>EVENT NAME
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">EVENT NAME
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
-                                        <th>TYPE
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">TYPE
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
-                                        <th>FROM
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">FROM
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
-                                        <th>TO
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">TO
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
-                                        <th>ROLE
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">ROLE
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
-                                        <th>STATUS
-                                            <i class="arrow down">
-                                                {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                {#<i class="arrow up">#}
-                                            </i>
+                                        <th>
+                                            <a class="table-header-link" href="#">STATUS
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
                                         </th>
                                         <th></th>
                                     </tr>
@@ -329,6 +393,15 @@
                                 </table>
                             </div>
                             <div class="row">
+
+                                <div class="pagination">
+                                    <a href="#" class="prev">← Previous</a>
+                                    <a class="next" href="#">Next →</a>
+                                </div>
+                                <div class="management-page-selector">
+                                    <p class="select-page-label">Page: </p>
+                                    <input type="text" name="pageInput" class="event-management-text">
+                                </div>
                                 <div class="management-row-selector">
                                     <p class="select-row-label">Show Rows: </p>
                                     <select class="event-management-select">
@@ -337,16 +410,13 @@
                                         <option value="row-10">10</option>
                                         <option value="row-20">20</option>
                                         <option value="row-50">50</option>
+                                        <option value="row-50">100</option>
+                                        <option value="row-50">200</option>
+                                        <option value="row-50">400</option>
+                                        <option value="row-50">800</option>
+                                        <option value="row-50">1000</option>
+                                        <option value="row-50">2000</option>
                                     </select>
-                                </div>
-                                <div class="pagination">
-                                    <a href="#" class="prev">← Previous</a>
-                                    <em class="current">1</em>
-                                    <a href="#">2</a>
-                                    <a href="#">3</a>
-                                    <a href="#">4</a>
-                                    <a href="#">5</a>
-                                    <a class="next" href="#">Next →</a>
                                 </div>
                             </div>
                         </div>
@@ -635,6 +705,78 @@
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
+    <!-----------------------ADVANCED SEARCH MODAL -------------------------->
+    <div id="mo-advanced-search" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Advanced Search</h4>
+        <div class="modal-content">
+            <div class="event-form-cont mo-body">
+                <form>
+                    <input type="hidden" class="txt-event-id">
+                    <div class="row">
+
+                        <div class="col-md-7">
+                            <label for="event_name_modal">Event Name</label>
+                            <input type="text" name="event-name" class="event-name txt-event-name" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="event_type_modal">Event Type</label>
+                            <select name="event_type" id="event_type_modal"
+                                    class="browser-default event-type cmb-select-event-type">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="">All</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6" id="from-row">
+                            <label>From</label><br>
+                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
+                                   id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
+                        </div>
+                        <div class="col-md-6" id="to-row">
+                            <label>To</label><br>
+                            <input type="text" name="to-event-date" readonly class="to-event-date"
+                                   id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="role_modal">Role</label>
+                            <select name="event_type" id="role_modal"
+                                    class="browser-default event-role cmb-select-event-role">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="event_status_modal">Status</label>
+                            <select name="event_status" id="event_status_modal"
+                                    class="browser-default event-status cmb-select-event-status">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="All">All</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <br>
+        </div>
+        <input type="hidden" id="event_id">
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Cancel</a>
+            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Search</a>
+            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
+                Required Fields!
+            </div>
+        </div>
+        <input type="hidden" id="event_id">
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
+            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Create</a>
+            {#<a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>#}
+            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
+                Required Fields!
+            </div>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
 {% endblock %}
 
 {% block customjs %}
@@ -659,6 +801,7 @@
         var btnOpenCreateModal = '.btn-open-create-modal';
         var btnCreateEvent = '.btn-create-event';
         var btnOpenEvent = '.btn-view-event';
+        var btnAdvancedSearch = '#advanced-search-button';
         var btnTagExpandReason = '.btn-tag-list-expand-reason';
         var btnViewOpenEditModal = '.btn-view-open-edit-event-mo';
         var btnGuestResponse = '.btn-guest-response';
