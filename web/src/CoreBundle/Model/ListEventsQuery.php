@@ -14,7 +14,7 @@ class ListEventsQuery extends BaseListEventsQuery
             ->findOne();
     }
 
-    static function _findAll($params = array())
+    static function _findAll($params = array(), $isCount = false)
     {
         $data = self::create();
 
@@ -58,7 +58,15 @@ class ListEventsQuery extends BaseListEventsQuery
             $data->orderBy($params['order']['data'], isset($params['order']['criteria']) ? $params['order']['criteria'] : \Criteria::ASC);
         }
 
+        if(isset($params['page'])) {
+            $data->setOffset($params['page']);
+            $data->setLimit($params['limit']);
+        }
+
         $data->setDistinct();
+
+        if($isCount)
+            return $data->count();
 
         return
             $data->find();

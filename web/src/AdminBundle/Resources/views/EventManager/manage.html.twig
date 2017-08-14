@@ -1,4 +1,5 @@
 {% extends 'AdminBundle::base.html.twig' %}
+
 {% block title %}
     <title>Propelrr Log-in System| Manage Events</title>
 {% endblock %}
@@ -21,7 +22,7 @@
             content: '';
             position: absolute;
             top: 0px;
-            left: calc(33% + 15px);
+            left: calc(20% + 18px);
             bottom: 0px;
             width: 4px;
             background: #ddd;
@@ -42,8 +43,8 @@
         .custom-timeline-1 .entry .title {
             margin-bottom: .5em;
             float: left;
-            width: 33%;
-            padding-right: 30px;
+            width: 20%;
+            padding-right: 0px;
             text-align: right;
             position: relative;
         }
@@ -61,6 +62,15 @@
             z-index: 99;
         }
 
+        .custom-timeline-1 .entry.green .title:before, .custom-timeline-1 .entry.green blockquote { border-color: #6dab7f; }
+        .custom-timeline-1 .entry.red .title:before, .custom-timeline-1 .entry.red blockquote { border-color: #ff6056; }
+        .custom-timeline-1 .entry.gray .title:before, .custom-timeline-1 .entry.gray blockquote { border-color: #8a8383; }
+
+        .custom-timeline-1 .entry blockquote {
+            margin-left: 20px;
+            padding-left: 15px;
+        }
+
         .custom-timeline-1 .entry .title h3 {
             margin: 0;
             font-size: 90%;
@@ -74,8 +84,8 @@
         .custom-timeline-1 .entry .body {
             margin: 0 0 1em;
             float: right;
-            width: 66%;
-            padding-left: 30px;
+            width: 80%;
+            padding-left: 28px;
         }
 
         .custom-timeline-1 .entry .body p {
@@ -113,9 +123,15 @@
             margin: 3px;
         }
 
+        .arrow.gray {
+            border-color: #808080;
+        }
+
         .up {
             transform: rotate(-135deg);
             -webkit-transform: rotate(-135deg);
+            top: 4px;
+            position: relative;
         }
 
         .down {
@@ -137,6 +153,9 @@
             border-radius: 5px;
             outline: none;
             color: #ffffff;
+            top: -4px;
+            position: relative;
+            padding-left: 10px !important;
         }
 
         .search-term:focus {
@@ -266,10 +285,6 @@
 
         }
 
-        .not-going {
-            text-decoration: line-through;
-        }
-
         .btn-view-event {
             background: #ff9800;
         }
@@ -280,6 +295,22 @@
 
         .table-header-link {
             color: #000;
+        }
+
+        .color-blue {  color: #039be5;  }
+        .color-red {  color: salmon;  }
+        .strike-red{
+            color: salmon;
+            text-decoration:line-through;
+        }
+        .level-2-gray-text {
+            color: #8a8383;
+        }
+        .level-2-red-text {
+            color: #ff6056;
+        }
+        .level-2-green-text {
+            color: #6dab7f;
         }
     </style>
 {% endblock %}
@@ -392,30 +423,29 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="row">
+                            <div class="row -pagination-section">
 
                                 <div class="pagination">
-                                    <a href="#" class="prev">← Previous</a>
-                                    <a class="next" href="#">Next →</a>
+                                    <a href="javascript:void(0);" class="prev waves-effect waves-light grey btn-flat">← Previous</a>
+                                    <a href="javascript:void(0);" class="next  waves-light grey btn-flat">Next →</a>
                                 </div>
                                 <div class="management-page-selector">
                                     <p class="select-page-label">Page: </p>
-                                    <input type="text" name="pageInput" class="event-management-text">
+                                    <input type="number" min="1" name="pageInput" class="event-management-text -page-number" value="1">
                                 </div>
                                 <div class="management-row-selector">
                                     <p class="select-row-label">Show Rows: </p>
-                                    <select class="event-management-select">
-                                        <option value="">All</option>
-                                        <option value="row-5">5</option>
-                                        <option value="row-10">10</option>
-                                        <option value="row-20">20</option>
-                                        <option value="row-50">50</option>
-                                        <option value="row-50">100</option>
-                                        <option value="row-50">200</option>
-                                        <option value="row-50">400</option>
-                                        <option value="row-50">800</option>
-                                        <option value="row-50">1000</option>
-                                        <option value="row-50">2000</option>
+                                    <select class="event-management-text -page-limit">
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="50">100</option>
+                                        <option value="50">200</option>
+                                        <option value="50">400</option>
+                                        <option value="50">800</option>
+                                        <option value="50">1000</option>
+                                        <option value="50">2000</option>
                                     </select>
                                 </div>
                             </div>
@@ -489,12 +519,10 @@
                                     I am going
                                 </label>
                             </div>
-                            {#<div class="col-md-12" id="from-row">#}
-                            {#<label for="event_going_reason_modal">Add Notes (*required if not going)</label>#}
-                            {#<textarea id="event_going_reason_modal"#}
-                            {#class="materialize-textarea txt-event-going-notes" required#}
-                            {#autocapitalize></textarea>#}
-                            {#</div>#}
+                            <div class="col-md-12" id="from-row">
+                                <label for="event_going_reason_modal">Add Notes (*note is required if you're not going)</label>
+                                <textarea id="event_going_reason_modal" class="materialize-textarea txt-event-going-notes" required autocapitalize></textarea>
+                            </div>
                             <div class="col-md-6" id="from-row">
                                 <label>From</label><br>
                                 <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
@@ -594,79 +622,46 @@
         </h4>
         <div class="modal-content">
             <div class="mo-body">
-                <div class="row mb2">
-                    <div class="col-md-2">
-                        <span class="font20 pt2">WHAT:</span>
+                <div class="sect-event-tagged-are">
+                    <div class="row mb2 -info">
+                        <div class="col-md-2">
+                            <span class="font20 pt2">WHAT:</span>
+                        </div>
+                        <div class="col-md-10">
+                            <h6 class="font28 p-view-title mt0">Glide Session With Mike</h6>
+                            <span class="p-view-desc">This is the description of this event. This is the description of this
+                                event. This is the description of this event. This is the description of this event.</span>
+                        </div>
                     </div>
-                    <div class="col-md-10">
-                        <h6 class="font28 p-view-title mt0">Glide Session With Mike</h6>
-                        <span class="p-view-desc">This is the description of this event. This is the description of this
-                            event. This is the description of this event. This is the description of this event.</span>
-                    </div>
-                </div>
 
-                <div class="row mb2">
-                    <div class="col-md-2">
-                        <span class="font20 pt1">WHERE:</span>
+                    <div class="row mb2 -info">
+                        <div class="col-md-2">
+                            <span class="font20 pt1">WHERE:</span>
+                        </div>
+                        <div class="col-md-10">
+                            <span class="p-view-venue">Propelrr Conference</span>
+                        </div>
                     </div>
-                    <div class="col-md-10">
-                        <span>Propelrr Conference</span>
-                    </div>
-                </div>
 
-                <div class="row mb2">
-                    <div class="col-md-2">
-                        <span class="font20">WHEN:</span>
+                    <div class="row mb2 -info">
+                        <div class="col-md-2">
+                            <span class="font20">WHEN:</span>
+                        </div>
+                        <div class="col-md-10">
+                            <span class="p-view-date">Jun 22, 2017 - 04:00pm To Jun 22, 2017 - 05:00pm</span>
+                        </div>
                     </div>
-                    <div class="col-md-10">
-                        <span>Jun 22, 2017 - 04:00pm To Jun 22, 2017 - 05:00pm</span>
-                    </div>
-                </div>
 
-                {#<div class="row sect-event-tagged-area">#}
-                {#<div class="col-md-2">#}
-                {#<span class="font20">WHO:</span>#}
-                {#</div>#}
-                {#<div class="col-md-10 sect-view-tags-list-area">#}
-                {#<div class="mb1">#}
-                {#<a href="javascript:void(0)">#}
-                {#<div class="chip">#}
-                {#Denmark Jay Mago (Organizer) - PENDING#}
-                {#</div>#}
-                {#</a>#}
-                {#<ul class="collection mt2">#}
-                {#<li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>#}
-                {#</ul>#}
-                {#</div>#}
-                {#<div class="mb1">#}
-                {#<div class="chip green">#}
-                {#Denmark Jay Mago - GOING#}
-                {#</div>#}
-                {#</div>#}
-                {#<div class="mb1">#}
-                {#<div class="chip orange">#}
-                {#Denmark Jay Mago - NOT GOING#}
-                {#</div>#}
-                {#</div>#}
-                {#</div>#}
-                {#</div>#}
+                    {#INTEGRATE THE FOLLOWING LINES OF CODE INSTEAD#}
+                    <div class="row">
+                        <div class="col-md-2">
+                            <span class="font20">WHO:</span>
+                        </div>
+                        <div class="col-md-10 sect-view-tags-list-area">
+                            <ul>
 
-                {#INTEGRATE THE FOLLOWING LINES OF CODE INSTEAD#}
-                <div class="row">
-                    <div class="col-md-2">
-                        <span class="font20">WHO:</span>
-                    </div>
-                    <div class="col-md-10 sect-view-tags-list-area">
-                        <ul>
-                            <li><a href="#">Denmark Jay Mago - GOING</a></li>
-                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
-                            <li><a href="#">Jarniel Cataluna - GOING</a></li>
-                            <li class="not-going">
-                                <a href="#">Brian Niel Bilog - NOT GOING</a>
-                            </li>
-                            <li><a href="#">Denmark Jay Mago - PENDING</a></li>
-                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -682,8 +677,7 @@
                class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
             <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2"
                style="font-size: 16px;">Edit</a>
-            <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2"
-               style="font-size: 16px;">Cancel Event</a>
+            <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2 btn-ghost red" style="font-size: 16px;">Cancel Event</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -696,11 +690,10 @@
                     Are you sure you want to cancel <span class="txt-mo-cancel-event-name">this event</span>?&nbsp;
                 </h4>
                 <a href="javascript:void(0);"
-                   class="waves-effect waves-light red custombtn btn-flat close-modal-agenda btn-mo-cancel-event">Cancel
-                    Event</a>
+                   class="waves-effect waves-light red custombtn btn-flat close-modal-agenda btn-mo-cancel-event">Confirm</a>
                 &nbsp;&nbsp;&nbsp;
                 <a href="javascript:void(0);"
-                   class="waves-effect waves-light green custombtn btn-flat modal-action modal-close">Retain</a>
+                   class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
             </center>
         </div>
     </div>
@@ -781,15 +774,15 @@
 
 {% block customjs %}
     {% set timelineTemp %}{% spaceless %}
-        <div class="entry">
-            <div class="title">
-                <h3>[DATE]</h3>
-                <p>[TIME]</p>
-            </div>
-            <div class="body">
-                [MESSAGE]
-            </div>
+    <div class="entry [TIMELINE_COLOR]">
+        <div class="title">
+            <h3>[DATE]</h3>
+            <p>[TIME]</p>
         </div>
+        <div class="body">
+            [MESSAGE]
+        </div>
+    </div>
     {% endspaceless %}{% endset %}
 
     <script type="text/javascript">
@@ -815,7 +808,7 @@
         var sectGuestResponse = '.sect-guest-response-area';
         var sectUserAction = '.sect-user-action-area';
         var sectViewStatusArea = '.sect-view-status-area';
-        //        var sectViewTagsListArea = '.sect-view-tags-list-area';
+        var sectViewTagsListArea = '.sect-view-tags-list-area';
         var sectGuestSelect = '.sect-guest-selection-area';
         var sectViewTagsArea = '.sect-event-tagged-area';
         var sectViewOwnerAction = '.sect-view-owner-action-area';
@@ -845,6 +838,14 @@
         var activeEventId = parseInt('{{ app.request.query.get('id') }}');
         var clickedEventId = 0;
         var contentReady = false;
+
+        //pagination
+        $pageSection = $('.-pagination-section');
+        $limit = $pageSection.find('select.-page-limit');
+        $page = $pageSection.find('.-page-number');
+        PAGE = $page.val();
+        LIMIT = $limit.val();
+        TOTAL_PAGES = 0;
     </script>
     <script type="text/javascript">
         bindEvents();
@@ -859,9 +860,23 @@
             });
         }
 
-        function getList() {
-            post($('.noButton'), '{{ path('manage_events') }}', {id: activeEventId > 0 ? activeEventId : null}, function (data) {
+        function getList(reset) {
+            if(reset) {
+                $page.val(1);
+                LIMIT = $limit.val();
+            }
+
+            var data = {
+                id: activeEventId ? activeEventId : null,
+                page: PAGE==1? 0: (parseInt(PAGE))*parseInt(LIMIT)-1,
+                limit: LIMIT
+            };
+            post($('.-list-button-none-exist'), '{{ path('admin_manage_get_events') }}', data, function (data) {
                 $(tbEventList).find('tbody').html(data.list);
+
+                paginate(data.totalEntries, PAGE, LIMIT);
+
+                TOTAL_PAGES = Math.ceil(data.totalEntries/LIMIT);
 
                 if (activeEventId > 0 && !contentReady) {
                     var tr = $('.event-tr[data-id=' + activeEventId + ']');
@@ -967,17 +982,9 @@
         }
 
         function viewEventDetails(el, action) {
-            var tagsViewTemp = '<div class="mb1">' +
-                '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">' +
-                '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">' +
-                '         [NAME]' +
-                '      </div>' +
-                '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">' +
-                '         [STATUS]' +
-                '      </div>[ACTION]' +
-                '   </a> [REASON]'
-            '   </div>';
-            var tagsViewReasonTemp = '<ul class="collection mt3 display-none">' +
+            var tagsViewTemp = '<li><a href="javascript:void(0);" class="[STRIKE] btn-tag-list-expand-reason"><i class="arrow down gray"></i> <span class="color-blue">[NAME] - <span class="[LEGEND_COLOR]">[STATUS]</span></span></a> [REASON]</li>';
+
+            var tagsViewReasonTemp = '<ul class="collection display-none [TIMELINE_COLOR]">' +
                 '      <li class="collection-item">[REASON]</li>' +
                 '   </ul>';
 
@@ -1024,6 +1031,11 @@
             $(txtViewReason).val(el.data('event-tag-reason'));
             $(moViewEventDetails).attr('data-id', data.event_id);
 
+            $(txtViewVenue).closest('.-info').show();
+            if(! removeSpace(data.event_venue)) {
+                $(txtViewVenue).closest('.-info').hide();
+            }
+
             $(chkOrganizerIsGoing).prop('checked', data.is_going);
 
             setPikadayData('set-date', fromEl, data.from);
@@ -1044,6 +1056,7 @@
                 $(txtViewDate).html(fromHoliday + (fromHoliday != toHoliday ? ' to ' + toHoliday : ''));
 
                 headerTitle = 'Holiday';
+                $(sectViewTagsListArea).html('<h6>ALL EMPLOYEES</h6>');
             } else {
                 hideElements([$(sectGuestResponse), $(sectUserAction), $(sectReasonSection)]);
 
@@ -1079,54 +1092,59 @@
 
                 console.log(employees)
 
-                {#$(sectViewTagsListArea).empty();#}
-                {#for (i in tagIds) {#}
-                {#var empData = _.findWhere(employees, {id: parseInt(tagIds[i])});#}
-                {#var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;#}
-                {#var clss = '';#}
-                {#var timelineTmp = '{{ timelineTemp|e('js') }}';#}
-                {#var timeline = '';#}
+                $(sectViewTagsListArea).empty();
+                for (i in tagIds) {
+                    var empData = _.findWhere(employees, {
+                        id: parseInt(tagIds[i])
+                    });
+                    var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;
+                    var clss = 'pending';
+                    var timelineTmp = '{{ timelineTemp|e('js') }}';
+                    var timeline = '';
 
-                {#if (stat == STATUS_APPROVED) {#}
-                {#clss = 'green';#}
-                {#} else if (stat == STATUS_DECLINED) {#}
-                {#clss = 'red';#}
-                {#}#}
-                {#stat = convertStatusToString(stat);#}
+                    if (stat == STATUS_APPROVED) {
+                        clss = 'green';
+                    } else if (stat == STATUS_DECLINED) {
+                        clss = 'red';
+                    }
+                    stat = convertStatusToString(stat);
 
-                {#if (_.size(empData)) {#}
-                {#if (tagHistory[i]) {#}
-                {#for (i2 in tagHistory[i]) {#}
-                {#timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)#}
-                {#.replace('[TIME]', tagHistory[i][i2].time)#}
-                {#.replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name + ' was tagged.' :#}
-                {#('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.' :#}
-                {#('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ? tagHistory[i][i2].name + ' updated status to <b>' + ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'going' : 'not going') + '</b>.' + (tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>' + tagHistory[i][i2].message + '</blockquote></p>' : '') : ''))#}
-                {#);#}
-                {#}#}
-                {#}#}
+                    if (_.size(empData)) {
+                        if (tagHistory[i]) {
+                            for (i2 in tagHistory[i]) {
+                                timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)
+                                    .replace('[TIMELINE_COLOR]', ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'green' : ('{{ constant(CONST~'STATUS_DECLINED') }}' == tagHistory[i][i2].status ? 'red':'gray' )))
+                                    .replace('[TIME]', tagHistory[i][i2].time)
+                                    .replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name + ' was tagged.' :
+                                            ('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.' :
+                                                    ('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ? tagHistory[i][i2].name + ' updated status to <b>' + ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'going' : 'not going') + '</b>.' + (tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>' + tagHistory[i][i2].message + '</blockquote></p>' : '') : ''))
+                                );
+                            }
+                        }
 
-                {#if (timeline.length) {#}
-                {#timeline = '<div class="custom-timeline-1">' + timeline + '</div>';#}
-                {#}#}
+                        if (timeline.length) {
+                            timeline = '<div class="custom-timeline-1">' + timeline + '</div>';
+                        }
 
-                {#var Reason = '';#}
-                {#if (timeline.length || (tagReasons[i] && tagReasons[i].length)) {#}
-                {#if (createdBy == currentEmpId && timeline.length)#}
-                {#Reason = tagsViewReasonTemp.replace('[REASON]', timeline);#}
-                {#else if (createdBy != currentEmpId && tagReasons[i].length)#}
-                {#Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);#}
-                {#}#}
+                        var Reason = '';
+                        if (timeline.length || (tagReasons[i] && tagReasons[i].length)) {
+                            if (createdBy == currentEmpId && timeline.length)
+                                Reason = tagsViewReasonTemp.replace('[REASON]', timeline).replace('[TIMELINE_COLOR]', (stat == 'approved' ? 'timeline-green' : (stat == 'declined' ? 'timeline-red' : 'timeline-gray')));
+                            else if (createdBy != currentEmpId && tagReasons[i].length)
+                                Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);
+                        }
 
-                {#$(sectViewTagsListArea).append(tagsViewTemp#}
-                {#.replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))#}
-                {#.replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))#}
-                {#.replace('[CLASS]', clss)#}
-                {#.replace('[ACTION]', ((timeline.length && createdBy == currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy != currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>' : '')#}
-                {#.replace('[REASON]', Reason)#}
-                {#);#}
-                {#}#}
-                {#}#}
+                        tagsViewTemp = '<ul>'+tagsViewTemp+'</ul>';
+                        $(sectViewTagsListArea).append(tagsViewTemp
+                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))
+                            .replace('[STATUS]', (stat == 'approved' ? '<span class="">GOING</span>' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
+                            .replace('[STRIKE]', (stat == 'approved' ? '' : (stat == 'declined' ? 'strike-red' : '')))
+                            .replace('[LEGEND_COLOR]', (stat == 'approved' ? 'level-2-green-text' : (stat == 'declined' ? 'level-2-red-text' : 'level-2-gray-text')))
+                            .replace('[ACTION]', ((timeline.length && createdBy == currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy != currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>' : '')
+                            .replace('[REASON]', Reason)
+                        );
+                    }
+                }
 
                 $(sectViewStatusArea).find('a').text(statusName);
                 showElements([$(sectViewTagsArea), $(sectViewStatusArea)]);
@@ -1238,9 +1256,11 @@
 
             DOC.on('click', btnTagExpandReason, function () {
                 var reason = $(this).parent().find('.collection');
-                if (reason.is(':visible'))
+                $(this).closest('a').find('.arrow').removeClass('down').addClass('up');
+                if (reason.is(':visible')) {
                     reason.hide();
-                else
+                    $(this).closest('a').find('.arrow').addClass('down').removeClass('up');
+                } else
                     reason.show();
             });
 
@@ -1328,14 +1348,7 @@
                 }, 200);
             });
 
-            initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR - 2, 12, 31), new Date(CURRENT_YEAR + 20, 12, 31), function () {
-//                setTimeout( function() {
-//                    var val = $('#'+txtEventHolidayTo).val();
-//                    var pd = setPikadayData('end-range', txtEventHolidayFrom, new Date(val));
-//
-//                    if(!removeSpace($('#'+txtEventHolidayFrom).val()).length) pd.show();
-//                }, 200);
-            });
+            initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR - 2, 12, 31), new Date(CURRENT_YEAR + 20, 12, 31), function () { });
 
             var param = {showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
             var fromStart = new Date(CURRENT_YEAR, moment().format('M') - 1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
@@ -1366,6 +1379,26 @@
 //                    //if(!removeSpace(valfrom).length) pd.show();
 //                }, 200);
             }, param);
+
+            //pagination
+            $pageSection.find('.next').click( function() {
+                PAGE++;
+                getList();
+            });
+            $pageSection.find('.prev').click( function() {
+                PAGE--;
+                getList();
+            });
+            $limit.change( function() {
+                getList(1);
+            });
+            $pageSection.keyup(function(e){
+                var code = e.which; // recommended to use e.which, it's normalized across browsers
+                if(code==13)e.preventDefault();
+                if(code==32||code==13||code==188||code==186){
+                    $("#displaysomething").html($(this).val());
+                } // missing closing if brace
+            });
         }
     </script>
 {% endblock %}
