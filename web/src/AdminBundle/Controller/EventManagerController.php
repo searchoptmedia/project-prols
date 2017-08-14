@@ -216,82 +216,6 @@ class EventManagerController extends Controller
         $user = $this->getUser();
         $id = $user->getId();
 
-        if($method=='POST') {
-            $params = $request->request->all();
-//            $getEvents = ListEventsPeer::getAllEvents($id);
-            $getEvents = ListEventsQuery::_findAll(array(
-                'tag_ids' => array(
-                    'data' => $id
-                ),
-                'event_type' => array(
-                    'data' => C::EVENT_TYPE_HOLIDAY, '_or' => true
-                ),
-                'created_by' => array(
-                    'data' => $id, '_or' => true
-                ),
-                'status' => array(
-                    'data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL
-                ),
-                'order' => array(
-                    'data' => 'date_created', 'criteria' => \Criteria::DESC
-                )
-            ));
-            $activeEvent = null;
-            $response = array();
-
-            if(!empty($params['id'])) {
-                $activeEvent = ListEventsQuery::_findById($params['id']);
-
-                if($activeEvent && $activeEvent->getStatus()==C::STATUS_INACTIVE)
-                    $activeEvent = null;
-                else {
-                    $etags = $activeEvent->getEventTaggedPersonss();
-                    if($etags) {
-                        foreach($etags as $k2=>$et) {
-                            $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
-                            $activeEvent->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
-                                'TagID' => array(
-                                    'value' => $et->getId()
-                                ),
-                                'order' => array(
-                                    'value' => 'date_created',
-                                    'criteria' => \Criteria::DESC
-                                )
-                            ));
-                            $activeEvent->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
-                        }
-                    }
-                }
-            }
-
-            foreach($getEvents as $k=>$e) {
-                $etags = $e->getEventTaggedPersonss();
-
-                if($etags) {
-                    foreach($etags as $k2=>$et) {
-                        $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
-                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
-                            'TagID' => array(
-                                'value' => $et->getId()
-                            ),
-                            'order' => array(
-                                'value' => 'date_created',
-                                'criteria' => \Criteria::DESC
-                            )
-                        ));
-                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
-                    }
-                }
-            }
-
-            $response['list'] = $this->renderView('AdminBundle:EventManager:ajax-list.html.twig', array(
-                'allEvents' => $getEvents,
-                'event' => $activeEvent
-            ));
-
-            return new JsonResponse($response);
-        }
-
         $timedata = EmpTimePeer::getTime($id);
 
         $currenttimein = 0;
@@ -366,6 +290,89 @@ class EventManagerController extends Controller
             'eventTypes' => $eventTypes,
             'allacc' => $allacc
         ));
+    }
+
+    function getListAction(Request $request)
+    {
+        $method = $request->getMethod();
+
+        if($method=='POST') {
+            $params = $request->request->all();
+            $user = $this->getUser();
+            $id = $user->getId();
+
+            $entriesData = array(
+                'tag_ids' => array( 'data' => $id ),
+                'event_type' => array( 'data' => C::EVENT_TYPE_HOLIDAY, '_or' => true ),
+                'created_by' => array( 'data' => $id, '_or' => true ),
+                'status' => array( 'data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL ),
+                'order' => array( 'data' => 'date_created', 'criteria' => \Criteria::DESC ),
+                'page' => $params['page'],
+                'limit' => $params['limit'],
+            );
+
+            $getEvents = ListEventsQuery::_findAll($entriesData);
+
+            unset($entriesData['page']);
+            $totalEntries = ListEventsQuery::_findAll($entriesData, true);
+
+            $activeEvent = null;
+
+            if(!empty($params['id'])) {
+                $activeEvent = ListEventsQuery::_findById($params['id']);
+
+                if($activeEvent && $activeEvent->getStatus()==C::STATUS_INACTIVE)
+                    $activeEvent = null;
+                else {
+                    $etags = $activeEvent->getEventTaggedPersonss();
+                    if($etags) {
+                        foreach($etags as $k2=>$et) {
+                            $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
+                            $activeEvent->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
+                                'TagID' => array(
+                                    'value' => $et->getId()
+                                ),
+                                'order' => array(
+                                    'value' => 'date_created',
+                                    'criteria' => \Criteria::DESC
+                                )
+                            ));
+                            $activeEvent->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
+                        }
+                    }
+                }
+            }
+
+            foreach($getEvents as $k=>$e) {
+                $etags = $e->getEventTaggedPersonss();
+
+                if($etags) {
+                    foreach($etags as $k2=>$et) {
+                        $profile = EmpProfileQuery::_findByAccId($et->getEmpId());
+                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagHistory = EventTagHistoryQuery::_find(array(
+                            'TagID' => array(
+                                'value' => $et->getId()
+                            ),
+                            'order' => array(
+                                'value' => 'date_created',
+                                'criteria' => \Criteria::DESC
+                            )
+                        ));
+                        $getEvents[$k]->getEventTaggedPersonss()[$k2]->tagName = trim($profile->getFname().' '.$profile->getLname());
+                    }
+                }
+            }
+
+            $response = array(
+                'list' => $this->renderView('AdminBundle:EventManager:ajax-list.html.twig', array(
+                    'allEvents' => $getEvents,
+                    'event' => $activeEvent
+                )),
+                'totalEntries' => $totalEntries
+            );
+
+            return new JsonResponse($response);
+        }
     }
 
     public function updateTagStatusAction(Request $request)

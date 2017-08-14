@@ -161,9 +161,13 @@ admin_employee_leave_absences_report:
     path: /employee/leave-absences/report
     defaults: { _controller:AdminBundle:EmployeeReport:generateLeaveAbsencesReport }
 
-manage_events:
+admin_manage_events:
     path: /events
     defaults: { _controller: AdminBundle:EventManager:list }
+
+admin_manage_get_events:
+    path: /get/events
+    defaults: { _controller: AdminBundle:EventManager:getList }
 
 manage_event_add:
     path: /event/save

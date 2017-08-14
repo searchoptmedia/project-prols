@@ -95,7 +95,6 @@
 <script src="{{asset('prols2/js/materialize.js')}}"></script>
 <script src="{{asset('prols2/js/underscore.js')}}"></script>
 <script src="{{asset('prols2/js/script.js')}}"></script>
-<script type="text/javascript" src="{{ asset('js/script-2.js') }}"></script>
 <script src="{{ asset('prols2/js/select2.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('prols2/js/plugins/moment.min.js')}}"></script>
 <script type="text/javascript" src="{{asset('prols2/js/plugins/fullcalendar/fullcalendar.min.js')}}"></script>
@@ -115,7 +114,7 @@
     {% set indexPath =  path('admin_homepage') %}
     {% set profilePath = path('profile_page') %}
     {% set managePath = path('manage_employee') %}
-    {% set manageEventPath = path('manage_events') %}
+    {% set manageEventPath = path('admin_manage_events') %}
     {% set timeLogPath = path('time_logs_page') %}
     {% set viewRequestPath = path('view_request') %}
 
@@ -327,19 +326,7 @@
     }
 
     function initWidget() {
-        {#if((isSameDay == '' || isSameDay == 'true') && '{{ isTimeoutAlready }}' != 'true') {#}
-        {#toggleTimeWidget('show');#}
-
-        {#} else if(isSameDay == '' && isTimeout == '') {#}
-        {#toggleTimeInModal('show');#}
-        {#}#}
-
-        {#if('{{ isTimeoutAlready }}' == 'true'){#}
-        {#toggleTimeWidget('hide');#}
-        {#}#}
-
         if(timeLogCase == 'no-record') {
-
             toggleTimeInModal('show');
 
         } else if(timeLogCase == 'timed-in') {
@@ -367,21 +354,6 @@
     });
     $('#leavetype').material_select();
     $('.caret').hide();
-    {#$.post( "{{ path('check_timein') }}", {}, function(data) {#}
-
-    {#}).always(function(data) {#}
-    {#console.log(data)#}
-    {#var res = parseInt(data);#}
-    {#if(res == 1) {#}
-    {#console.log('ok')#}
-    {#$('.time-in-container').hide();#}
-    {#$('.btn-timeout').show();#}
-    {#$('.timechip').show();#}
-    {#}else{#}
-    {#$('.time-in-container').show();#}
-    {#$('.btn-timeout').hide();#}
-    {#}#}
-    {#});#}
 
     var pass = '';
 
