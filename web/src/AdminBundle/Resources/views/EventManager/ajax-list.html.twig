@@ -74,16 +74,16 @@
                 {% for tag in event.getEventTaggedPersonss %}
                     {% if(app.user.id==tag.empid) %}
                         {% if tag.status==constant(CONST~'STATUS_PENDING') %}
-                            <div class="event-status pending">Pending</div>
+                            Pending
                         {% elseif tag.status==constant(CONST~'STATUS_APPROVED') %}
-                            <div class="event-status approved">Going</div>
+                            Going
                         {% elseif tag.status==constant(CONST~'STATUS_DECLINED') %}
-                            <div class="event-status declined">Not Going</div>
+                            Not Going
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             {% else %}
-                <div class="event-status created">Created</div>
+                Created
             {% endif %}
         </td>
         <td class="event-desc"

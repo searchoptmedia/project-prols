@@ -5,90 +5,282 @@
 
 {% block css %}
     <style>
-    .select2-results__option[aria-selected=true] {
-        display: none;
-    }
-    .custom-timeline-1 {
-        width: 100%;
-        max-width: 800px;
-        background: #fff;
-        padding: 30px 10px;
-        position: relative;
-    }
-    .custom-timeline-1:before {
-        content: '';
-        position: absolute;
-        top: 0px;
-        left: calc(33% + 15px);
-        bottom: 0px;
-        width: 4px;
-        background: #ddd;
-    }
-    .custom-timeline-1:after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+        .select2-results__option[aria-selected=true] {
+            display: none;
+        }
 
-    .custom-timeline-1 .entry {
-        clear: both;
-        text-align: left;
-        position: relative;
-    }
-    .custom-timeline-1 .entry .title {
-        margin-bottom: .5em;
-        float: left;
-        width: 33%;
-        padding-right: 30px;
-        text-align: right;
-        position: relative;
-    }
-    .custom-timeline-1 .entry .title:before {
-        content: '';
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        border: 6px solid salmon;
-        background-color: #fff;
-        border-radius: 100%;
-        top: 15%;
-        right: -20px;
-        z-index: 99;
-    }
-    .custom-timeline-1 .entry .title h3 {
-        margin: 0;
-        font-size: 90%;
-    }
-    .custom-timeline-1 .entry .title p {
-        margin: 0;
-        font-size: 80%;
-    }
-    .custom-timeline-1 .entry .body {
-        margin: 0 0 1em;
-        float: right;
-        width: 66%;
-        padding-left: 30px;
-    }
-    .custom-timeline-1 .entry .body p {
-        line-height: 1.4em;
-    }
-    .custom-timeline-1 .entry .body p:first-child {
-        margin-top: 0;
-        font-weight: 400;
-    }
-    .custom-timeline-1 .entry .body ul {
-        color: #aaa;
-        padding-left: 0;
-        list-style-type: none;
-    }
-    .custom-timeline-1 .entry .body ul li:before {
-        content: "–";
-        margin-right: .5em;
-    }
-    .event-status {
-        padding: 3px 0px;
-        border-radius: 100px;
-    }
+        .custom-timeline-1 {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            padding: 30px 10px;
+            position: relative;
+        }
+
+        .custom-timeline-1:before {
+            content: '';
+            position: absolute;
+            top: 0px;
+            left: calc(33% + 15px);
+            bottom: 0px;
+            width: 4px;
+            background: #ddd;
+        }
+
+        .custom-timeline-1:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .custom-timeline-1 .entry {
+            clear: both;
+            text-align: left;
+            position: relative;
+        }
+
+        .custom-timeline-1 .entry .title {
+            margin-bottom: .5em;
+            float: left;
+            width: 33%;
+            padding-right: 30px;
+            text-align: right;
+            position: relative;
+        }
+
+        .custom-timeline-1 .entry .title:before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border: 6px solid salmon;
+            background-color: #fff;
+            border-radius: 100%;
+            top: 15%;
+            right: -20px;
+            z-index: 99;
+        }
+
+        .custom-timeline-1 .entry .title h3 {
+            margin: 0;
+            font-size: 90%;
+        }
+
+        .custom-timeline-1 .entry .title p {
+            margin: 0;
+            font-size: 80%;
+        }
+
+        .custom-timeline-1 .entry .body {
+            margin: 0 0 1em;
+            float: right;
+            width: 66%;
+            padding-left: 30px;
+        }
+
+        .custom-timeline-1 .entry .body p {
+            line-height: 1.4em;
+        }
+
+        .custom-timeline-1 .entry .body p:first-child {
+            margin-top: 0;
+            font-weight: 400;
+        }
+
+        .custom-timeline-1 .entry .body ul {
+            color: #aaa;
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .custom-timeline-1 .entry .body ul li:before {
+            content: "–";
+            margin-right: .5em;
+        }
+
+        .event-status {
+            padding: 3px 0px;
+            border-radius: 100px;
+        }
+
+        /*EDIT STARTS HERE*/
+
+        .arrow {
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+            margin: 3px;
+        }
+
+        .up {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
+
+        .down {
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+        }
+
+        .search {
+            width: 100%;
+            position: relative;
+        }
+
+        .search-term {
+            float: left;
+            width: 100%;
+            border: 3px solid #ffffff;
+            padding: 5px;
+            height: 20px;
+            border-radius: 5px;
+            outline: none;
+            color: #ffffff;
+        }
+
+        .search-term:focus {
+            color: #ffffff;
+            background: rgba(225, 225, 225, 0.11);
+        }
+
+        .search-button {
+            position: absolute;
+            right: 45px;
+            width: 40px;
+            height: 36px;
+            border: 1px solid #ffffff;
+            background: #ff9800;
+            text-align: center;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .advanced-search-button {
+            position: absolute;
+            right: 0px;
+            width: 40px;
+            height: 36px;
+            border: 1px solid #ffffff;
+            background: #ff9800;
+            text-align: center;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .wrap {
+            width: 30%;
+            position: absolute;
+            top: 68%;
+            left: 65%;
+            float: right;
+            transform: translate(-50%, -50%);
+        }
+
+        .pagination {
+            display: inline-block;
+            padding-left: 0;
+            margin: 20px 50px 0px 0px;
+            border-radius: 4px;
+            float: right;
+        }
+
+        .current {
+            background-color: #039be5;
+            font-family: "Century Gothic Bold";
+            border: 1px solid white;
+            color: #ffffff;
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        .pagination > * {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 2px;
+            line-height: 30px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .next {
+            width: auto;
+            padding: 0 8px;
+            border: none;
+        }
+
+        .prev {
+            width: auto;
+            padding: 0 8px;
+            border: none;
+        }
+
+        .news a {
+            color: #E11C24;
+        }
+
+        .pagination a {
+            color: #000000;
+            border: 1px solid #000000;
+            background: #039be5;
+            color: #ffffff;
+        }
+
+        .event-management-select {
+            display: inline-block;
+            width: 35%;
+        }
+
+        .event-management-text {
+            display: inline-block;
+            width: 35% !important;
+            border: 1px solid #000000 !important;
+            padding: 5px !important;
+        }
+
+        .select-row-label {
+            display: inline-block;
+        }
+
+        .management-row-selector {
+            margin: 10px 0px 0px 50px;
+            display: inline-block;
+            width: 20%;
+            float: right;
+        }
+
+        .select-page-label {
+            display: inline-block;
+        }
+
+        .management-page-selector {
+            margin: 10px 0px 0px 0px;
+            display: inline-block;
+            width: 10%;
+            float: right;
+
+        }
+
+        .not-going {
+            text-decoration: line-through;
+        }
+
+        .btn-view-event {
+            background: #ff9800;
+        }
+
+        .btn-view-event:hover {
+            background: #039be5;
+        }
+
+        .table-header-link {
+            color: #000;
+        }
     </style>
 {% endblock %}
 
@@ -103,38 +295,94 @@
                                             class="material-icons res-menu">reorder</i></a></div>
                             <div class="top-nav-vl">
                                 <h3>Events List</h3>
-                                <a class="btn amber btn-add btn-open-create-modal  btn-select1" style="color: white; margin-right: 5px;">Create Event</a>
+                                <div class="wrap">
+                                    <div class="search">
+                                        <input type="text" class="search-term"
+                                               placeholder="What are you looking for?">
+                                        <button type="submit" class="search-button">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                        <button type="submit" class="advanced-search-button">
+                                            <i class="fa fa-cog"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <a class="btn amber btn-add btn-open-create-modal  btn-select1"
+                                   style="color: white; margin-right: 5px;">Create Event</a>
                             </div>
                         </div>
 
-                        <div class = "top-nav">
+                        <div class="top-nav">
                             {#<!-- Dropdown Structure -->#}
                             {#<ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">#}
-                                {#<li><a href="#!" id="allbtn">All</a></li>#}
-                                {#<li class="divider"></li>#}
-                                {#&#123;&#35;<li><a href="#!" id="holidaybtn">Holiday</a></li>&#35;&#125;#}
-                                {#&#123;&#35;<li class="divider"></li>&#35;&#125;#}
-                                {#<li><a href="#!" id="meetingbtn">Meeting</a></li>#}
-                                {#<li class="divider"></li>#}
-                                {#<li><a href="#!" id="companyeventbtn">Company Event</a></li>#}
-                                {#<li class="divider"></li>#}
-                                {#<li><a href="#!" id="othersbtn">Other Events</a></li>#}
-                                {#<li class="divider"></li>#}
+                            {#<li><a href="#!" id="allbtn">All</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#&#123;&#35;<li><a href="#!" id="holidaybtn">Holiday</a></li>&#35;&#125;#}
+                            {#&#123;&#35;<li class="divider"></li>&#35;&#125;#}
+                            {#<li><a href="#!" id="meetingbtn">Meeting</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#<li><a href="#!" id="companyeventbtn">Company Event</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#<li><a href="#!" id="othersbtn">Other Events</a></li>#}
+                            {#<li class="divider"></li>#}
                             {#</ul>#}
                             <!-- End of DS -->
                         </div>
 
-                        <div class="col-md-12 content manageemployees-content" style="display: block; min-height: 700px;">
-                            <div class="row" >
+                        <div class="col-md-12 content manageemployees-content"
+                             style="display: block; min-height: 700px;">
+                            <div class="row">
                                 <table class="bordered highlight tb-emp-list" style="width: 97%; margin: 0 auto;">
                                     <thead>
                                     <tr>
-                                        <th>EVENT NAME</th>
-                                        <th>TYPE</th>
-                                        <th>FROM</th>
-                                        <th>TO</th>
-                                        <th>ROLE</th>
-                                        <th>STATUS</th>
+                                        <th>
+                                            <a class="table-header-link" href="#">EVENT NAME
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="table-header-link" href="#">TYPE
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="table-header-link" href="#">FROM
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="table-header-link" href="#">TO
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="table-header-link" href="#">ROLE
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th>
+                                            <a class="table-header-link" href="#">STATUS
+                                                <i class="arrow down">
+                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
+                                                    {#<i class="arrow up">#}
+                                                </i>
+                                            </a>
+                                        </th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -143,6 +391,33 @@
 
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="row">
+
+                                <div class="pagination">
+                                    <a href="#" class="prev">← Previous</a>
+                                    <a class="next" href="#">Next →</a>
+                                </div>
+                                <div class="management-page-selector">
+                                    <p class="select-page-label">Page: </p>
+                                    <input type="text" name="pageInput" class="event-management-text">
+                                </div>
+                                <div class="management-row-selector">
+                                    <p class="select-row-label">Show Rows: </p>
+                                    <select class="event-management-select">
+                                        <option value="">All</option>
+                                        <option value="row-5">5</option>
+                                        <option value="row-10">10</option>
+                                        <option value="row-20">20</option>
+                                        <option value="row-50">50</option>
+                                        <option value="row-50">100</option>
+                                        <option value="row-50">200</option>
+                                        <option value="row-50">400</option>
+                                        <option value="row-50">800</option>
+                                        <option value="row-50">1000</option>
+                                        <option value="row-50">2000</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -163,8 +438,9 @@
                     <div class="row">
                         <div class="col-md-5">
                             <label for="event_type_modal">Event Type</label>
-                            <select name="event_type" id="event_type_modal" class="browser-default event-type cmb-select-event-type">
-                                <option value="" disabled selected >Select Event Type</option>
+                            <select name="event_type" id="event_type_modal"
+                                    class="browser-default event-type cmb-select-event-type">
+                                <option value="" disabled selected>Select Event Type</option>
                                 {% for eventtype in eventTypes %}
                                     {% if app.user.role==constant(CONST~'ROLE_ADMIN') or (constant(CONST~'EVENT_TYPE_MEETING')==eventtype.id and app.user.role!=constant(CONST~'ROLE_ADMIN')) %}
                                         <option value="{{ eventtype.id }}">{{ eventtype.name }}</option>
@@ -180,7 +456,8 @@
 
                         <div class="col-md-12" id="desc-row">
                             <label for="event_desc_modal">Event Description</label>
-                            <textarea id="event_desc_modal" class="materialize-textarea txt-event-description" required autocapitalize></textarea>
+                            <textarea id="event_desc_modal" class="materialize-textarea txt-event-description" required
+                                      autocapitalize></textarea>
                         </div>
 
                         <div class="col-md-12">
@@ -190,11 +467,19 @@
 
                         <!-- meeting field -->
                         <div class="meeting-request-section sect-event-tag-type display-none">
-                            <div class = "col-md-12" id="guest-row">
-                                <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a href="javascript:void(0);" class="link-add-tags"  data-action="remove">Deselect All</a></span></label><br>
-                                <select class="select-emp-tag" multiple="multiple" style="width: 100%;" id="tag_employees">
+                            <div class="col-md-12" id="guest-row">
+                                <label for="tag_employees">Guests <span class="ml2 sect-guest-selection-area"><a
+                                                href="javascript:void(0);" class="link-add-tags" data-action="add">Select All</a> | <a
+                                                href="javascript:void(0);" class="link-add-tags" data-action="remove">Deselect All</a></span></label><br>
+                                <select class="select-emp-tag" multiple="multiple" style="width: 100%;"
+                                        id="tag_employees">
                                     {% for acc in allacc %}
-                                        <option name="select2[]" value="{{ acc.email }}" data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}" data-employee-id="{{ acc.id }}" {%  if acc.id==app.user.id %}disabled{% endif %}> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }} &lt;{{ acc.email }}&gt;</option>
+                                        <option name="select2[]" value="{{ acc.email }}"
+                                                data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}"
+                                                data-employee-id="{{ acc.id }}"
+                                                {% if acc.id==app.user.id %}disabled{% endif %}> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}
+                                            &lt;{{ acc.email }}&gt;
+                                        </option>
                                     {% endfor %}
                                 </select><br><br>
                             </div>
@@ -204,17 +489,21 @@
                                     I am going
                                 </label>
                             </div>
-                            <div class="col-md-12" id="from-row">
-                                <label for="event_going_reason_modal">Add Notes (*required if not going)</label>
-                                <textarea id="event_going_reason_modal" class="materialize-textarea txt-event-going-notes" required autocapitalize></textarea>
-                            </div>
+                            {#<div class="col-md-12" id="from-row">#}
+                            {#<label for="event_going_reason_modal">Add Notes (*required if not going)</label>#}
+                            {#<textarea id="event_going_reason_modal"#}
+                            {#class="materialize-textarea txt-event-going-notes" required#}
+                            {#autocapitalize></textarea>#}
+                            {#</div>#}
                             <div class="col-md-6" id="from-row">
                                 <label>From</label><br>
-                                <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
+                                <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
+                                       id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
                             </div>
                             <div class="col-md-6" id="to-row">
                                 <label>To</label><br>
-                                <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
+                                <input type="text" name="to-event-date" readonly class="to-event-date"
+                                       id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
                             </div>
                         </div>
 
@@ -227,7 +516,8 @@
                             </div>
                             <div class="col-md-6" id="to-row-holiday">
                                 <label>To</label><br>
-                                <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_to_event_holiday" placeholder="mm/dd/yyyy">
+                                <input type="text" name="to-event-date" readonly class="to-event-date"
+                                       id="txt_to_event_holiday" placeholder="mm/dd/yyyy">
                             </div>
                         </div>
 
@@ -235,19 +525,27 @@
                             <p class="notify-email-event">
                                 <input type="checkbox" id="chk-notify-email" value="1"/>
                                 <label for="chk-notify-email" class="black-text">
-                                    Send Invitation on Employees via Email? <a href="javascript:void(0)" class="btn-create-show-email-about">Details</a>
+                                    Send Invitation on Employees via Email? <a href="javascript:void(0)"
+                                                                               class="btn-create-show-email-about">Details</a>
                                 </label>
 
-                                <div class="row display-none email-o-about">
-                                    <div class="col-md-12">
-                                        <strong>If this is enabled?</strong>
-                                        <ul class="collection">
-                                            <li class="collection-item"><input type="checkbox" id="chk-notify-email" value="1"/> Email will be resent to the employees with pending status.</li>
-                                            <li class="collection-item">If there are changes, employees will be notified with the details.</li>
-                                            <li class="collection-item">If there are new tagged employees, an invitation will be sent.</li>
-                                        </ul>
-                                    </div>
+                            <div class="row display-none email-o-about">
+                                <div class="col-md-12">
+                                    <strong>If this is enabled?</strong>
+                                    <ul class="collection">
+                                        <li class="collection-item"><input type="checkbox" id="chk-notify-email"
+                                                                           value="1"/> Email will be resent to the
+                                            employees with pending status.
+                                        </li>
+                                        <li class="collection-item">If there are changes, employees will be notified
+                                            with the details.
+                                        </li>
+                                        <li class="collection-item">If there are new tagged employees, an invitation
+                                            will be sent.
+                                        </li>
+                                    </ul>
                                 </div>
+                            </div>
                             </p>
                             <p class="notify-sms-event">
                                 <input type="checkbox" id="notify-sms" value="1"/>
@@ -277,17 +575,21 @@
     <div id="mo-event-view-details" class="modal modal-fixed-footer overflow-hidden">
         <h4 class="mo-header"><span class="mo-header-title">Meeting</span>
             <div class="pull-right sect-guest-response-area display-none">
-                <a class="waves-effect btn-guest-response waves-light btn green font16" data-status="{{ constant(CONST~'STATUS_APPROVED') }}" >Going</a>
-                <a class="waves-effect btn-guest-response waves-light btn amber font16"  data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>
+                <a class="waves-effect btn-guest-response waves-light btn green font16"
+                   data-status="{{ constant(CONST~'STATUS_APPROVED') }}">Going</a>
+                <a class="waves-effect btn-guest-response waves-light btn amber font16"
+                   data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>
             </div>
             <div class="pull-right sect-user-action-area display-none">
                 <a class="waves-effect waves-light btn amber btn-show-consider-section font16">Reconsider</a>
             </div>
 
             <div class="form-group display-none sect-reason-area mt1 pt2 pb2 pr2 pl2" style="background: #fff; ">
-                <label style="text-shadow: 0px 0px 0px;">ADD COMMENT (<span class="span-reason-status">I'm not going</span>)</label>
+                <label style="text-shadow: 0px 0px 0px;">ADD COMMENT (<span
+                            class="span-reason-status">I'm not going</span>)</label>
                 <textarea style="color: #555;!important" class="materialize-textarea txt-view-reason"></textarea>
-                <a class="waves-effect btn-guest-response-save waves-light btn amber font16" data-loading-text="Saving..." data-status="">Save</a>
+                <a class="waves-effect btn-guest-response-save waves-light btn amber font16"
+                   data-loading-text="Saving..." data-status="">Save</a>
             </div>
         </h4>
         <div class="modal-content">
@@ -298,7 +600,8 @@
                     </div>
                     <div class="col-md-10">
                         <h6 class="font28 p-view-title mt0">Glide Session With Mike</h6>
-                        <p class="p-view-desc">This is the description of this event. This is the description of this event. This is the description of this event. This is the description of this event.</p>
+                        <span class="p-view-desc">This is the description of this event. This is the description of this
+                            event. This is the description of this event. This is the description of this event.</span>
                     </div>
                 </div>
 
@@ -307,7 +610,7 @@
                         <span class="font20 pt1">WHERE:</span>
                     </div>
                     <div class="col-md-10">
-                        <h6 class="font22 p-view-venue mt0">Propelrr Conference</h6>
+                        <span>Propelrr Conference</span>
                     </div>
                 </div>
 
@@ -316,55 +619,71 @@
                         <span class="font20">WHEN:</span>
                     </div>
                     <div class="col-md-10">
-                        <h6 class="font22 p-view-date mt0">Jun 22, 2017 at 04:00pm to <br>Jun 22, 2017 at 05:00pm</h6>
+                        <span>Jun 22, 2017 - 04:00pm To Jun 22, 2017 - 05:00pm</span>
                     </div>
                 </div>
 
-                <div class="row sect-event-tagged-area">
+                {#<div class="row sect-event-tagged-area">#}
+                {#<div class="col-md-2">#}
+                {#<span class="font20">WHO:</span>#}
+                {#</div>#}
+                {#<div class="col-md-10 sect-view-tags-list-area">#}
+                {#<div class="mb1">#}
+                {#<a href="javascript:void(0)">#}
+                {#<div class="chip">#}
+                {#Denmark Jay Mago (Organizer) - PENDING#}
+                {#</div>#}
+                {#</a>#}
+                {#<ul class="collection mt2">#}
+                {#<li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>#}
+                {#</ul>#}
+                {#</div>#}
+                {#<div class="mb1">#}
+                {#<div class="chip green">#}
+                {#Denmark Jay Mago - GOING#}
+                {#</div>#}
+                {#</div>#}
+                {#<div class="mb1">#}
+                {#<div class="chip orange">#}
+                {#Denmark Jay Mago - NOT GOING#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+
+                {#INTEGRATE THE FOLLOWING LINES OF CODE INSTEAD#}
+                <div class="row">
                     <div class="col-md-2">
                         <span class="font20">WHO:</span>
                     </div>
                     <div class="col-md-10 sect-view-tags-list-area">
-                        <div class="mb1">
-                            <a href="javascript:void(0)">
-                                <div class="chip">
-                                    Denmark Jay Mago (Organizer) - PENDING
-                                </div>
-                            </a>
-                            <ul class="collection mt2">
-                                <li class="collection-item">I will be at the office by 9:00pm. So I might be late.</li>
-                            </ul>
-                        </div>
-                        <div class="mb1">
-                            <div class="chip green">
-                                Denmark Jay Mago - GOING
-                            </div>
-                        </div>
-                        <div class="mb1">
-                            <div class="chip orange">
-                                Denmark Jay Mago - NOT GOING
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-
+                        <ul>
+                            <li><a href="#">Denmark Jay Mago - GOING</a></li>
+                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
+                            <li><a href="#">Jarniel Cataluna - GOING</a></li>
+                            <li class="not-going">
+                                <a href="#">Brian Niel Bilog - NOT GOING</a>
+                            </li>
+                            <li><a href="#">Denmark Jay Mago - PENDING</a></li>
+                            <li><a href="#">Vino Angelo Bolisay - GOING</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer" style="z-index: 111;">
-            <div style="margin-right:5px; float:left;">
+            <div style="margin-left:10px; float:left;">
                 <div class="pull-left sect-view-status-area display-none">
                     Your current status is: <a class="" style="font-size: 16px;">Pending</a>
                 </div>
             </div>
-            <a href="javascript:void(0);" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
-            <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Edit</a>
-            <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2" style="font-size: 16px;">Cancel Event</a>
+            <a href="javascript:void(0);"
+               class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
+            <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2"
+               style="font-size: 16px;">Edit</a>
+            <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2"
+               style="font-size: 16px;">Cancel Event</a>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -376,10 +695,85 @@
                 <h4 class="modal-delete-header">
                     Are you sure you want to cancel <span class="txt-mo-cancel-event-name">this event</span>?&nbsp;
                 </h4>
-                <a href="javascript:void(0);" class="waves-effect waves-light red custombtn btn-flat close-modal-agenda btn-mo-cancel-event">Cancel Event</a>
+                <a href="javascript:void(0);"
+                   class="waves-effect waves-light red custombtn btn-flat close-modal-agenda btn-mo-cancel-event">Cancel
+                    Event</a>
                 &nbsp;&nbsp;&nbsp;
-                <a href="javascript:void(0);" class="waves-effect waves-light green custombtn btn-flat modal-action modal-close">Retain</a>
+                <a href="javascript:void(0);"
+                   class="waves-effect waves-light green custombtn btn-flat modal-action modal-close">Retain</a>
             </center>
+        </div>
+    </div>
+    <!-----------------------END OF MODAL -------------------------->
+    <!-----------------------ADVANCED SEARCH MODAL -------------------------->
+    <div id="mo-advanced-search" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Advanced Search</h4>
+        <div class="modal-content">
+            <div class="event-form-cont mo-body">
+                <form>
+                    <input type="hidden" class="txt-event-id">
+                    <div class="row">
+
+                        <div class="col-md-7">
+                            <label for="event_name_modal">Event Name</label>
+                            <input type="text" name="event-name" class="event-name txt-event-name" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="event_type_modal">Event Type</label>
+                            <select name="event_type" id="event_type_modal"
+                                    class="browser-default event-type cmb-select-event-type">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="">All</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6" id="from-row">
+                            <label>From</label><br>
+                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
+                                   id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
+                        </div>
+                        <div class="col-md-6" id="to-row">
+                            <label>To</label><br>
+                            <input type="text" name="to-event-date" readonly class="to-event-date"
+                                   id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="role_modal">Role</label>
+                            <select name="event_type" id="role_modal"
+                                    class="browser-default event-role cmb-select-event-role">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label for="event_status_modal">Status</label>
+                            <select name="event_status" id="event_status_modal"
+                                    class="browser-default event-status cmb-select-event-status">
+                                <option value="" disabled selected>Select Event Type</option>
+                                <option value="All">All</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <br>
+        </div>
+        <input type="hidden" id="event_id">
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Cancel</a>
+            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Search</a>
+            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
+                Required Fields!
+            </div>
+        </div>
+        <input type="hidden" id="event_id">
+        <div class="modal-footer">
+            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
+            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Create</a>
+            {#<a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>#}
+            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
+                Required Fields!
+            </div>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
@@ -387,15 +781,15 @@
 
 {% block customjs %}
     {% set timelineTemp %}{% spaceless %}
-    <div class="entry">
-        <div class="title">
-            <h3>[DATE]</h3>
-            <p>[TIME]</p>
+        <div class="entry">
+            <div class="title">
+                <h3>[DATE]</h3>
+                <p>[TIME]</p>
+            </div>
+            <div class="body">
+                [MESSAGE]
+            </div>
         </div>
-        <div class="body">
-            [MESSAGE]
-        </div>
-    </div>
     {% endspaceless %}{% endset %}
 
     <script type="text/javascript">
@@ -407,6 +801,7 @@
         var btnOpenCreateModal = '.btn-open-create-modal';
         var btnCreateEvent = '.btn-create-event';
         var btnOpenEvent = '.btn-view-event';
+        var btnAdvancedSearch = '#advanced-search-button';
         var btnTagExpandReason = '.btn-tag-list-expand-reason';
         var btnViewOpenEditModal = '.btn-view-open-edit-event-mo';
         var btnGuestResponse = '.btn-guest-response';
@@ -420,7 +815,7 @@
         var sectGuestResponse = '.sect-guest-response-area';
         var sectUserAction = '.sect-user-action-area';
         var sectViewStatusArea = '.sect-view-status-area';
-        var sectViewTagsListArea = '.sect-view-tags-list-area';
+        //        var sectViewTagsListArea = '.sect-view-tags-list-area';
         var sectGuestSelect = '.sect-guest-selection-area';
         var sectViewTagsArea = '.sect-event-tagged-area';
         var sectViewOwnerAction = '.sect-view-owner-action-area';
@@ -444,7 +839,7 @@
         var txtEventHolidayFrom = 'txt_from_event_holiday';
         var txtEventHolidayTo = 'txt_to_event_holiday';
         var txtEventOtherFrom = 'txt_from_event_other';
-        var txtEventOtherTo   = 'txt_to_event_other';
+        var txtEventOtherTo = 'txt_to_event_other';
         var currentEmpId = parseInt('{{ app.user.id }}');
         var employees = [];
         var activeEventId = parseInt('{{ app.request.query.get('id') }}');
@@ -457,7 +852,7 @@
         initData();
 
         function initData() {
-            cmbEmpTag.find('option').each( function() {
+            cmbEmpTag.find('option').each(function () {
                 var id = $(this).data('employee-id');
                 var name = $(this).data('name');
                 employees.push({id: id, name: name});
@@ -465,12 +860,12 @@
         }
 
         function getList() {
-            post($('.noButton'), '{{ path('manage_events') }}', {id: activeEventId>0? activeEventId:null}, function(data) {
+            post($('.noButton'), '{{ path('manage_events') }}', {id: activeEventId > 0 ? activeEventId : null}, function (data) {
                 $(tbEventList).find('tbody').html(data.list);
 
-                if(activeEventId>0 && !contentReady) {
-                    var tr = $('.event-tr[data-id='+activeEventId+']');
-                    if(tr.length) {
+                if (activeEventId > 0 && !contentReady) {
+                    var tr = $('.event-tr[data-id=' + activeEventId + ']');
+                    if (tr.length) {
                         tr.find('.btn-view-event').trigger('click');
                     }
                 }
@@ -494,56 +889,56 @@
                 is_going_note: $(txtIsGoingNote).val()
             };
 
-            var dateFromEl =  $('#'+txtEventHolidayFrom);
-            var dateToEl = $('#'+txtEventHolidayTo);
+            var dateFromEl = $('#' + txtEventHolidayFrom);
+            var dateToEl = $('#' + txtEventHolidayTo);
 
-            if(EVENT_TYPE_HOLIDAY!=eventType) {
-                dateFromEl = $('#'+txtEventOtherFrom);
-                dateToEl = $('#'+txtEventOtherTo);
+            if (EVENT_TYPE_HOLIDAY != eventType) {
+                dateFromEl = $('#' + txtEventOtherFrom);
+                dateToEl = $('#' + txtEventOtherTo);
             }
 
             data.from_date = dateFromEl.val();
             data.to_date = dateToEl.val();
 
-            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(txtEventVenue), $(txtIsGoingNote) ]);
-            if(eventType==null) {
-                errorBorder([ $(cmbEventType) ]);
+            defaultBorder([$(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(txtEventVenue), $(txtIsGoingNote)]);
+            if (eventType == null) {
+                errorBorder([$(cmbEventType)]);
                 error = true;
-            } else if(! removeSpace(data.event_name).length) {
+            } else if (!removeSpace(data.event_name).length) {
                 $(moCreateEvent).find(txtEventName).focus();
-                errorBorder([ $(txtEventName) ]);
+                errorBorder([$(txtEventName)]);
                 error = true;
-            } else if(! removeSpace(data.event_desc).length && eventType!=EVENT_TYPE_HOLIDAY) {
+            } else if (!removeSpace(data.event_desc).length && eventType != EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtEventDesc).focus();
-                errorBorder([ $(txtEventDesc) ]);
+                errorBorder([$(txtEventDesc)]);
                 error = true;
-            }  else if(! removeSpace(data.event_venue).length && eventType!=EVENT_TYPE_HOLIDAY) {
+            } else if (!removeSpace(data.event_venue).length && eventType != EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtEventVenue).focus();
-                errorBorder([ $(txtEventVenue) ]);
+                errorBorder([$(txtEventVenue)]);
                 error = true;
-            }  else if(! data.is_going && ! removeSpace(data.is_going_note).length && eventType!=EVENT_TYPE_HOLIDAY) {
+            } else if (!data.is_going && !removeSpace(data.is_going_note).length && eventType != EVENT_TYPE_HOLIDAY) {
                 $(moCreateEvent).find(txtIsGoingNote).focus();
-                errorBorder([ $(txtIsGoingNote) ]);
+                errorBorder([$(txtIsGoingNote)]);
                 error = true;
-            } else if(! removeSpace(data.from_date)) {
-                errorBorder([ $(dateFromEl) ]);
+            } else if (!removeSpace(data.from_date)) {
+                errorBorder([$(dateFromEl)]);
                 dateFromEl.focus();
                 error = true;
-            } else if(! removeSpace(data.to_date)) {
-                errorBorder([ $(dateToEl) ]);
+            } else if (!removeSpace(data.to_date)) {
+                errorBorder([$(dateToEl)]);
                 dateToEl.focus();
                 error = true;
             }
 
-            if(error) {
+            if (error) {
                 $(moCreateEvent).find('.add-error-chip').show();
                 return false;
             }
 
-            post($(btnCreateEvent), '{{ path('manage_event_add') }}', data, function(data) {
-                if(data.error) {
+            post($(btnCreateEvent), '{{ path('manage_event_add') }}', data, function (data) {
+                if (data.error) {
                     showErrorBar(data.error);
-                } else if(data.success) {
+                } else if (data.success) {
                     getList();
                     resetCreateForm();
                     showSuccessBar(data.success);
@@ -554,13 +949,13 @@
         }
 
         function resetCreateForm() {
-            var dateFromEl =  $('#'+txtEventHolidayFrom);
-            var dateToEl = $('#'+txtEventHolidayTo);
-            var dateFromEl2 = $('#'+txtEventOtherFrom);
-            var dateToEl2 = $('#'+txtEventOtherTo);
+            var dateFromEl = $('#' + txtEventHolidayFrom);
+            var dateToEl = $('#' + txtEventHolidayTo);
+            var dateFromEl2 = $('#' + txtEventOtherFrom);
+            var dateToEl2 = $('#' + txtEventOtherTo);
 
             enableElement($(cmbEventType));
-            defaultBorder([ $(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(dateFromEl2), $(dateToEl2), $(txtEventVenue) ]);
+            defaultBorder([$(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(dateFromEl2), $(dateToEl2), $(txtEventVenue)]);
 
             $(txtEventId).val('');
             $(moCreateEvent).find('form').trigger('reset');
@@ -572,23 +967,23 @@
         }
 
         function viewEventDetails(el, action) {
-            var tagsViewTemp = '<div class="mb1">'+
-                '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">'+
-                '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">'+
-                '         [NAME]'+
-                '      </div>'+
-                '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">'+
-                '         [STATUS]'+
-                '      </div>[ACTION]'+
+            var tagsViewTemp = '<div class="mb1">' +
+                '   <a href="javascript:void(0)" class="btn-tag-list-expand-reason">' +
+                '      <div class="chip" style="z-index: 11; border-right: 1px solid #ccc;">' +
+                '         [NAME]' +
+                '      </div>' +
+                '      <div class="chip [CLASS]" style="left: -35px;padding-left: 40px;z-index: 1;">' +
+                '         [STATUS]' +
+                '      </div>[ACTION]' +
                 '   </a> [REASON]'
-                '   </div>';
-            var tagsViewReasonTemp = '<ul class="collection mt3 display-none">'+
-                '      <li class="collection-item">[REASON]</li>'+
+            '   </div>';
+            var tagsViewReasonTemp = '<ul class="collection mt3 display-none">' +
+                '      <li class="collection-item">[REASON]</li>' +
                 '   </ul>';
 
             clickedEventId = el.data('id');
             var data = {
-                event_id:  el.data('id'),
+                event_id: el.data('id'),
                 event_name: el.data('event-name'),
                 event_desc: el.data('event-desc'),
                 event_venue: el.data('event-venue'),
@@ -610,10 +1005,10 @@
             var toNonHoliday = el.data('event-to-nonholiday');
 
             var fromEl = txtEventHolidayFrom;
-            var toEl   = txtEventHolidayTo;
-            if(data.event_type!=EVENT_TYPE_HOLIDAY) {
+            var toEl = txtEventHolidayTo;
+            if (data.event_type != EVENT_TYPE_HOLIDAY) {
                 fromEl = txtEventOtherFrom;
-                toEl   = txtEventOtherTo;
+                toEl = txtEventOtherTo;
             }
 
             $(txtEventId).val(data.event_id);
@@ -634,8 +1029,8 @@
             setPikadayData('set-date', fromEl, data.from);
             setPikadayData('set-date', toEl, data.to);
 
-            for(i in data.tags) {
-                cmbEmpTag.find('option[data-employee-id="'+data.tags[i]+'"]').prop('selected', 'selected');
+            for (i in data.tags) {
+                cmbEmpTag.find('option[data-employee-id="' + data.tags[i] + '"]').prop('selected', 'selected');
             }
 
             cmbEmpTag.trigger('change');
@@ -644,37 +1039,37 @@
 
             disableElement($(cmbEventType));
 
-            if(data.event_type==EVENT_TYPE_HOLIDAY) {
+            if (data.event_type == EVENT_TYPE_HOLIDAY) {
                 hideElements([$(sectViewTagsArea), $(sectGuestResponse), $(sectUserAction), $(sectViewStatusArea)]);
-                $(txtViewDate).html(fromHoliday+(fromHoliday!=toHoliday?' to '+toHoliday:''));
+                $(txtViewDate).html(fromHoliday + (fromHoliday != toHoliday ? ' to ' + toHoliday : ''));
 
                 headerTitle = 'Holiday';
             } else {
-                hideElements( [$(sectGuestResponse), $(sectUserAction), $(sectReasonSection)] );
+                hideElements([$(sectGuestResponse), $(sectUserAction), $(sectReasonSection)]);
 
-                if(myStatus==STATUS_PENDING) {
+                if (myStatus == STATUS_PENDING) {
                     statusName = 'Pending';
 
-                    if(moment().format('YYYY-MM-DD') <= moment(fromNonHoliday).format('YYYY-MM-DD'))
-                        showElements( [$(sectGuestResponse)] );
+                    if (moment().format('YYYY-MM-DD') <= moment(fromNonHoliday).format('YYYY-MM-DD'))
+                        showElements([$(sectGuestResponse)]);
                 } else {
-                    if(myStatus==STATUS_APPROVED) {
+                    if (myStatus == STATUS_APPROVED) {
                         statusName = 'I\'m going';
-                    } else if(myStatus==STATUS_DECLINED) {
+                    } else if (myStatus == STATUS_DECLINED) {
                         statusName = 'I\'m not going';
                     }
-                    if(moment().format('YYYY-MM-DD') <= moment(fromNonHoliday).format('YYYY-MM-DD'))
-                        showElements( [$(sectUserAction)] );
+                    if (moment().format('YYYY-MM-DD') <= moment(fromNonHoliday).format('YYYY-MM-DD'))
+                        showElements([$(sectUserAction)]);
                 }
 
-                if(data.event_type==EVENT_TYPE_INTERNAL) {
+                if (data.event_type == EVENT_TYPE_INTERNAL) {
                     headerTitle = 'Internal Event';
                 }
-                if(data.event_type==EVENT_TYPE_MEETING) {
+                if (data.event_type == EVENT_TYPE_MEETING) {
                     headerTitle = 'Meeting';
                 }
 
-                $(txtViewDate).html(fromNonHoliday+(fromNonHoliday!=toNonHoliday?' to <br>'+toNonHoliday:''));
+                $(txtViewDate).html(fromNonHoliday + (fromNonHoliday != toNonHoliday ? ' to <br>' + toNonHoliday : ''));
 
                 //render tags
                 var tagIds = (el.data('event-tags')).toString().split(',');
@@ -684,82 +1079,82 @@
 
                 console.log(employees)
 
-                $(sectViewTagsListArea).empty();
-                for(i in tagIds) {
-                    var empData = _.findWhere(employees, {id:parseInt(tagIds[i])});
-                    var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;
-                    var clss = '';
-                    var timelineTmp = '{{ timelineTemp|e('js') }}';
-                    var timeline = '';
+                {#$(sectViewTagsListArea).empty();#}
+                {#for (i in tagIds) {#}
+                {#var empData = _.findWhere(employees, {id: parseInt(tagIds[i])});#}
+                {#var stat = (!_.isNull(tagStatus[i])) ? tagStatus[i] : null;#}
+                {#var clss = '';#}
+                {#var timelineTmp = '{{ timelineTemp|e('js') }}';#}
+                {#var timeline = '';#}
 
-                    if(stat==STATUS_APPROVED) {
-                        clss = 'green';
-                    } else if(stat==STATUS_DECLINED) {
-                        clss = 'red';
-                    }
-                    stat = convertStatusToString(stat);
+                {#if (stat == STATUS_APPROVED) {#}
+                {#clss = 'green';#}
+                {#} else if (stat == STATUS_DECLINED) {#}
+                {#clss = 'red';#}
+                {#}#}
+                {#stat = convertStatusToString(stat);#}
 
-                    if(_.size(empData)) {
-                        if(tagHistory[i]) {
-                            for(i2 in tagHistory[i]) {
-                                timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)
-                                    .replace('[TIME]', tagHistory[i][i2].time)
-                                    .replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name+' was tagged.' :
-                                        ('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.':
-                                        ('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ?  tagHistory[i][i2].name+' updated status to <b>'+('{{ constant(CONST~'STATUS_APPROVED') }}'==tagHistory[i][i2].status ? 'going':'not going')+'</b>.'+(tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>'+tagHistory[i][i2].message+'</blockquote></p>':''):''))
-                                );
-                            }
-                        }
+                {#if (_.size(empData)) {#}
+                {#if (tagHistory[i]) {#}
+                {#for (i2 in tagHistory[i]) {#}
+                {#timeline += timelineTmp.replace('[DATE]', tagHistory[i][i2].date)#}
+                {#.replace('[TIME]', tagHistory[i][i2].time)#}
+                {#.replace('[MESSAGE]', ('{{ constant(CONST~'HA_EVENT_TAG_ADD') }}' == tagHistory[i][i2].action) ? tagHistory[i][i2].name + ' was tagged.' :#}
+                {#('{{ constant(CONST~'HA_EVENT_TAG_EMAIL') }}' == tagHistory[i][i2].action ? 'An invitation was sent via <b>email</b>.' :#}
+                {#('{{ constant(CONST~'HA_EVENT_TAG_STAT_UPDATE') }}' == tagHistory[i][i2].action ? tagHistory[i][i2].name + ' updated status to <b>' + ('{{ constant(CONST~'STATUS_APPROVED') }}' == tagHistory[i][i2].status ? 'going' : 'not going') + '</b>.' + (tagHistory[i][i2].message.length ? '<br>With a message:<blockquote>' + tagHistory[i][i2].message + '</blockquote></p>' : '') : ''))#}
+                {#);#}
+                {#}#}
+                {#}#}
 
-                        if(timeline.length) {
-                            timeline = '<div class="custom-timeline-1">'+timeline+'</div>';
-                        }
+                {#if (timeline.length) {#}
+                {#timeline = '<div class="custom-timeline-1">' + timeline + '</div>';#}
+                {#}#}
 
-                        var Reason = '';
-                        if(timeline.length || (tagReasons[i] && tagReasons[i].length)) {
-                            if(createdBy==currentEmpId && timeline.length)
-                                Reason = tagsViewReasonTemp.replace('[REASON]', timeline);
-                            else if(createdBy!=currentEmpId && tagReasons[i].length)
-                                Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);
-                        }
+                {#var Reason = '';#}
+                {#if (timeline.length || (tagReasons[i] && tagReasons[i].length)) {#}
+                {#if (createdBy == currentEmpId && timeline.length)#}
+                {#Reason = tagsViewReasonTemp.replace('[REASON]', timeline);#}
+                {#else if (createdBy != currentEmpId && tagReasons[i].length)#}
+                {#Reason = tagsViewReasonTemp.replace('[REASON]', tagReasons[i]);#}
+                {#}#}
 
-                        $(sectViewTagsListArea).append(tagsViewTemp
-                            .replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))
-                            .replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
-                            .replace('[CLASS]', clss)
-                            .replace('[ACTION]', ((timeline.length && createdBy==currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy!=currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>':'')
-                            .replace('[REASON]', Reason )
-                        );
-                    }
-                }
+                {#$(sectViewTagsListArea).append(tagsViewTemp#}
+                {#.replace('[NAME]', empData.name + (empData.id == createdBy ? ' (ORGANIZER)' : ''))#}
+                {#.replace('[STATUS]', (stat == 'approved' ? 'GOING' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))#}
+                {#.replace('[CLASS]', clss)#}
+                {#.replace('[ACTION]', ((timeline.length && createdBy == currentEmpId) || (tagReasons[i] && tagReasons[i].length && createdBy != currentEmpId)) ? '<span class="badge blue mt3" style="color: #fff;">View Logs</span>' : '')#}
+                {#.replace('[REASON]', Reason)#}
+                {#);#}
+                {#}#}
+                {#}#}
 
                 $(sectViewStatusArea).find('a').text(statusName);
-                showElements( [$(sectViewTagsArea), $(sectViewStatusArea)] );
+                showElements([$(sectViewTagsArea), $(sectViewStatusArea)]);
             }
 
-            if(createdBy==currentEmpId) {
-                if(new Date() < new Date(data.to))
-                    showElements( [ $(sectViewOwnerAction) ] );
+            if (createdBy == currentEmpId) {
+                if (new Date() < new Date(data.to))
+                    showElements([$(sectViewOwnerAction)]);
 
-                hideElements( [ $(sectViewStatusArea),$(sectGuestResponse),$(sectUserAction) ] );
+                hideElements([$(sectViewStatusArea), $(sectGuestResponse), $(sectUserAction)]);
             } else {
-                hideElements( [ $(sectViewOwnerAction) ] );
+                hideElements([$(sectViewOwnerAction)]);
             }
 
             $(txtHeaderTitle).text(headerTitle);
 
             $(chkNotifyOnEmail).prop('checked', true);
 
-            if(action=='view')
+            if (action == 'view')
                 $(moViewEventDetails).openModal();
-            else if(action=='edit') {
+            else if (action == 'edit') {
                 $(btnCreateEvent).text('Save Changes');
                 $(moCreateEvent).openModal();
             }
         }
 
         function updateGuestStatus(data) {
-            if(buttonIsReadyPlr($(btnGuestResponseSave))) {
+            if (buttonIsReadyPlr($(btnGuestResponseSave))) {
                 var btn = $(btnGuestResponseSave).eq(0);
 
                 post(btn, '{{ path('manage_event_tag_change_status') }}', data, function (data) {
@@ -777,19 +1172,19 @@
         }
 
         function cancelEvent() {
-            post($(btnCancelEvent), '{{ path('manage_event_cancel') }}', {'event_id':clickedEventId}, function(data) {
-                if(data.success) {
+            post($(btnCancelEvent), '{{ path('manage_event_cancel') }}', {'event_id': clickedEventId}, function (data) {
+                if (data.success) {
                     showSuccessBar(data.success);
                     $(moViewEventDetails).closeModal();
                     getList();
-                } else if(data.error) {
+                } else if (data.error) {
                     showErrorBar(data.error);
                 }
             });
         }
 
         function disableForm() {
-            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each( function() {
+            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each(function () {
                 $(this).attr('disabled', 'disabled');
             });
 
@@ -797,7 +1192,7 @@
         }
 
         function enableForm() {
-            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each( function() {
+            $(moCreateEvent).find('form').find('select, input:text, textarea, :checkbox').each(function () {
                 $(this).removeAttr('disabled');
             });
 
@@ -805,7 +1200,7 @@
         }
 
         function bindEvents() {
-            DOC.on('click', btnOpenCreateModal, function(e) {
+            DOC.on('click', btnOpenCreateModal, function (e) {
                 clickedEventId = 0;
                 enableForm();
                 resetCreateForm();
@@ -814,99 +1209,100 @@
                 $(moCreateEvent).openModal();
             });
 
-            DOC.on('click', btnCreateEvent, function(e) {
+            DOC.on('click', btnCreateEvent, function (e) {
                 console.log(clickedEventId);
                 saveEvent(clickedEventId);
             });
 
-            DOC.on('click', '.link-add-tags', function() {
+            DOC.on('click', '.link-add-tags', function () {
                 var act = $(this).data('action');
-                if(act=='add')
-                    cmbEmpTag.find('option:enabled').prop("selected","selected");
+                if (act == 'add')
+                    cmbEmpTag.find('option:enabled').prop("selected", "selected");
                 else
                     cmbEmpTag.find('option').removeAttr("selected");
 
                 cmbEmpTag.trigger('change');
             });
 
-            DOC.on('click', btnOpenEvent, function() {
+            DOC.on('click', btnOpenEvent, function () {
                 viewEventDetails($(this), 'view');
             });
 
-            DOC.on('click', btnViewOpenEditModal, function() {
+            DOC.on('click', btnViewOpenEditModal, function () {
                 var eventId = $(moViewEventDetails).attr('data-id');
 
                 enableForm();
-                viewEventDetails($('.btn-view-event[data-id='+eventId+']'), 'edit');
+                viewEventDetails($('.btn-view-event[data-id=' + eventId + ']'), 'edit');
                 $(moViewEventDetails).closeModal();
             });
 
-            DOC.on('click', btnTagExpandReason, function() {
+            DOC.on('click', btnTagExpandReason, function () {
                 var reason = $(this).parent().find('.collection');
-                if(reason.is(':visible'))
+                if (reason.is(':visible'))
                     reason.hide();
                 else
                     reason.show();
             });
 
             var ResponseStatus = 0;
-            DOC.on('click', btnGuestResponse, function() {
+            DOC.on('click', btnGuestResponse, function () {
                 ResponseStatus = parseInt($(this).data('status'));
 
-                if(ResponseStatus==STATUS_DECLINED)
+                if (ResponseStatus == STATUS_DECLINED)
                     $('span.span-reason-status').html('I\'m not going!');
-                else if(ResponseStatus==STATUS_APPROVED)
+                else if (ResponseStatus == STATUS_APPROVED)
                     $('span.span-reason-status').html('I\'m going!');
 
-                showElements( [$(sectReasonSection)] );
+                showElements([$(sectReasonSection)]);
             });
 
-            DOC.on('click', btnGuestResponseSave, function() {
+            DOC.on('click', btnGuestResponseSave, function () {
                 var status = ResponseStatus;
                 var eventId = clickedEventId;
                 var reason = $(txtViewReason).val();
 
-                defaultBorder([ $(txtViewReason) ]);
-                if(removeSpace(reason)=='' && status==STATUS_DECLINED) {
-                    errorBorder([ $(txtViewReason) ]);
+                defaultBorder([$(txtViewReason)]);
+                if (removeSpace(reason) == '' && status == STATUS_DECLINED) {
+                    errorBorder([$(txtViewReason)]);
                     $(txtViewReason).focus();
                     return false;
                 }
 
-                hideElements( [$(sectReasonSection)] );
-                updateGuestStatus({event_id: eventId, user_id: {{ app.user.id}}, status:status, reason:reason });
+                hideElements([$(sectReasonSection)]);
+                updateGuestStatus({event_id: eventId, user_id: {{ app.user.id }}, status: status, reason: reason});
             });
 
-            DOC.on('click', btnShowConsiderArea, function() {
-                showElements( [$(sectGuestResponse)] );
-                hideElements( [$(sectUserAction)] );
+            DOC.on('click', btnShowConsiderArea, function () {
+                showElements([$(sectGuestResponse)]);
+                hideElements([$(sectUserAction)]);
             });
 
-            DOC.on('click', btnShowEmailAbout, function() {
+            DOC.on('click', btnShowEmailAbout, function () {
 
-                if($(this).hasClass('btn-open')) {
+                if ($(this).hasClass('btn-open')) {
                     $(this).removeClass('btn-open');
                     $('.email-o-about').hide();
-                } else {console.log('not')
+                } else {
+                    console.log('not')
                     $(this).addClass('btn-open');
                     $('.email-o-about').show();
                 }
             });
 
-            DOC.on('click', btnCancelEvent, function() {
+            DOC.on('click', btnCancelEvent, function () {
                 console.log(clickedEventId)
                 $(moCancelEvents).openModal();
             });
 
-            DOC.on('click', btnConfirmCancelEvent, function() {
+            DOC.on('click', btnConfirmCancelEvent, function () {
                 $(moCancelEvents).closeModal();
                 cancelEvent();
             });
 
-            DOC.on('change', cmbEventType, function() {
+            DOC.on('change', cmbEventType, function () {
                 var type = $(this).val();
 
-                if(EVENT_TYPE_HOLIDAY==type) {
+                if (EVENT_TYPE_HOLIDAY == type) {
                     $(sectNonTagFields).show();
                     $(sectTagFields).hide();
                 } else {
@@ -919,20 +1315,20 @@
                 placeholder: 'Type name here'
             });
 
-            initPicker(txtEventHolidayFrom, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
-                setTimeout( function() {
-                    var val = $('#'+txtEventHolidayFrom).val();
-                    var valto = $('#'+txtEventHolidayTo).val();
+            initPicker(txtEventHolidayFrom, new Date(CURRENT_YEAR - 2, 12, 31), new Date(CURRENT_YEAR + 20, 12, 31), function () {
+                setTimeout(function () {
+                    var val = $('#' + txtEventHolidayFrom).val();
+                    var valto = $('#' + txtEventHolidayTo).val();
                     var pd = setPikadayData('start-range', txtEventHolidayTo, new Date(val));
 
-                    if(!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                    if (!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
                         setPikadayData('set-date', txtEventHolidayTo, new Date(val));
                         pd.show();
                     }
                 }, 200);
             });
 
-            initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR-2, 12, 31), new Date(CURRENT_YEAR+20, 12, 31), function() {
+            initPicker(txtEventHolidayTo, new Date(CURRENT_YEAR - 2, 12, 31), new Date(CURRENT_YEAR + 20, 12, 31), function () {
 //                setTimeout( function() {
 //                    var val = $('#'+txtEventHolidayTo).val();
 //                    var pd = setPikadayData('end-range', txtEventHolidayFrom, new Date(val));
@@ -941,23 +1337,23 @@
 //                }, 200);
             });
 
-            var param = { showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
-            var fromStart = new Date(CURRENT_YEAR, moment().format('M')-1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
+            var param = {showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+            var fromStart = new Date(CURRENT_YEAR, moment().format('M') - 1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
 
-            initPicker(txtEventOtherFrom, fromStart, new Date(CURRENT_YEAR+20, 12, 31), function() {
-                setTimeout( function() {
-                    var val = $('#'+txtEventOtherFrom).val();
-                    var valto = $('#'+txtEventOtherTo).val();
+            initPicker(txtEventOtherFrom, fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () {
+                setTimeout(function () {
+                    var val = $('#' + txtEventOtherFrom).val();
+                    var valto = $('#' + txtEventOtherTo).val();
                     var pd = setPikadayData('start-range', txtEventOtherTo, new Date(val));
 
-                    if(!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                    if (!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
                         setPikadayData('set-date', txtEventOtherTo, new Date(val));
                         pd.show();
                     }
                 }, 200);
             }, param);
 
-            initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR+20, 12, 31), function() {
+            initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () {
 //                setTimeout( function() {
 //                    var val = $('#'+txtEventOtherTo).val();
 //                    var valfrom = $('#'+txtEventOtherFrom).val();
