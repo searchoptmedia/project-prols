@@ -1,5 +1,16 @@
 {% extends 'AdminBundle::base.html.twig' %}
 
+{% block css %}
+<style>
+    .sect-view-tags-list-area { margin-left: 35px; }
+    .sect-view-tags-list-area .color-red.strike { text-decoration: line-through; color: #8a8383;  }
+    .sect-view-tags-list-area span { color: #8a8383;  }
+    .sect-view-tags-list-area .level-2-gray-text { color: #8a8383;  }
+    .sect-view-tags-list-area .level-2-green-text { color: #6dab7f;  }
+    .sect-view-tags-list-area .level-2-red { color: salmon;  }
+</style>
+{% endblock %}
+
 {% block body %}
     <div class="page-content">
         <div class="col-md-12 light-blue darken-1 heading z-depth-1">

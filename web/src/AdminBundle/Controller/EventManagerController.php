@@ -738,15 +738,16 @@ class EventManagerController extends Controller
 
             foreach($eventTags as $et) {
                 if($et->getStatus()!=C::STATUS_INACTIVE) {
-                    $class = $et->getStatus()==C::STATUS_APPROVED ? 'green' : ($et->getStatus()==C::STATUS_DECLINED ? 'red' : '');
+                    $class = $et->getStatus()==C::STATUS_APPROVED ? 'green' : ($et->getStatus()==C::STATUS_DECLINED ? 'red strike' : 'gray');
+                    $stat = $et->getStatus()==C::STATUS_APPROVED ? 'GOING' : ($et->getStatus()==C::STATUS_DECLINED ? 'NOT GOING' : 'PENDING');
                     $empId = $et->getEmpId();
                     $userProfile = EmpProfileQuery::_findByAccId($empId);
-                    $eventTagsList .= '<div class="chip mr1 mb1 '.$class.'">'.( $userProfile->getFname(). ' ' . $userProfile->getLname() ).'</div>';
+                    $eventTagsList .= '<a href="javascript:void(0);" class=" btn-tag-list-expand-reason '.$et->getStatus().'"> <span class="color-'.$class.'">'.( $userProfile->getFname(). ' ' . $userProfile->getLname() ).' - <span class="level-2-'.$class.'-text">'.$stat.'</span></span></a><br>';
                     $totalTags++;
                 }
             }
-
-            $eventTagsList .= '<div class="chip mr1 mb1 '.($event->getIsGoing() ? 'green':'red').'">'.$listProfiles[$event->getCreatedBy()] .'</div>';
+            $eventTagsList .= '<a href="javascript:void(0);" class=" btn-tag-list-expand-reason"> <span class="'.($event->getIsGoing()==1 ? 'color-green':($event->getIsGoing()==0 ? 'color-red-text strike':'color-gray')).'">'.$listProfiles[$event->getCreatedBy()].' - <span class="level-2-'.($event->getIsGoing()==1?'green':'red').'-text">'.($event->getIsGoing()==1 ? 'GOING':'NOT GOING').'</span></span></a><br>';
+            $eventTagsList = '<div class="col-md-10 sect-view-tags-list-area">'. $eventTagsList .'</div>';
 
             $eventData = array(
                 'date' => 'From: ' . $eventFromDate . "<br>" . "To: " . $eventToDate,
