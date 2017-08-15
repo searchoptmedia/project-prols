@@ -93,6 +93,11 @@
             background: rgba(255,255,255, 0.9);
             left: 0;
         }
+
+        .bold{
+            font-weight: bold;
+        }
+
         .login-2 { top: 50px; }
 
         .button-action { margin-top:10px;margin-right:5px;background-color:rgb(13,181,216);border-radius:4px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none; }
@@ -126,7 +131,7 @@
                                 <table style="width:100%" class="tb-request" data-id="{{ r.id }}" data-timeid="{{ r.empTimeId }}">
                                     <tbody>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Employee:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -134,15 +139,17 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Dates:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
-                                            <span tabindex="0"><span>{{ r.dateStarted|date('M d, Y') }} {{ r.dateStarted|date('M d, Y')!=r.dateEnded|date('M d, Y') ? 'to '~r.dateEnded|date('M d, Y'):''  }}</span></span>
+                                            <span tabindex="0"><span>{{ r.dateStarted|date('M d, Y') }}</span></span>
+                                            <br>
+                                            <span tabindex="0"><span>{{ r.dateStarted|date('M d, Y')!=r.dateEnded|date('M d, Y') ? 'To '~r.dateEnded|date('M d, Y'):''  }}</span></span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Reason:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -150,7 +157,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Status:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -161,7 +168,7 @@
                                     </tr>
                                     {% if type=='decline' %}
                                         <tr>
-                                            <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                                 <b>Add Reason:</b>
                                             </td>
                                             <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">

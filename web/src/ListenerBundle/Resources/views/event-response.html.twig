@@ -93,6 +93,11 @@
             background: rgba(255,255,255, 0.9);
             left: 0;
         }
+
+        .bold{
+            font-weight: bold;
+        }
+
         .login-2 { top: 50px; }
 
         .button-action { margin-top:10px;margin-right:5px;background-color:rgb(13,181,216);border-radius:4px;border:1px solid rgba(5,5,5,0.2);display:inline-block;color:#ffffff;font-family:arial,sans-serif;font-size:17px;padding:10px 18px;text-decoration:none; }
@@ -126,7 +131,7 @@
                                 <table style="width:100%" class="tb-request" data-id="{{ r.id }}">
                                     <tbody>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td  class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Employee:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -134,16 +139,18 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Dates:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
                                             {% set eventType = r.eventType!=constant(CONST~'EVENT_HOLIDAY_ID') ? 'M d, Y h:i a':'M d, Y' %}
-                                            <span tabindex="0"><span>{{ r.fromDate|date(eventType) }} {{ r.fromDate|date(eventType)!=r.toDate|date(eventType) ? 'to '~r.toDate|date(eventType):''  }}</span></span>
+                                            <span tabindex="0"><span>{{ r.fromDate|date(eventType) }} </span></span>
+                                            <br>
+                                            <span tabindex="0"><span>{{ r.fromDate|date(eventType)!=r.toDate|date(eventType) ? 'To '~r.toDate|date(eventType):''  }}</span></span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Notes:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -151,7 +158,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                        <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                             Status:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -162,7 +169,7 @@
                                     </tr>
                                     {% if type=='decline' %}
                                         <tr>
-                                            <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
+                                            <td class="bold" style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;width:25%">
                                                 <b>Add Reason:</b>
                                             </td>
                                             <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
@@ -220,98 +227,98 @@
     var _btnActions = $('.button-action');
     var _alertMessage = $('#card-alert');
 
-    {% if not existApproval and type=='approve' %}
-    _timer.hide();
-    setTimeout( function() {
-        tbloader();
-        setTimeout(function() {
-            _alertMessage.removeClass('red').addClass('green').show();
-            _timer.show();
-            myTimer();
-        }, 1000);
-    }, 2000);
-    {% else %}
-        {% if existApproval %}
-            _alertMessage.removeClass('green').addClass('red').show();
-            _alertMessage.find('.text').text('We found that there are already approved/declined records!');
-        {% endif %}
-        _timer.hide();
+    {#{% if not existApproval and type=='approve' %}#}
+    {#_timer.hide();#}
+    {#setTimeout( function() {#}
+        {#tbloader();#}
+        {#setTimeout(function() {#}
+            {#_alertMessage.removeClass('red').addClass('green').show();#}
+            {#_timer.show();#}
+            {#myTimer();#}
+        {#}, 1000);#}
+    {#}, 2000);#}
+    {#{% else %}#}
+        {#{% if existApproval %}#}
+            {#_alertMessage.removeClass('green').addClass('red').show();#}
+            {#_alertMessage.find('.text').text('We found that there are already approved/declined records!');#}
+        {#{% endif %}#}
+        {#_timer.hide();#}
         _loaderDiv.hide();
-    {% endif %}
+    {#{% endif %}#}
 
-    var start = 10;
+    {#var start = 10;#}
 
-    function myTimer() {
-        $(timerSpan).text(start);
+    {#function myTimer() {#}
+        {#$(timerSpan).text(start);#}
 
-        if(start >= 1) {
-            start--;
-            setTimeout(myTimer, 1000);
-        } else {
-            self.close();
-        }
-    }
+        {#if(start >= 1) {#}
+            {#start--;#}
+            {#setTimeout(myTimer, 1000);#}
+        {#} else {#}
+            {#self.close();#}
+        {#}#}
+    {#}#}
 
-    function tbloader(state) {
-        if(state) {
-            _loader.removeClass('load-complete');
-            _loaderCheck.hide();
-            _loaderDiv.show();
-        } else {
-            _loader.addClass('load-complete');
-            _loaderCheck.show();
-            setTimeout(function() { _loaderDiv.hide(); }, 1000);
-        }
-    }
+    {#function tbloader(state) {#}
+        {#if(state) {#}
+            {#_loader.removeClass('load-complete');#}
+            {#_loaderCheck.hide();#}
+            {#_loaderDiv.show();#}
+        {#} else {#}
+            {#_loader.addClass('load-complete');#}
+            {#_loaderCheck.show();#}
+            {#setTimeout(function() { _loaderDiv.hide(); }, 1000);#}
+        {#}#}
+    {#}#}
 
-    $doc.on('click', '.btn-approval', function() {
-        var error = false, data = {};
-        data.requests = [];
-        _tbRequest.each( function() {
-            var comment = $(this).find('.txt-reason').val();
-            var id = $(this).data('id');
-            var timeid = $(this).data('timeid');
+    {#$doc.on('click', '.btn-approval', function() {#}
+        {#var error = false, data = {};#}
+        {#data.requests = [];#}
+        {#_tbRequest.each( function() {#}
+            {#var comment = $(this).find('.txt-reason').val();#}
+            {#var id = $(this).data('id');#}
+            {#var timeid = $(this).data('timeid');#}
 
-            $(this).find('.txt-reason').attr('style', 'border-color: grey;');
+            {#$(this).find('.txt-reason').attr('style', 'border-color: grey;');#}
 
-            if(comment!=undefined && removeSpace(comment)=='') {
-                $(this).find('.txt-reason').attr('style', 'border-color: red;').focus();
-                error = true;
-            } else {
-                data.requests.push({
-                   'reason':  comment,
-                    'id': id,
-                    'emptimeid': timeid ? timeid : 0
-                });
-            }
-        });
+            {#if(comment!=undefined && removeSpace(comment)=='') {#}
+                {#$(this).find('.txt-reason').attr('style', 'border-color: red;').focus();#}
+                {#error = true;#}
+            {#} else {#}
+                {#data.requests.push({#}
+                   {#'reason':  comment,#}
+                    {#'id': id,#}
+                    {#'emptimeid': timeid ? timeid : 0#}
+                {#});#}
+            {#}#}
+        {#});#}
 
-        data.requesttype = '';
-        data.prevstatus = '';
-        data.status = '{{ type }}';
-        data.empId = '{{ app.request.get('uid') }}';
+        {#data.requesttype = '';#}
+        {#data.prevstatus = '';#}
+        {#data.status = '{{ type }}';#}
+        {#data.empId = '{{ app.request.get('uid') }}';#}
 
-        if(! error && !_proc) {
-            _alertMessage.hide();
-            tbloader(1);
-            _proc = true;
-            post($(this), "{{ path('listener_event_change_tag_status') }}", data, function(data) {
-                _proc = false;
-                if(data.code==200) {
-                    showNotificationBar('Successfully '+data.status+'d requests!');
-                    _alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');
-                    _alertMessage.addClass('green').removeClass('red').show();
-                } else if(data.code==230) {
-                    showNotificationBar('No changes has been made!', 'error');
-                }
+        {#if(! error && !_proc) {#}
+            {#_alertMessage.hide();#}
+            {#tbloader(1);#}
+            {#_proc = true;#}
+            {#post($(this), "{{ path('listener_event_change_tag_status') }}", data, function(data) {#}
+                {#_proc = false;#}
+                {#if(data.code==200) {#}
+                    {#showNotificationBar('Successfully '+data.status+'d requests!');#}
+                    {#_alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');#}
+                    {#_alertMessage.addClass('green').removeClass('red').show();#}
+                {#} else if(data.code==230) {#}
+                    {#showNotificationBar('No changes has been made!', 'error');#}
+                {#}#}
 
-                _btnActions.hide();
-                _timer.show();
-                tbloader();
-                myTimer();
-            });
-        }
-    });
+                {#_btnActions.hide();#}
+                {#_timer.show();#}
+                {#tbloader();#}
+                {#myTimer();#}
+            {#});#}
+        {#}#}
+    {#});#}
 
 
 </script>
