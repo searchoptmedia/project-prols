@@ -175,7 +175,7 @@
                         {% for k,n in event_tag_names %}•
                             {% if event_tag_status is defined and event_tag_status[k]!=constant(CONST~'STATUS_PENDING') %}{% if event_tag_status[k]==constant(CONST~'STATUS_DECLINED') %}<strike>{{ n }}</strike>{% else %}{{ n }}{% endif %}{% else %}{{ n }}{% endif %}
                             {% if owner_email==k %}(Organizer){% endif %}
-                            {% if event_tag_status[k]==constant(CONST~'STATUS_APPROVED') %}<span style="color: darkgreen; margin-left: 5px;">✓</span>{% endif %}
+                            {% if event_tag_status[k] is defined and event_tag_status[k]==constant(CONST~'STATUS_APPROVED') %}<span style="color: darkgreen; margin-left: 5px;">✓</span>{% endif %}
                             <br>
                         {% endfor %}
                     </td>

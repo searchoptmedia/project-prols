@@ -861,6 +861,11 @@
         PAGE = $page.val();
         LIMIT = $limit.val();
         TOTAL_PAGES = 0;
+        var _users = [];
+        {% for acc in allRecords if acc.getEmpProfiles[0] is defined %}
+        _users['{{ acc.id }}'] = "{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}";
+        {% endfor %}
+
     </script>
     <script type="text/javascript">
         bindEvents();
@@ -1170,6 +1175,15 @@
                     }
                 }
 
+                $(sectViewTagsListArea).append(tagsViewTemp
+                    .replace('[NAME]', _users[createdBy] + ' (ORGANIZER)')
+                    .replace('[STATUS]', (data.is_going ? '<span class="">GOING</span>' : (stat == 'declined' ? 'NOT GOING' : stat.toUpperCase())))
+                    .replace('[STRIKE]', (data.is_going ? '' : (stat == 'declined' ? 'strike-red' : '')))
+                    .replace('[LEGEND_COLOR]', (data.is_going ? 'level-2-green-text' : 'level-2-red-text'))
+                    .replace('[ACTION]', '')
+                    .replace('[REASON]', tagsViewReasonTemp.replace('[REASON]', data.is_going_note))
+                );
+
                 $(sectViewStatusArea).find('a').text(statusName);
                 showElements([$(sectViewTagsArea), $(sectViewStatusArea)]);
             }
@@ -1200,9 +1214,9 @@
                 var btn = $(btnGuestResponseSave).eq(0);
 
                 post(btn, '{{ path('manage_event_tag_change_status') }}', data, function (data) {
-                    if (data.error) {
+                    if (data.code!=200) {
                         showErrorBar(data.error);
-                    } else if (data.success) {
+                    } else if (data.code==200) {
                         getList();
                         resetCreateForm();
                         showSuccessBar(data.success);
@@ -1223,6 +1237,7 @@
                     showErrorBar(data.error);
                 }
             });
+
         }
 
         function disableForm() {
@@ -1280,12 +1295,16 @@
 
             DOC.on('click', btnTagExpandReason, function () {
                 var reason = $(this).parent().find('.collection');
-                $(this).closest('a').find('.arrow').removeClass('down').addClass('up');
-                if (reason.is(':visible')) {
-                    reason.hide();
-                    $(this).closest('a').find('.arrow').addClass('down').removeClass('up');
-                } else
-                    reason.show();
+                var tot = reason.find('li').length;
+                console.log(tot)
+                if(tot > 0) {
+                    $(this).closest('a').find('.arrow').removeClass('down').addClass('up');
+                    if (reason.is(':visible')) {
+                        reason.hide();
+                        $(this).closest('a').find('.arrow').addClass('down').removeClass('up');
+                    } else
+                        reason.show();
+                }
             });
 
             var ResponseStatus = 0;
