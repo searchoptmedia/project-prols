@@ -54,8 +54,20 @@ class ListEventsQuery extends BaseListEventsQuery
             $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
         }
 
+        if(!empty($params['searchText'])) {
+            $data->filterByEventName('%'.$params['searchText'].'%', \Criteria::LIKE);
+            $data->_or();
+            $data->filterByEventDescription('%'.$params['searchText'].'%', \Criteria::LIKE);
+            $data->_or();
+            $data
+                ->useListEventsTypeQuery()
+                ->filterByName('%'.$params['searchText'].'%', \Criteria::LIKE)
+                ->endUse();
+        }
+
         if(!empty($params['order']['data'])) {
-            $data->orderBy($params['order']['data'], isset($params['order']['criteria']) ? $params['order']['criteria'] : \Criteria::ASC);
+            if($params['order']['data']!='event_type') $data->orderBy($params['order']['data'], isset($params['order']['criteria']) ? $params['order']['criteria'] : \Criteria::ASC);
+            else $data->orderByEventType($params['order']['criteria']);
         }
 
         if(isset($params['page'])) {
