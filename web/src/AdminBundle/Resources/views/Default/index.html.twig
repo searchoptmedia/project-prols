@@ -2,12 +2,42 @@
 
 {% block css %}
 <style>
-    .sect-view-tags-list-area { margin-left: 35px; }
-    .sect-view-tags-list-area .color-red.strike { text-decoration: line-through; color: #8a8383;  }
+    .sect-view-tags-list-area {  margin-left: 67px; margin-top: -21px; }
     .sect-view-tags-list-area span { color: #8a8383;  }
     .sect-view-tags-list-area .level-2-gray-text { color: #8a8383;  }
     .sect-view-tags-list-area .level-2-green-text { color: #6dab7f;  }
     .sect-view-tags-list-area .level-2-red { color: salmon;  }
+
+    ul.legend-list {
+        list-style: none;
+        padding:0;
+        margin:0;
+        display: inline-block;
+        float: left;
+    }
+
+    ul.legend-list li {
+        padding-left: 1em;
+        text-indent: -.7em;
+        float:left;
+        position: relative;
+        top: -22px;
+        margin-right: 20px;
+    }
+
+    ul.legend-list li:before {
+        content: "■ ";
+        color: red; /* or whatever color you prefer */
+        font-size: 40px;
+        position: relative;
+        top: 8px;
+        left: 10px;
+    }
+    ul.legend-list li.m:before { color: #FFC82D; }
+    ul.legend-list li.v:before { color: #0072B1; }
+    ul.legend-list li.h:before { color: #E90133; }
+    ul.legend-list li.i:before { color: #EB7124; }
+    ul.legend-list li.o:before { color: #9e9e9e; }
 </style>
 {% endblock %}
 
@@ -23,6 +53,20 @@
                 <div id="alert_holder"></div>
                 <div class="calendar">
                     <div id="calendar"></div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div>
+                    <h6 class="pull-left"><strong>LEGENDS:</strong></h6>
+
+                    <ul class="legend-list">
+                        <li class="v">Vacation Leave</li>
+                        <li class="o">Out of the Office Access</li>
+                        <li class="h">Holiday</li>
+                        <li class="i">Internal Event</li>
+                        <li class="m">Meeting</li>
+                    </ul>
                 </div>
             </div>
 

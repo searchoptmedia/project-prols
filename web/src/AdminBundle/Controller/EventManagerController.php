@@ -344,6 +344,10 @@ class EventManagerController extends Controller
                 $entriesData['date_ended'] =  array('data' => date('Y-m-d H:i:s',strtotime($params['to'])));
             }
 
+            if(strtolower($user->getRole())=='employee') {
+
+            }
+
             $getEvents = ListEventsQuery::_findAll($entriesData);
 
             unset($entriesData['page']);
