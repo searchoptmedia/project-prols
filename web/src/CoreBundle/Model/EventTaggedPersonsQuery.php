@@ -24,6 +24,15 @@ class EventTaggedPersonsQuery extends BaseEventTaggedPersonsQuery
             ->findOne();
     }
 
+    static function _findByEmployeeAndEvent($eventId, $empId)
+    {
+        return
+            self::create()
+                ->filterByEventId($eventId)
+                ->filterByEmpId($empId)
+            ->findOne();
+    }
+
     static function _findAllByEvent($eventId)
     {
         return

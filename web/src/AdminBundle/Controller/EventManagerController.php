@@ -83,11 +83,6 @@ class EventManagerController extends Controller
                 $response = U::getSuccessResponse();
 
                 $params['owner_email'] = U::getUserDetails('email', $this);
-                $params['links'] = array(
-                    'Going' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true), 'bgColor' => '#4CAF50' ),
-                    'Not Going' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true), 'bgColor' => '#F44336'),
-                    'View Event' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true) )
-                );
 
                 if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
                     if(!empty($params['tags'])) {
@@ -141,6 +136,13 @@ class EventManagerController extends Controller
                                         'event_tag_id' => $eventTagged->getId()
                                     ), C::HA_EVENT_TAG_ADD);
                                 }
+
+                                //links
+                                $params['links'] = array(
+                                    'Going' => array( 'href' => $this->generateUrl('listener_event_response', array('id' => $event->getId(), 'type' => 'approve', 'uid' => $params['user_id']), true), 'bgColor' => '#4CAF50' ),
+                                    'Not Going' => array( 'href' => $this->generateUrl('listener_event_response', array('id' => $event->getId(),  'type' => 'decline', 'uid' => $params['user_id']), true), 'bgColor' => '#F44336'),
+                                    'View Event' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true) )
+                                );
 
                                 if((! $eventTagQry || ($eventTagQry && $eventTagQry->getStatus()==C::STATUS_PENDING)) && $params['notify_email']) {
                                     $params['has-update'] = false;
@@ -383,9 +385,9 @@ class EventManagerController extends Controller
         }
     }
 
-    public function updateTagStatusAction(Request $request)
+    public function updateTagStatusAction(Request $request, $refClass = null)
     {
-        $response = U::getForbiddenResponse();
+        $response = U::getForbid();
         $method = $request->getMethod();
 
         if($method=='POST') {
@@ -411,10 +413,10 @@ class EventManagerController extends Controller
                     $eventTag = $eventTag->_save($eventTagData, $eventTagQry);
 
                     if($eventTag) {
-                        $response = U::getSuccessResponse();
+                        $response = U::getSuccess();
                         //send notification
                         if($origStatus != $statusId) {
-                            $this->email->notifyEmployeeOnEventUpdateTagStatus($params, $this);
+                            $this->email->notifyEmployeeOnEventUpdateTagStatus($params, $refClass?:$this);
                             $historyData = array(
                                 'event_tag_id' => $eventTag->getId(),
                                 'status' => $statusId,
@@ -429,6 +431,9 @@ class EventManagerController extends Controller
                 }
             }
         }
+
+        if($refClass)
+            return $response;
 
         return new JsonResponse($response);
     }

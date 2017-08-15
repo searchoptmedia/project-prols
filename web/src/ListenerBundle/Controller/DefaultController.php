@@ -3,8 +3,11 @@
 namespace ListenerBundle\Controller;
 
 use AdminBundle\Controller\EmployeeRequestController;
+use AdminBundle\Controller\EventManagerController;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpRequestPeer;
+use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Utilities\Constant as C;
 use CoreBundle\Utilities\Utils;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -112,6 +115,115 @@ class DefaultController extends Controller
                     $res = $empRequestController->statusChangeAction( $request, $this);
 
                     if($res['code']==C::CODE_SUCCESS) $totalUpdates++;
+                }
+            }
+
+            if($totalUpdates)
+                $response = Utils::getSuccess();
+            else
+                $response = Utils::getNoChange();
+
+        }
+
+        return new JsonResponse($response);
+    }
+
+
+    public function eventResponseAction($type = 'approve', Request $request)
+    {
+        $userId = $request->get('uid');
+        $ids = $request->get('id');
+        $ids = explode(",", $ids);
+
+        $requestList = array();
+        $approveList = array();
+        $declineList = array();
+
+        $newStatus = ($type=='approve' ? C::STATUS_APPROVED : C::STATUS_DECLINED);
+
+        if(count($ids)) {
+            foreach ($ids as $k => $id) {
+                $events = ListEventsPeer::retrieveByPK($id);
+
+                if ($events) {
+                    $eventTag = EventTaggedPersonsQuery::_findByEmployeeAndEvent($events->getId(), $userId);
+
+                    if($eventTag) {
+                        $requestList[$k] = $events;
+                        $requestList[$k]->tag = $eventTag;
+                        $requestList[$k]->employee = EmpProfilePeer::getInformation($eventTag->getEmpId());
+
+                        //approve
+                        if ($events->getStatus() == C::STATUS_APPROVED)
+                            $approveList[] = $events;
+                        //decline
+                        else if ($events->getStatus() == C::STATUS_DECLINED)
+                            $declineList[] = $events;
+                        else if ($type=='approve') {
+                            $this->getRequest()->request->set('event_id', $events->getId());
+                            $this->getRequest()->request->set('user_id', $userId);
+                            $this->getRequest()->request->set('status', $newStatus);
+                            $this->getRequest()->request->set('reason', '');
+                            $this->getRequest()->setMethod('POST');
+
+                            $empRequestController = new EventManagerController();
+                            $response = $empRequestController->updateTagStatusAction($request, $this);
+                        }
+                    }
+                }
+            }
+
+            if (count($requestList)) {
+                return $this->render('ListenerBundle::event-response.html.twig', array(
+                    'requests' => $requestList,
+                    'approveRequests' => $approveList,
+                    'declineRequests' => $declineList,
+                    'existApproval' => count($approveList) || count($declineList) ? 1 : 0,
+                    'type' => $type
+                ));
+            }
+        }
+    }
+
+    public function eventChangeStatusAction(Request $request)
+    {
+        $params = $request->request->all();
+        $response = Utils::getForbid();
+        $totalUpdates = 0;
+
+        if(count($params['requests'])) {
+            $status = C::STATUS_DECLINED;
+
+            if($params['status']=='approve') {
+                $request->request->set('status', C::STATUS_APPROVED);
+                $status = C::STATUS_APPROVED;
+            } else
+                $request->request->set('status', C::STATUS_DECLINED);
+
+            foreach($params['requests'] as $re) {
+                $event = ListEventsPeer::retrieveByPK($re['id']);
+                $userId = $params['empId'];
+
+                if($event) {
+                    $eventTag = EventTaggedPersonsQuery::_findByEmployeeAndEvent($event->getId(), $userId);
+
+                    if($eventTag) {
+                        $this->getRequest()->request->set('event_id', $event->getId());
+                        $this->getRequest()->request->set('user_id', $userId);
+                        $this->getRequest()->request->set('status', $status);
+                        $this->getRequest()->request->set('reason', $re['reason']);
+
+                        if ($params['status'] != $eventTag->getStatus())
+                            $request->request->set('isChanged', true);
+                        else
+                            $request->request->set('isChanged', false);
+
+
+                        $empRequestController = new EventManagerController();
+                        $res = $empRequestController->updateTagStatusAction($request, $this);
+
+                        if ($res['code'] == C::CODE_SUCCESS) $totalUpdates++;
+                    }
                 }
             }
 

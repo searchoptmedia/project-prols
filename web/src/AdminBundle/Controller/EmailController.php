@@ -429,7 +429,7 @@ class EmailController extends Controller
                 $params['event_tag_names'] = array();
                 $params['template'] = 'event-status-change';
                 $params['links'] = array('View Event' => array(
-                    'href' => $class->generateUrl('manage_events', array('id' => $event->getId()), true)
+                    'href' => $class->generateUrl('admin_manage_events', array('id' => $event->getId()), true)
                 ));
 
                 $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');

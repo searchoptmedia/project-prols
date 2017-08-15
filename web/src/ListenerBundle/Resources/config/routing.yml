@@ -5,3 +5,11 @@ listener_homepage:
 listener_request_change_status:
     path:     /request/change/status
     defaults: { _controller: ListenerBundle:Default:changeStatus }
+
+listener_event_response:
+    path:     /event/{type}/response
+    defaults: { _controller: ListenerBundle:Default:eventResponse }
+
+listener_event_change_tag_status:
+    path:     /event/change/status
+    defaults: { _controller: ListenerBundle:Default:eventChangeStatus }

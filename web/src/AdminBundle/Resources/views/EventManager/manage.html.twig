@@ -329,7 +329,7 @@
                                 <div class="wrap-filters">
                                     <div class="search">
                                         <input type="text" class="search-term -search-box" placeholder="What are you looking for?">
-                                        <button type="submit" class="search-button btn-ghost no-border"><i class="fa fa-search"></i></button>
+                                        <button type="submit" class="search-button btn-ghost no-border -btn-search-go"><i class="fa fa-search"></i></button>
                                         <button type="submit" class="advanced-search-button -btn-advance-search-open"><i class="fa fa-cog"></i></button>
                                     </div>
                                 </div>
@@ -705,12 +705,11 @@
 
                         <div class="col-md-7">
                             <label for="event_name_modal">Event Name</label>
-                            <input type="text" name="event-name" class="event-name txt-event-name" required>
+                            <input type="text" name="event-name" class="event-name -search-field-event-name">
                         </div>
                         <div class="col-md-5">
                             <label for="event_type_modal">Event Type</label>
-                            <select name="event_type" id="event_type_modal"
-                                    class="browser-default event-type cmb-select-event-type">
+                            <select name="event_type" id="event_type_modal" class="browser-default event-type -search-field-event-type">
                                 <option value="" disabled selected>Select Event Type</option>
                                 <option value="">All</option>
                             </select>
@@ -718,26 +717,22 @@
 
                         <div class="col-md-6" id="from-row">
                             <label>From</label><br>
-                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date"
-                                   id="txt_from_event_other" placeholder="mm/dd/yyyy hh:mm">
+                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_search_from" placeholder="mm/dd/yyyy hh:mm">
                         </div>
                         <div class="col-md-6" id="to-row">
                             <label>To</label><br>
-                            <input type="text" name="to-event-date" readonly class="to-event-date"
-                                   id="txt_to_event_other" placeholder="mm/dd/yyyy hh:mm">
+                            <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_search_to" placeholder="mm/dd/yyyy hh:mm">
                         </div>
                         <div class="col-md-5">
                             <label for="role_modal">Role</label>
-                            <select name="event_type" id="role_modal"
-                                    class="browser-default event-role cmb-select-event-role">
-                                <option value="" disabled selected>Select Event Type</option>
+                            <select name="event_type" id="role_modal" class="browser-default event-role -search-field-event-role">
+                                <option value="" disabled selected>Select Role</option>
                                 <option value="">All</option>
                             </select>
                         </div>
                         <div class="col-md-5">
                             <label for="event_status_modal">Status</label>
-                            <select name="event_status" id="event_status_modal"
-                                    class="browser-default event-status cmb-select-event-status">
+                            <select name="event_status" id="event_status_modal" class="browser-default event-status -search-field-event-name">
                                 <option value="" disabled selected>Select Event Type</option>
                                 <option value="All">All</option>
                             </select>
@@ -851,7 +846,7 @@
             });
         }
 
-        function getList(reset) {
+        function getList(reset, searchQry) {
             if(reset) {
                 $page.val(1);
                 LIMIT = $limit.val();
@@ -861,9 +856,15 @@
                 id: activeEventId ? activeEventId : null,
                 page: PAGE==1? 0: (parseInt(PAGE)-1)*parseInt(LIMIT),
                 limit: LIMIT,
-                searchQry: $(txtSearchBox).val(),
-                sort: Sort, order: Order
+                searchQry: searchQry!=null&&removeSpace(searchQry)!=''? searchQry : $(txtSearchBox).val(),
+                sort: Sort, order: Order,
+                from: $('#txt_search_from').val(),
+                to: $('#txt_search_to').val(),
+                type: $('.-search-field-event-type').val(),
+                status: $('.-search-field-event-status').val(),
+                role: $('.-search-field-event-role').val(),
             };
+
             post($('.-list-button-none-exist'), '{{ path('admin_manage_get_events') }}', data, function (data) {
                 $(tbEventList).find('tbody').html(data.list);
 
@@ -1362,21 +1363,48 @@
 
             initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () { }, param);
 
-            //==>filters
+
+            /*************
+             ********* FILTERS **************/
+            initPicker('txt_search_from', fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () {
+                setTimeout(function () {
+                    var val = $('#txt_search_from').val();
+                    var valto = $('#txt_search_to').val();
+                    var pd = setPikadayData('start-range', 'txt_search_to', new Date(val));
+
+                    if (!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                        setPikadayData('set-date', 'txt_search_to', new Date(val));
+                        pd.show();
+                    }
+                }, 200);
+            }, param);
+
+            initPicker('txt_search_to', fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () { }, param);
+
+
             DOC.on('keyup', txtSearchBox, function(event) {
                 clearTimeout(timer); console.log(event.keyCode)
-                if (event.keyCode!='18' && event.keyCode!='17' && event.keyCode!='16' && event.keyCode!='9') {
+                if (event.keyCode!='18' && event.keyCode!='17' && event.keyCode!='16' && event.keyCode!='9' && event.keyCode=='13') {
                     timer = setTimeout(function () {
                         getList(1);
                     }, 500);
                 }
             });
 
+            DOC.on('click', '.-btn-search-go', function() {
+                getList(1);
+            });
+
             DOC.on('click', '.-btn-advance-search-open', function() {
                 $('#mo-advanced-search').openModal();
             });
 
-            //==>pagination
+            DOC.on('click', '.-btn-advance-filter', function() {
+                getList(1);
+            });
+
+            /*************
+             ***** PAGINATION **************/
             $pageSection.find('.next').click( function() {
                 PAGE++;
                 getList();
