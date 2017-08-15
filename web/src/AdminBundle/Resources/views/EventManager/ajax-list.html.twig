@@ -67,11 +67,11 @@
             <td class="event-from-date">{{ event.fromDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.fromDate|date('h:i a') }}{% endif %}</td>
             <td class="event-to-date">{{ event.toDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.toDate|date('h:i a') }}{% endif %}</td>
             <td class="role">
-                {% if (app.user.id != event.getCreatedBy) %}Guest
+                {% if (app.user.id != event.createdBy) %}Guest
                 {% else %}Creator{% endif %}
             </td>
             <td>
-                {% if (app.user.id!=event.getCreatedBy) %}
+                {% if (app.user.id!=event.createdBy) %}
                     {% for tag in event.getEventTaggedPersonss %}
                         {% if(app.user.id==tag.empid) %}
                             {% if tag.status==constant(CONST~'STATUS_PENDING') %}

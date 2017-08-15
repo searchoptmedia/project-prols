@@ -711,31 +711,34 @@
                         <div class="col-md-5">
                             <label for="event_type_modal">Event Type</label>
                             <select name="event_type" id="event_type_modal" class="browser-default event-type -search-field-event-type">
-                                <option value="" disabled selected>Select Event Type</option>
-                                <option value="">All</option>
+                                <option value="" selected>Select Event Type</option>
+                                {% for t in eventTypes %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
                             </select>
                         </div>
 
                         <div class="col-md-6" id="from-row">
                             <label>From</label><br>
-                            <input type="text" name="from-event-date" readonly class="from-event-date txt-from-date" id="txt_search_from" placeholder="mm/dd/yyyy hh:mm">
+                            <input type="text" name="from-event-date" class="from-event-date txt-from-date" id="txt_search_from" placeholder="mm/dd/yyyy hh:mm">
                         </div>
                         <div class="col-md-6" id="to-row">
                             <label>To</label><br>
-                            <input type="text" name="to-event-date" readonly class="to-event-date" id="txt_search_to" placeholder="mm/dd/yyyy hh:mm">
+                            <input type="text" name="to-event-date" class="to-event-date" id="txt_search_to" placeholder="mm/dd/yyyy hh:mm">
                         </div>
                         <div class="col-md-5">
                             <label for="role_modal">Role</label>
                             <select name="event_type" id="role_modal" class="browser-default event-role -search-field-event-role">
-                                <option value="" disabled selected>Select Role</option>
-                                <option value="">All</option>
+                                <option value="" selected>Select Role</option>
+                                <option value="1">Creator</option>
+                                <option value="2">Guest</option>
                             </select>
                         </div>
                         <div class="col-md-5">
                             <label for="event_status_modal">Status</label>
-                            <select name="event_status" id="event_status_modal" class="browser-default event-status -search-field-event-name">
-                                <option value="" disabled selected>Select Event Type</option>
-                                <option value="All">All</option>
+                            <select name="event_status" id="event_status_modal" class="browser-default event-status -search-field-event-status">
+                                <option value="" selected>Select Status</option>
+                                <option value="{{ constant(CONST~'STATUS_PENDING') }}">Pending</option>
+                                <option value="{{ constant(CONST~'STATUS_APPROVED') }}">Going</option>
+                                <option value="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</option>
                             </select>
                         </div>
                     </div>
@@ -861,7 +864,7 @@
                 sort: Sort, order: Order,
                 from: $('#txt_search_from').val(),
                 to: $('#txt_search_to').val(),
-                type: $('.-search-field-event-type').val(),
+                event_type: $('.-search-field-event-type').val(),
                 status: $('.-search-field-event-status').val(),
                 role: $('.-search-field-event-role').val(),
             };
@@ -1406,14 +1409,16 @@
 
             /*************
              ***** PAGINATION **************/
-            $pageSection.find('.next').click( function() {
+            DOC.on('click', '.-pagination-section .next:not(.disabled)', function() {
                 PAGE++;
                 getList();
             });
-            $pageSection.find('.prev').click( function() {
+
+            DOC.on('click', '.-pagination-section .prev:not(.disabled)', function() {
                 PAGE--;
                 getList();
             });
+
             $limit.change( function() {
                 getList(1);
             });
