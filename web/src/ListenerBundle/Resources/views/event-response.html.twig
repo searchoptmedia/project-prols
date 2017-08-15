@@ -162,7 +162,7 @@
                                             Status:
                                         </td>
                                         <td style="vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif;">
-                                            <strong>
+                                            <strong class="txt-status">
                                                 {% if r.tag.status==constant(CONST~'STATUS_PENDING') %}Pending{% elseif r.tag.status==constant(CONST~'STATUS_APPROVED') %}Going{% else %}Not Going{% endif %}
                                             </strong>
                                         </td>
@@ -227,98 +227,99 @@
     var _btnActions = $('.button-action');
     var _alertMessage = $('#card-alert');
 
-    {#{% if not existApproval and type=='approve' %}#}
-    {#_timer.hide();#}
-    {#setTimeout( function() {#}
-        {#tbloader();#}
-        {#setTimeout(function() {#}
-            {#_alertMessage.removeClass('red').addClass('green').show();#}
-            {#_timer.show();#}
-            {#myTimer();#}
-        {#}, 1000);#}
-    {#}, 2000);#}
-    {#{% else %}#}
-        {#{% if existApproval %}#}
-            {#_alertMessage.removeClass('green').addClass('red').show();#}
-            {#_alertMessage.find('.text').text('We found that there are already approved/declined records!');#}
-        {#{% endif %}#}
-        {#_timer.hide();#}
+    {% if not existApproval and type=='approve' %}
+    _timer.hide();
+    setTimeout( function() {
+        tbloader();
+        setTimeout(function() {
+            _alertMessage.removeClass('red').addClass('green').show();
+            _timer.show();
+            myTimer();
+        }, 1000);
+    }, 2000);
+    {% else %}
+        {% if existApproval %}
+            _alertMessage.removeClass('green').addClass('red').show();
+            _alertMessage.find('.text').text('We found that there are already approved/declined records!');
+        {% endif %}
+        _timer.hide();
         _loaderDiv.hide();
-    {#{% endif %}#}
+    {% endif %}
 
-    {#var start = 10;#}
+    var start = 10;
 
-    {#function myTimer() {#}
-        {#$(timerSpan).text(start);#}
+    function myTimer() {
+        $(timerSpan).text(start);
 
-        {#if(start >= 1) {#}
-            {#start--;#}
-            {#setTimeout(myTimer, 1000);#}
-        {#} else {#}
-            {#self.close();#}
-        {#}#}
-    {#}#}
+        if(start >= 1) {
+            start--;
+            setTimeout(myTimer, 1000);
+        } else {
+            self.close();
+        }
+    }
 
-    {#function tbloader(state) {#}
-        {#if(state) {#}
-            {#_loader.removeClass('load-complete');#}
-            {#_loaderCheck.hide();#}
-            {#_loaderDiv.show();#}
-        {#} else {#}
-            {#_loader.addClass('load-complete');#}
-            {#_loaderCheck.show();#}
-            {#setTimeout(function() { _loaderDiv.hide(); }, 1000);#}
-        {#}#}
-    {#}#}
+    function tbloader(state) {
+        if(state) {
+            _loader.removeClass('load-complete');
+            _loaderCheck.hide();
+            _loaderDiv.show();
+        } else {
+            _loader.addClass('load-complete');
+            _loaderCheck.show();
+            setTimeout(function() { _loaderDiv.hide(); }, 1000);
+        }
+    }
 
-    {#$doc.on('click', '.btn-approval', function() {#}
-        {#var error = false, data = {};#}
-        {#data.requests = [];#}
-        {#_tbRequest.each( function() {#}
-            {#var comment = $(this).find('.txt-reason').val();#}
-            {#var id = $(this).data('id');#}
-            {#var timeid = $(this).data('timeid');#}
+    $doc.on('click', '.btn-approval', function() {
+        var error = false, data = {};
+        data.requests = [];
+        _tbRequest.each( function() {
+            var comment = $(this).find('.txt-reason').val();
+            var id = $(this).data('id');
+            var timeid = $(this).data('timeid');
 
-            {#$(this).find('.txt-reason').attr('style', 'border-color: grey;');#}
+            $(this).find('.txt-reason').attr('style', 'border-color: grey;');
 
-            {#if(comment!=undefined && removeSpace(comment)=='') {#}
-                {#$(this).find('.txt-reason').attr('style', 'border-color: red;').focus();#}
-                {#error = true;#}
-            {#} else {#}
-                {#data.requests.push({#}
-                   {#'reason':  comment,#}
-                    {#'id': id,#}
-                    {#'emptimeid': timeid ? timeid : 0#}
-                {#});#}
-            {#}#}
-        {#});#}
+            if(comment!=undefined && removeSpace(comment)=='') {
+                $(this).find('.txt-reason').attr('style', 'border-color: red;').focus();
+                error = true;
+            } else {
+                data.requests.push({
+                   'reason':  comment,
+                    'id': id,
+                    'emptimeid': timeid ? timeid : 0
+                });
+            }
+        });
 
-        {#data.requesttype = '';#}
-        {#data.prevstatus = '';#}
-        {#data.status = '{{ type }}';#}
-        {#data.empId = '{{ app.request.get('uid') }}';#}
+        data.requesttype = '';
+        data.prevstatus = '';
+        data.status = '{{ type }}';
+        data.empId = '{{ app.request.get('uid') }}';
 
-        {#if(! error && !_proc) {#}
-            {#_alertMessage.hide();#}
-            {#tbloader(1);#}
-            {#_proc = true;#}
-            {#post($(this), "{{ path('listener_event_change_tag_status') }}", data, function(data) {#}
-                {#_proc = false;#}
-                {#if(data.code==200) {#}
-                    {#showNotificationBar('Successfully '+data.status+'d requests!');#}
-                    {#_alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');#}
-                    {#_alertMessage.addClass('green').removeClass('red').show();#}
-                {#} else if(data.code==230) {#}
-                    {#showNotificationBar('No changes has been made!', 'error');#}
-                {#}#}
+        if(! error && !_proc) {
+            _alertMessage.hide();
+            tbloader(1);
+            _proc = true;
+            post($(this), "{{ path('listener_event_change_tag_status') }}", data, function(data) {
+                _proc = false;
+                if(data.code==200) {
+                    $('.txt-status').text(data.status=='approve' ? 'Going':'Not Going');
+                    showNotificationBar('Successfully '+data.status+'d requests!');
+                    _alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');
+                    _alertMessage.addClass('green').removeClass('red').show();
+                } else if(data.code==230) {
+                    showNotificationBar('No changes has been made!', 'error');
+                }
 
-                {#_btnActions.hide();#}
-                {#_timer.show();#}
-                {#tbloader();#}
-                {#myTimer();#}
-            {#});#}
-        {#}#}
-    {#});#}
+                _btnActions.hide();
+                _timer.show();
+                tbloader();
+                myTimer();
+            });
+        }
+    });
 
 
 </script>

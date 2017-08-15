@@ -347,7 +347,7 @@ class EmailController extends Controller
         $ownerName = trim($ownerAcc->getFname() . " " . $ownerAcc->getLname());
 
         $empAcc = EmpAccQuery::_findById($params['user_id']);
-        $empInfo = EmpProfilePeer::getInformation($params['user_id']);
+        $empInfo = EmpProfileQuery::_findByAccId($params['user_id']);
         $employeeName = trim($empInfo->getFname() . ' ' . $empInfo->getLname());
 
         $title = 'Holiday';
