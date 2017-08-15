@@ -63,7 +63,7 @@
                             <td>
                                 <center style="margin-top:5px">
                                 {% for rk,rl in requestLinks[k]  %}
-                                    <a href="{{ rl.href }}" id="request-btn" style="margin-right:5px;margin-top:2px;border-radius:6px;display:inline-block;color:{{ rl.bgColor is defined ? rl.bgColor : 'rgb(13, 181, 216)' }};font-family:arial,sans-serif;font-size:17px;padding:2px 20px;text-decoration:none;">
+                                    <a href="{{ rl.href }}" id="request-btn" style="margin-right:5px;margin-top:2px;border-radius:px;display:inline-block;color:{{ rl.bgColor|default('rgb(13, 181, 216)') }};font-family:arial,sans-serif;font-size: 14px;padding: 2px 10px;/* padding:2px 20px; */text-decoration:none;">
                                         {{ rk }}
                                     </a>{{ not loop.last ? '|':'' }}
                                 {% endfor %}
@@ -76,7 +76,7 @@
             <hr style="border-top: 1px dashed menu; ">
         {% endfor %}
         {% if data|length>1 %}
-            Total Request: {{ data|length }}
+            <span style="vertical-align:top;padding-top:5px;font-size:16px;padding-bottom:5px;font-family:'Lato',Calibri,Arial,sans-serif;">Total Request: {{ data|length }}</span>
         {% endif %}
 
     <!----------- approve/decline -------->
@@ -191,19 +191,19 @@
         {% if links is defined and links|length %}
             {% for k,l in links %}
                 <a href="{{ l.href }}" id="request-btn" style="
-                        margin-top: 10px;
-                        margin-right: 5px;
-                        background-color:{{ l.bgColor is defined ? l.bgColor : 'rgb(13, 181, 216)' }};-moz-border-radius:6px;
-                        -webkit-border-radius:6px;
-                        border-radius:4px;
-                        border:1px solid rgba(5,5,5,0.2);
-                        display:inline-block;
-                        cursor:pointer;
-                        color:#ffffff;
-                        font-family:arial,sans-serif;
-                        font-size:17px;
-                        padding:10px 18px;
-                        text-decoration:none;">
+                    margin-top: 30px;
+                    margin-right: 3px;
+                    background-color:{{ l.bgColor is defined ? l.bgColor : 'rgb(13, 181, 216)' }};-moz-border-radius:6px;
+                    -webkit-border-radius:6px;
+                    border-radius:4px;
+                    border:1px solid {{ l.borderColor|default('rgba(5,5,5,0.2)') }};
+                    display:inline-block;
+                    cursor:pointer;
+                    color:{{ l.color|default('#ffffff') }};
+                    font-family:arial,sans-serif;
+                    font-size:17px;
+                    padding:10px 18px;
+                    text-decoration:none;">
                     {{ k }}
                 </a>
             {% endfor %}

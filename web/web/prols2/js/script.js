@@ -486,7 +486,7 @@ function paginate(total, page, limit) {
     $pnav.find('.prev').removeClass('disabled').removeAttr('disabled');
     $pnav.find('.next').removeClass('disabled').removeAttr('disabled');
 
-    var remaining = total - (page*limit);
+    var remaining = total - ((page-1)*limit);
 
     $pnav.find('.-page-number').val(page);
 

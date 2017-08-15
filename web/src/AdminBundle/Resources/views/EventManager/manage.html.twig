@@ -191,11 +191,11 @@
             font-size: 20px;
         }
 
-        .wrap {
+        .wrap-filters {
             width: 30%;
             position: absolute;
             top: 68%;
-            left: 65%;
+            left: 63%;
             float: right;
             transform: translate(-50%, -50%);
         }
@@ -280,7 +280,7 @@
         .management-page-selector {
             margin: 10px 0px 0px 0px;
             display: inline-block;
-            width: 10%;
+            width: 15%;
             float: right;
 
         }
@@ -312,6 +312,7 @@
         .level-2-green-text {
             color: #6dab7f;
         }
+        .no-border { border: 0; }
     </style>
 {% endblock %}
 
@@ -322,24 +323,18 @@
                 <div class="row">
                     <div class="page-content">
                         <div class="col-md-12 light-blue darken-1 heading z-depth-1">
-                            <div class="responsive-nav"><a class="btn-flat"><i
-                                            class="material-icons res-menu">reorder</i></a></div>
+                            <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
                             <div class="top-nav-vl">
                                 <h3>Events List</h3>
-                                <div class="wrap">
+                                <div class="wrap-filters">
                                     <div class="search">
-                                        <input type="text" class="search-term"
-                                               placeholder="What are you looking for?">
-                                        <button type="submit" class="search-button">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                        <button type="submit" class="advanced-search-button">
-                                            <i class="fa fa-cog"></i>
-                                        </button>
+                                        <input type="text" class="search-term -search-box" placeholder="What are you looking for?">
+                                        <button type="submit" class="search-button btn-ghost no-border"><i class="fa fa-search"></i></button>
+                                        <button type="submit" class="advanced-search-button -btn-advance-search-open"><i class="fa fa-cog"></i></button>
                                     </div>
                                 </div>
-                                <a class="btn amber btn-add btn-open-create-modal  btn-select1"
-                                   style="color: white; margin-right: 5px;">Create Event</a>
+                                <a class="btn amber btn-open-create-modal  btn-select1"
+                                   style="margin-right: 5px;">Create Event</a>
                             </div>
                         </div>
 
@@ -367,7 +362,7 @@
                                     <thead>
                                     <tr>
                                         <th>
-                                            <a class="table-header-link" href="#">EVENT NAME
+                                            <a class="table-header-link sort desc" data-col="event_name" href="javascript:void(0);">EVENT NAME
                                                 <i class="arrow down">
                                                     {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
                                                     {#<i class="arrow up">#}
@@ -375,7 +370,7 @@
                                             </a>
                                         </th>
                                         <th>
-                                            <a class="table-header-link" href="#">TYPE
+                                            <a class="table-header-link sort desc" data-col="event_type" href="javascript:void(0);">TYPE
                                                 <i class="arrow down">
                                                     {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
                                                     {#<i class="arrow up">#}
@@ -383,7 +378,7 @@
                                             </a>
                                         </th>
                                         <th>
-                                            <a class="table-header-link" href="#">FROM
+                                            <a class="table-header-link sort desc" data-col="from_date"  href="javascript:void(0);">FROM
                                                 <i class="arrow down">
                                                     {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
                                                     {#<i class="arrow up">#}
@@ -391,7 +386,7 @@
                                             </a>
                                         </th>
                                         <th>
-                                            <a class="table-header-link" href="#">TO
+                                            <a class="table-header-link sort desc" data-col="to_date" href="javascript:void(0);">TO
                                                 <i class="arrow down">
                                                     {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
                                                     {#<i class="arrow up">#}
@@ -399,19 +394,19 @@
                                             </a>
                                         </th>
                                         <th>
-                                            <a class="table-header-link" href="#">ROLE
-                                                <i class="arrow down">
-                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                    {#<i class="arrow up">#}
-                                                </i>
+                                            <a class="table-header-link" href="javascript:void(0);">ROLE
+                                                {#<i class="arrow down">#}
+                                                    {#&#123;&#35;CREATE CONDITION IF FOR SWITCHING ARROWS&#35;&#125;#}
+                                                    {#&#123;&#35;<i class="arrow up">&#35;&#125;#}
+                                                {#</i>#}
                                             </a>
                                         </th>
                                         <th>
-                                            <a class="table-header-link" href="#">STATUS
-                                                <i class="arrow down">
-                                                    {#CREATE CONDITION IF FOR SWITCHING ARROWS#}
-                                                    {#<i class="arrow up">#}
-                                                </i>
+                                            <a class="table-header-link" href="javascript:void(0);">STATUS
+                                                {#<i class="arrow down">#}
+                                                    {#&#123;&#35;CREATE CONDITION IF FOR SWITCHING ARROWS&#35;&#125;#}
+                                                    {#&#123;&#35;<i class="arrow up">&#35;&#125;#}
+                                                {#</i>#}
                                             </a>
                                         </th>
                                         <th></th>
@@ -698,6 +693,7 @@
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
+
     <!-----------------------ADVANCED SEARCH MODAL -------------------------->
     <div id="mo-advanced-search" class="modal modal-fixed-footer overflow-hidden">
         <h4 class="mo-header">Advanced Search</h4>
@@ -754,16 +750,7 @@
         <input type="hidden" id="event_id">
         <div class="modal-footer">
             <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Cancel</a>
-            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Search</a>
-            <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
-                Required Fields!
-            </div>
-        </div>
-        <input type="hidden" id="event_id">
-        <div class="modal-footer">
-            <a href="#!" class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close">Close</a>
-            <a class="waves-effect waves-light btn amber btn-create-event" style="margin-right:5px;">Create</a>
-            {#<a class="waves-effect waves-light btn amber btn-edit" style="margin-right:5px;">Edit</a>#}
+            <a class="waves-effect waves-light btn amber -btn-advance-filter" style="margin-right:5px;">Search</a>
             <div class="chip add-error-chip pull-left display-none" style="font-size: 12px; color: red;">
                 Required Fields!
             </div>
@@ -833,11 +820,15 @@
         var txtEventHolidayTo = 'txt_to_event_holiday';
         var txtEventOtherFrom = 'txt_from_event_other';
         var txtEventOtherTo = 'txt_to_event_other';
+        var txtSearchBox = '.-search-box';
         var currentEmpId = parseInt('{{ app.user.id }}');
         var employees = [];
         var activeEventId = parseInt('{{ app.request.query.get('id') }}');
         var clickedEventId = 0;
         var contentReady = false;
+        var timer;
+        var Sort = 'date_created';
+        var Order = 'DESC';
 
         //pagination
         $pageSection = $('.-pagination-section');
@@ -868,8 +859,10 @@
 
             var data = {
                 id: activeEventId ? activeEventId : null,
-                page: PAGE==1? 0: (parseInt(PAGE))*parseInt(LIMIT)-1,
-                limit: LIMIT
+                page: PAGE==1? 0: (parseInt(PAGE)-1)*parseInt(LIMIT),
+                limit: LIMIT,
+                searchQry: $(txtSearchBox).val(),
+                sort: Sort, order: Order
             };
             post($('.-list-button-none-exist'), '{{ path('admin_manage_get_events') }}', data, function (data) {
                 $(tbEventList).find('tbody').html(data.list);
@@ -968,13 +961,14 @@
             var dateToEl = $('#' + txtEventHolidayTo);
             var dateFromEl2 = $('#' + txtEventOtherFrom);
             var dateToEl2 = $('#' + txtEventOtherTo);
+            activeEventId = 0;
 
             enableElement($(cmbEventType));
             defaultBorder([$(cmbEventType), $(txtEventName), $(txtEventDesc), $(dateFromEl), $(dateToEl), $(dateFromEl2), $(dateToEl2), $(txtEventVenue)]);
 
             $(txtEventId).val('');
             $(moCreateEvent).find('form').trigger('reset');
-            $('select').trigger('change');
+            $('select.select-emp-tag,select.cmb-select-event-type').trigger('change');
             $(chkNotifyOnEmail).prop('checked', true);
             $(chkOrganizerIsGoing).prop('checked', true);
             $(sectTagFields).hide();
@@ -1366,21 +1360,23 @@
                 }, 200);
             }, param);
 
-            initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () {
-//                setTimeout( function() {
-//                    var val = $('#'+txtEventOtherTo).val();
-//                    var valfrom = $('#'+txtEventOtherFrom).val();
-//                    //var pd = setPikadayData('end-range', txtEventOtherFrom, new Date(val));
-//
-//                    if(new Date(valfrom) > new Date(val)) {
-//
-//                    }
-//
-//                    //if(!removeSpace(valfrom).length) pd.show();
-//                }, 200);
-            }, param);
+            initPicker(txtEventOtherTo, fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () { }, param);
 
-            //pagination
+            //==>filters
+            DOC.on('keyup', txtSearchBox, function(event) {
+                clearTimeout(timer); console.log(event.keyCode)
+                if (event.keyCode!='18' && event.keyCode!='17' && event.keyCode!='16' && event.keyCode!='9') {
+                    timer = setTimeout(function () {
+                        getList(1);
+                    }, 500);
+                }
+            });
+
+            DOC.on('click', '.-btn-advance-search-open', function() {
+                $('#mo-advanced-search').openModal();
+            });
+
+            //==>pagination
             $pageSection.find('.next').click( function() {
                 PAGE++;
                 getList();
@@ -1392,12 +1388,38 @@
             $limit.change( function() {
                 getList(1);
             });
-            $pageSection.keyup(function(e){
-                var code = e.which; // recommended to use e.which, it's normalized across browsers
-                if(code==13)e.preventDefault();
-                if(code==32||code==13||code==188||code==186){
-                    $("#displaysomething").html($(this).val());
-                } // missing closing if brace
+
+            $page.bind('keyup', function(e) {
+                clearTimeout(timer);
+
+                timer = setTimeout(function() {
+                    var v = $page.val();
+                    if(e.keyCode==13 && PAGE!=v){
+                        console.log(TOTAL_PAGES)
+                        PAGE = v > TOTAL_PAGES ? TOTAL_PAGES : v;
+                        $page.val(PAGE)
+                        getList();
+                    }
+                }, 500);
+            });
+
+            //==>Order Column
+            DOC.on('click', '.table-header-link.sort', function() {
+                $('.table-header-link.sort').not(this).find('.arrow').addClass('down').removeClass('up');
+                $('.table-header-link.sort').not(this).removeClass('asc').addClass('desc')
+
+                Sort = $(this).data('col');
+                if($(this).hasClass('asc')) {
+                    Order = 'DESC';
+                    getList();
+                    $(this).removeClass('asc').addClass('desc');
+                    $(this).find('.arrow').addClass('down').removeClass('up');
+                } else {
+                    Order = 'ASC';
+                    getList();
+                    $(this).removeClass('desc').addClass('asc');
+                    $(this).find('.arrow').addClass('up').removeClass('down');
+                }
             });
         }
     </script>

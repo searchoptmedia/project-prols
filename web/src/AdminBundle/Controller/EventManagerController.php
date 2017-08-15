@@ -83,9 +83,11 @@ class EventManagerController extends Controller
                 $response = U::getSuccessResponse();
 
                 $params['owner_email'] = U::getUserDetails('email', $this);
-                $params['links'] = array('View Event' => array(
-                    'href' => $this->generateUrl('manage_events', array('id' => $event->getId()), true),
-                ));
+                $params['links'] = array(
+                    'Going' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true), 'bgColor' => '#4CAF50' ),
+                    'Not Going' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true), 'bgColor' => '#F44336'),
+                    'View Event' => array( 'href' => $this->generateUrl('admin_manage_events', array('id' => $event->getId()), true) )
+                );
 
                 if($event->getEventType()!=C::EVENT_TYPE_HOLIDAY) {
                     if(!empty($params['tags'])) {
@@ -274,7 +276,7 @@ class EventManagerController extends Controller
         $eventTypes = ListEventsTypePeer::getAllEventType();
         $allacc = EmpAccPeer::getAllUser();
 
-        return $this->render('AdminBundle:EventManager:manage.html.twig', array(
+        $response = $this->render('AdminBundle:EventManager:manage.html.twig', array(
             'userip' => $userip,
             'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
             'checkipdata' => $checkipdata,
@@ -290,6 +292,11 @@ class EventManagerController extends Controller
             'eventTypes' => $eventTypes,
             'allacc' => $allacc
         ));
+
+        $response->setSharedMaxAge(3600);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+
+        return $response;
     }
 
     function getListAction(Request $request)
@@ -306,9 +313,10 @@ class EventManagerController extends Controller
                 'event_type' => array( 'data' => C::EVENT_TYPE_HOLIDAY, '_or' => true ),
                 'created_by' => array( 'data' => $id, '_or' => true ),
                 'status' => array( 'data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL ),
-                'order' => array( 'data' => 'date_created', 'criteria' => \Criteria::DESC ),
+                'order' => array( 'data' => $params['sort'], 'criteria' =>$params['order'] ),
                 'page' => $params['page'],
                 'limit' => $params['limit'],
+                'searchText' => $params['searchQry']
             );
 
             $getEvents = ListEventsQuery::_findAll($entriesData);

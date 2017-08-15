@@ -637,7 +637,7 @@ class EmailController extends Controller
                     $requestLinks[] = array(
                         'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage',  array('id' => $o['requestId'], 'type' => 'approve', 'uid' => $ae['id']), true)),
                         'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage',  array('id' => $o['requestId'], 'type' => 'decline', 'uid' => $ae['id']), true)),
-                        'View'    => array('bgColor' => 'rgb(13, 181, 216)', 'href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
+                        'View'    => array('href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
                     );
                 }
 
@@ -658,7 +658,7 @@ class EmailController extends Controller
                     'links' => array(
                         (count($requestDates)==1 ? 'Approve':'Approve All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam1, true), 'bgColor' => '#4CAF50'),
                         (count($requestDates)==1 ? 'Decline':'Decline All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam2, true), 'bgColor' => '#F44336'),
-                        'View' =>  array('href' => $class->generateUrl('view_request', $urlParam, true), 'bgColor' => 'rgb(13, 181, 216)'),
+                        (count($requestDates)==1 ? 'View':'View All') =>  array('href' => $class->generateUrl('view_request', $urlParam, true), 'bgColor' => 'transparent', 'color'=>'#26a69a;', 'borderColor' => 'rgb(38, 166, 154)'),
                     )
                 ));
 
