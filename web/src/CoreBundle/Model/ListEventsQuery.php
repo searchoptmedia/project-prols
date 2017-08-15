@@ -25,7 +25,7 @@ class ListEventsQuery extends BaseListEventsQuery
         }
 
         if(!empty($params['date_ended']['data'])) {
-            $data->_or();
+            if(!isset($params['calendar'])) $data->_or();
             $data->filterByToDate($params['date_ended']['data'], isset($params['date_ended']['criteria']) ? $params['date_ended']['criteria'] : \Criteria::LESS_EQUAL );
         }
 
