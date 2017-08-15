@@ -312,14 +312,35 @@ class EventManagerController extends Controller
 
             $entriesData = array(
                 'tag_ids' => array( 'data' => $id ),
-                'event_type' => array( 'data' => C::EVENT_TYPE_HOLIDAY, '_or' => true ),
-                'created_by' => array( 'data' => $id, '_or' => true ),
                 'status' => array( 'data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL ),
                 'order' => array( 'data' => $params['sort'], 'criteria' =>$params['order'] ),
                 'page' => $params['page'],
                 'limit' => $params['limit'],
                 'searchText' => $params['searchQry']
             );
+
+            if($params['role']==1) {
+                $entriesData['created_by'] = array('data' => array($this->getUser()->getId()), 'criteria' => \Criteria::IN);
+            } else if($params['role']==2) {
+                $entriesData['created_by'] = array('data' => array($this->getUser()->getId()), 'criteria' => \Criteria::NOT_IN);
+            } else {
+                $entriesData['created_by'] = array('data' => array($this->getUser()->getId()), 'criteria' => \Criteria::IN, '_or' => !empty($params['event_type']) ? false : true );
+            }
+
+            if(!empty($params['status'])) {
+                $entriesData['tag_status'] = array('data' => $params['status']);
+            }
+
+            if(!empty($params['event_type'])) {
+                $entriesData['event_type'] = array('data' => $params['event_type']);
+            }
+
+            if(!empty($params['from'])) {
+                $entriesData['date_started'] =  array('data' => date('Y-m-d H:i:s',strtotime($params['from'])));
+            }
+            if(!empty($params['to'])) {
+                $entriesData['date_ended'] =  array('data' => date('Y-m-d H:i:s',strtotime($params['to'])));
+            }
 
             $getEvents = ListEventsQuery::_findAll($entriesData);
 

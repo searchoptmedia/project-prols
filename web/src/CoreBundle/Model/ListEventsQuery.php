@@ -3,6 +3,7 @@
 namespace CoreBundle\Model;
 
 use CoreBundle\Model\om\BaseListEventsQuery;
+use CoreBundle\Utilities\Constant;
 
 class ListEventsQuery extends BaseListEventsQuery
 {
@@ -17,31 +18,32 @@ class ListEventsQuery extends BaseListEventsQuery
     static function _findAll($params = array(), $isCount = false)
     {
         $data = self::create();
+        $isHoliday = false;
 
         if(!empty($params['date_started']['data'])) {
             $data->filterByFromDate($params['date_started']['data'], isset($params['date_started']['criteria']) ? $params['date_started']['criteria'] : \Criteria::GREATER_EQUAL );
         }
 
         if(!empty($params['date_ended']['data'])) {
+            $data->_or();
             $data->filterByToDate($params['date_ended']['data'], isset($params['date_ended']['criteria']) ? $params['date_ended']['criteria'] : \Criteria::LESS_EQUAL );
-        }
-
-        if(!empty($params['tag_ids']['data'])) {
-            $data->useEventTaggedPersonsQuery('tp', 'left join')
-                ->filterByEmpId($params['tag_ids']['data'], isset($params['tag_ids']['criteria']) ? $params['tag_ids']['criteria'] : \Criteria::EQUAL )
-                ->_or()
-            ->endUse();
         }
 
         if(!empty($params['event_type']['data'])) {
             if(isset($params['event_type']['_or']))
                 $data->_or();
 
+            if($params['event_type']['data']==Constant::EVENT_TYPE_HOLIDAY) {
+                $isHoliday = true;
+            }
+
             $data->filterByEventType($params['event_type']['data'], isset($params['event_type']['criteria']) ? $params['event_type']['criteria'] : \Criteria::EQUAL);
         }
+//        $data->_or();
+//        $data->filterByEventType(1, isset($params['event_type']['criteria']) ? $params['event_type']['criteria'] : \Criteria::EQUAL);
 
         if(!empty($params['created_by']['data'])) {
-            if(isset($params['created_by']['_or']))
+            if(isset($params['created_by']['_or']) && $params['created_by']['_or']==true)
                 $data->_or();
 
             $data->filterByCreatedBy($params['created_by']['data'], isset($params['created_by']['criteria']) ? $params['created_by']['criteria'] : \Criteria::EQUAL);
@@ -52,6 +54,22 @@ class ListEventsQuery extends BaseListEventsQuery
                 $data->_or();
 
             $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
+        }
+
+        if($isHoliday==false) {
+            if (!empty($params['tag_ids']['data'])) {
+                $data->useEventTaggedPersonsQuery('tp', 'left join')
+                    ->filterByEmpId($params['tag_ids']['data'], isset($params['tag_ids']['criteria']) ? $params['tag_ids']['criteria'] : \Criteria::EQUAL)
+                    ->_or()
+                    ->endUse();
+            }
+
+            if (!empty($params['tag_status']['data'])) {
+                $data->useEventTaggedPersonsQuery('tp', 'left join')
+                    ->filterByStatus($params['tag_status']['data'], isset($params['tag_status']['criteria']) ? $params['tag_status']['criteria'] : \Criteria::EQUAL)
+                    ->_or()
+                    ->endUse();
+            }
         }
 
         if(!empty($params['searchText'])) {
