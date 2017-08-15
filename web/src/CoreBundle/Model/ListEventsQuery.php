@@ -39,22 +39,6 @@ class ListEventsQuery extends BaseListEventsQuery
 
             $data->filterByEventType($params['event_type']['data'], isset($params['event_type']['criteria']) ? $params['event_type']['criteria'] : \Criteria::EQUAL);
         }
-//        $data->_or();
-//        $data->filterByEventType(1, isset($params['event_type']['criteria']) ? $params['event_type']['criteria'] : \Criteria::EQUAL);
-
-        if(!empty($params['created_by']['data'])) {
-            if(isset($params['created_by']['_or']) && $params['created_by']['_or']==true)
-                $data->_or();
-
-            $data->filterByCreatedBy($params['created_by']['data'], isset($params['created_by']['criteria']) ? $params['created_by']['criteria'] : \Criteria::EQUAL);
-        }
-
-        if(!empty($params['status']['data'])) {
-            if(isset($params['status']['_or']))
-                $data->_or();
-
-            $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
-        }
 
         if($isHoliday==false) {
             if (!empty($params['tag_ids']['data'])) {
@@ -70,6 +54,22 @@ class ListEventsQuery extends BaseListEventsQuery
                     ->_or()
                     ->endUse();
             }
+        }
+//        $data->_or();
+//        $data->filterByEventType(1, isset($params['event_type']['criteria']) ? $params['event_type']['criteria'] : \Criteria::EQUAL);
+
+        if(!empty($params['created_by']['data'])) {
+            if(isset($params['created_by']['_or']) && $params['created_by']['_or']==true)
+                $data->_or();
+
+            $data->filterByCreatedBy($params['created_by']['data'], isset($params['created_by']['criteria']) ? $params['created_by']['criteria'] : \Criteria::EQUAL);
+        }
+
+        if(!empty($params['status']['data'])) {
+            if(isset($params['status']['_or']))
+                $data->_or();
+
+            $data->filterByStatus($params['status']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
         }
 
         if(!empty($params['searchText'])) {
