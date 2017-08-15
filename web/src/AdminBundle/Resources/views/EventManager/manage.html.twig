@@ -609,22 +609,25 @@
     <!----------------------- VIEW EVENT MODAL -------------------------->
     <div id="mo-event-view-details" class="modal modal-fixed-footer overflow-hidden">
         <h4 class="mo-header"><span class="mo-header-title">Meeting</span>
-            <div class="pull-right sect-guest-response-area display-none">
-                <a class="waves-effect btn-guest-response waves-light btn green font16"
-                   data-status="{{ constant(CONST~'STATUS_APPROVED') }}">Going</a>
-                <a class="waves-effect btn-guest-response waves-light btn amber font16"
-                   data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>
-            </div>
-            <div class="pull-right sect-user-action-area display-none">
-                <a class="waves-effect waves-light btn amber btn-show-consider-section font16">Reconsider</a>
-            </div>
+            {#<div class="pull-right sect-guest-response-area display-none">#}
+                {#<a class="waves-effect btn-guest-response waves-light btn green font16"#}
+                   {#data-status="{{ constant(CONST~'STATUS_APPROVED') }}">Going</a>#}
+                {#<a class="waves-effect btn-guest-response waves-light btn red font16"#}
+                   {#data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>#}
+            {#</div>#}
+            {#<div class="pull-right sect-user-action-area display-none">#}
+                {#<a class="waves-effect waves-light btn amber btn-show-consider-section font16">Reconsider</a>#}
+            {#</div>#}
 
             <div class="form-group display-none sect-reason-area mt1 pt2 pb2 pr2 pl2" style="background: #fff; ">
                 <label style="text-shadow: 0px 0px 0px;">ADD COMMENT (<span
                             class="span-reason-status">I'm not going</span>)</label>
                 <textarea style="color: #555;!important" class="materialize-textarea txt-view-reason"></textarea>
                 <a class="waves-effect btn-guest-response-save waves-light btn amber font16"
-                   data-loading-text="Saving..." data-status="">Save</a>
+                   data-loading-text="Saving..." data-status="">Done</a>
+                <a style="margin-right: 15px;" href="#"
+                   class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close font16" id="">Cancel</a>
+
             </div>
         </h4>
         <div class="modal-content">
@@ -675,16 +678,27 @@
         </div>
 
         <div class="modal-footer" style="z-index: 111;">
-            <div style="margin-left:10px; float:left;">
-                <div class="pull-left sect-view-status-area display-none">
-                    Your current status is: <a class="" style="font-size: 16px;">Pending</a>
-                </div>
-            </div>
-            <a href="javascript:void(0);"
+            {#<div style="margin-left:10px; float:left;">#}
+                {#<div class="pull-left sect-view-status-area display-none">#}
+                    {#Your current status is: <a class="" style="font-size: 16px;">Pending</a>#}
+                {#</div>#}
+            {#</div>#}
+            <a style="margin-right: 15px;" href="javascript:void(0);"
                class="waves-effect waves-light grey custombtn btn-flat modal-action modal-close" id="view-btn-close">Close</a>
+
             <a class="waves-effect waves-light btn orange btn-view-open-edit-event-mo sect-view-owner-action-area display-none mr2"
-               style="font-size: 16px;">Edit</a>
+               style="font-size: 16px; margin-right: 15px;">Edit</a>
             <a class="waves-effect waves-light btn red btn-view-open-cancel-verify-mo sect-view-owner-action-area display-none mr2 btn-ghost red" style="font-size: 16px;">Cancel Event</a>
+
+            <div class="pull-right sect-guest-response-area display-none">
+                <a style="margin-right: 15px;" class="waves-effect btn-guest-response waves-light btn red font16"
+                   data-status="{{ constant(CONST~'STATUS_DECLINED') }}">Not Going</a>
+                <a style="margin-right: 15px;" class="waves-effect btn-guest-response waves-light btn green font16"
+                   data-status="{{ constant(CONST~'STATUS_APPROVED') }}">Going</a>
+            </div>
+            <div class="pull-right sect-user-action-area display-none">
+                <a style="margin-right: 15px;" class="waves-effect waves-light btn amber btn-show-consider-section font16">Reconsider</a>
+            </div>
         </div>
     </div>
     <!-----------------------END OF MODAL -------------------------->
