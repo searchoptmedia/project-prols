@@ -533,12 +533,34 @@ class EmailController extends Controller
 
                 $adminLists[] = array(
                     'id' => $e->getEmpAcc()->getId(),
-                    'email' => array( $email =>$name )
+                    'email' => array( $email =>$name ),
+                    'name' => 'Admin'
                 );
             }
         }
 
         return $adminLists;
+    }
+
+    public function addTeamLeadEmail($department)
+    {
+        $admin = EmpProfileQuery::create()
+            ->filterByListDeptDeptId($department)
+                ->useEmpAccQuery()
+                    ->filterByTeamRole('lead')
+                    ->filterByStatus(C::STATUS_ACTIVE)
+                ->endUse()
+            ->findOne();
+
+        if($admin) {
+            return array(
+                'id' => 0,
+                'email' => array($admin->getEmpAcc()->getEmail() => trim($admin->getFname() .' '. $admin->getLname())),
+                'name' => $admin->getFname()
+            );
+        }
+
+        return array();
     }
 
 
@@ -616,6 +638,10 @@ class EmailController extends Controller
         $subject = "PROLS » " . $requestType . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
         $adminEmailList = $this->getAdmins();
+        $teamLeadEmail = $this->addTeamLeadEmail($empinfo->getListDeptDeptId());
+
+        if($teamLeadEmail)
+            $adminEmailList[] = $teamLeadEmail;
 
         if(count($adminEmailList)) {
             foreach($adminEmailList as $ae) {
@@ -634,11 +660,13 @@ class EmailController extends Controller
 
                     $requestIds[] = $o['requestId'];
 
-                    $requestLinks[] = array(
-                        'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage',  array('id' => $o['requestId'], 'type' => 'approve', 'uid' => $ae['id']), true)),
-                        'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage',  array('id' => $o['requestId'], 'type' => 'decline', 'uid' => $ae['id']), true)),
-                        'View'    => array('href' => $class->generateUrl('view_request',  array('id' => $o['requestId']), true)),
-                    );
+                    if($ae['id']!=0) {
+                        $requestLinks[] = array(
+                            'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage', array('id' => $o['requestId'], 'type' => 'approve', 'uid' => $ae['id']), true)),
+                            'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage', array('id' => $o['requestId'], 'type' => 'decline', 'uid' => $ae['id']), true)),
+                            'View' => array('href' => $class->generateUrl('view_request', array('id' => $o['requestId']), true)),
+                        );
+                    }
                 }
 
                 $urlParam = count($requestDates)==1 ? array('id' => $requestDates[0]['id']) : array();
@@ -648,18 +676,20 @@ class EmailController extends Controller
                 $urlParam1['type'] = 'approve';
                 $urlParam2['type'] = 'decline';
 
+                $links = $ae['id'] > 0 ? array(
+                    (count($requestDates)==1 ? 'Approve':'Approve All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam1, true), 'bgColor' => '#4CAF50'),
+                    (count($requestDates)==1 ? 'Decline':'Decline All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam2, true), 'bgColor' => '#F44336'),
+                    (count($requestDates)==1 ? 'View':'View All') =>  array('href' => $class->generateUrl('view_request', $urlParam, true), 'bgColor' => 'transparent', 'color'=>'#26a69a;', 'borderColor' => 'rgb(38, 166, 154)'),
+                ) : array();
+
                 $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
                     'data' => $requestDates,
                     'title' => $requestType,
-                    'greetings' => 'Hi Admin,',
+                    'greetings' => 'Hi '.$ae['name'].',',
                     'message' => "<strong>$empName</strong> has requested for a <strong>$requestType</strong>.",
                     'template' => 'leave-request',
                     'requestLinks' => $requestLinks,
-                    'links' => array(
-                        (count($requestDates)==1 ? 'Approve':'Approve All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam1, true), 'bgColor' => '#4CAF50'),
-                        (count($requestDates)==1 ? 'Decline':'Decline All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam2, true), 'bgColor' => '#F44336'),
-                        (count($requestDates)==1 ? 'View':'View All') =>  array('href' => $class->generateUrl('view_request', $urlParam, true), 'bgColor' => 'transparent', 'color'=>'#26a69a;', 'borderColor' => 'rgb(38, 166, 154)'),
-                    )
+                    'links' => $links
                 ));
 
                 $response = self::sendEmail($class, $subject, $from, $to, $emailContent);

@@ -110,7 +110,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -121,7 +121,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [history_id] column value.
-     *
+     * 
      * @return int
      */
     public function getHistoryId()
@@ -132,7 +132,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [event_tag_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEventTagId()
@@ -143,7 +143,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     *
+     * 
      * @return int
      */
     public function getStatus()
@@ -154,7 +154,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [message] column value.
-     *
+     * 
      * @return string
      */
     public function getMessage()
@@ -165,7 +165,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date_created] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -200,12 +200,12 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTagHistory The current object (for fluent API support)
      */
@@ -226,7 +226,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [history_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTagHistory The current object (for fluent API support)
      */
@@ -251,7 +251,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [event_tag_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTagHistory The current object (for fluent API support)
      */
@@ -276,7 +276,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTagHistory The current object (for fluent API support)
      */
@@ -297,7 +297,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [message] column.
-     *
+     * 
      * @param  string $v new value
      * @return EventTagHistory The current object (for fluent API support)
      */
@@ -318,7 +318,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date_created] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EventTagHistory The current object (for fluent API support)
@@ -654,22 +654,22 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`history_id`':
+                    case '`history_id`':						
                         $stmt->bindValue($identifier, $this->history_id, PDO::PARAM_INT);
                         break;
-                    case '`event_tag_id`':
+                    case '`event_tag_id`':						
                         $stmt->bindValue($identifier, $this->event_tag_id, PDO::PARAM_INT);
                         break;
-                    case '`status`':
+                    case '`status`':						
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
-                    case '`message`':
+                    case '`message`':						
                         $stmt->bindValue($identifier, $this->message, PDO::PARAM_STR);
                         break;
-                    case '`date_created`':
+                    case '`date_created`':						
                         $stmt->bindValue($identifier, $this->date_created, PDO::PARAM_STR);
                         break;
                 }
@@ -882,7 +882,7 @@ abstract class BaseEventTagHistory extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aHistory) {
                 $result['History'] = $this->aHistory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
