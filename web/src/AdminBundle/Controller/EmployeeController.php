@@ -11,8 +11,10 @@ use CoreBundle\Model\EmpCapabilities;
 use CoreBundle\Model\EmpCapabilitiesPeer;
 use CoreBundle\Model\EmpStatusTypePeer;
 use CoreBundle\Model\EmpTimeQuery;
+use CoreBundle\Utilities\Utils;
 use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use CoreBundle\Model\EmpProfile;
@@ -42,22 +44,23 @@ class EmployeeController extends Controller
 
 	function __construct()
 	{
+        date_default_timezone_set('Asia/Manila');
 		$this->session = new Session();
 	}
 
 	public function TimeInAction(Request $request)
 	{
-		date_default_timezone_set('Asia/Manila');
-
 		//check session active
 		$user = $this->getUser();
+        $response = Utils::getForbid();
 
-		if(empty($user))
-		{
+		if(empty($user)) {
 			// if session expire
-			echo 'Session Expire';
-			exit;
+			return new JsonResponse($response);
 		}
+
+        $response = Utils::getForbid();
+
 		$matchedip 		= InitController::getUserIP($this);
 		$datetimetoday 	= date('Y-m-d H:i:s');
 		$datetoday 		= date('Y-m-d');
@@ -66,17 +69,17 @@ class EmployeeController extends Controller
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$ip_add 		= ListIpPeer::getValidIP($matchedip);
         $emailresp      = 0;
+
 		//Compare last time in date with date today
-		if(!empty($timedata))
-		{
+		if(!empty($timedata)) {
 			$emptimedate = $timedata->getTimeIn()->format('Y-m-d');
-			if($emptimedate == $datetoday)
-			{
+			if($emptimedate == $datetoday) {
 				$timeflag = 1;
                 InitController::ResetSessionValue();
                 InitController::loginSetTimeSession($this);
 			}
 		}
+
 		//Time in
 		if($timeflag == 0) {
 			$empTimeSave = new EmpTime();
@@ -97,15 +100,14 @@ class EmployeeController extends Controller
 				$empTimeSave->setCheckIp(0);
 			}
 
-             $message = "Oops. Something went wrong. Please try again.";
+             $response['message'] = "Oops. Something went wrong. Please try again.";
              $empTimeAlreadySaved = false;
              $this->session->set('timeout', 'false');
              $is_message = $request->request->get('is_message');
              $emailresp = '';
-             $is_email = false;
-             if(!is_null($is_message))
-             {
-                 $emailresp = 'Email Sent';
+
+             if(!is_null($is_message)) {
+                 $response['email'] = 200;
                  $requesttimein = new EmpRequest();
                  $requesttimein->setStatus(2);
                  $requesttimein->setRequest($request->request->get('message'));
@@ -125,13 +127,13 @@ class EmployeeController extends Controller
                          $sendemail = $email->sendTimeInRequest($request, $this, $requesttimein->getId());
 
                          if(! $sendemail) {
-                             $emailresp = 'No email sent';
+                             $response['email'] = 500;
                          }
                      }
 
                      InitController::ResetSessionValue();
                      InitController::loginSetTimeSession($this);
-                     $message = 'Time in Successful';
+                     $response['message'] = 'Time in Successful';
                  }
              }
 
@@ -139,15 +141,14 @@ class EmployeeController extends Controller
                  if($empTimeSave->save()) {
                      InitController::ResetSessionValue();
                      InitController::loginSetTimeSession($this);
-                     $message = 'Time in Successful';
+                     $response['message'] = 'Time in Successful';
                  }
              }
 		} else {
-			$message = 'Already Time in today';
+            $response['message'] = 'Already Time in today';
 		}
-		$response = array('message' => $message, 'emailresp' => $emailresp);
-		echo json_encode($response);
-    	exit;
+
+        return new JsonResponse($response);
     }
 
 	public function TimeOutAction($passw)

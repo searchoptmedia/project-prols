@@ -27,3 +27,7 @@ services:
         arguments: [ @router, @security.context ]
         tags:
             - { name: 'monolog.logger', channel: 'security' }
+    app.twig.extension:
+        class:  CoreBundle\Twig\Helper
+        tags:
+            - { name: twig.extension }

@@ -39,7 +39,8 @@
 
             <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                 <p class="confirm-timein"><b>Happy Birthday!!!</b>
-                    {% for userbdayname in userbdaynames %}<br>{{ userbdayname }}{% endfor %}</p>
+                    <span class="bday-names"></span>
+                </p>
                 <p class="confirm-timein" style="font-size: 30px; position:relative; top: 20px;">Greetings from your <b>Propelrr</b> Family!<br>Burger! Burger!</p>
                 <div class="btn-block" style="position:relative;top: 50px;">
                     <a class="waves-effect waves-light green btn-flat btn-large btn-bdayclose" href="#">CLOSE</a>
@@ -50,57 +51,52 @@
 </div>
 
 <!-----------------------TIME IN MODAL CONTAINER------------------------->
-{% if checkip %}
-    <div class="time-in-container" style="display:none;">
-        <div class="time-in center-align">
-            <div class="valign-wrapper">
+<div class="custom-modal-1 modal-time-in-container allowed display-none">
+    <div class="time-in center-align">
+        <div class="valign-wrapper">
 
-                <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                    <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
-                        <div class="widget-subtitle plugin-date">Loading...</div></div>
-                    {% if systime >= afternoon %}
-                        <p class="confirm-timein">Good Afternoon!</p>
-                    {% else %}
-                        <p class="confirm-timein">Good Morning!</p>
-                    {% endif %}
-                    <div class="btn-block">
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action="timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
-                            <i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                    </div>
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <div class="clock2">
+                    <div class="widget-big-int plugin-clock">00:00</div>
+                    <div class="widget-subtitle plugin-date">Loading...</div>
+                </div>
+                <p class="confirm-timein">Good Afternoon!</p>
+                <div class="btn-block">
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit"
+                       id="time-in-button" data-action="timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
+                        <i class="material-icons left icon-timein">query_builder</i>Time in
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
+</div>
 
 <!-- if not same ip -->
-{% if matchedip != userip %}
-    <div class="time-in-container" style="display:none;">
-        <div class="diff-ip center-align">
-            <div class="valign-wrapper">
+<div class="custom-modal-1 modal-time-in-container deny display-none">
+    <div class="diff-ip center-align">
+        <div class="valign-wrapper">
 
-                <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                    <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
-                        <div class="widget-subtitle plugin-date">Loading...</div></div>
-                    <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
-                    <textarea id="diffip-input-reason" class="materialize-textarea" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
-                    <!-- <p class="diff-ip-notice">Request Access?</p>
-                    <p class="diff-ip-sent">Request Sent!</p>
-                    <p class="diff-ip-reason">Enter reason:</p> -->
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+                    <div class="widget-subtitle plugin-date">Loading...</div></div>
+                <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
+                <textarea id="diffip-input-reason" class="materialize-textarea -txt-timein-reason" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
+                <!-- <p class="diff-ip-notice">Request Access?</p>
+                <p class="diff-ip-sent">Request Sent!</p>
+                <p class="diff-ip-reason">Enter reason:</p> -->
 
-                    <div class="btn-block">
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action = "timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
-                            <i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
-                    </div>
+                <div class="btn-block">
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
+                       id="time-in-button" data-action = "timein" data-id="{{ app.user.id }}" data-ip="{{ checkip }}">
+                        <i class="material-icons left icon-timein">query_builder</i>Time in</a>
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
+</div>
 
 
 <!-----------------------TIME OUT MODAL CONTAINER------------------------->
