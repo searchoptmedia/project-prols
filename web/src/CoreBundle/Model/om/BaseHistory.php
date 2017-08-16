@@ -92,7 +92,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -103,7 +103,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Get the [module] column value.
-     *
+     * 
      * @return string
      */
     public function getModule()
@@ -114,7 +114,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Get the [action] column value.
-     *
+     * 
      * @return string
      */
     public function getAction()
@@ -125,7 +125,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return History The current object (for fluent API support)
      */
@@ -146,7 +146,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [module] column.
-     *
+     * 
      * @param  string $v new value
      * @return History The current object (for fluent API support)
      */
@@ -167,7 +167,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
 
     /**
      * Set the value of [action] column.
-     *
+     * 
      * @param  string $v new value
      * @return History The current object (for fluent API support)
      */
@@ -481,13 +481,13 @@ abstract class BaseHistory extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`module`':
+                    case '`module`':						
                         $stmt->bindValue($identifier, $this->module, PDO::PARAM_STR);
                         break;
-                    case '`action`':
+                    case '`action`':						
                         $stmt->bindValue($identifier, $this->action, PDO::PARAM_STR);
                         break;
                 }
@@ -678,7 +678,7 @@ abstract class BaseHistory extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->collEventTagHistories) {
                 $result['EventTagHistories'] = $this->collEventTagHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);

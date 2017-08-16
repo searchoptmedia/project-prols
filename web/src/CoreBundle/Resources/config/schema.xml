@@ -10,6 +10,7 @@
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <column name="email" phpName="Email" type="VARCHAR" size="45" required="true"/>
         <column name="role" phpName="Role" type="VARCHAR" size="45" required="true"/>
+        <column name="team_role" phpName="TeamRole" type="VARCHAR" size="45" required="true"/>
         <column name="key" phpName="Key" type="VARCHAR" size="255" />
         <column name="created_by" phpName="CreatedBy" type="INTEGER" required="true"/>
         <column name="last_updated_by" phpName="LastUpdatedBy" type="INTEGER" required="true"/>

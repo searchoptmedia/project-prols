@@ -104,7 +104,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -115,7 +115,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Get the [event_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEventId()
@@ -126,7 +126,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Get the [note] column value.
-     *
+     * 
      * @return string
      */
     public function getNote()
@@ -137,7 +137,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Get the [created_by] column value.
-     *
+     * 
      * @return int
      */
     public function getCreatedBy()
@@ -148,7 +148,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date_created] column value.
-     *
+     * 
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -183,12 +183,12 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-
+        
     }
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventNotes The current object (for fluent API support)
      */
@@ -209,7 +209,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Set the value of [event_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventNotes The current object (for fluent API support)
      */
@@ -234,7 +234,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Set the value of [note] column.
-     *
+     * 
      * @param  string $v new value
      * @return EventNotes The current object (for fluent API support)
      */
@@ -255,7 +255,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Set the value of [created_by] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventNotes The current object (for fluent API support)
      */
@@ -280,7 +280,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date_created] column to a normalized version of the date/time value specified.
-     *
+     * 
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EventNotes The current object (for fluent API support)
@@ -612,19 +612,19 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`event_id`':
+                    case '`event_id`':						
                         $stmt->bindValue($identifier, $this->event_id, PDO::PARAM_INT);
                         break;
-                    case '`note`':
+                    case '`note`':						
                         $stmt->bindValue($identifier, $this->note, PDO::PARAM_STR);
                         break;
-                    case '`created_by`':
+                    case '`created_by`':						
                         $stmt->bindValue($identifier, $this->created_by, PDO::PARAM_INT);
                         break;
-                    case '`date_created`':
+                    case '`date_created`':						
                         $stmt->bindValue($identifier, $this->date_created, PDO::PARAM_STR);
                         break;
                 }
@@ -833,7 +833,7 @@ abstract class BaseEventNotes extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

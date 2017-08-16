@@ -50,6 +50,7 @@ class EmpAccTableMap extends TableMap
         $this->addColumn('status', 'Status', 'INTEGER', true, null, null);
         $this->addColumn('email', 'Email', 'VARCHAR', true, 45, null);
         $this->addColumn('role', 'Role', 'VARCHAR', true, 45, null);
+        $this->addColumn('team_role', 'TeamRole', 'VARCHAR', true, 45, null);
         $this->addColumn('key', 'Key', 'VARCHAR', false, 255, null);
         $this->addColumn('created_by', 'CreatedBy', 'INTEGER', true, null, null);
         $this->addColumn('last_updated_by', 'LastUpdatedBy', 'INTEGER', true, null, null);

@@ -360,7 +360,7 @@ abstract class BaseEventTaggedPersonsPeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -375,7 +375,7 @@ abstract class BaseEventTaggedPersonsPeer
       }
         EventTaggedPersonsPeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to event_tagged_persons
      * by a foreign key with ON DELETE CASCADE
@@ -418,7 +418,7 @@ abstract class BaseEventTaggedPersonsPeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -429,7 +429,7 @@ abstract class BaseEventTaggedPersonsPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = EventTaggedPersonsPeer::getOMClass();
         // populate the object(s)
@@ -895,7 +895,7 @@ abstract class BaseEventTaggedPersonsPeer
         if ($con === null) {
             $con = Propel::getConnection(EventTaggedPersonsPeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EventTaggedPersonsPeer::EVENT_ID, ListEventsPeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -946,7 +946,7 @@ abstract class BaseEventTaggedPersonsPeer
         if ($con === null) {
             $con = Propel::getConnection(EventTaggedPersonsPeer::DATABASE_NAME, Propel::CONNECTION_READ);
         }
-
+    
         $criteria->addJoin(EventTaggedPersonsPeer::EMP_ID, EmpAccPeer::ID, $join_behavior);
 
         $stmt = BasePeer::doCount($criteria, $con);
@@ -1015,7 +1015,7 @@ abstract class BaseEventTaggedPersonsPeer
                 if ($key2 !== null) {
                     $obj2 = ListEventsPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = ListEventsPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1089,7 +1089,7 @@ abstract class BaseEventTaggedPersonsPeer
                 if ($key2 !== null) {
                     $obj2 = EmpAccPeer::getInstanceFromPool($key2);
                     if (!$obj2) {
-
+    
                         $cls = EmpAccPeer::getOMClass();
 
                     $obj2 = new $cls();
@@ -1304,7 +1304,7 @@ abstract class BaseEventTaggedPersonsPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EventTaggedPersonsPeer::clearRelatedInstancePool();
             $con->commit();
