@@ -69,8 +69,8 @@ admin_time_in:
     path: /timein
     defaults: { _controller: AdminBundle:Employee:TimeIn }
 
-time_out:
-    path: /timeout/
+admin_time_out:
+    path: /timeout
     defaults: { _controller: AdminBundle:Employee:TimeOut }
 
 time_out_w_params:

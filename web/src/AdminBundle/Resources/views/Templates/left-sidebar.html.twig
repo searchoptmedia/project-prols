@@ -6,10 +6,8 @@
             <i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <a href="{{ path('view_request') }}" class="collection-item link-sidebar-requests">
             <i class="material-icons nav-icon">view_agenda</i> View Requests
-            {% if requestcount != 0 %}
-                <span class="new badge reqcount">
-            {{ requestcount }}
-                </span>
+            {% if Twig_GetPendingRequest()!=0 %}
+                <span class="new badge reqcount">{{ Twig_GetPendingRequest() }}</span>
             {% endif %}
         </a>
         <a href="{{ path('admin_manage_events') }}" class="collection-item link-sidebar-events">
@@ -26,11 +24,11 @@
         <a href="{{ path('profile_page') }}" class="collection-item profile-page"><i class="material-icons nav-icon">perm_identity</i> Profile</a>
         <a href="{{ path('view_request') }}" class="collection-item view-request-page">
             <i class="material-icons nav-icon">view_agenda</i> My Requests
-            {% if requestcount != 0 %}
-                <span class="new badge reqcount">
-                {{ requestcount }}
-                </span>
-            {% endif %}
+            {#{% if requestcount != 0 %}#}
+                {#<span class="new badge reqcount">#}
+                {#{{ requestcount }}#}
+                {#</span>#}
+            {#{% endif %}#}
         </a>
         <a href="{{ path('admin_manage_events') }}" class="collection-item manage-events-page">
             <i class="material-icons nav-icon">perm_contact_calendar</i> Events</a>

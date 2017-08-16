@@ -1,9 +1,7 @@
 {% extends 'AdminBundle::base.html.twig' %}
 {% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
 
-{% block title %}
-    <title>Propelrr Log-in System| View Requests</title>
-{% endblock %}
+{% block title %}Requests{% endblock %}
 
 {% block body %}
     <section id="main-container">
@@ -15,8 +13,8 @@
                             <div class="responsive-nav"><a class="btn-flat">
                                     <i class="material-icons res-menu">reorder</i></a>
                             </div>
-                            <div class="top-nav-vl"><h3>Request List</h3>
-                                <a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>
+                            <div class="top-nav"><h3>Request List</h3>
+                                {#<a class='dropdown-button btn amber btn-select1' href='#' data-activates='dropdown2'>Category</a>#}
                             </div>
                         </div>
                         <div class = "top-nav">
@@ -45,7 +43,7 @@
 
                                 </thead>
 
-                                <tbody data-role = "{{ user.role }}" data-id = "{{ user.id }}">
+                                <tbody data-role = "{{ app.user.role }}" data-id = "{{ app.user.id }}">
                                 {% if activeRequest is not empty %}
                                     <tr class="request-row active display-none" style="display:none;" data-empid="{{ activeRequest.empAccId }}"
                                          data-id="{{ activeRequest.id }}" data-emptime="{{ activeRequest.empTimeId }}" data-request="{{ activeRequest.listRequestTypeId }}" data-reason = "{{ activeRequest.request }}">

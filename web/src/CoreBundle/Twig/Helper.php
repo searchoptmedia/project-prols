@@ -4,6 +4,7 @@ namespace CoreBundle\Twig;
 
 use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EmpRequestQuery;
 use CoreBundle\Model\EmpTimeQuery;
 use CoreBundle\Model\ListIpQuery;
 use CoreBundle\Utilities\Constant;
@@ -14,7 +15,8 @@ class Helper extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction('Twig_GetUserInfo', array($this, 'getUserInfo')),
-            new \Twig_SimpleFunction('Twig_GetTimeData', array($this, 'getTimeData'))
+            new \Twig_SimpleFunction('Twig_GetTimeData', array($this, 'getTimeData')),
+            new \Twig_SimpleFunction('Twig_GetPendingRequest', array($this, 'getPendingRequest')),
         );
     }
 
@@ -80,6 +82,15 @@ class Helper extends \Twig_Extension
 
 
         return $data;
+    }
+
+    public function getPendingRequest()
+    {
+        $total = EmpRequestQuery::_findAll(array(
+            'status' => array('data' => Constant::STATUS_PENDING )
+        ), 'count');
+
+        return $total;
     }
 
     public function getName()

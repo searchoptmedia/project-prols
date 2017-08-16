@@ -33,96 +33,21 @@ class EmployeeRequestController extends Controller
     public function requestAction(Request $req)
     {
         $user = $this->getUser();
-        $name = $user->getUsername();
-        $page = 'View Request';
         $role = $user->getRole();
         $id = $user->getId();
-        $admincontroller = new AdminController();
-        $timename = $admincontroller->timeInOut($id);
 
-        // redirect to index if not Admin
+        if((strcasecmp($role,'ADMIN')== 0))
+            $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
+        else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
 
-            if((strcasecmp($role,'ADMIN')== 0))
-                $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
-            else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
-            $timedata = EmpTimePeer::getTime($id);
-            $timeflag = 0;
-            $currenttimein = 0;
-            $currenttimeout = 0;
+        //single record - if from email
+        $activeId = $req->query->get('id');
+        $activeRequest = EmpRequestPeer::retrieveByPK($activeId);
 
-            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-            {
-                $checktimein = $timedata[$ctr]->getTimeIn();
-                $checktimeout = $timedata[$ctr]->getTimeOut();
-                if(!is_null($checktimein) && is_null($checktimeout))
-                {
-                    $currenttimein = $checktimein->format('h:i A');
-                }
-                else
-                {
-                    $currenttimein = 0;
-                    $currenttimeout = $checktimeout->format('h:i A');
-                }
-            }
-            $timeoutdata = '';
-            $checkipdata = null;
-            if(!empty($timedata))
-            {
-                $datetoday = date('Y-m-d');
-                $emp_time = EmpTimePeer::getTime($id);
-                $currenttime = sizeof($emp_time) - 1;
-                $timein_data = $emp_time[$currenttime]->getTimeIn();
-                $timeout_data = $emp_time[$currenttime]->getTimeOut();
-                $checkipdata = $emp_time[$currenttime]->getCheckIp();
-            }
-            $systime = date('H:i A');
-            $timetoday = date('h:i A');
-            $afternoon = date('H:i A', strtotime('12 pm'));
-
-            $et = EmpTimePeer::getEmpLastTimein($id);
-            if(!empty($et))
-            {
-                $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-                $emptimedate = $et->getDate();
-                if($emptimedate->format('Y-m-d') == $datetoday)
-                {
-                    $timeflag = 1;
-                }
-                if(! empty($et->getTimeOut()))
-                    $isTimeOut = 'true';
-            }
-            $userip = InitController::getUserIP($this);
-            $ip_add = ListIpPeer::getValidIP($userip);
-            $is_ip  = InitController::checkIP($userip);
-
-            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
-
-            //single record - if from email
-            $activeId = $req->query->get('id');
-            $activeRequest = EmpRequestPeer::retrieveByPK($activeId);
-
-            return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
-                'name' => $name,
-                'page' => $page,
-                'user' => $user,
-                'timename' => $timename,
-                'allrequest' => $getEmployeeRequest,
-                'userid' =>$id,
-                'timeflag' => $timeflag,
-                'currenttimein' => $currenttimein,
-                'currenttimeout' => $currenttimeout,
-                'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-                'userip' => $userip,
-                'checkipdata' => $checkipdata,
-                'checkip' => $is_ip,
-                'systime' => $systime,
-                'afternoon' => $afternoon,
-                'requestcount' => $requestcount,
-                'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-                'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday,
-                'activeRequest' => $activeRequest
-            ));
+        return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
+            'allrequest' => $getEmployeeRequest,
+            'activeRequest' => $activeRequest
+        ));
     }
 
     public function requestMeetingAction(Request $req)
