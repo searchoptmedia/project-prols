@@ -56,7 +56,7 @@ var _fullCalendar = function(){
                     if(isLoading)
                         showLoadingBar();
                     else {
-                        enableElement($(btnViewLeaveRequest));
+                        // enableElement($(btnViewLeaveRequest));
                         hideLoadingBar();
                     }
                 },
