@@ -1,14 +1,20 @@
 DATE_FORMAT = 'YYYY-MM-DD';
 DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss';
+TIME_FORMAT = 'hh:mm a';
+TIME_24HRFORMAT = 'HH:mm a';
+TIME_24HRFORMAT_B = 'HH:mm:ss a';
+DATE_FORMAT_FORMAL = 'MMM DD, YYYY';
 
 //left widget
 var btnWidgetTimeout = $('.-btn-widget-timeout');
 var btnWidgetChip = $('.-btn-widget-timechip');
+var noExistButton = $('.-button-not-exist');
 
 MAIN_APP = function() {
     var _d = { slug: '' };
     var _nowDate = null;
     var _nowDateFull = null;
+    var _self = this;
 
     return {
         setActiveSidebar: function() {
@@ -18,9 +24,9 @@ MAIN_APP = function() {
         },
 
         start: function(d) {
-            _d = $.extend(true, _d, d);
+            _d = $.extend(true, _d, d); _self = this;
 
-            this
+            _self
                 .setup()
         },
 
@@ -40,17 +46,31 @@ MAIN_APP = function() {
 
         renderScreenModal: function() {
             //if has timein, get last
-            if(_.size(_d.lastTimein)) {
+            if(_.size(_d.lastTimein) && _d.lastTimein.Status!=-1) {
                 var d = _d.lastTimein;
 
-                if(moment(d.Date.date).format(DATE_FORMAT)!=_nowDate) {
-                    if(in_array(_d.ip, _d.ips)) {
-                        this.toggleModal('.modal-time-in-container.allowed', 'show');
+                if(moment(d.Date.date).format(DATE_FORMAT)!=_nowDate && d.TimeOut!=null) {
+                    var timeLogout = moment(d.TimeOut.date).format(TIME_24HRFORMAT_B);
+                    if(timeLogout!='00:00:00 am') {
+                        if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
+                        else _self.toggleModal('.modal-time-in-container.deny', 'show');
                     } else {
-                        this.toggleModal('.modal-time-in-container.deny', 'show');
+                        $('.-txt-autotimeout-message-in').text(moment(d.TimeIn.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT))
+                        $('.-txt-autotimeout-message-out').text(moment(d.TimeOut.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT))
+                        _self.toggleModal('.modal-auto-timeout-notice', 'show');
+                    }
+                } else {
+                    if(d.TimeOut==null) {
+                        _self.toggleTimeWidget('show');
+                        btnWidgetChip.html("Timed-in at " + moment(d.Date.TimeIn).format(TIME_FORMAT));
+                    } else {
+                        _self.toggleTimeWidget('hide');
+                        btnWidgetChip.html("Timed-out at " + moment(d.Date.TimeOut).format(TIME_FORMAT));
                     }
                 }
-
+            } else {
+                if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
+                else _self.toggleModal('.modal-time-in-container.deny', 'show');
             }
 
             return this;
@@ -62,29 +82,31 @@ MAIN_APP = function() {
         },
 
         toggleTimeWidget: function (state) {
-            if(state == 'show') {
+            if(state=='show') {
                 btnWidgetTimeout.removeClass('display-none');
-                btnWidgetChip.show();
+                btnWidgetChip.removeClass('display-none');
             } else {
-                btnTimeoutWidget.addClass('display-none');
-                btnWidgetChip.hide();
+                btnWidgetTimeout.addClass('display-none');
+                btnWidgetChip.addClass('display-none');
             }
         },
 
         bindClicks: function() {
-            //timein submit
+            /**** TIMEIN **/
             $('.-btn-timein-submit').click(function(){
 
-                var txtReason = $('-txt-timein-reason'),
+                var txtReason = $('.-txt-timein-reason'),
                     error = false, button = $(this),
                     is_message = undefined, action = $(this).data('action');
 
                 var message = txtReason.val();
+                console.log(message)
 
                 if(!in_array(_d.ip, _d.ips)){
                     var m = message.replace(/(?:\r\n|\r|\n)/g, '')
-                    if(m==''){
-                        txtReason.css({'border-color': '#f44336'});
+                    if(removeSpace(m)==''){
+                        txtReason.focus();
+                        errorBorder([txtReason]);
                         error = true;
                     }
 
@@ -97,56 +119,154 @@ MAIN_APP = function() {
                 button.hide();
                 showLoadingBar();
 
-                post($('.-button-not-exist'), _d.url_timein, {is_message : is_message, message : message.replace(/(?:\r\n|\r|\n)/g, '<br>') }, function() {
-                    this.toggleTimeWidget('show');
+                post(noExistButton, _d.uri_timein, {is_message : is_message, message : message.replace(/(?:\r\n|\r|\n)/g, '<br>') }, function(data) {
+                    _self.toggleTimeWidget('show');
+                    var state = 'error';
                     if(data.code==200) {
-                        btnWidgetChip.html("Timed-in at " + timetoday);
+                        if(_d.birthdays.length)
+                            _self.toggleBirthday('show');
 
+                        btnWidgetChip.html("Timed-in at " + moment().format(TIME_FORMAT));
+                        state = 'success';
+                    }
+
+                    if(in_array(data.code, [403,200])) {
                         if (in_array(_d.ip, _d.ips)) {
-                            this.toggleModal('.modal-time-in-container.allowed', 'hide');
+                            _self.toggleModal('.modal-time-in-container.allowed', 'hide');
                         } else {
-                            this.toggleModal('.modal-time-in-container.deny', 'hide');
+                            _self.toggleModal('.modal-time-in-container.deny', 'hide');
                         }
                     }
 
-                    showNotificationBar(data.message)
+                    showNotificationBar(data.message, state);
                 }, null, null, function() {
                     button.show();
                 });
+            });
 
-                //var timetoday = "{{ timetoday }}";
-                //$.post("{{ path('time_in') }}",
-                //    ,
-                //    function(data){
-                //        console.log(data);
+            /**** TIMEOUT **/
+            $('.-btn-widget-timeout').click( function() {
+                _self.toggleModal('.modal-timeout-container', 'show');
+            });
+
+            $('.-btn-timeout-cancel').click( function() {
+                _self.toggleModal('.modal-timeout-container', 'hide');
+            });
+
+            $('.-btn-timeout-confirm').click(function() {
+                var pass = $('.-txt-timeout-password');
+                var errDiv = $('.-timeout-error-message');
+                var btnActions = $(this).closest('.plr-modal').find('.button-action');
+
+                defaultBorder([pass]);
+                errDiv.hide();
+                //check if password is empty
+                if (removeSpace(pass.val()) == '') {
+                    errorBorder([pass]);
+                    errDiv.show().find('strong').text('Password is required!');
+                } else {
+                    showLoadingBar();
+                    btnActions.hide();
+
+
+                    post(noExistButton, _d.uri_timeout, { encpas: base64EncodeUnicode(pass.val())  }, function(data) {
+                        if(data.code==200) {
+                            showNotificationBar(data.message, 'success');
+                        } else {
+                            if(data.code==501) {
+                                errDiv.show().find('strong').text('Wrong Password!');
+                                errorBorder([pass]);
+                                showLoadingBar();
+                                btnActions.show();
+                            } else {
+                                showNotificationBar(data.message + ' <a href="">Reload</a>', 'error');
+                            }
+                        }
+
+                        if(data.code!=501) {
+                            _self.toggleModal('.modal-timeout-container', 'hide');
+                            _self.toggleTimeWidget('hide');
+                        }
+
+                    }, null, null, function(data) {
+                        btnActions.show();
+                        showNotificationBar('Error. Something went wrong! <a href="">Reload</a>', 'error');
+                    });
+                }
+                // notifLoader.show();
+                // notifLoader.css({'top': '0px'});
                 //
-                //        _moTimeIn.hide();
-                //        $('.timein-notif-container').css({'top':'0px'});
-                //        $('.timed-in').css({'display' : 'block'});
-                //        $('.btn-timeout').show();
-                //        $('.diff-ip-container').hide();
+                // $('#time-out-button').hide();
+                // $('.timeout-cancel').hide();
                 //
-                //        showBirthday();
-                //        setTimeout(function(){
-                //            $('.timein-notif-container').css({'top' : '-55px'});
-                //        }, 5000);
-                //    }).always(function(data){
-                //        console.log(data);
-                //        notifLoader.hide();
-                //        notifLoader.css({'top' : '-55px'});
-                //    }).fail( function() {
-                //        btnTimeIn.show();
-                //        $('.error-notif-container').css({'top':'0px'});
-                //        setTimeout(function(){
-                //            $('.timein-notif-container').css({'top' : '-55px'});
-                //        }, 5000);
-                //    });
+                // $.post("{{ path('time_out') }}" + pass, function (data) {
+                //     //validate password
+                //     if (data.error == true && data.code == 501) {
+                //         console.log('error dow')
+                //         $('#time-out-button').show();
+                //         $('.timeout-cancel').show();
+                //         $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
+                //         $('#errormessage').show();
+                //         return;
+                //     } else if (data.error == true && data.code == 500) {
+                //         _moTimeIn.hide();
+                //         $('.timeout-container').hide();
+                //         $('.modal-logout-notify-container').show();
+                //         $('.confirm-timein.error-message').text(data.message);
+                //     } else if (data.error == false) {
+                //         //time out success
+                //         toggleTimeWidget('hide');
+                //         $('.timeout-container').css({'display': 'none'});
+                //         $('.timeout').css({'display': 'none'});
+                //         $('.timeout-notif-container').css({'top': '0px'});
+                //         //                                    $('.timed-in').css({'display' : 'none'});
+                //         $('.timed-out').css({'display': 'block'});
+                //         $('.btn-timeout').css({'display': 'none'});
+                //         $('.timechip').hide();
+                //
+                //         setTimeout(function () {
+                //             $('.timeout-notif-container').css({'top': '-55px'});
+                //         }, 5000);
+                //     }
+                //
+                //     if (isFromForgot) window.location = '/logout';
+                //
+                // }, 'json').always(function (data) {
+                //     console.log(data);
+                //     notifLoader.hide();
+                //     notifLoader.css({'top': '-55px'});
+                // }).fail(function (data) {
+                //     console.log(data);
+                //     _moTimeIn.hide();
+                //     $('.timeout-container').hide();
+                //     $('.modal-logout-notify-container').show();
+                //     //                      $('.modal-session-content').show();
+                // });
+            });
+
+            $('.-btn-auto-timeout-timein').click( function() {
+                _self.toggleModal('.modal-auto-timeout-notice', 'hide');
+                setTimeout( function() {
+                    if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
+                    else _self.toggleModal('.modal-time-in-container.deny', 'show');
+                }, 100);
+            });
+
+            /** REMOVE BIRTHDAY */
+            $('.-btn-close-birthday').click( function() {
+                _self.toggleModal('.modal-birthday-notify-container', 'hide');
+                toggleBirthday('hide');
             });
 
             return this;
         },
 
-        toggleBithday: function(state) {
+        toggleBirthday: function(state) {
+            if(state=='show') {
+                _self.toggleModal('.modal-birthday-notify-container', 'show');
+                $('.-txt-bday-names').html(_d.birthdays.join(', '))
+                toggleBirthday();
+            }
 
             return this;
         }
@@ -154,236 +274,236 @@ MAIN_APP = function() {
 }();
 
 
-$(document).ready(function(){
-
-    $('.btn-time').on('click', function(e){
-        e.preventDefault();
-
-        if($(this).hasClass('time-out')) {
-            $('#mb-timeout').addClass('open');
-
-            
-        } else {
-            $('#mb-timein').addClass('open');
-        }
-    });   
-
-    $('.btn-confirm-timein').click(function(e){
-        e.preventDefault();
-
-        $('#mb-timein').removeClass('open');
-        $('.btn-time').addClass('time-out').find('.xn-text').html('Time Out');
-
-
-    
-    });
-
-    $('.btn-confirm-timeout').click(function(e){
-        e.preventDefault();
-        
-        $('#mb-timeout').removeClass('open');
-        $('.btn-time').removeClass('time-out').find('.xn-text').html('Time In');
-    });
-
-    $( ".edit-this" ).click(function(e) {
-        e.preventDefault();
-        $(this).parent('.list-group-item').find('input').val('').focus();
-    });
-
-
-    $('#close-alert2').click(function(){
-            $('#close-alert2').addClass('anim');
-            $('.alert-message-timein').css({'top' : '-55px'});
-    });
-
-    $('#close-alert1').click(function(){
-          $('.alert-message-timeout').css({'top' : '-55px'});
-
-    });
-
-     $('#close-alert4').click(function(){
-            $('#close-alert2').addClass('anim');
-            $('.alert-message-reject').css({'top' : '-55px'});
-    });
-
-    $('#close-alert3').click(function(){
-          $('.alert-message-accept').css({'top' : '-55px'});
-
-    });
-
-
-    $('.btn-confirm-timeout').click(function(e){
-        e.preventDefault();
-            $('.alert-message-timeout').css({'top' : '0px'});
-            $('#mb-timeout').removeClass('open');
-            $('.alert-message-timein').css({'top' : '-55px'});
-
-         setTimeout(function(){
-          $('.alert-message-timeout').css({'top' : '-55px'});
-        }, 5000);
-    });
-
-
-    $('.btn-confirm-timein').click(function(e){
-        e.preventDefault();
-        $('.alert-message-timein').css({'top' : '0px'});
-        $('#mb-timein').removeClass('open');
-        $('.alert-message-timeout').css({'top' : '-55px'});
-
-         setTimeout(function(){
-            $('.alert-message-timein').css({'top' : '-55px'});
-         }, 5000);
-    });
-
-    $('.btn-confirm-accept').click(function(e){
-        e.preventDefault();
-        $('.alert-message-accept').css({'top' : '0px'});
-        $('#mb-accept').removeClass('open');
-        $('.alert-message-reject').css({'top' : '-55px'});
-
-        setTimeout(function(){
-            $('.alert-message-accept').css({'top' : '-55px'});
-         }, 5000);
-    });
-
-
-    $('.btn-confirm-reject').click(function(e){
-        e.preventDefault();
-        // $('.alert-message-reject').css({'top' : '0px'});
-        $('#mb-reject').removeClass('open');
-        $('.alert-message-accept').css({'top' : '-55px'});
-
-         // setTimeout(function(){
-         //    $('.alert-message-reject').css({'top' : '-55px'});
-         // }, 5000);
-    });
-
-    $("#sendtoemail").click(function(e){
-        e.preventDefault();
-
-         if(!$('.form-control').val() == ''){
-            $('.alert-message-reject').css({'top' : '0px'});
-            $('.required').css({'display' : 'none'});
-
-            setTimeout(function(){
-            $('.alert-message-reject').css({'top' : '-55px'});
-          }, 5000);
-
-        } else {
-            $('.required').css({'display' : 'block'});
-
-        }
-
-    });
-
-
-    // $('.btn-addevent').click(function(e){
-    //     e.preventDefault();
-        
-
-    //     if ($("#event").val() == '') {
-    //             $('.required').css({'display' : 'inline'})
-    //         }
-    //          else {
-               
-    //             $('.success-addevent').css({'display' : 'block'})
-    //             $('#event').val('');
-    //         }           
-    // });
-
-
-    // $('#accept-vl').click(function(e){
-
-    //     e.preventDefault();
-    //     $("#accept-vl").css({'display' : 'none'});
-    //     $("#reject-vl").css({'display' : 'none'});
-
-    // });
-
-    //  $('#reject-vl').click(function(e){
-
-    //     e.preventDefault();
-    //     $("#accept-vl").css({'display' : 'none'});
-    //     $("#reject-vl").css({'display' : 'none'});
-
-    // });
-
-
-     $('.btn-addevent').click(function(e){
-            e.preventDefault();
-            $validation = false;
-            $("#event").closest('.form-group').find('.success-addevent').css({'display' : 'none'})
-
-            if(!$("#event").val() == ''){
-                $validate = true;
-                $("#event").closest('.form-group').find('.required').css({'display' : 'none'})
-                // $("#event").closest('.form-group').find('.success-addevent').css({'display' : 'block'})
-                $("#addTest").css({'display' : 'block'})
-                
-
-
-            } else {
-                $("#event").closest('.form-group').find('.required').css({'display' : 'block'})
-
-                e.preventDefault();
-            }
-
-            
-
-        });
-
-
-     $('.btn-sendreq').click(function(e){
-            e.preventDefault();
-            $validation = false;
-            $("#reason").closest('.card-block').find('.success-sendreq').css({'display' : 'none'})
-
-            if (!$("#reason").val() == ''){
-                $validate = true;
-                $("#reason").closest('.card-block').find('.required').css({'display' : 'none'})
-                $("#reason").closest('.card-block').find('.success-sendreq').css({'display' : 'inline'})
-            } else {
-                $("#reason").closest('.card-block').find('.required').css({'display' : 'block'})
-                e.preventDefault();
-
-               
-            }
-
-
-            // if (!$("#startDate").val() == ''){
-            //     $validate = true;
-            //     $("#startDate").closest('.card-block').find('.required').css({'display' : 'none'})
-            //     $("#startDate").closest('.card-block').find('.success-sendreq').css({'display' : 'inline'})
-            // } else {
-            //     $("#startDate").closest('.card-block').find('.required').css({'display' : 'block'})
-            //     e.preventDefault();
-
-               
-            // }
-
-
-            $('.modal-reason').leanModal();
-
-        });
-
-
-      // $('select').material_select();
-
-      // pagination
-
-      // $('.page-2').click(function(e){
-      //       e.preventDefault();
-      //       $('#page2').css({'display':'block'})
-
-      //        });
-
-
- $('ul.tabs').tabs('select_tab', 'tab_id');
-
-
-
-
-});
+// $(document).ready(function(){
+//
+//     $('.btn-time').on('click', function(e){
+//         e.preventDefault();
+//
+//         if($(this).hasClass('time-out')) {
+//             $('#mb-timeout').addClass('open');
+//
+//
+//         } else {
+//             $('#mb-timein').addClass('open');
+//         }
+//     });
+//
+//     $('.btn-confirm-timein').click(function(e){
+//         e.preventDefault();
+//
+//         $('#mb-timein').removeClass('open');
+//         $('.btn-time').addClass('time-out').find('.xn-text').html('Time Out');
+//
+//
+//
+//     });
+//
+//     $('.btn-confirm-timeout').click(function(e){
+//         e.preventDefault();
+//
+//         $('#mb-timeout').removeClass('open');
+//         $('.btn-time').removeClass('time-out').find('.xn-text').html('Time In');
+//     });
+//
+//     $( ".edit-this" ).click(function(e) {
+//         e.preventDefault();
+//         $(this).parent('.list-group-item').find('input').val('').focus();
+//     });
+//
+//
+//     $('#close-alert2').click(function(){
+//             $('#close-alert2').addClass('anim');
+//             $('.alert-message-timein').css({'top' : '-55px'});
+//     });
+//
+//     $('#close-alert1').click(function(){
+//           $('.alert-message-timeout').css({'top' : '-55px'});
+//
+//     });
+//
+//      $('#close-alert4').click(function(){
+//             $('#close-alert2').addClass('anim');
+//             $('.alert-message-reject').css({'top' : '-55px'});
+//     });
+//
+//     $('#close-alert3').click(function(){
+//           $('.alert-message-accept').css({'top' : '-55px'});
+//
+//     });
+//
+//
+//     $('.btn-confirm-timeout').click(function(e){
+//         e.preventDefault();
+//             $('.alert-message-timeout').css({'top' : '0px'});
+//             $('#mb-timeout').removeClass('open');
+//             $('.alert-message-timein').css({'top' : '-55px'});
+//
+//          setTimeout(function(){
+//           $('.alert-message-timeout').css({'top' : '-55px'});
+//         }, 5000);
+//     });
+//
+//
+//     $('.btn-confirm-timein').click(function(e){
+//         e.preventDefault();
+//         $('.alert-message-timein').css({'top' : '0px'});
+//         $('#mb-timein').removeClass('open');
+//         $('.alert-message-timeout').css({'top' : '-55px'});
+//
+//          setTimeout(function(){
+//             $('.alert-message-timein').css({'top' : '-55px'});
+//          }, 5000);
+//     });
+//
+//     $('.btn-confirm-accept').click(function(e){
+//         e.preventDefault();
+//         $('.alert-message-accept').css({'top' : '0px'});
+//         $('#mb-accept').removeClass('open');
+//         $('.alert-message-reject').css({'top' : '-55px'});
+//
+//         setTimeout(function(){
+//             $('.alert-message-accept').css({'top' : '-55px'});
+//          }, 5000);
+//     });
+//
+//
+//     $('.btn-confirm-reject').click(function(e){
+//         e.preventDefault();
+//         // $('.alert-message-reject').css({'top' : '0px'});
+//         $('#mb-reject').removeClass('open');
+//         $('.alert-message-accept').css({'top' : '-55px'});
+//
+//          // setTimeout(function(){
+//          //    $('.alert-message-reject').css({'top' : '-55px'});
+//          // }, 5000);
+//     });
+//
+//     $("#sendtoemail").click(function(e){
+//         e.preventDefault();
+//
+//          if(!$('.form-control').val() == ''){
+//             $('.alert-message-reject').css({'top' : '0px'});
+//             $('.required').css({'display' : 'none'});
+//
+//             setTimeout(function(){
+//             $('.alert-message-reject').css({'top' : '-55px'});
+//           }, 5000);
+//
+//         } else {
+//             $('.required').css({'display' : 'block'});
+//
+//         }
+//
+//     });
+//
+//
+//     // $('.btn-addevent').click(function(e){
+//     //     e.preventDefault();
+//
+//
+//     //     if ($("#event").val() == '') {
+//     //             $('.required').css({'display' : 'inline'})
+//     //         }
+//     //          else {
+//
+//     //             $('.success-addevent').css({'display' : 'block'})
+//     //             $('#event').val('');
+//     //         }
+//     // });
+//
+//
+//     // $('#accept-vl').click(function(e){
+//
+//     //     e.preventDefault();
+//     //     $("#accept-vl").css({'display' : 'none'});
+//     //     $("#reject-vl").css({'display' : 'none'});
+//
+//     // });
+//
+//     //  $('#reject-vl').click(function(e){
+//
+//     //     e.preventDefault();
+//     //     $("#accept-vl").css({'display' : 'none'});
+//     //     $("#reject-vl").css({'display' : 'none'});
+//
+//     // });
+//
+//
+//      $('.btn-addevent').click(function(e){
+//             e.preventDefault();
+//             $validation = false;
+//             $("#event").closest('.form-group').find('.success-addevent').css({'display' : 'none'})
+//
+//             if(!$("#event").val() == ''){
+//                 $validate = true;
+//                 $("#event").closest('.form-group').find('.required').css({'display' : 'none'})
+//                 // $("#event").closest('.form-group').find('.success-addevent').css({'display' : 'block'})
+//                 $("#addTest").css({'display' : 'block'})
+//
+//
+//
+//             } else {
+//                 $("#event").closest('.form-group').find('.required').css({'display' : 'block'})
+//
+//                 e.preventDefault();
+//             }
+//
+//
+//
+//         });
+//
+//
+//      $('.btn-sendreq').click(function(e){
+//             e.preventDefault();
+//             $validation = false;
+//             $("#reason").closest('.card-block').find('.success-sendreq').css({'display' : 'none'})
+//
+//             if (!$("#reason").val() == ''){
+//                 $validate = true;
+//                 $("#reason").closest('.card-block').find('.required').css({'display' : 'none'})
+//                 $("#reason").closest('.card-block').find('.success-sendreq').css({'display' : 'inline'})
+//             } else {
+//                 $("#reason").closest('.card-block').find('.required').css({'display' : 'block'})
+//                 e.preventDefault();
+//
+//
+//             }
+//
+//
+//             // if (!$("#startDate").val() == ''){
+//             //     $validate = true;
+//             //     $("#startDate").closest('.card-block').find('.required').css({'display' : 'none'})
+//             //     $("#startDate").closest('.card-block').find('.success-sendreq').css({'display' : 'inline'})
+//             // } else {
+//             //     $("#startDate").closest('.card-block').find('.required').css({'display' : 'block'})
+//             //     e.preventDefault();
+//
+//
+//             // }
+//
+//
+//             $('.modal-reason').leanModal();
+//
+//         });
+//
+//
+//       // $('select').material_select();
+//
+//       // pagination
+//
+//       // $('.page-2').click(function(e){
+//       //       e.preventDefault();
+//       //       $('#page2').css({'display':'block'})
+//
+//       //        });
+//
+//
+//  $('ul.tabs').tabs('select_tab', 'tab_id');
+//
+//
+//
+//
+// });
 
 
 
@@ -434,7 +554,7 @@ function showNotificationBar(message, state) {
     if(state=='error')
         topNotificationBar.addClass('red').removeClass('green');
 
-    topNotificationBar.find('h5').text(message);
+    topNotificationBar.find('h5').html(message);
     topNotificationBar.css({'top': '0px'});
     setTimeout(function () {
         topNotificationBar.css({'top': '-55px'});
@@ -464,8 +584,7 @@ function post(button, path, data, callback, done, always, fail) {
             }
 
             if (typeof fail === 'function') fail(data);
-            else
-                showErrorBar("Server Error. Please try again.");
+            else showErrorBar("Server Error. Please try again.");
         });
     }
 }
@@ -570,7 +689,6 @@ function in_array(needle, haytack) {
     if(haytack.indexOf(needle) > -1) {
         return true;
     }
-
     return false;
 }
 
@@ -596,6 +714,16 @@ function paginate(total, page, limit) {
     } else {
         $pnav.show();
     }
+}
+
+function base64EncodeUnicode(str) {
+    // first we use encodeURIComponent to get percent-encoded UTF-8,
+    // then we convert the percent encodings into raw bytes which
+    // can be fed into btoa.
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        }));
 }
 
 

@@ -199,12 +199,12 @@ h5{
 }
 
 /*==========={{ GENERAL }}=================*/
-.chip.timechip {
-    width: 61%;
+.chip.-btn-widget-timechip {
+    width: 65%;
     margin: 0 auto;
 }
-.btn-timeout i { margin-right: 3px; float: none; }
-.btn-timeout { padding: 0 26px; }
+.-btn-widget-timeout i { margin-right: 3px; float: none; }
+.-btn-widget-timeout { padding: 0 26px; }
 
 
 /*==========={{ DASHBOARD }}=================*/
@@ -225,7 +225,7 @@ ul.legend-list li {
     text-indent: -.7em;
     float:left;
     position: relative;
-    top: -22px;
+    top: -27px;
     margin-right: 20px;
 }
 ul.legend-list li:before {
@@ -236,12 +236,14 @@ ul.legend-list li:before {
     top: 8px;
     left: 10px;
 }
+ul.legend-list li a { position: relative; top: 5px; }
 ul.legend-list li.active:before {content: "■ ";  }
 ul.legend-list li.m:before { color: #FFC82D; }
 ul.legend-list li.v:before { color: #0072B1; }
 ul.legend-list li.h:before { color: #E90133; }
 ul.legend-list li.i:before { color: #EB7124; }
 ul.legend-list li.o:before { color: #9e9e9e; }
+
 /** calendar */
 .fc-toolbar .fc-center h2 {
     font-size: 26px;

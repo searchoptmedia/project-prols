@@ -1,7 +1,5 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}
-    <title>Propelrr Log-in System| Manage Employees</title>
-{% endblock %}
+{% block title %}Manage Employees{% endblock %}
 
 {% block css %}
     <style>
@@ -39,7 +37,7 @@
                                         <th>Department</th>
                                         <th>Position</th>
                                         <th>Status</th>
-                                        {% if user.role == 'ADMIN' %}
+                                        {% if app.user.role == 'ADMIN' %}
                                             <th>Capability</th>
                                         {% endif %}
                                         <th></th>
@@ -48,13 +46,13 @@
 
                                     <tbody>
                                     {% for emp in getEmployee %}
-                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ user.id }}">
+                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ app.user.id }}">
                                             <td class = "number">{{emp.getEmployeeNumber}}</td>
                                             <td class = "name">{{ emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname }}</td>
                                             <td class = "dept">{{emp.getListDept().DeptNames}}</td>
                                             <td class = "pos">{{emp.getListPos().PosNames}}</td>
-                                            <td class = "status">{{ emp.getEmpStatusType().name }}</td>
-                                            {% if user.role == 'ADMIN' %}
+                                            {#<td class = "status">{{ emp.getEmpStatusType().name }}</td>#}
+                                            {% if app.user.role == 'ADMIN' %}
                                                 <td class = "capabilities">
                                                     {% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}
                                                         {{ cap.getCapabilitiesList().Capability }}<br>
@@ -63,13 +61,13 @@
                                             {% endif %}
 
                                             <td>
-                                                {% if user.role == 'ADMIN' %}
+                                                {% if app.user.role == 'ADMIN' %}
                                                     <button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
                                                 {% endif %}
 
                                                 {% for cap in capabilities %}
                                                     {% if cap.Capid == 1 and emp.EmpAcc.id!=app.user.id %}
-                                                        {% if (emp.EmpAcc.role != 'ADMIN' and user.role != 'ADMIN') %}
+                                                        {% if (emp.EmpAcc.role != 'ADMIN' and app.user.role != 'ADMIN') %}
                                                             <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
                                                                     data-username = "{{ emp.EmpAcc.username }}"
                                                                     data-password = "{{ emp.EmpAcc.password }}"
@@ -149,7 +147,7 @@
                         </div>
                     </div>
 
-                    {% if user.role == 'ADMIN' %}
+                    {% if app.user.role == 'ADMIN' %}
                     <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 110px; right: 24px;">
                         <a class="btn-floating btn-large blue">
                             <i class="material-icons">file_download</i>
@@ -162,14 +160,14 @@
                     {% endif %}
 
                     <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
-                        {% if capabilities|length or user.role == 'ADMIN' %}
+                        {% if capabilities|length or app.user.role == 'ADMIN' %}
                         <a class="btn-floating btn-large red">
                             <i class="material-icons">add</i>
                         </a>
                         {% endif %}
 
                         <ul class="add">
-                            {% if user.role != 'ADMIN' %}
+                            {% if app.user.role != 'ADMIN' %}
                             {% for cap in capabilities %}
                                 {% if cap.Capid == 1 %}
                                     <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">add employee</a></li>
@@ -202,7 +200,7 @@
             <div class="mo-body">
                 <input type="hidden" name="employee-id" id = "employee-id"/>
                 <div class="row mo-body">
-                    {% if user.role == 'ADMIN' %}
+                    {% if app.user.role == 'ADMIN' %}
                     <div class="col-md-7 col-lg-8">
                         {% else %}
                         <div class="col-md-12 col-lg-12">
@@ -268,7 +266,7 @@
                         <p>BIR<input name="bir" placeholder="type here..." id="bir" type="text" class="input-field"></p>
                         <p>PhilHealth<input name="philhealth" placeholder="type here..." id="philhealth" type="text" class="input-field"></p>
                     </div>
-                    {% if user.role == 'ADMIN' %}
+                    {% if app.user.role == 'ADMIN' %}
                         <div class="col-md-5 col-lg-4 div-capabilities-area">
                             <big>User Capabilities</big>
                             {% for allcap in allcapabilities %}

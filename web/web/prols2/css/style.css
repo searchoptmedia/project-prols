@@ -6679,14 +6679,7 @@ button.picker__close:focus {
     transition: all 0.3 ease;
     cursor: pointer
 }
-.emp-photo {
-    float: left;
-    padding: 10px 10px 0px 0;
-    position: relative;
-    top: 0px;
-    left: 0px;
-    display: inline
-}
+
 .profile-image {
     width: 50px;
     height: 50px;
@@ -7104,6 +7097,16 @@ button.picker__close:focus {
     left: 0;
     background: rgba(0, 0, 0, 0.8)
 }
+
+
+.plr-modal .button-action {
+    position: relative;
+    font-size: 20px;
+    font-weight: 300;
+    color: white;
+    min-width: 150px;
+}
+
 .timeout-container {
     position: fixed;
     width: 100%;
@@ -7115,12 +7118,6 @@ button.picker__close:focus {
     background: rgba(0, 0, 0, 0.8);
     display: none
 }
-.custom-modal-1 .button-action {
-    position: relative;
-    font-size: 20px;
-    font-weight: 300;
-    color: white
-}
 
 .btn-yes,
 .btn-cancel {
@@ -7128,9 +7125,8 @@ button.picker__close:focus {
     font-size: 20px;
     font-weight: 300;
     color: white;
-    display: none
 }
-.btn-timeout {
+.-btn-widget-timeout {
     color: white;
     height: 40px;
     line-height: 40px;
@@ -7454,7 +7450,7 @@ span.badge.new {
         font-size: 42px;
         display: block
     }
-    .btn-timeout {
+    .-btn-widget-timeout {
         padding: 0px 5px
     }
     .top-nav {
@@ -7839,9 +7835,38 @@ span.badge.new {
     }
 }
 
+/************** PAGES **/
+.top-nav {
+    padding-bottom: 6px;
+    padding-top: 2px;
+}
+.top-nav a { top: 3px; }
+
+.header-profile-photo {
+    float: left;
+    padding: 6px 10px 2px 0;
+    position: relative;
+    top: 0;
+    left: 0;
+    display: inline
+}
+.header-profile-name h3 {
+    padding-top: 12px;
+}
+
+.header-profile .top-nav a { top: 10px; }
+
+/************** MODAL ELEMENTS **/
+input.-txt-timeout-password {  width: 40%; color: #fff; }
+
+
+/*** GENERAL UPDATE **/
 .display-none { display: none; }
 .pull-left { float: left; }
 .pull-right { float: right; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
 
 .mo-header {
     border-bottom: 1px solid #ccc;

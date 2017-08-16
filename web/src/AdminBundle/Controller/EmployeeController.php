@@ -134,6 +134,7 @@ class EmployeeController extends Controller
                      InitController::ResetSessionValue();
                      InitController::loginSetTimeSession($this);
                      $response['message'] = 'Time in Successful';
+                     $response['code'] = 200;
                  }
              }
 
@@ -142,39 +143,37 @@ class EmployeeController extends Controller
                      InitController::ResetSessionValue();
                      InitController::loginSetTimeSession($this);
                      $response['message'] = 'Time in Successful';
+                     $response['code'] = 200;
                  }
              }
 		} else {
-            $response['message'] = 'Already Time in today';
+            $response['message'] = 'Already Time in Today';
 		}
 
         return new JsonResponse($response);
     }
 
-	public function TimeOutAction($passw)
+	public function TimeOutAction(Request $request)
 	{
-		date_default_timezone_set('Asia/Manila');
-
 		$user = $this->getUser();
-		if(empty($user)) {
+		$response = Utils::getForbid();
+		if(empty($user) && $request->getMethod()!='POST') {
 			// if session expire
-			echo 1;
-			exit;
+			return new JsonResponse($response);
 		}
 
-		$pass = $user->getPassword();
+		$params = $request->request->all();
+		$pass           = base64_decode($params['encpas']);
 		$datetimetoday 	= date('Y-m-d H:i:s');
         $datetoday 		= date('Y-m-d');
 		$emp 			= $this->getUser()->getId();
 		$timedata 		= EmpTimePeer::getEmpLastTimein($emp);
 		$timeinId 		= $timedata->getId();
-		$inputpass 		= $passw;
+		$inputpass 		= $user->getPassword();
 		$error 			= false;
         $code           = 500;
 
         if(!empty($timedata)) {
-            $emptimedate = $timedata->getTimeIn()->format('Y-m-d');
-
             $timeoutData = $timedata->getTimeOut();
 
             if(empty($timeoutData)) {
@@ -235,9 +234,13 @@ class EmployeeController extends Controller
             }
         }
 
-		$response = array('message' => $message, 'error' => $error, 'code' => $code);
-		echo json_encode($response);
-		exit;
+		$response = array(
+		    'message' => $message,
+            'error' => $error,
+            'code' => $code
+        );
+
+        return new JsonResponse($response);
 	}
 
 	public function autoTimeOutAction()
@@ -277,10 +280,7 @@ class EmployeeController extends Controller
     public function timeLogsAction()
     {
         $user = $this->getUser();
-        $name = $user->getUsername();
         $role = $user->getRole();
-        $id = $user->getId();
-        $timename = AdminController::timeInOut($id);
 
         if((strcasecmp($role, 'employee') == 0)) {
             return $this->redirect($this->generateUrl('admin_homepage'));
@@ -288,83 +288,15 @@ class EmployeeController extends Controller
             $getEmployee = EmpProfilePeer::getAllProfile();
             $getPos = ListPosPeer::getAllPos();
             $getDept = ListDeptPeer::getAllDept();
-            $timedata = EmpTimePeer::getTime($id);
-            $currenttimein = 0;
-            $currenttimeout = 0;
-            $timeflag = 0;
-
-            //get last timed in
-            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++) {
-                $checktimein = $timedata[$ctr]->getTimeIn();
-                $checktimeout = $timedata[$ctr]->getTimeOut();
-
-                if(!is_null($checktimein) && is_null($checktimeout)) {
-                    $currenttimein = $checktimein->format('h:i A');
-                } else {
-                    $currenttimein = 0;
-                    $currenttimeout = $checktimeout->format('h:i A');
-                }
-            }
-
-            $checkipdata = null;
-            //check if already timed in today
-            if(!empty($timedata)) {
-                $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-                $datetoday = date('Y-m-d');
-                $emp_time = EmpTimePeer::getTime($id);
-                $currenttime = sizeof($emp_time) - 1;
-                $timein_data = $emp_time[$currenttime]->getTimeIn();
-                $timeout_data = $emp_time[$currenttime]->getTimeOut();
-                $checkipdata = $emp_time[$currenttime]->getCheckIp();
-                // echo $checkipdata;
-            }
-
-            $systime = date('H:i A');
-            $timetoday = date('h:i A');
-            $afternoon = date('H:i A', strtotime('12 pm'));
-
-            $userip = InitController::getUserIP($this);
-            $ip_add = ListIpPeer::getValidIP($userip);
-            $is_ip  = InitController::checkIP($userip);
-
             $getTime = EmpTimePeer::getAllTime(50);
             $getAllProfile = EmpProfilePeer::getAllProfile();
-            $et = EmpTimePeer::getEmpLastTimein($id);
-
-            if(!empty($et)) {
-                $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-                $emptimedate = $et->getDate();
-                if($emptimedate->format('Y-m-d') == $datetoday) {
-                    $timeflag = 1;
-                }
-
-                if(! empty($et->getTimeOut()))
-                    $isTimeOut = 'true';
-            }
-
-            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
             return $this->render('AdminBundle:Employee:managetime.html.twig', array(
-                'name' => $name,
-                'user' => $user,
-                'timename' => $timename,
                 'getEmployee' => $getEmployee,
                 'getPos' => $getPos,
                 'getDept' => $getDept,
-                'userip' => $userip,
-                'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-                'checkipdata' => $checkipdata,
-                'checkip' => $is_ip,
-                'currenttimein' => $currenttimein,
-                'timeflag' => $timeflag,
-                'systime' => $systime,
-                'afternoon' => $afternoon,
                 'getTime' => $getTime,
                 'getAllProfile' => $getAllProfile,
-                'requestcount' => $requestcount,
-                'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-                'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday,
                 'Util' => new InitController()
             ));
         }
@@ -700,12 +632,8 @@ class EmployeeController extends Controller
 
     public function profileAction()
     {
-        $page = 'Profile';
         //employee account information
         $user = $this->getUser();
-        $name = $user->getUsername();
-        $role = $user->getRole();
-        $pw = $user->getPassword();
         $id = $user->getId();
         $user2 = EmpAccPeer::retrieveByPK($id);
 
@@ -770,109 +698,36 @@ class EmployeeController extends Controller
         //employee work information
         $datawork = EmpProfilePeer::retrieveByPk($profileid);
 
-        if(!is_null($datawork))
-        {
-            $workdeptid = $datawork->getListDeptDeptId();
-            $workposid = $datawork->getListPosPosId();
+        if(!is_null($datawork)) {
             $empnumber = $datawork->getEmployeeNumber();
-
-            $datadept = ListDeptPeer::getDept($workdeptid);
-            $datapos = ListPosPeer::getPos($workposid);
-
-            $deptnames = $datadept->getDeptNames();
-            $posStatus = $datapos->getPosNames();
-        }
-        else
-        {
+        } else {
             $workdeptid = null;
             $workposid = null;
             $empnumber = null;
             $deptnames = null;
             $posStatus = null;
         }
-        $admincontroller = new AdminController();
-        $timename = $admincontroller->timeInOut($id);
+
         $getDept = ListDeptPeer::getAllDept();
 
-        //check pending count
-        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         //Check late
         $late = 0;
         $getEmpTime = EmpTimePeer::getTime($id);
-        for ($ct = 0; $ct < sizeof($getEmpTime); $ct++)
-        {
+        for ($ct = 0; $ct < sizeof($getEmpTime); $ct++) {
             $checklate = $getEmpTime[$ct]->getTimeIn();
-            if($checklate->format('H:i:s') > 12)
-            {
+            if($checklate->format('H:i:s') > 12) {
                 $late++;
             }
         }
 
-        $timedata = EmpTimePeer::getTime($id);
-        $timeflag = 0;
-        $currenttimein = 0;
-        $currenttimeout = 0;
-        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-        {
-
-
-            $checktimein = $timedata[$ctr]->getTimeIn();
-            $checktimeout = $timedata[$ctr]->getTimeOut();
-
-            if(!is_null($checktimein) && is_null($checktimeout))
-            {
-                $currenttimein = $checktimein->format('h:i A');
-            }
-            else
-            {
-                $currenttimein = 0;
-                $currenttimeout = $checktimeout->format('h:i A');
-            }
-        }
-
-        $timeoutdata = '';
         $checkipdata = null;
-        if(!empty($timedata))
-        {
-            $datetoday = date('Y-m-d');
-            $emp_time = EmpTimePeer::getTime($id);
-            $currenttime = sizeof($emp_time) - 1;
-            $timein_data = $emp_time[$currenttime]->getTimeIn();
-            $timeout_data = $emp_time[$currenttime]->getTimeOut();
-            $checkipdata = $emp_time[$currenttime]->getCheckIp();
-        }
         $firstchar = $fname[0];
-        $systime = date('h:i A');
-        $timetoday = date('h:i A');
-        $afternoon = date('h:i A', strtotime('12 pm'));
-
-        $et = EmpTimePeer::getEmpLastTimein($id);
-        if(!empty($et))
-        {
-            $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-            $emptimedate = $et->getDate();
-            if($emptimedate->format('Y-m-d') == $datetoday)
-            {
-                $timeflag = 1;
-            }
-            if(! empty($et->getTimeOut()))
-                $isTimeOut = 'true';
-        }
-        // echo'<pre>';var_dump($manhours);
-        $userip = InitController::getUserIP($this);
-        $ip_add = ListIpPeer::getValidIP($userip);
-        $is_ip  = InitController::checkIP($userip);
-
-        //count duration
-
-
 
         $getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
 
         // add duration
         return $this->render('AdminBundle:Employee:profile.html.twig', array(
-            'page' => $page,
             'img' => $img,
             'datejoined' => $datejoined,
             'user' => $user,
@@ -880,7 +735,6 @@ class EmployeeController extends Controller
             'conEmail' => $conEmail,
             'conMobile' => $conMobile,
             'conTele' => $conTele,
-            'timename' => $timename,
             'user2' => $user2,
             'profileId' => $profileid,
             'contacttype' => $contacttype,
@@ -890,23 +744,10 @@ class EmployeeController extends Controller
             'getDept' => $getDept,
             'empnumber' => $empnumber,
             'deptid' => $deptid,
-            'late' =>$late,
-            'timeflag' => $timeflag,
-            'currenttimein' => $currenttimein,
-            'currenttimeout' => $currenttimeout,
             'firstchar' => $firstchar,
-            'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-            'userip' => $userip,
-            'checkipdata' => $checkipdata,
+
             'propelrr' => $data2,
-            'checkip' => $is_ip,
-            'systime' => $systime,
-            'afternoon' => $afternoon,
-            'requestcount' => $requestcount,
-            'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-            'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'getAllTime' => $getAllTimeData,
-            'timetoday' => $timetoday,
             'Util' =>  new InitController()
         ));
 
@@ -914,87 +755,16 @@ class EmployeeController extends Controller
 
     public function manageAction(Request $request)
     {
-        $item_per_page = 10;
-
         $user = $this->getUser();
-        $name = $user->getUsername();
-        $page = 'Manage Employees';
-        $role = $user->getRole();
         $id = $user->getId();
 
         $capabilities = EmpCapabilitiesPeer::getEmpCapabilities($id);
 
-        $adminController = new AdminController();
-
-        $timename = $adminController->timeInOut($id);
-
         $getEmployee     = EmpProfilePeer::getAllProfile();
         $getPos          = ListPosPeer::getAllPos();
         $getDept         = ListDeptPeer::getAllDept();
-        $timedata        = EmpTimePeer::getTime($id);
-        $currenttimein   = 0;
-        $currenttimeout  = 0;
-        $timeflag        = 0;
-
-        //get last timed in
-        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-        {
-            $checktimein = $timedata[$ctr]->getTimeIn();
-            $checktimeout = $timedata[$ctr]->getTimeOut();
-            if(!is_null($checktimein) && is_null($checktimeout))
-            {
-                $currenttimein = $checktimein->format('h:i A');
-            }else
-            {
-                $currenttimein = 0;
-                $currenttimeout = $checktimeout->format('h:i A');
-            }
-        }
-        $checkipdata = null;
-        //check if already timed in today
-        if(!empty($timedata))
-        {
-            $overtime = date('h:i A',strtotime('+9 hours',strtotime($currenttimein)));
-            $datetoday = date('Y-m-d');
-            $emp_time = EmpTimePeer::getTime($id);
-            $currenttime = sizeof($emp_time) - 1;
-            $timein_data = $emp_time[$currenttime]->getTimeIn();
-            $timeout_data = $emp_time[$currenttime]->getTimeOut();
-            $checkipdata = $emp_time[$currenttime]->getCheckIp();
-            // echo $checkipdata;
-        }
-        $systime = date('H:i A');
-        $timetoday = date('h:i A');
-        $afternoon = date('H:i A', strtotime('12 pm'));
-
-        $userip = InitController::getUserIP($this);
-        $ip_add = ListIpPeer::getValidIP($userip);
-        $is_ip  = InitController::checkIP($userip);
-
-        $getTime = EmpTimePeer::getAllTime();
-
-        $countAllEmpData = EmpProfileQuery::create()
-            ->count();
-
-        $total_page = ceil($countAllEmpData/$item_per_page); //divide
 
         $getAllProfile = EmpProfilePeer::getAllProfile();
-
-
-        $et = EmpTimePeer::getEmpLastTimein($id);
-        if(!empty($et))
-        {
-            $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-            $emptimedate = $et->getDate();
-            if($emptimedate->format('Y-m-d') == $datetoday)
-            {
-                $timeflag = 1;
-            }
-            if(! empty($et->getTimeOut()))
-                $isTimeOut = 'true';
-        }
-
-        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $AllUsers = EmpAccPeer::getAllUser();
         $AllDepartments = ListDeptPeer::getAllDept();
@@ -1004,27 +774,10 @@ class EmployeeController extends Controller
         $getContact = EmpContactPeer::getAllContact();
 
         return $this->render('AdminBundle:Employee:manage.html.twig', array(
-            'name' => $name,
-            'page' => $page,
-            'user' => $user,
-            'timename' => $timename,
             'getEmployee' => $getEmployee,
             'getPos' => $getPos,
             'getDept' => $getDept,
-            'userip' => $userip,
-            'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-            'checkipdata' => $checkipdata,
-            'checkip' => $is_ip,
-            'currenttimein' => $currenttimein,
-            'timeflag' => $timeflag,
-            'systime' => $systime,
-            'afternoon' => $afternoon,
-            'getTime' => $getTime,
             'getAllProfile' => $getAllProfile,
-            'requestcount' => $requestcount,
-            'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-            'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-            'timetoday' => $timetoday,
             'allusers' => $AllUsers,
             'alldept' => $AllDepartments,
             'allpos' => $AllPositions,

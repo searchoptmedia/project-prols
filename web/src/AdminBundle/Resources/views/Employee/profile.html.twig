@@ -1,21 +1,19 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}
-    <title>Propelrr Log-in System| Profile</title>
-{% endblock %}
+{% block title %}Profile{% endblock %}
+
 {% block body %}
     <div class="page-content">
-        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+        <div class="col-md-12 light-blue darken-1 heading z-depth-1 header-profile">
             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
 
-            <div class="emp-photo">
+            <div class="header-profile-photo">
                 <div class="profile-image center-align">
-
-
                     <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                 </div>
             </div>
             {#<div class="top-nav"><a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a></div>#}
-            <div class="top-nav"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3><a class="waves-effect waves-light btn modal-trigger modal-change orange changepwmodal" href="#modal-changepw">Change Password</a></div>
+            <div class="top-nav header-profile-name"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3>
+                <a class="waves-effect waves-light btn modal-trigger modal-change orange changepwmodal" href="#modal-changepw">Change Password</a></div>
         </div>
         <div class="col-md-12 content" style="background-color: #e7e7e7;">
 

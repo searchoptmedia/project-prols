@@ -216,82 +216,12 @@ class EventManagerController extends Controller
 
     public function listAction(Request $request)
     {
-        $method = $request->getMethod();
-        $user = $this->getUser();
-        $id = $user->getId();
-
-        $timedata = EmpTimePeer::getTime($id);
-
-        $currenttimein = 0;
-        $timeflag = 0;
-
-        //get last timed in
-        for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-        {
-            $checktimein = $timedata[$ctr]->getTimeIn();
-            $checktimeout = $timedata[$ctr]->getTimeOut();
-            if(!is_null($checktimein) && is_null($checktimeout))
-            {
-                $currenttimein = $checktimein->format('h:i A');
-            }else
-            {
-                $currenttimein = 0;
-            }
-        }
-
-        $checkipdata = null;
-        $datetoday = null;
-        //check if already timed in today
-        if(!empty($timedata))
-        {
-            $datetoday = date('Y-m-d');
-            $emp_time = EmpTimePeer::getTime($id);
-            $currenttime = sizeof($emp_time) - 1;
-            $checkipdata = $emp_time[$currenttime]->getCheckIp();
-        }
-
-        $systime = date('H:i A');
-        $timetoday = date('h:i A');
-        $afternoon = date('H:i A', strtotime('12 pm'));
-
-        $userip = InitController::getUserIP($this);
-        $ip_add = ListIpPeer::getValidIP($userip);
-        $is_ip  = InitController::checkIP($userip);
-
-        $et = EmpTimePeer::getEmpLastTimein($id);
-        if(!empty($et))
-        {
-            $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-            $emptimedate = $et->getDate();
-            if($emptimedate->format('Y-m-d') == $datetoday)
-            {
-                $timeflag = 1;
-            }
-
-            $timeOut = $et->getTimeOut();
-            if(! empty($timeOut))
-                $isTimeOut = 'true';
-        }
-
-        $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
 
         $eventTypes = ListEventsTypePeer::getAllEventType();
         $allacc = EmpAccPeer::getAllUser();
         $allAccList = EmpAccPeer::getAllUser(null);
 
         $response = $this->render('AdminBundle:EventManager:manage.html.twig', array(
-            'userip' => $userip,
-            'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-            'checkipdata' => $checkipdata,
-            'checkip' => $is_ip,
-            'currenttimein' => $currenttimein,
-            'timeflag' => $timeflag,
-            'systime' => $systime,
-            'afternoon' => $afternoon,
-            'requestcount' => $requestcount,
-            'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-            'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-            'timetoday' => $timetoday,
             'eventTypes' => $eventTypes,
             'allacc' => $allacc,
             'allRecords' => $allAccList
@@ -701,6 +631,7 @@ class EventManagerController extends Controller
             'date_started' => $params['date_started'],
             'date_ended' => $params['date_ended'],
             'status' => array('data' => C::STATUS_INACTIVE, 'criteria' => \Criteria::NOT_EQUAL),
+            'event_type' => array('data' => $params['events'], 'criteria' => \Criteria::IN),
             'calendar' => true
         ));
 
