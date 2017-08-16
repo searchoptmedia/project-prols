@@ -1,4 +1,160 @@
-$(document).ready(function(){        
+DATE_FORMAT = 'YYYY-MM-DD';
+DATE_FORMAT_FULL = 'YYYY-MM-DD HH:mm:ss';
+
+//left widget
+var btnWidgetTimeout = $('.-btn-widget-timeout');
+var btnWidgetChip = $('.-btn-widget-timechip');
+
+MAIN_APP = function() {
+    var _d = { slug: '' };
+    var _nowDate = null;
+    var _nowDateFull = null;
+
+    return {
+        setActiveSidebar: function() {
+            $('.link-sidebar-'+_d.slug).addClass('active');
+
+            return this;
+        },
+
+        start: function(d) {
+            _d = $.extend(true, _d, d);
+
+            this
+                .setup()
+        },
+
+        setup: function() {
+            moment.tz.add('Asia/Manila');
+            console.log('Today is '+ moment().format(DATE_FORMAT_FULL));
+            _nowDate = moment().format(DATE_FORMAT);
+            _nowDateFull = moment().format(DATE_FORMAT_FULL);
+
+            this
+                .setActiveSidebar()
+                .bindClicks()
+                .renderScreenModal();
+
+            return this;
+        },
+
+        renderScreenModal: function() {
+            //if has timein, get last
+            if(_.size(_d.lastTimein)) {
+                var d = _d.lastTimein;
+
+                if(moment(d.Date.date).format(DATE_FORMAT)!=_nowDate) {
+                    if(in_array(_d.ip, _d.ips)) {
+                        this.toggleModal('.modal-time-in-container.allowed', 'show');
+                    } else {
+                        this.toggleModal('.modal-time-in-container.deny', 'show');
+                    }
+                }
+
+            }
+
+            return this;
+        },
+        /** show/hide */
+        toggleModal: function(el, state) {
+            if(state=='show') $(el).removeClass('display-none');
+            else $(el).addClass('display-none');
+        },
+
+        toggleTimeWidget: function (state) {
+            if(state == 'show') {
+                btnWidgetTimeout.removeClass('display-none');
+                btnWidgetChip.show();
+            } else {
+                btnTimeoutWidget.addClass('display-none');
+                btnWidgetChip.hide();
+            }
+        },
+
+        bindClicks: function() {
+            //timein submit
+            $('.-btn-timein-submit').click(function(){
+
+                var txtReason = $('-txt-timein-reason'),
+                    error = false, button = $(this),
+                    is_message = undefined, action = $(this).data('action');
+
+                var message = txtReason.val();
+
+                if(!in_array(_d.ip, _d.ips)){
+                    var m = message.replace(/(?:\r\n|\r|\n)/g, '')
+                    if(m==''){
+                        txtReason.css({'border-color': '#f44336'});
+                        error = true;
+                    }
+
+                    is_message = true;
+                    if(error){
+                        return false;
+                    }
+                }
+
+                button.hide();
+                showLoadingBar();
+
+                post($('.-button-not-exist'), _d.url_timein, {is_message : is_message, message : message.replace(/(?:\r\n|\r|\n)/g, '<br>') }, function() {
+                    this.toggleTimeWidget('show');
+                    if(data.code==200) {
+                        btnWidgetChip.html("Timed-in at " + timetoday);
+
+                        if (in_array(_d.ip, _d.ips)) {
+                            this.toggleModal('.modal-time-in-container.allowed', 'hide');
+                        } else {
+                            this.toggleModal('.modal-time-in-container.deny', 'hide');
+                        }
+                    }
+
+                    showNotificationBar(data.message)
+                }, null, null, function() {
+                    button.show();
+                });
+
+                //var timetoday = "{{ timetoday }}";
+                //$.post("{{ path('time_in') }}",
+                //    ,
+                //    function(data){
+                //        console.log(data);
+                //
+                //        _moTimeIn.hide();
+                //        $('.timein-notif-container').css({'top':'0px'});
+                //        $('.timed-in').css({'display' : 'block'});
+                //        $('.btn-timeout').show();
+                //        $('.diff-ip-container').hide();
+                //
+                //        showBirthday();
+                //        setTimeout(function(){
+                //            $('.timein-notif-container').css({'top' : '-55px'});
+                //        }, 5000);
+                //    }).always(function(data){
+                //        console.log(data);
+                //        notifLoader.hide();
+                //        notifLoader.css({'top' : '-55px'});
+                //    }).fail( function() {
+                //        btnTimeIn.show();
+                //        $('.error-notif-container').css({'top':'0px'});
+                //        setTimeout(function(){
+                //            $('.timein-notif-container').css({'top' : '-55px'});
+                //        }, 5000);
+                //    });
+            });
+
+            return this;
+        },
+
+        toggleBithday: function(state) {
+
+            return this;
+        }
+    }
+}();
+
+
+$(document).ready(function(){
 
     $('.btn-time').on('click', function(e){
         e.preventDefault();
@@ -28,73 +184,6 @@ $(document).ready(function(){
         $('#mb-timeout').removeClass('open');
         $('.btn-time').removeClass('time-out').find('.xn-text').html('Time In');
     });
-
-    // $('.btn-edit-profile').click(function(e){
-    //     e.preventDefault();
-    //
-    //     // console.log('test');
-    //
-    //     $('.list-group-item input').attr("readonly", false);
-    //     $('.edit-this').css({'display' : 'block'});
-    //     $('.btn-save-profile').css({'display' : 'inline'});
-    //     $('.btn-cancel-profile').css({'display' : 'inline'});
-    //     $('.btn-edit-profile').css({'display' : 'none'});
-    // });
-
-
-    // $('.btn-save-profile').click(function(e){
-    //     e.preventDefault();
-    //     $validate = false;
-    //
-    //     $('.btn-edit-profile').css({'display' : 'none'});
-    //
-    //     if( !$("#cellP").val() == '') {
-    //         $validate = true;
-    //         $("#cellP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-    //         $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'none'})
-    //     } else {
-    //         $("#cellP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-    //     }
-    //
-    //     if( !$("#telP").val() == '') {
-    //         $validate = true;
-    //         $("#telP").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-    //         $("#telP").closest('.list-group-item').find('.required').css({'display' : 'none'})
-    //     } else {
-    //         $("#telP").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-    //     }
-    //
-    //     if( !$("#address").val() == '') {
-    //         $validate = true;
-    //         $("#address").closest('.list-group-item').find('.edit-this').css({'display' : 'block'});
-    //         $("#address").closest('.list-group-item').find('.required').css({'display' : 'none'})
-    //     } else {
-    //         $("#address").closest('.list-group-item').find('.required').css({'display' : 'inline'})
-    //     }
-    //
-    //
-    //     if(!$("#cellP").val() == '' && $validate == true && !$("#telP").val() == '' && !$("#address").val() == '') {
-    //         $('.btn-save-profile').css({'display' : 'none'});
-    //         $('.btn-cancel-profile').css({'display' : 'none'});
-    //         $('.edit-this').css({'display' : 'none'});
-    //         $('.btn-edit-profile').css({'display' : 'block'});
-    //     } else {
-    //         e.preventDefault();
-    //     }
-    //
-    // });
-
-
-    // $('.btn-cancel-profile').click(function(e){
-    //     e.preventDefault();
-    //
-    //         $('.list-group-item input').attr("readonly", false);
-    //         $('.edit-this').css({'display' : 'none'});
-    //         $('.btn-save-profile').css({'display' : 'none'});
-    //         $('.btn-cancel-profile').css({'display' : 'none'});
-    //         $('.btn-edit-profile').css({'display' : 'block'});
-    //         $('.required').css({'display' : 'none'});
-    // });
 
     $( ".edit-this" ).click(function(e) {
         e.preventDefault();
@@ -298,7 +387,6 @@ $(document).ready(function(){
 
 
 
-
 /**
  * Created by Hazel on 22/02/2017.
  */
@@ -355,7 +443,7 @@ function showNotificationBar(message, state) {
 }
 
 // AJAX POST
-function post(button, path, data, callback, done, always) {
+function post(button, path, data, callback, done, always, fail) {
     showLoadingBar();
     var btnText = button.text();
 
@@ -375,7 +463,9 @@ function post(button, path, data, callback, done, always) {
                 window.location = '/';
             }
 
-            showErrorBar("Server Error. Please try again.");
+            if (typeof fail === 'function') fail(data);
+            else
+                showErrorBar("Server Error. Please try again.");
         });
     }
 }
@@ -474,6 +564,14 @@ function convertStatusToString(statusId) {
 /** filters */
 function removeSpace(str) {
     return str.replace(/\s/g, '');
+}
+
+function in_array(needle, haytack) {
+    if(haytack.indexOf(needle) > -1) {
+        return true;
+    }
+
+    return false;
 }
 
 /**

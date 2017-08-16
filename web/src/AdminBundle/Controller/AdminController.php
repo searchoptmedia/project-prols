@@ -138,7 +138,7 @@ class AdminController extends Controller
             'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
             'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
             'timetoday' => $timetoday,
-            'allacc' => $allacc,
+//            'allacc' => $allacc,
             't' => $timedintoday,
         ));
     }

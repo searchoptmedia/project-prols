@@ -131,10 +131,10 @@ var _fullCalendar = function(){
                                 '      <h5 class="colorBlack"><img src="/images/qoute.png" height="20" width="25"> [TITLE]</h5>  ' +
                                 '      <span style="padding: 4px 0;color: #333;display: inline;"><span style="padding: 30px;-webkit-box-decoration-break: clone;box-decoration-break: clone;">[DESC]</span></span><br>  ' +
                                 '      <hr style="border-top:1px dotted #ccc;margin-bottom:10px">  ' +
-                                '      <strong class="font20 mr2">When:&nbsp;</strong> [DATE]<br>  ' +
-                                '      <strong class="font20 mr2">Where:</strong> [VENUE]<br>  ' +
-                                (event.eventTypeId != EVENT_TYPE_HOLIDAY && _.size(event.eventTags) ? '      <strong class="font20">Who:</strong>  ' +
-                                '      <span style="position:relative;top:-11px;left: 22px;">[TAGS]</span>  ' : ''  ) +
+                                '      <strong class="font20 mr2">When&nbsp;&nbsp;&nbsp;:&nbsp;</strong> [DATE]<br>  ' +
+                                '      <strong class="font20 mr2">Where&nbsp;&nbsp;:</strong> [VENUE]<br>  ' +
+                                (event.eventTypeId != EVENT_TYPE_HOLIDAY && _.size(event.eventTags) ? '      <strong class="font20">Who&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> <br> ' +
+                                '      <span style="">[TAGS]</span>  ' : ''  ) +
                                 '  </div>  ';
 
                             var details = details.replace('[TITLE]', event.title)
@@ -630,7 +630,7 @@ var templatePlugins = function(){
             var month   = months[now.getMonth()];
             var year    = now.getFullYear();
 
-            $(".plugin-date").html(day+", "+month+" "+date+", "+year);
+            $(".plugin-date").html(""+day+", "+month+" "+date+", "+year);
         }
 
     }

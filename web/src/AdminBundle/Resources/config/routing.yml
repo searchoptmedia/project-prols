@@ -6,11 +6,11 @@ admin_dashboard_get_events:
     path:     /dashboard/events/get
     defaults: { _controller: AdminBundle:Dashboard:getCalendarEvents }
 
-admin_time_in:
+admin_time_in_1:
     path:     /admin/time_in/{id}/{passw}
     defaults: { _controller: AdminBundle:Admin:timeIn }
 
-admin_time_in_no_params:
+admin_time_in_no_params_1:
     path:     /admin/time_in/
     defaults: { _controller: AdminBundle:Admin:timeIn}
 
@@ -65,7 +65,7 @@ delete_request:
     defaults: { _controller: AdminBundle:EmployeeRequest:deleteRequest }
 
 
-time_in:
+admin_time_in:
     path: /timein
     defaults: { _controller: AdminBundle:Employee:TimeIn }
 
@@ -106,7 +106,7 @@ profile_page:
     defaults: { _controller: AdminBundle:Employee:profile }
 
 manage_employee:
-    path: /manage
+    path: /employees
     defaults: { _controller: AdminBundle:Employee:manage }
 
 add_employee:
