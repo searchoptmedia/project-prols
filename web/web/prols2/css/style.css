@@ -7107,6 +7107,15 @@ button.picker__close:focus {
     min-width: 150px;
 }
 
+.plr-modal h3.-modal-title {
+    position: relative;
+    color: #fff;
+    font-size: 48px;
+    font-weight: 100;
+    z-index: 3;
+    margin: 0
+}
+
 .timeout-container {
     position: fixed;
     width: 100%;
