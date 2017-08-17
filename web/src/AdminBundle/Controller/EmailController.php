@@ -177,7 +177,7 @@ class EmailController extends Controller
             'template' => 'account-create-employee',
             'message' => 'Your account was successfully created. Use the following details to login at <a href="'.$class->generateUrl('login', array(), true).'">login.propelrr.com</a>.',
             'links' => array(
-                'Login Now!' => $class->generateUrl('login', array(), true)
+                'Login Now!' =>  array('href' => $class->generateUrl('login', array(), true))
             )
         ));
 
@@ -203,7 +203,7 @@ class EmailController extends Controller
                 'message'  => 'Account for <strong>'.$empname.'</strong> was successfully created by <strong>'.$name.'</strong>.',
                 'template' => 'account-create-admin',
                 'links' => array(
-                    'Manage Employees' => $class->generateUrl('manage_employee', array(), true)
+                    'Manage Employees' => array('href' => $class->generateUrl('manage_employee', array(), true))
                 )
             ));
 
@@ -276,7 +276,7 @@ class EmailController extends Controller
         $subject = "PROLS » " . ucwords(strtolower($action)) . " " . ucwords(strtolower($category)) . " Request";
         $from = array('no-reply@searchoptmedia.com', 'PROLS');
 
-        $adminEmailList = $this->getAdminEmails($admins);
+        $adminEmailList = $this->getAdmins();
 
         $newStartDate = $req->request->get('start_date');
         $newEndDate = $req->request->get('end_date');
@@ -317,24 +317,33 @@ class EmailController extends Controller
             }
         }
 
+
         if(count($adminEmailList)) {
-            $to = $adminEmailList;
-            $message = "<strong>".$empname . "</strong> has ". strtolower($action) ." $genderPref <strong>" . strtolower($category) . "</strong>.";
+            foreach($adminEmailList as $a) {
+                $to = array($a['email']);
+                $message = "<strong>".$empname . "</strong> has ". strtolower($action) ." $genderPref <strong>" . strtolower($category) . "</strong>.";
 
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
-                'title'     => strtolower($category)!='work out of office' ? ucwords(strtolower($category)) : 'Request Access',
-                'greetings' => 'Hi Admin,',
-                'template'  => 'update-request',
-                'message'   => $message,
-                'links'     => ($action!='CANCELLED') ? array('View Request' => $class->generateUrl('view_request',  array('id' => $param ? $param['request']->getId() : null), true)) : null,
-                'data'      => $data,
-                'old_data'  => $oldData
-            ));
+                $links = array(
+                    'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage',  array('id' =>  $param ? $param['request']->getId():0, 'type' => 'approve', 'uid' => $class->getUser()->getId()), true)),
+                    'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage',  array('id' =>  $param ? $param['request']->getId():0, 'type' => 'decline', 'uid' => $class->getUser()->getId()), true)),
+                    'View Request' =>  array('href' => $class->generateUrl('view_request',  array('id' =>  $param ? $param['request']->getId() : 0), true))
+                );
 
-            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                    'title'     => strtolower($category)!='work out of office' ? ucwords(strtolower($category)) : 'Request Access',
+                    'greetings' => 'Hi Admin,',
+                    'template'  => 'update-request',
+                    'message'   => $message,
+                    'links'     => ($action!='CANCELLED') ? $links : null,
+                    'data'      => $data,
+                    'old_data'  => $oldData
+                ));
 
-            if($email)
-                $emailCtr++;
+                $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+                if($email)
+                    $emailCtr++;
+            }
         }
 
         return $emailCtr;
