@@ -455,7 +455,7 @@ class EmailController extends Controller
                         $params['greetings'] = 'Hi ' . $ownerName . ',';
                         $params['message'] = strtr($message, array(
                             '[NAME]' => $doerName,
-                            '[REASON]' => strlen($params['reason']) ? "<br><br><hr style=\"border-top:1px dotted #ccc;margin-bottom:10px\"><p style=\"vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif\"><strong>Comment:</strong><br>".$params['reason']."</p>":""
+                            '[REASON]' => strlen($params['reason']) ? "<br><br><hr style=\"border-top:1px dotted #ccc;margin-bottom:10px\"><p style=\"vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif\"><strong>Reason:</strong><br>".$params['reason']."</p>":""
                         ));
 
                         $to = array(array($event->getEmpAcc()->getEmail() => $ownerName));
