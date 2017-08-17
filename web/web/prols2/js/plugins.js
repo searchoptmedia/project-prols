@@ -122,7 +122,7 @@ var _fullCalendar = function(){
                 }
             });
 
-            $(document).on('click', '.legend-list li a', function() {
+            $(document).on('click', '.legend-list li', function() {
                 setTimeout( function() {
                     calendarWrap.fullCalendar('refetchEvents');
                 }, 200);

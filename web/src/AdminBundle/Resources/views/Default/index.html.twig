@@ -319,10 +319,10 @@
                         $(this).closest('.multi_reqleaveform').remove();
                     });
 
-                    DOC.on('click', '.legend-list a', function() {
-                        var isActive = $(this).closest('li').hasClass('active');
-                        if(isActive) $(this).closest('li').removeClass('active');
-                        else $(this).closest('li').addClass('active');
+                    DOC.on('click', '.legend-list li', function() {
+                        var isActive = $(this).hasClass('active');
+                        if(isActive) $(this).removeClass('active');
+                        else $(this).addClass('active');
                     });
                 },
 

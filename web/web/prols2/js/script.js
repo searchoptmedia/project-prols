@@ -198,55 +198,6 @@ MAIN_APP = function() {
                         showNotificationBar('Error. Something went wrong! <a href="">Reload</a>', 'error');
                     });
                 }
-                // notifLoader.show();
-                // notifLoader.css({'top': '0px'});
-                //
-                // $('#time-out-button').hide();
-                // $('.timeout-cancel').hide();
-                //
-                // $.post("{{ path('time_out') }}" + pass, function (data) {
-                //     //validate password
-                //     if (data.error == true && data.code == 501) {
-                //         console.log('error dow')
-                //         $('#time-out-button').show();
-                //         $('.timeout-cancel').show();
-                //         $('#confirmpw-timeout').closest('.timeout').find('input[type=password]').css({'border-bottom-color': '#f44336'});
-                //         $('#errormessage').show();
-                //         return;
-                //     } else if (data.error == true && data.code == 500) {
-                //         _moTimeIn.hide();
-                //         $('.timeout-container').hide();
-                //         $('.modal-logout-notify-container').show();
-                //         $('.confirm-timein.error-message').text(data.message);
-                //     } else if (data.error == false) {
-                //         //time out success
-                //         toggleTimeWidget('hide');
-                //         $('.timeout-container').css({'display': 'none'});
-                //         $('.timeout').css({'display': 'none'});
-                //         $('.timeout-notif-container').css({'top': '0px'});
-                //         //                                    $('.timed-in').css({'display' : 'none'});
-                //         $('.timed-out').css({'display': 'block'});
-                //         $('.btn-timeout').css({'display': 'none'});
-                //         $('.timechip').hide();
-                //
-                //         setTimeout(function () {
-                //             $('.timeout-notif-container').css({'top': '-55px'});
-                //         }, 5000);
-                //     }
-                //
-                //     if (isFromForgot) window.location = '/logout';
-                //
-                // }, 'json').always(function (data) {
-                //     console.log(data);
-                //     notifLoader.hide();
-                //     notifLoader.css({'top': '-55px'});
-                // }).fail(function (data) {
-                //     console.log(data);
-                //     _moTimeIn.hide();
-                //     $('.timeout-container').hide();
-                //     $('.modal-logout-notify-container').show();
-                //     //                      $('.modal-session-content').show();
-                // });
             });
 
             $('.-btn-auto-timeout-timein').click( function() {
