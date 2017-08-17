@@ -304,8 +304,8 @@
             post($(this), "{{ path('listener_request_change_status') }}", data, function(data) {
                 _proc = false;
                 if(data.code==200) {
-                    showNotificationBar('Successfully '+data.status+'d requests!');
-                    _alertMessage.find('.text').text('Successfully '+'{{ type }}d requests!');
+                    showNotificationBar('Successfully {{ type }}d requests!');
+                    _alertMessage.find('.text').text('Successfully {{ type }}d requests!');
                     _alertMessage.addClass('green').removeClass('red').show();
                 } else if(data.code==230) {
                     showNotificationBar('No changes were made!', 'error');

@@ -35,8 +35,8 @@ class DashboardController extends Controller
             );
         }
 
-        $params['requests'] = isset($params['requests'])? $params['requests'] : array();
-        $params['events'] = isset($params['events'])? $params['events'] : array();
+        $params['requests'] = isset($params['requests'])? $params['requests'] : array(-1);
+        $params['events'] = isset($params['events'])? $params['events'] : array(-1);
 
         $queryData['status'] = array( 'data' => C::STATUS_APPROVED );
         $queryData['request_type'] = array( 'data' => $params['requests'], 'criteria' => \Criteria::IN );

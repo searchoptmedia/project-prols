@@ -216,7 +216,7 @@ class EmployeeRequestController extends Controller
         $params['adminInfo'] = EmpProfilePeer::getInformation($adminId);
 
         if(!empty($empRequest)) {
-            $response = "Status ";
+            $response = "Successfully ";
             $empRequest->setAdminId($adminId);
 
             //on request is access
@@ -229,7 +229,7 @@ class EmployeeRequestController extends Controller
                     }
                 }
 
-                $response .= "Declined";
+                $response .= "Approved!";
             } else {
                 if($requesttype==3) {
                     $emptime = EmpTimePeer::retrieveByPK($empTimeId);
@@ -239,7 +239,7 @@ class EmployeeRequestController extends Controller
                     }
                 }
 
-                $response .= "Declined";
+                $response .= "Declined!";
             }
 
             //if status change
@@ -255,7 +255,7 @@ class EmployeeRequestController extends Controller
             if($empRequest->save()) {
                 $response = array('result' => $response, 'code' => C::CODE_SUCCESS);
             } else {
-                $response = array('error' => 'Status not changed', 'code' => C::CODE_NO_CHANGE);
+                $response = array('error' => 'Status not changed!', 'code' => C::CODE_NO_CHANGE);
             }
 
         } else {

@@ -219,7 +219,8 @@
                         <p>Middle Name<input name = "mname" placeholder="type here..." id="mname" type="text" class="input-field"/></p>
 
                         <p>Gender</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="gender" id="gender" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="" disabled selected>Select Gender</option>
                                 <option value="Male">Male</option>
@@ -228,7 +229,8 @@
                         </div>
 
                         <p>Department</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="dept" id="dept" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select department</option>
                                 {% for dept in getDept %}
@@ -238,7 +240,8 @@
                         </div>
 
                         <p>Position</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="pos" id="pos" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select position</option>
                                 {% for pos in getPos %}
@@ -248,7 +251,8 @@
                         </div>
 
                         <p>Employment Status</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="status"id="status" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select status</option>
                                 {% for status in allstatus %}
