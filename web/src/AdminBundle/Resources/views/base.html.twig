@@ -4,6 +4,7 @@
 {% set userbdaynames = userbdaynames|default([]) %}
 
 {% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
+{% set timeData = Twig_GetTimeData(app.user.id) %}
 
 <!DOCTYPE HTML>
 <html class="no-js" lang="">
@@ -130,7 +131,7 @@
     var URI_ROUTE_ARR = URI.split('/');
     URI_ROUTE_SLUG = URI_ROUTE_ARR[4];
 
-    APPDATA = eval('('+'{{ Twig_GetTimeData(app.user.id)|json_encode|escape('js') }}'+')');
+    APPDATA = eval('('+'{{ timeData|json_encode|escape('js') }}'+')');
 
     APPDATA.slug = URI_ROUTE_SLUG;
     APPDATA.ip = '{{ app.request.clientIp }}';
