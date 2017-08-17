@@ -147,7 +147,7 @@ class EmployeeController extends Controller
                  }
              }
 		} else {
-            $response['message'] = 'Already Time in Today';
+            $response['message'] = 'Already Timed in Today';
 		}
 
         return new JsonResponse($response);
