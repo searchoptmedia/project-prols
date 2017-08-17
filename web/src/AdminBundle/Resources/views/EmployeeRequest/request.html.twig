@@ -296,11 +296,6 @@
      }
 
      $(document).on("click", "#close_modal", function () {
-         if (picker != null)
-             picker.destroy();
-         if (picker2 != null)
-             picker2.destroy();
-
          view_modal.closeModal();
          editBtn.removeClass('open');
          reason_modal.attr("readonly", true);
@@ -331,8 +326,6 @@
          };
 
          callback = function (data) {
-             picker.destroy();
-             picker2.destroy();
              view_modal.closeModal();
          };
 
@@ -399,6 +392,10 @@
          getValues($(this), role, adminid);
      });
 
+     var param = {showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+     var fromStart = new Date(CURRENT_YEAR, moment().format('M') - 1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
+
+
      /************                  **********/
      {% if app.request.get('id') is not empty %}
         setTimeout( function() { $('.request-row.active[data-id="{{ app.request.get('id') }}"]').each( function() {
@@ -423,21 +420,40 @@
              var endVal =  $('#end_date_modal').val();
              var currentYear = (new Date()).getFullYear();
 
-             initPicker('start_date_modal', new Date(startVal), new Date(endVal), function() {
-                 setTimeout( function() {
-                     startVal = $('#start_date_modal').val();
-                     setPikadayData('start-range', 'end_date_modal', new Date(startVal)).show();
-                 }, 200);
-             });
+//             initPicker('start_date_modal', new Date(startVal), new Date(endVal), function() {
+//                 setTimeout( function() {
+//                     startVal = $('#start_date_modal').val();
+//                     setPikadayData('start-range', 'end_date_modal', new Date(startVal)).show();
+//                 }, 200);
+//             });
+//
+//             var endPikaDate = initPicker('end_date_modal', new Date(startVal), new Date(currentYear+20, 12, 31), function() {
+//                 setTimeout( function() {
+//                     endVal =  $('#end_date_modal').val();
+//                     setPikadayData('end-range', 'start_date_modal', new Date(endVal));
+//                 }, 200);
+//             });
+//
+//             endPikaDate.setDate(new Date(endVal));
 
-             var endPikaDate = initPicker('end_date_modal', new Date(startVal), new Date(currentYear+20, 12, 31), function() {
-                 setTimeout( function() {
-                     endVal =  $('#end_date_modal').val();
-                     setPikadayData('end-range', 'start_date_modal', new Date(endVal));
-                 }, 200);
-             });
+             var param = {showTime: false, use24hour: false, format: 'YYYY-MM-DD'};
+             var fromStart = new Date(CURRENT_YEAR, moment().format('M') - 1, moment().format('D'), moment().format('h'), moment().format('m'), 0);
 
-             endPikaDate.setDate(new Date(endVal));
+             initPicker('start_date_modal', fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () {
+                 setTimeout(function () {
+                     var val = $('#start_date_modal').val();
+                     var valto = $('#end_date_modal').val();
+                     var pd = setPikadayData('start-range', 'end_date_modal', new Date(val));
+
+                     if (!removeSpace(valto).length || (removeSpace(valto).length && new Date(val) > new Date(valto))) {
+                         setPikadayData('set-date', 'end_date_modal', new Date(val));
+                         pd.show();
+                     }
+                 }, 200);
+             }, param);
+
+             initPicker('end_date_modal', fromStart, new Date(CURRENT_YEAR + 20, 12, 31), function () { }, param);
+
          }
      });
 

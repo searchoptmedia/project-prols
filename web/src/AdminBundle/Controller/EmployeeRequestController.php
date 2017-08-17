@@ -78,14 +78,12 @@ class EmployeeRequestController extends Controller
         $tag_request_ids = array();
 
         try {
-            foreach($taggedemail as $tagemail)
-            {
+            foreach($taggedemail as $tagemail) {
                 $emp = EmpAccPeer::getUserInfo($tagemail);
                 $tag_record = EmpAccPeer::getUserInfo($tagemail);
                 $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
                 $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
-                if(!empty($emp))
-                {
+                if(!empty($emp)) {
                     $empTagRequest = new RequestMeetingTags();
                     $empTagRequest->setRequestId($request_id);
                     $empTagRequest->setEmpAccId($emp->getId());

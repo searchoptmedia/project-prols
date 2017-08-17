@@ -125,7 +125,7 @@ class EventManagerController extends Controller
 
                             $params['user_id'] = $empAcc->getId();
 
-                            if($eventTagged && $eventTagged->getStatus()==C::STATUS_PENDING) {
+                            if(($eventTagged && $eventTagged->getStatus()==C::STATUS_PENDING) || ($event)) {
                                 $params['from_date'] = date('F d, Y h:i a', strtotime($params['from_date']));
                                 $params['to_date'] = date('F d, Y h:i a', strtotime($params['to_date']));
 
