@@ -67,11 +67,11 @@ MAIN_APP = function() {
                 } else {
                     if(d.TimeOut==null) {
                         _self.toggleTimeWidget('show');
-                        btnWidgetChip.html("Timed-in at " + moment(d.Date.TimeIn).format(TIME_FORMAT));
                     } else {
                         _self.toggleTimeWidget('hide');
-                        btnWidgetChip.html("Timed-out at " + moment(d.Date.TimeOut).format(TIME_FORMAT));
                     }
+
+                    btnWidgetChip.html("Timed-in at " + moment(d.TimeIn.date).format(TIME_FORMAT));
                 }
             } else {
                 if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
