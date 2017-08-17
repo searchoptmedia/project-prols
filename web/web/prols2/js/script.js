@@ -45,6 +45,11 @@ MAIN_APP = function() {
         },
 
         renderScreenModal: function() {
+            var txtGreet = $('.-modal-greetings-text');
+            //set greetings
+            if(moment().format('H') >= 12) txtGreet.text('Good Afternoon!');
+            else txtGreet.text('Good Morning!');
+
             //if has timein, get last
             if(_.size(_d.lastTimein) && _d.lastTimein.Status!=-1) {
                 var d = _d.lastTimein;
