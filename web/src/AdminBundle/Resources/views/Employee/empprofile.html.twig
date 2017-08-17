@@ -1,7 +1,5 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}
-    <title>Propelrr Log-in System| Profile</title>
-{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block body %}
     <div class="page-content">
@@ -202,27 +200,32 @@
                 <br><br>
             </div>
         </div>
-        <!---------------CHANGE PASS MODAL------------------>
-        <div id="modal-changepw" class="modal">
-            <form action="{{ path('change_pass') }}" id = "changepass" method="post">
-                <div class="modal-content">
-                    <h4>Change Password</h4>
-                    <div class="chip" id="formchangedalert" style="display:none;">
-                        <strong>Password Changed!</strong>
-                    </div>
-                    <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
-                    <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
-                    <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
-                </div>
-                <div class="modal-footer">
-                    <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
-                    <button type="submit" href="#!" class=" modal-action waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
     </div>
 
+{% endblock %}
+
+{% block modal %}
+<!---------------CHANGE PASS MODAL------------------>
+<div id="modal-changepw" class="modal modal-fixed-footer overflow-hidden">
+    <form action="{{ path('change_pass') }}" id = "changepass" method="post">
+        <h4 class="mo-header">Change Password</h4>
+        <div class="modal-content">
+            <div class="mo-body">
+                <div class="chip" id="formchangedalert" style="display:none;">
+                    <strong>Password Changed!</strong>
+                </div>
+                <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
+                <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
+                <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
+            <button type="submit" href="#!" class=" modal-action waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
 
 {% block customjs %}

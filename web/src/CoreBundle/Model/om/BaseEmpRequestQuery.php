@@ -21,6 +21,7 @@ use CoreBundle\Model\ListRequestType;
 /**
  * @method EmpRequestQuery orderById($order = Criteria::ASC) Order by the id column
  * @method EmpRequestQuery orderByRequest($order = Criteria::ASC) Order by the request column
+ * @method EmpRequestQuery orderByAdminNote($order = Criteria::ASC) Order by the admin_notes column
  * @method EmpRequestQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method EmpRequestQuery orderByDateStarted($order = Criteria::ASC) Order by the date_started column
  * @method EmpRequestQuery orderByDateEnded($order = Criteria::ASC) Order by the date_ended column
@@ -32,6 +33,7 @@ use CoreBundle\Model\ListRequestType;
  *
  * @method EmpRequestQuery groupById() Group by the id column
  * @method EmpRequestQuery groupByRequest() Group by the request column
+ * @method EmpRequestQuery groupByAdminNote() Group by the admin_notes column
  * @method EmpRequestQuery groupByStatus() Group by the status column
  * @method EmpRequestQuery groupByDateStarted() Group by the date_started column
  * @method EmpRequestQuery groupByDateEnded() Group by the date_ended column
@@ -61,6 +63,7 @@ use CoreBundle\Model\ListRequestType;
  * @method EmpRequest findOneOrCreate(PropelPDO $con = null) Return the first EmpRequest matching the query, or a new EmpRequest object populated from the query conditions when no match is found
  *
  * @method EmpRequest findOneByRequest(string $request) Return the first EmpRequest filtered by the request column
+ * @method EmpRequest findOneByAdminNote(string $admin_notes) Return the first EmpRequest filtered by the admin_notes column
  * @method EmpRequest findOneByStatus(int $status) Return the first EmpRequest filtered by the status column
  * @method EmpRequest findOneByDateStarted(string $date_started) Return the first EmpRequest filtered by the date_started column
  * @method EmpRequest findOneByDateEnded(string $date_ended) Return the first EmpRequest filtered by the date_ended column
@@ -72,6 +75,7 @@ use CoreBundle\Model\ListRequestType;
  *
  * @method array findById(int $id) Return EmpRequest objects filtered by the id column
  * @method array findByRequest(string $request) Return EmpRequest objects filtered by the request column
+ * @method array findByAdminNote(string $admin_notes) Return EmpRequest objects filtered by the admin_notes column
  * @method array findByStatus(int $status) Return EmpRequest objects filtered by the status column
  * @method array findByDateStarted(string $date_started) Return EmpRequest objects filtered by the date_started column
  * @method array findByDateEnded(string $date_ended) Return EmpRequest objects filtered by the date_ended column
@@ -132,7 +136,7 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpRequest|EmpRequest[]|mixed the result, formatted by the current formatter
@@ -185,9 +189,9 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `request`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id`, `meeting_title` FROM `emp_request` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `request`, `admin_notes`, `status`, `date_started`, `date_ended`, `emp_acc_id`, `list_request_type_id`, `admin_id`, `emp_time_id`, `meeting_title` FROM `emp_request` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -343,6 +347,35 @@ abstract class BaseEmpRequestQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpRequestPeer::REQUEST, $request, $comparison);
+    }
+
+    /**
+     * Filter the query on the admin_notes column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByAdminNote('fooValue');   // WHERE admin_notes = 'fooValue'
+     * $query->filterByAdminNote('%fooValue%'); // WHERE admin_notes LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $adminNote The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpRequestQuery The current query, for fluid interface
+     */
+    public function filterByAdminNote($adminNote = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($adminNote)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $adminNote)) {
+                $adminNote = str_replace('*', '%', $adminNote);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpRequestPeer::ADMIN_NOTES, $adminNote, $comparison);
     }
 
     /**

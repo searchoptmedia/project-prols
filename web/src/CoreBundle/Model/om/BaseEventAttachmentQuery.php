@@ -95,7 +95,7 @@ abstract class BaseEventAttachmentQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EventAttachment|EventAttachment[]|mixed the result, formatted by the current formatter
@@ -150,7 +150,7 @@ abstract class BaseEventAttachmentQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `event_id`, `filename` FROM `event_attachment` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

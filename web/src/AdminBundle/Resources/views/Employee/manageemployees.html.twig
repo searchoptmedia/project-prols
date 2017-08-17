@@ -1,4 +1,4 @@
-{% if user.role == 'ADMIN' %}
+{% if app.user.role == 'ADMIN' %}
 <a href="{{ path('time_logs_page') }}" class="waves-effect waves-light btn amber" style="color: white;">
     View Time logs</a>
 <a href="{{ path('manage_employee') }}" class="waves-effect waves-light btn amber" style="color: white;">

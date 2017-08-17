@@ -1,0 +1,127 @@
+{% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
+{% if event is defined and event is not empty %}
+    <tr data-id="{{ event.getId }}" class="event-tr display-none">
+        <td class="event-name">{{ event.getEventName }}</td>
+        <td class="event-type" id="{{ event.listEventsType.id }}">{{ event.listEventsType.name|upper }}</td>
+        <td class="event-from-date">{{ event.fromDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.fromDate|date('h:i a') }}{% endif %}</td>
+        <td class="event-to-date">{{ event.toDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.toDate|date('h:i a') }}{% endif %}</td>
+        <td class="role">
+            {% if (app.user.id != event.getCreatedBy) %}Guest
+            {% else %}Creator{% endif %}
+        </td>
+        <td class="status">
+            {% if (app.user.id!=event.getCreatedBy) %}
+                {% for tag in event.getEventTaggedPersonss %}
+                    {% if(app.user.id==tag.empid) %}
+                        {% if(tag.status==constant(CONST~'STATUS_PENDING')) %}
+                            <div class="pending" id = "pending">Pending</div>
+                        {% elseif(tag.status == 3) %}
+                            <div class="approved">Going</div>
+                        {% else %}
+                            <div class="declined">Not Going</div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="created">Created</div>
+            {% endif %}
+        </td>
+        <td class="event-desc"
+            style="display: none;">{{ event.getEventDescription|raw }}
+        </td>
+        <td>
+            <a class='btn btn-default btn-view-event' href="javascript:void(0);"
+               data-action="view"
+               data-id="{{ event.id }}"
+               data-type="{{ event.eventType }}"
+               data-event-name="{{ event.eventName }}"
+               data-event-desc="{{ event.getEventDescription }}"
+               data-event-venue="{{ event.eventVenue }}"
+               data-event-from="{{ event.fromDate|date('Y-m-d h:i: A') }}"
+               data-event-to="{{ event.toDate|date('Y-m-d h:i: A') }}"
+               data-event-from-holiday="{{ event.fromDate|date('M d, Y') }}"
+               data-event-to-holiday="{{ event.toDate|date('M d, Y') }}"
+               data-event-from-nonholiday="{{ event.fromDate|date('M d, Y h:i a') }}"
+               data-event-to-nonholiday="{{ event.toDate|date('M d, Y h:i a') }}"
+               data-event-tags='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+               data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endif %}{% endfor %}'
+
+               data-event-tag-userid="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.empid }}{% endif %}{% endfor %}"
+               data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
+               data-event-tag-reason="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.reason }}{% endif %}{% endfor %}"
+               data-created-by="{{ event.createdBy }}"
+               data-isgoing="{{ event.isGoing }}"
+               data-isgoing-note="{{ event.isGoingNote }}"
+               data-event-tags-timeline='[ {% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}[{% if tag.tagHistory is defined %}{% for h in tag.tagHistory %}{ "date": "{{ h.dateCreated|date('M d, Y') }}", "time":"{{ h.dateCreated|date('h:i a') }}","message":"{{ h.message|e('js') }}", "status":"{{ h.status }}", "action":"{{ h.history.action }}", "name":"{{ tag.tagName }}" }, {% endfor %}{% endif %}],{% endif %}{% endfor %} ]'
+                    >View</a>
+        </td>
+    </tr>
+{% endif %}
+
+{% if allEvents|length %}
+    {% for event in allEvents %}
+        <tr data-id="{{ event.getId }}" class="event-tr">
+            <td class="event-name">{{ event.getEventName }}</td>
+            <td class="event-type" id="{{ event.listEventsType.id }}">{{ event.listEventsType.name|upper }}</td>
+            <td class="event-from-date">{{ event.fromDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.fromDate|date('h:i a') }}{% endif %}</td>
+            <td class="event-to-date">{{ event.toDate|date('m/d/Y') }} {% if event.eventType!=constant(CONST~'EVENT_TYPE_HOLIDAY') %}<br>{{ event.toDate|date('h:i a') }}{% endif %}</td>
+            <td class="role">
+                {% if (app.user.id != event.createdBy) %}Guest
+                {% else %}Creator{% endif %}
+            </td>
+            <td>
+                {% if (app.user.id!=event.createdBy) %}
+                    {% for tag in event.getEventTaggedPersonss %}
+                        {% if(app.user.id==tag.empid) %}
+                            {% if tag.status==constant(CONST~'STATUS_PENDING') %}
+                                Pending
+                            {% elseif tag.status==constant(CONST~'STATUS_APPROVED') %}
+                                Going
+                            {% elseif tag.status==constant(CONST~'STATUS_DECLINED') %}
+                                Not Going
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    Created
+                {% endif %}
+            </td>
+            <td class="event-desc"
+                style="display: none;">{{ event.getEventDescription|raw }}
+            </td>
+            <td>
+                <a class='btn btn-default btn-view-event' href="javascript:void(0);"
+                   data-action="view"
+                   data-id="{{ event.id }}"
+                   data-type="{{ event.eventType }}"
+                   data-event-name="{{ event.eventName }}"
+                   data-event-desc="{{ event.getEventDescription }}"
+                   data-event-venue="{{ event.eventVenue }}"
+                   data-event-from="{{ event.fromDate|date('Y-m-d h:i: A') }}"
+                   data-event-to="{{ event.toDate|date('Y-m-d h:i: A') }}"
+                   data-event-from-holiday="{{ event.fromDate|date('M d, Y') }}"
+                   data-event-to-holiday="{{ event.toDate|date('M d, Y') }}"
+                   data-event-from-nonholiday="{{ event.fromDate|date('M d, Y h:i a') }}"
+                   data-event-to-nonholiday="{{ event.toDate|date('M d, Y h:i a') }}"
+                   data-event-tags='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.empid }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+                   data-event-tags-status='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.status }}{% if not loop.last %},{% endif %}{% endif %}{% endfor %}'
+                   data-event-tags-reasons='{% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}{{ tag.reason }}{% if not loop.last %}[[[break]]]{% endif %}{% endif %}{% endfor %}'
+
+                   data-event-tag-userid="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.empid }}{% endif %}{% endfor %}"
+                   data-event-tag-status="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.status }}{% endif %}{% endfor %}"
+                   data-event-tag-reason="{% for tag in event.getEventTaggedPersonss %}{% if tag.empid==app.user.id %}{{ tag.reason }}{% endif %}{% endfor %}"
+                   data-created-by="{{ event.createdBy }}"
+
+                   data-isgoing="{{ event.isGoing }}"
+                   data-isgoing-note="{{ event.isGoingNote }}"
+                   data-event-tags-timeline='[ {% for tag in event.getEventTaggedPersonss %}{% if tag.status!=constant(CONST~'STATUS_INACTIVE') %}[{% if tag.tagHistory is defined %}{% for h in tag.tagHistory %}{ "date": "{{ h.dateCreated|date('M d, Y') }}", "time":"{{ h.dateCreated|date('h:i a') }}","message":"{{ h.message|e('js') }}", "status":"{{ h.status }}", "action":"{{ h.history.action }}", "name":"{{ tag.tagName }}" }, {% endfor %}{% endif %}],{% endif %}{% endfor %} ]'
+                >View</a>
+            </td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <tr>
+        <td colspan="7" class="text-center"><strong><i class="fa fa-info-circle"></i> no event found!</strong></td>
+    </tr>
+{% endif %}

@@ -34,14 +34,16 @@ class EmpAccPeer extends BaseEmpAccPeer{
 	}
 
 
-	public static function getAllUser(Criteria $c = null)
+	public static function getAllUser($status = 1, Criteria $c = null)
 	{
 		if(is_null($c)){
 			$c = new Criteria();
 		}
 
-        $c->add(self::STATUS, 1, Criteria::EQUAL);
-        $result = self::doSelect($c);
+        if($status)
+			$c->add(self::STATUS, 1, Criteria::EQUAL);
+
+		$result = self::doSelect($c);
 
         return $result ? $result : array();
 	}

@@ -8,7 +8,7 @@
                 <p class="confirm-timein">Something went wrong.</p>
                 <p class="confirm-timein error-message" style="color: #fd7a7a;"></p>
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large btn-timein" href="/">RELOAD</a>
+                    <a class="waves-effect waves-light red btn-flat btn-large btn-timein" href="/">RELOAD PAGE</a>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
                 <p class="confirm-timein">Something went wrong.</p>
                 <br>
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large btn-timein" href="/">RELOAD PAGE</a>
+                    <a class="waves-effect waves-light red btn-flat btn-large btn-timein" href="/">RELOAD PAGE</a>
                 </div>
             </div>
         </div>
@@ -33,17 +33,17 @@
 </div>
 
 <!-----------------------BIRTHDAY MODAL CONTAINER------------------------->
-<div class="modal-container modal-birthday-notify-container" style="display: none;">
-    <div class="center-align" style="position: relative; top: 250px;">
+<div class="plr-modal custom-modal-1 modal-container modal-birthday-notify-container display-none" style="background: rgba(0, 0, 0, 0.50);" >
+    <div class="center-align" style="position: relative; top: 0px;">
         <div class="valign-wrapper">
 
             <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                <p class="confirm-timein"><b>Happy Birthday!!!</b>
-                    {% for userbdayname in userbdaynames %}<br>{{ userbdayname }}{% endfor %}</p>
+                <p class="confirm-timein"><b>Happy Birthday!!!</b><br>
+                    <span class="-txt-bday-names"></span>
+                </p>
                 <p class="confirm-timein" style="font-size: 30px; position:relative; top: 20px;">Greetings from your <b>Propelrr</b> Family!<br>Burger! Burger!</p>
-                <div class="btn-block" style="position:relative;top: 100px;">
-                    <a class="waves-effect waves-light green btn-flat btn-large btn-bdayclose" href="#">CLOSE</a>
-
+                <div class="btn-block" style="position:relative;top: 20px;">
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-close-birthday" href="#">CLOSE</a>
                 </div>
             </div>
         </div>
@@ -51,75 +51,69 @@
 </div>
 
 <!-----------------------TIME IN MODAL CONTAINER------------------------->
-{% if checkip %}
-    <div class="time-in-container" style="display:none;">
-        <div class="time-in center-align">
-            <div class="valign-wrapper">
+<div class="plr-modal custom-modal-1 modal-time-in-container allowed display-none">
+    <div class="time-in center-align">
+        <div class="valign-wrapper">
 
-                <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                    <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
-                        <div class="widget-subtitle plugin-date">Loading...</div></div>
-                    {% if systime >= afternoon %}
-                        <p class="confirm-timein">Good Afternoon!</p>
-                    {% else %}
-                        <p class="confirm-timein">Good Morning!</p>
-                    {% endif %}
-                    <div class="btn-block">
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action="timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
-                            <i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                    </div>
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <div class="clock2">
+                    <div class="widget-big-int plugin-clock">00:00</div>
+                    <div class="widget-subtitle plugin-date">Loading...</div>
+                </div>
+                <h3 class="-modal-title -modal-greetings-text">Good Afternoon!</h3>
+                <div class="btn-block">
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit"
+                       id="time-in-button" data-action="timein" data-id="{{ app.user.id }}">
+                        <i class="material-icons left icon-timein">query_builder</i>Time in
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
+</div>
 
 <!-- if not same ip -->
-{% if matchedip != userip %}
-    <div class="time-in-container" style="display:none;">
-        <div class="diff-ip center-align">
-            <div class="valign-wrapper">
-
-                <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
-                    <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
-                        <div class="widget-subtitle plugin-date">Loading...</div></div>
-                    <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
-                    <textarea id="diffip-input-reason" class="materialize-textarea" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
-                    <!-- <p class="diff-ip-notice">Request Access?</p>
-                    <p class="diff-ip-sent">Request Sent!</p>
-                    <p class="diff-ip-reason">Enter reason:</p> -->
-
-                    <div class="btn-block">
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-timein time-btn"
-                           id="time-in-button" data-action = "timein" data-id="{{ user.id }}" data-ip="{{ checkip }}">
-                            <i class="material-icons left icon-timein">query_builder</i>Time in</a>
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>
-                        <a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
-
-
-<!-----------------------TIME OUT MODAL CONTAINER------------------------->
-<div class="timeout-container">
-    <div class="timeout center-align">
+<div class="plr-modal custom-modal-1 modal-time-in-container deny display-none">
+    <div class="diff-ip center-align">
         <div class="valign-wrapper">
 
             <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                 <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
                     <div class="widget-subtitle plugin-date">Loading...</div></div>
-                <p class="confirm-timeout">Are you sure you want to time-out?</p>
-                <div id="errormessage" style="color: #f44336; display:none;"><strong>Wrong Password</strong></div>
-                <input id="confirmpw-timeout" type="password" placeholder="Enter password...">
+                <p class="diff-ip-notice" style="font-weight:700">You logged in with a different IP Address!</p>
+                <textarea id="diffip-input-reason" class="materialize-textarea -txt-timein-reason" style="width: 500px; color:white; text-align:center; font-weight:400" placeholder="Enter Message..."></textarea>
+                <!-- <p class="diff-ip-notice">Request Access?</p>
+                <p class="diff-ip-sent">Request Sent!</p>
+                <p class="diff-ip-reason">Enter reason:</p> -->
 
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large btn-yes time-btn"
-                       id="time-out-button" data-action="timeout" data-id="{{ user.id }}" data-ip="{{ checkip }}">Yes</a> &nbsp;
-                    <a class="waves-effect waves-light red btn-flat btn-large btn-cancel timeout-cancel">Cancel</a>
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit"
+                       id="time-in-button" data-action = "timein" data-id="{{ app.user.id }}">
+                        <i class="material-icons left icon-timein">query_builder</i>Time in</a>
+                    {#<a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>#}
+                    {#<a class="waves-effect waves-light green btn-flat btn-large btn-ip-send">Send</a>#}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-----------------------TIME OUT MODAL CONTAINER------------------------->
+<div class="plr-modal custom-modal-1 modal-timeout-container display-none">
+    <div class="center-align">
+        <div class="valign-wrapper">
+            <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
+                <div class="clock2"><div class="widget-big-int plugin-clock">00:00</div>
+                    <div class="widget-subtitle plugin-date">Loading...</div>
+                </div>
+                <h3 class="-modal-title">Are you sure you want to time-out?</h3><br>
+                <div class="-timeout-error-message display-none" style="color: #f44336;"><strong>Wrong Password</strong></div>
+                <input class="text-center font20 -txt-timeout-password" type="password" placeholder="Enter password...">
+
+                <div class="btn-block">
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timeout-confirm">Yes</a> &nbsp;
+                    <a class="waves-effect waves-light red btn-flat btn-large button-action -btn-timeout-cancel ">Cancel</a>
                 </div>
             </div>
         </div>
@@ -133,7 +127,7 @@
             <div class="prompt" style="display:block; width:100%; float:none; clear:both;">
                 <p class="confirm-logout">Are you sure you want to log-out?</p>
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large btn-yes-logout" href="{{ path('logout') }}">Yes</a>
+                    <a class="waves-effect waves-light green btn-flat btn-large btn-yes-logout" href="{{ path('logout') }}">Yes</a>&nbsp;&nbsp;
                     <a class="waves-effect waves-light red btn-flat btn-large btn-cancel">Cancel</a>
                 </div>
             </div>
@@ -142,7 +136,7 @@
 </div>
 
 <!-----------------------FORGOT TO TIMEOUT MODAL CONTAINER------------------------->
-<div class="modal-container forgot-timeout-modal" style="display:none;">
+<div class="modal-container forgot-timeout-modal display-none">
     <div class="center-align" style="position: relative; top: 350px;">
         <div class="valign-wrapper">
 
@@ -170,18 +164,17 @@
 </div>
 
 <!-----------------------AUTO TIME OUT MODAL CONTAINER------------------------->
-<div class="modal-container auto-timeout-notice" style="display:none;">
-    <div class="center-align" style="position: relative; top: 20%;">
+<div class="plr-modal modal-container modal-auto-timeout-notice display-none">
+    <div class="center-align" style="position: relative; top: 0%;">
         <div class="valign-wrapper">
-
             <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
                 <p class="confirm-timein">You have been timed out automatically!</p>
-                <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="auto-timeout-time-message">{{ app.session.get('autoTimeOutDate')|date('M d, Y') }} 12:00 AM</span></p>
-                <p class="confirm-timein" style="font-size: 24px">Last Timed in at <span class="auto-timeout-time-message-2">{{ lasttimein }}</span></p>
+                <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="-txt-autotimeout-message-out">{{ app.session.get('autoTimeOutDate')|date('M d, Y') }} 12:00 AM</span></p>
+                <p class="confirm-timein" style="font-size: 24px">Last Timed in at <span class="-txt-autotimeout-message-in"></span></p>
                 <br><br>
                 <div class="btn-block">
-                    <a class="waves-effect waves-light red btn-flat btn-large btn-forgot-timeout-show-timein" style="height: 54px; line-height: 55px; top: 0px; color:white;">
-                        <i class="material-icons left" style="color:white;">query_builder</i>Time In</a>
+                    <a class="waves-effect waves-light red btn-flat btn-large button-action -btn-auto-timeout-timein">
+                        <i class="material-icons left">query_builder</i>Time In</a>
                 </div>
             </div>
         </div>

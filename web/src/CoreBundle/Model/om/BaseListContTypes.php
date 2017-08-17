@@ -86,7 +86,7 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -97,7 +97,7 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
 
     /**
      * Get the [contact_type] column value.
-     *
+     * 
      * @return string
      */
     public function getContactType()
@@ -108,7 +108,7 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return ListContTypes The current object (for fluent API support)
      */
@@ -129,7 +129,7 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
 
     /**
      * Set the value of [contact_type] column.
-     *
+     * 
      * @param  string $v new value
      * @return ListContTypes The current object (for fluent API support)
      */
@@ -439,10 +439,10 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`contact_type`':
+                    case '`contact_type`':						
                         $stmt->bindValue($identifier, $this->contact_type, PDO::PARAM_STR);
                         break;
                 }
@@ -629,7 +629,7 @@ abstract class BaseListContTypes extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->collEmpContacts) {
                 $result['EmpContacts'] = $this->collEmpContacts->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);

@@ -53,8 +53,7 @@ class LoginHandler implements AuthenticationSuccessHandlerInterface
 
                 InitController::loginSetTimeSession($token);
 
-                $refererUrl = $this->router->generate('admin_homepage');
-                $response = new RedirectResponse($refererUrl);
+                $response = new RedirectResponse($request->headers->get('referer'));
             }else{
                 $response = array("Invalid Account");
                 echo json_encode($response);

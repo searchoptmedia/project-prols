@@ -1,21 +1,19 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}
-    <title>Propelrr Log-in System| Profile</title>
-{% endblock %}
+{% block title %}Profile{% endblock %}
+
 {% block body %}
     <div class="page-content">
-        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+        <div class="col-md-12 light-blue darken-1 heading z-depth-1 header-profile">
             <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
 
-            <div class="emp-photo">
+            <div class="header-profile-photo">
                 <div class="profile-image center-align">
-
-
                     <span>{{ propelrr.fname|slice(0,1)|upper }}</span>
                 </div>
             </div>
             {#<div class="top-nav"><a class="waves-effect waves-light btn modal-trigger modal-change orange" href="#modal-changepw">Change Password</a></div>#}
-            <div class="top-nav"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3><a class="waves-effect waves-light btn modal-trigger modal-change orange changepwmodal" href="#modal-changepw">Change Password</a></div>
+            <div class="top-nav header-profile-name"><h3>{{ propelrr.fname }} {{ propelrr.lname }}</h3>
+                <a class="waves-effect waves-light btn modal-trigger modal-change orange changepwmodal" href="#modal-changepw">Change Password</a></div>
         </div>
         <div class="col-md-12 content" style="background-color: #e7e7e7;">
 
@@ -218,22 +216,27 @@
                 <br><br>
             </div>
         </div>
-        <!---------------CHANGE PASS MODAL------------------>
-        <div id="modal-changepw" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <h4>Change Password</h4>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block modal %}
+    <!---------------CHANGE PASS MODAL------------------>
+    <div id="modal-changepw" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Change Password</h4>
+        <div class="modal-content">
+            <div class="mo-body">
                 <input id="oldpw" name = "inputpassword" type="password" placeholder="Enter old password...">
                 <input id="newpw" name = "password" type="password" placeholder="Enter new password...">
                 <input id="confirmpw" name = "conpassword" type="password" placeholder="Confirm your password...">
             </div>
-            <div class="modal-footer">
-                <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
-                <button class="waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat close-modal-agenda">Close</a>
+            <button class="waves-effect waves-light orange custombtn btn-flat btn-changepw" style="margin-right:5px;">Change</button>
         </div>
     </div>
-</div>
-
 {% endblock %}
 
 {% block customjs %}
@@ -443,35 +446,21 @@
             function computeTime(){
                 //time out
                 var getTimeIn = $('.time-logs-table').find('tbody').find('tr').data('time-in');
-                var d = new Date(getTimeIn);
-                var past_hour = d.getHours();
-                var past_minutes = d.getMinutes();
+                var now = moment().format('MM/DD/YYYY HH:mm:ss');
 
-//                    var duration = past_hour + ':' + past_minutes;
+                getTimeIn = moment(getTimeIn).format('MM/DD/YYYY HH:mm:ss');
 
-                //Date Today
-                var date = new Date();
-                var present_hour = date.getHours();
-                var present_minute = date.getMinutes();
+                var ms = moment(now,"MM/DD/YYYY HH:mm:ss").diff(moment(getTimeIn,"MM/DD/YYYY HH:mm:ss"));
+                var d = moment.duration(ms);
+                var diff = '';
 
-                //compute for duration
+                if(d.hours() > 0) diff = d.hours()+'hrs ';
 
-                var duration_hours = present_hour - past_hour;
-                var duration_min =  present_minute - past_minutes;
-                var num_of_hours = 'hr';
-                if(duration_hours > 1)
-                {
-                    num_of_hours = 'hrs';
-                    var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
-                }
-                var total_duration =  duration_hours + num_of_hours + " " + duration_min + "min";
-                console.log(total_duration);
-                if(!total_duration)
-                {
-                    total_duration = 0;
-                }
+                diff += d.minutes()+'mins';
 
-                $("#duration-time").html(total_duration);
+                $("#duration-time").html(diff);
+
+                setTimeout(computeTime, 500);
             }
             computeTime();
         });

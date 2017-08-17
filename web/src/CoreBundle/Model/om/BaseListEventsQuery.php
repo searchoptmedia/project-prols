@@ -28,9 +28,12 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEventsQuery orderByFromDate($order = Criteria::ASC) Order by the from_date column
  * @method ListEventsQuery orderByToDate($order = Criteria::ASC) Order by the to_date column
  * @method ListEventsQuery orderByEventName($order = Criteria::ASC) Order by the event_name column
+ * @method ListEventsQuery orderByEventVenue($order = Criteria::ASC) Order by the event_venue column
  * @method ListEventsQuery orderByEventDescription($order = Criteria::ASC) Order by the event_desc column
  * @method ListEventsQuery orderByEventType($order = Criteria::ASC) Order by the event_type column
  * @method ListEventsQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method ListEventsQuery orderByIsGoing($order = Criteria::ASC) Order by the is_going column
+ * @method ListEventsQuery orderByIsGoingNote($order = Criteria::ASC) Order by the is_going_note column
  * @method ListEventsQuery orderBySmsResponse($order = Criteria::ASC) Order by the sms_response column
  *
  * @method ListEventsQuery groupById() Group by the id column
@@ -39,9 +42,12 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEventsQuery groupByFromDate() Group by the from_date column
  * @method ListEventsQuery groupByToDate() Group by the to_date column
  * @method ListEventsQuery groupByEventName() Group by the event_name column
+ * @method ListEventsQuery groupByEventVenue() Group by the event_venue column
  * @method ListEventsQuery groupByEventDescription() Group by the event_desc column
  * @method ListEventsQuery groupByEventType() Group by the event_type column
  * @method ListEventsQuery groupByStatus() Group by the status column
+ * @method ListEventsQuery groupByIsGoing() Group by the is_going column
+ * @method ListEventsQuery groupByIsGoingNote() Group by the is_going_note column
  * @method ListEventsQuery groupBySmsResponse() Group by the sms_response column
  *
  * @method ListEventsQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -76,9 +82,12 @@ use CoreBundle\Model\ListEventsType;
  * @method ListEvents findOneByFromDate(string $from_date) Return the first ListEvents filtered by the from_date column
  * @method ListEvents findOneByToDate(string $to_date) Return the first ListEvents filtered by the to_date column
  * @method ListEvents findOneByEventName(string $event_name) Return the first ListEvents filtered by the event_name column
+ * @method ListEvents findOneByEventVenue(string $event_venue) Return the first ListEvents filtered by the event_venue column
  * @method ListEvents findOneByEventDescription(string $event_desc) Return the first ListEvents filtered by the event_desc column
  * @method ListEvents findOneByEventType(int $event_type) Return the first ListEvents filtered by the event_type column
  * @method ListEvents findOneByStatus(int $status) Return the first ListEvents filtered by the status column
+ * @method ListEvents findOneByIsGoing(int $is_going) Return the first ListEvents filtered by the is_going column
+ * @method ListEvents findOneByIsGoingNote(string $is_going_note) Return the first ListEvents filtered by the is_going_note column
  * @method ListEvents findOneBySmsResponse(string $sms_response) Return the first ListEvents filtered by the sms_response column
  *
  * @method array findById(int $id) Return ListEvents objects filtered by the id column
@@ -87,9 +96,12 @@ use CoreBundle\Model\ListEventsType;
  * @method array findByFromDate(string $from_date) Return ListEvents objects filtered by the from_date column
  * @method array findByToDate(string $to_date) Return ListEvents objects filtered by the to_date column
  * @method array findByEventName(string $event_name) Return ListEvents objects filtered by the event_name column
+ * @method array findByEventVenue(string $event_venue) Return ListEvents objects filtered by the event_venue column
  * @method array findByEventDescription(string $event_desc) Return ListEvents objects filtered by the event_desc column
  * @method array findByEventType(int $event_type) Return ListEvents objects filtered by the event_type column
  * @method array findByStatus(int $status) Return ListEvents objects filtered by the status column
+ * @method array findByIsGoing(int $is_going) Return ListEvents objects filtered by the is_going column
+ * @method array findByIsGoingNote(string $is_going_note) Return ListEvents objects filtered by the is_going_note column
  * @method array findBySmsResponse(string $sms_response) Return ListEvents objects filtered by the sms_response column
  */
 abstract class BaseListEventsQuery extends ModelCriteria
@@ -143,7 +155,7 @@ abstract class BaseListEventsQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   ListEvents|ListEvents[]|mixed the result, formatted by the current formatter
@@ -196,9 +208,9 @@ abstract class BaseListEventsQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_desc`, `event_type`, `status`, `sms_response` FROM `list_events` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_venue`, `event_desc`, `event_type`, `status`, `is_going`, `is_going_note`, `sms_response` FROM `list_events` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -530,6 +542,35 @@ abstract class BaseListEventsQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the event_venue column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByEventVenue('fooValue');   // WHERE event_venue = 'fooValue'
+     * $query->filterByEventVenue('%fooValue%'); // WHERE event_venue LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $eventVenue The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByEventVenue($eventVenue = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($eventVenue)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $eventVenue)) {
+                $eventVenue = str_replace('*', '%', $eventVenue);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::EVENT_VENUE, $eventVenue, $comparison);
+    }
+
+    /**
      * Filter the query on the event_desc column
      *
      * Example usage:
@@ -642,6 +683,77 @@ abstract class BaseListEventsQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ListEventsPeer::STATUS, $status, $comparison);
+    }
+
+    /**
+     * Filter the query on the is_going column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIsGoing(1234); // WHERE is_going = 1234
+     * $query->filterByIsGoing(array(12, 34)); // WHERE is_going IN (12, 34)
+     * $query->filterByIsGoing(array('min' => 12)); // WHERE is_going >= 12
+     * $query->filterByIsGoing(array('max' => 12)); // WHERE is_going <= 12
+     * </code>
+     *
+     * @param     mixed $isGoing The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByIsGoing($isGoing = null, $comparison = null)
+    {
+        if (is_array($isGoing)) {
+            $useMinMax = false;
+            if (isset($isGoing['min'])) {
+                $this->addUsingAlias(ListEventsPeer::IS_GOING, $isGoing['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($isGoing['max'])) {
+                $this->addUsingAlias(ListEventsPeer::IS_GOING, $isGoing['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::IS_GOING, $isGoing, $comparison);
+    }
+
+    /**
+     * Filter the query on the is_going_note column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIsGoingNote('fooValue');   // WHERE is_going_note = 'fooValue'
+     * $query->filterByIsGoingNote('%fooValue%'); // WHERE is_going_note LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $isGoingNote The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ListEventsQuery The current query, for fluid interface
+     */
+    public function filterByIsGoingNote($isGoingNote = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($isGoingNote)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $isGoingNote)) {
+                $isGoingNote = str_replace('*', '%', $isGoingNote);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(ListEventsPeer::IS_GOING_NOTE, $isGoingNote, $comparison);
     }
 
     /**

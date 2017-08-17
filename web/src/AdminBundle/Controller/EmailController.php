@@ -10,11 +10,18 @@ namespace AdminBundle\Controller;
 
 
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpProfileQuery;
+use CoreBundle\Model\EmpRequest;
+use CoreBundle\Model\EventTaggedPersonsQuery;
+use CoreBundle\Model\ListEvents;
 use CoreBundle\Model\ListEventsPeer;
+use CoreBundle\Model\ListEventsQuery;
 use CoreBundle\Model\ListEventsTypePeer;
 use CoreBundle\Model\ListRequestTypePeer;
+use CoreBundle\Utilities\Constant as C;
+use CoreBundle\Utilities\Utils as U;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Swift_Mailer;
@@ -69,7 +76,9 @@ class EmailController extends Controller
             'template' => 'request-access',
             'message' => $empName . ' timed in outside the office.',
             'links' => array(
-                'View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)
+                'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage',  array('id' => $reqId, 'type' => 'approve', 'uid' => $class->getUser()->getId()), true)),
+                'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage',  array('id' => $reqId, 'type' => 'decline', 'uid' => $class->getUser()->getId()), true)),
+                'View Request' =>  array('href' => $class->generateUrl('view_request',  array('id' => $reqId), true))
             )
         ));
 
@@ -84,34 +93,27 @@ class EmailController extends Controller
      * @param $class
      * @return int
      */
-    public function acceptRequestEmail($req, $class)
+    public function acceptRequestEmail(EmpRequest $empRequest, $params = array(), $class)
     {
-        $empid = $req->request->get('empId');
-        $reqId =   $req->request->get('reqid');
-        $user = $class->getUser();
-        $id = $user->getId();
+        $reqId = $empRequest->getId();
         $email = 0;
 
-        $employee = EmpAccPeer::retrieveByPK($empid);
-        $note = $req->request->get('comment');
-        $status = $req->request->get('status');
-        $reason = $req->request->get('reason');
-        $changed = $req->request->get('isChanged');
+        $employee = EmpProfilePeer::getInformation($empRequest->getEmpAccId());
+        $note = $params['comment'];
+        $status = $params['status'];
+        $reason = $empRequest->getRequest();
+        $changed = $params['isChanged'];
+        $requestName = $empRequest->getListRequestType()->getRequestType();
 
-        if($status == 3)
+        if($status == C::STATUS_APPROVED)
             $status = "Approved";
         else
             $status = "Declined";
 
         if(! empty($employee)) {
-            $empemail = $employee->getEmail();
-            $empinfo = EmpProfilePeer::getInformation($employee->getId());
-            $empname = $empinfo->getFname() . " " .$empinfo->getLname();
-
-            //admin profile information
-            $data = EmpProfilePeer::getInformation($id);
-            $name = $data->getFname(). " " .$data->getLname();
-            $requestName = $req->request->get('requestname');
+            $empName = trim($employee->getFname().' '.$employee->getLname());
+            $empEmail = $employee->getEmpAcc()->getEmail();
+            $adminName = $params['adminInfo']->getFname() .' '.$params['adminInfo']->getFname();
 
             if ($changed == "CHANGED")
                 $subject = "PROLS » " . ucwords(strtolower($requestName)) . " " . " Request Changed";
@@ -119,20 +121,24 @@ class EmailController extends Controller
                 $subject = "PROLS » " . ucwords(strtolower($requestName)) . " " . " Request " . $status;
 
             $from = array('no-reply@searchoptmedia.com', 'PROLS');
-            $to = array($empemail);
+            $to = array($empEmail);
 
             $requestDates = array(
-                array('start' => date('F d, Y', strtotime($req->request->get('datestart'))), 'end' => date('F d, Y', strtotime($req->request->get('dateend'))), 'reason' => $reason)
+                array(
+                    'start' => $empRequest->getDateStarted()->format('F d, Y'),
+                    'end' => $empRequest->getDateEnded()->format('F d, Y'),
+                    'reason' => $reason
+                )
             );
 
             $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
                 'data' => $requestDates,
                 'title' => !in_array(strtolower($requestName), array('work out of office', 'work outside office')) ? ucwords(strtolower($requestName)) : 'Request Access',
-                'greetings' => 'Hi '.$empname.',',
+                'greetings' => 'Hi '.$empName.',',
                 'template' => 'approve-decline',
-                'message' => "<strong>$name</strong> has <strong>".strtolower($status)."</strong> your ".strtolower($requestName).".",
+                'message' => "<strong>$adminName</strong> has <strong>".strtolower($status)."</strong> your ".strtolower($requestName).".",
                 'links' => array(
-                    'View Request' =>  $class->generateUrl('view_request',  array('id' => $reqId), true)
+                    'View Request' =>  array('href' => $class->generateUrl('view_request',  array('id' => $reqId), true))
                 ),
                 'approval_reason' => $note,
             ));
@@ -171,7 +177,7 @@ class EmailController extends Controller
             'template' => 'account-create-employee',
             'message' => 'Your account was successfully created. Use the following details to login at <a href="'.$class->generateUrl('login', array(), true).'">login.propelrr.com</a>.',
             'links' => array(
-                'Login Now!' => $class->generateUrl('login', array(), true)
+                'Login Now!' =>  array('href' => $class->generateUrl('login', array(), true))
             )
         ));
 
@@ -197,7 +203,7 @@ class EmailController extends Controller
                 'message'  => 'Account for <strong>'.$empname.'</strong> was successfully created by <strong>'.$name.'</strong>.',
                 'template' => 'account-create-admin',
                 'links' => array(
-                    'Manage Employees' => $class->generateUrl('manage_employee', array(), true)
+                    'Manage Employees' => array('href' => $class->generateUrl('manage_employee', array(), true))
                 )
             ));
 
@@ -270,7 +276,7 @@ class EmailController extends Controller
         $subject = "PROLS » " . ucwords(strtolower($action)) . " " . ucwords(strtolower($category)) . " Request";
         $from = array('no-reply@searchoptmedia.com', 'PROLS');
 
-        $adminEmailList = $this->getAdminEmails($admins);
+        $adminEmailList = $this->getAdmins();
 
         $newStartDate = $req->request->get('start_date');
         $newEndDate = $req->request->get('end_date');
@@ -311,27 +317,182 @@ class EmailController extends Controller
             }
         }
 
+
         if(count($adminEmailList)) {
-            $to = $adminEmailList;
-            $message = "<strong>".$empname . "</strong> has ". strtolower($action) ." $genderPref <strong>" . strtolower($category) . "</strong>.";
+            foreach($adminEmailList as $a) {
+                $to = array($a['email']);
+                $message = "<strong>".$empname . "</strong> has ". strtolower($action) ." $genderPref <strong>" . strtolower($category) . "</strong>.";
 
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
-                'title'     => strtolower($category)!='work out of office' ? ucwords(strtolower($category)) : 'Request Access',
-                'greetings' => 'Hi Admin,',
-                'template'  => 'update-request',
-                'message'   => $message,
-                'links'     => ($action!='CANCELLED') ? array('View Request' => $class->generateUrl('view_request',  array('id' => $param ? $param['request']->getId() : null), true)) : null,
-                'data'      => $data,
-                'old_data'  => $oldData
-            ));
+                $links = array(
+                    'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage',  array('id' =>  $param ? $param['request']->getId():0, 'type' => 'approve', 'uid' => $class->getUser()->getId()), true)),
+                    'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage',  array('id' =>  $param ? $param['request']->getId():0, 'type' => 'decline', 'uid' => $class->getUser()->getId()), true)),
+                    'View Request' =>  array('href' => $class->generateUrl('view_request',  array('id' =>  $param ? $param['request']->getId() : 0), true))
+                );
 
-            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                    'title'     => strtolower($category)!='work out of office' ? ucwords(strtolower($category)) : 'Request Access',
+                    'greetings' => 'Hi Admin,',
+                    'template'  => 'update-request',
+                    'message'   => $message,
+                    'links'     => ($action!='CANCELLED') ? $links : null,
+                    'data'      => $data,
+                    'old_data'  => $oldData
+                ));
 
-            if($email)
-                $emailCtr++;
+                $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+                if($email)
+                    $emailCtr++;
+            }
         }
 
         return $emailCtr;
+    }
+
+    public function notifyEmployeeOnEvent($params = array(), Controller $class)
+    {
+        $ownerId = U::getUserDetails('id', $class);
+        $ownerAcc = EmpProfilePeer::getInformation($ownerId);
+        $ownerName = trim($ownerAcc->getFname() . " " . $ownerAcc->getLname());
+
+        $empAcc = EmpAccQuery::_findById($params['user_id']);
+        $empInfo = EmpProfileQuery::_findByAccId($params['user_id']);
+        $employeeName = trim($empInfo->getFname() . ' ' . $empInfo->getLname());
+
+        $title = 'Holiday';
+        $message = (isset($params['isNew']) && $params['isNew'] ? "New Holiday was added on Propelrr Calendar" : "Holiday details was updated.")."<br>See the details below.";
+
+        if($params['event_type']!=C::EVENT_TYPE_HOLIDAY) {
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation';
+            $action = $params['event_type']==C::EVENT_TYPE_MEETING ? 'a meeting: ' : 'a company event: ';
+            $message = "<strong>".$ownerName . "</strong> invited you to join ". strtolower($action) ."<strong>". $params['event_name'] ."</strong>.<br>See the details below.";
+        }
+
+        $to = !empty($params['to_list']) ? $params['to_list'] : array(array($empAcc->getEmail() => $employeeName));
+        $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
+        $subject = "PROLS » " .
+            ($params['event_type']==C::EVENT_TYPE_HOLIDAY ? (isset($params['isNew']) && $params['isNew'] ? 'New Holiday: '.$params['event_name']:'Holiday: '.$params['event_name'].' Was Updated') :
+            ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Invitation' : 'Event Invitation'));
+
+        if(isset($params['has-update']) && $params['has-update']) {
+            $message = "<strong>".$ownerName . "</strong> has updated <strong>". $params['event_name'] ."</strong>.<br>See the details below.";
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting' : 'Internal Event';
+            $subject = "PROLS » " .
+                ($params['event_type']==C::EVENT_TYPE_MEETING ? 'Meeting Was Updated' :
+                ($params['event_type']==C::EVENT_TYPE_INTERNAL ? 'Internal Event Was Updated' : 'Holiday Was Updated'));
+        }
+
+        if(isset($params['has-cancel'])) {
+            $message = "<strong>".$ownerName . "</strong> has cancelled <strong>". $params['event_name'] ."</strong>.";
+            $title = $params['event_type']==C::EVENT_TYPE_MEETING ? 'Cancelled Meeting' : ($params['event_type']==C::EVENT_TYPE_MEETING? 'Cancelled Internal Event':'Cancelled Holiday');
+            $subject = "PROLS » " .
+                ($params['event_type']==C::EVENT_TYPE_MEETING ? ' Meeting Was Cancelled' :
+                ($params['event_type']==C::EVENT_TYPE_INTERNAL ? ' The Internal Event Was Cancelled' : 'Holiday Was Cancelled'));
+        }
+
+        $params['title'] = $title;
+        $params['greetings'] = 'Hi '.$employeeName.',';
+        $params['template'] = 'event-create';
+        $params['message'] = $message;
+
+        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+
+        return self::sendEmail($class, $subject, $from, $to, $emailContent);
+    }
+
+    public function notifyEmployeeOnEventUpdateTagStatus($params = array(), Controller $class)
+    {
+
+        if(isset($params['event_id'])) {
+            $event = ListEventsQuery::_findById($params['event_id']);
+            $user = EmpProfileQuery::_findByAccId($params['user_id']);
+
+            if($event && $user) {
+                $eventType = $event->getEventType();
+
+                $eventTags = EventTaggedPersonsQuery::_findAllByEvent($event->getId());
+                $title = 'Holiday';
+                $message = '';
+                $GuestIndicator = $params['status']==C::STATUS_APPROVED ? '':'not';
+
+                if ($eventType!=C::EVENT_TYPE_HOLIDAY) {
+                    $title = $eventType == C::EVENT_TYPE_MEETING ? 'Meeting' : 'Internal Event';
+                    $action = $eventType == C::EVENT_TYPE_MEETING ? 'the meeting' : $event->getEventName();
+                    $message = "<strong>[NAME]</strong> will $GuestIndicator be attending <strong>" . strtolower($action) . "</strong>. See the details below.[REASON]";
+                }
+
+                $owner = EmpProfileQuery::_findByAccId($event->getCreatedBy());
+                $ownerName = trim($owner->getFname() .' '. $owner->getLname());
+
+                $doerName = trim($user->getFname() . ' ' . $user->getLname());
+                $doerEmail = $user->getEmpAcc()->getEmail();
+                $doerAction = ucfirst($GuestIndicator) . ' be Attending';
+
+                $params['title'] = $title;
+                $params['event_name'] = $event->getEventName();
+                $params['event_desc'] = $event->getEventDescription();
+                $params['event_venue'] = $event->getEventVenue();
+                $params['to_date'] = $event->getToDate()->format('F d, Y h:i a');
+                $params['from_date'] = $event->getFromDate()->format('F d, Y h:i a');
+                $params['owner_email'] = $event->getEmpAcc()->getEmail();
+                $params['event_tag_names'] = array();
+                $params['template'] = 'event-status-change';
+                $params['links'] = array('View Event' => array(
+                    'href' => $class->generateUrl('admin_manage_events', array('id' => $event->getId()), true)
+                ));
+
+                $from = array('no-reply@searchoptmedia.com', 'Propelrr Login System');
+                $subject = "PROLS » " . $doerName . ' will ' . $doerAction . ' to ' . $event->getEventName();
+
+                if(count($eventTags)) {
+                    $emailTaggedList = array();
+                    foreach ($eventTags as $et) {
+                        $etStatus = $et->getStatus();
+
+                        if($etStatus!=C::STATUS_INACTIVE) {
+                            $employee = EmpProfileQuery::_findByAccId($et->getEmpId());
+                            $params['event_tag_names'][$et->getEmpAcc()->getEmail()] = trim($employee->getFname() . ' ' . $employee->getLname());
+                            $params['event_tag_status'][$et->getEmpAcc()->getEmail()] = $etStatus;
+                            $emailTaggedList[] = $et->getEmpAcc()->getEmail();
+                        }
+                    }
+
+                    $params['event_tag_names'][$event->getEmpAcc()->getEmail()] = trim($owner->getFname() . ' ' . $owner->getLname());
+                    $params['event_tag_status'][$event->getEmpAcc()->getEmail()] = $event->getIsGoing() ? C::STATUS_APPROVED : C::STATUS_DECLINED;
+
+                    if(! in_array($event->getEmpAcc()->getEmail(), $emailTaggedList)) {
+                        $params['greetings'] = 'Hi ' . $ownerName . ',';
+                        $params['message'] = strtr($message, array(
+                            '[NAME]' => $doerName,
+                            '[REASON]' => strlen($params['reason']) ? "<br><br><hr style=\"border-top:1px dotted #ccc;margin-bottom:10px\"><p style=\"vertical-align:top;padding-top:0px;font-size:16px;padding-bottom:0px;font-family:'Lato',Calibri,Arial,sans-serif\"><strong>Reason:</strong><br>".$params['reason']."</p>":""
+                        ));
+
+                        $to = array(array($event->getEmpAcc()->getEmail() => $ownerName));
+                        $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+                        $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                    }
+
+                    foreach ($eventTags as $et) {
+                        $employee = EmpProfileQuery::_findByAccId($et->getEmpId());
+                        $etEmail = $et->getEmpAcc()->getEmail();
+                        $etName = trim($employee->getFname() . " " . $employee->getLname());
+
+                        $to = array(array($etEmail => $etName));
+                        $params['greetings'] = 'Hi ' . $etName . ',';
+
+                        if($doerEmail!=$etEmail && $et->getStatus()!=C::STATUS_INACTIVE) {
+                            $params['message'] = strtr($message, array(
+                                '[NAME]' => $doerName,
+                                '[REASON]' => (strlen($params['reason'])) ? "<br><br><hr style='border-top:1px dotted #ccc;margin-bottom:10px'><strong>Comment:</strong><br>".$params['reason']:""
+                            ));
+
+                            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', $params);
+                            $email = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -357,6 +518,61 @@ class EmailController extends Controller
 
         return $adminEmails;
     }
+
+    /**
+     * Get admin email list
+     * @param array $adminList
+     * @return array
+     */
+    public function getAdmins()
+    {
+        $admins = EmpProfileQuery::create()
+            ->useEmpAccQuery()
+                ->filterByRole('ADMIN')
+                ->filterByStatus(C::STATUS_ACTIVE)
+            ->endUse()
+            ->find();
+
+        $adminLists = array();
+
+        if($admins) {
+            foreach($admins as $e) {
+                $email = $e->getEmpAcc()->getEmail();
+                $name  = trim($e->getFname() .' '. $e->getLname());
+
+                $adminLists[] = array(
+                    'id' => $e->getEmpAcc()->getId(),
+                    'email' => array( $email =>$name ),
+                    'name' => 'Admin'
+                );
+            }
+        }
+
+        return $adminLists;
+    }
+
+    public function addTeamLeadEmail($department)
+    {
+        $admin = EmpProfileQuery::create()
+            ->filterByListDeptDeptId($department)
+                ->useEmpAccQuery()
+                    ->filterByTeamRole('lead')
+                    ->filterByStatus(C::STATUS_ACTIVE)
+                ->endUse()
+            ->findOne();
+
+        if($admin) {
+            return array(
+                'id' => 0,
+                'email' => array($admin->getEmpAcc()->getEmail() => trim($admin->getFname() .' '. $admin->getLname())),
+                'name' => $admin->getFname()
+            );
+        }
+
+        return array();
+    }
+
+
 
     public function RequestMeetingEmail($req, $class)
     {
@@ -389,7 +605,8 @@ class EmailController extends Controller
     public function notifyEmployeeRequest($req, $class)
     {
         $user = $class->getUser();
-        $id = $user->getId();
+        $userId = $user->getId();
+
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empname = $empinfo->getFname() . " " . $empinfo->getLname();
@@ -397,58 +614,98 @@ class EmailController extends Controller
 
     }
 
-    public function requestTypeEmail($req, $class, $reqId = null)
+    /**
+     * Employee Request
+     * @param $req
+     * @param $class
+     * @param null $reqId
+     * @return int
+     */
+    public function requestTypeEmail($request, $class, $reqId = null)
     {
+        $params = $request->request->all();
         $email = 0;
         $user = $class->getUser();
         $id   = $user->getId();
 
         //lets get the request details
-        $obj = $req->request->get('obj');
-        $requestDates = array();
-
-        foreach($obj as $o) {
-            $requestDates[] = array(
-                'start' => date('F d, Y', strtotime($o["start_date"])),
-                'end' => date('F d, Y', strtotime($o["end_date"])),
-                'reason' => $o["reason"]
-            );
-        }
+        $obj = $params['empRequest'];
 
         $empinfo = EmpProfilePeer::getInformation($id);
         $empName = $empinfo->getFname() . " " . $empinfo->getLname();
 
-        $typeOfLeave = $req->request->get('typeleave');
+        $typeOfLeave = $params['typeleave'];
 
         if(empty($typeOfLeave)) {
             $requestlist = ListRequestTypePeer::retrieveByPK(4);
         } else {
-            $requestlist = ListRequestTypePeer::retrieveByPK($req->request->get('typeleave'));
+            $requestlist = ListRequestTypePeer::retrieveByPK($typeOfLeave);
         }
 
         $requestType = $requestlist->getRequestType();
 
-        $admins = EmpAccPeer::getAdminInfo();
         $subject = "PROLS » " . $requestType . " Request";
         $from    = array('no-reply@searchoptmedia.com', 'PROLS');
-        $adminEmailList = $this->getAdminEmails($admins);
+        $adminEmailList = $this->getAdmins();
+        $teamLeadEmail = $this->addTeamLeadEmail($empinfo->getListDeptDeptId());
+
+        if($teamLeadEmail)
+            $adminEmailList[] = $teamLeadEmail;
 
         if(count($adminEmailList)) {
-            $to = $adminEmailList;
+            foreach($adminEmailList as $ae) {
+                $to = array($ae['email']);
+                $requestDates = array();
+                $requestLinks = array();
+                $requestIds = array();
 
-            $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
-                'data' => $requestDates,
-                'title' => $requestType,
-                'greetings' => 'Hi Admin,',
-                'message' => "<strong>$empName</strong> has requested for a <strong>$requestType</strong>.",
-                'template' => 'leave-request',
-                'links' => array(count($requestDates)==1 ? 'View Request':'View All Requests' =>  $class->generateUrl('view_request',  array('id' => count($requestDates)==1? $reqId: ''), true))
-            ));
+                foreach($obj as $o) {
+                    $requestDates[] = array(
+                        'start' => date('F d, Y', strtotime($o["start_date"])),
+                        'end' => date('F d, Y', strtotime($o["end_date"])),
+                        'reason' => $o["reason"],
+                        'id' => $o['requestId']
+                    );
 
-            $response = self::sendEmail($class, $subject, $from, $to, $emailContent);
+                    $requestIds[] = $o['requestId'];
 
-            if ($response)
-                $email++;
+                    if($ae['id']!=0) {
+                        $requestLinks[] = array(
+                            'Approve' => array('bgColor' => '#4CAF50', 'href' => $class->generateUrl('listener_homepage', array('id' => $o['requestId'], 'type' => 'approve', 'uid' => $ae['id']), true)),
+                            'Decline' => array('bgColor' => '#F44336', 'href' => $class->generateUrl('listener_homepage', array('id' => $o['requestId'], 'type' => 'decline', 'uid' => $ae['id']), true)),
+                            'View' => array('href' => $class->generateUrl('view_request', array('id' => $o['requestId']), true)),
+                        );
+                    }
+                }
+
+                $urlParam = count($requestDates)==1 ? array('id' => $requestDates[0]['id']) : array();
+                $urlParam1 = count($requestDates)==1 ? array('id' => $requestDates[0]['id'], 'uid' => $ae['id']) : array('id' => implode(',', $requestIds), 'uid' => $ae['id']);
+                $urlParam2 = count($requestDates)==1 ? array('id' => $requestDates[0]['id'], 'uid' => $ae['id']) : array('id' => implode(',', $requestIds), 'uid' => $ae['id']);
+
+                $urlParam1['type'] = 'approve';
+                $urlParam2['type'] = 'decline';
+
+                $links = $ae['id'] > 0 ? array(
+                    (count($requestDates)==1 ? 'Approve':'Approve All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam1, true), 'bgColor' => '#4CAF50'),
+                    (count($requestDates)==1 ? 'Decline':'Decline All') =>  array('href' => $class->generateUrl('listener_homepage', $urlParam2, true), 'bgColor' => '#F44336'),
+                    (count($requestDates)==1 ? 'View':'View All') =>  array('href' => $class->generateUrl('view_request', $urlParam, true), 'bgColor' => 'transparent', 'color'=>'#26a69a;', 'borderColor' => 'rgb(38, 166, 154)'),
+                ) : array();
+
+                $emailContent = $class->renderView('AdminBundle:Templates/Email:email-has-table.html.twig', array(
+                    'data' => $requestDates,
+                    'title' => $requestType,
+                    'greetings' => 'Hi '.$ae['name'].',',
+                    'message' => "<strong>$empName</strong> has requested for a <strong>$requestType</strong>.",
+                    'template' => 'leave-request',
+                    'requestLinks' => $requestLinks,
+                    'links' => $links
+                ));
+
+                $response = self::sendEmail($class, $subject, $from, $to, $emailContent);
+
+                if ($response)
+                    $email++;
+            }
         }
 
         return $email;

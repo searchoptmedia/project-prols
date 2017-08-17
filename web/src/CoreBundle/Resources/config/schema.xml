@@ -10,6 +10,7 @@
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
         <column name="email" phpName="Email" type="VARCHAR" size="45" required="true"/>
         <column name="role" phpName="Role" type="VARCHAR" size="45" required="true"/>
+        <column name="team_role" phpName="TeamRole" type="VARCHAR" size="45" required="true"/>
         <column name="key" phpName="Key" type="VARCHAR" size="255" />
         <column name="created_by" phpName="CreatedBy" type="INTEGER" required="true"/>
         <column name="last_updated_by" phpName="LastUpdatedBy" type="INTEGER" required="true"/>
@@ -42,7 +43,8 @@
 
     <table name="emp_request" phpName="EmpRequest" idMethod="native">
         <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-        <column name="request" phpName="Request" type="VARCHAR" size="100"/>
+        <column name="request" phpName="Request" type="LONGVARCHAR"/>
+        <column name="admin_notes" phpName="AdminNote" type="LONGVARCHAR"/>
         <column name="status" phpName="Status" type="INTEGER"/>
         <column name="date_started" phpName="DateStarted" type="TIMESTAMP"/>
         <column name="date_ended" phpName="DateEnded" type="TIMESTAMP"/>
@@ -221,9 +223,12 @@
         <column name="from_date" phpName="FromDate" type="TIMESTAMP" required="true"/>
         <column name="to_date" phpName="ToDate" type="TIMESTAMP" required="true"/>
         <column name="event_name" phpName="EventName" type="VARCHAR" size="45" required="true"/>
+        <column name="event_venue" phpName="EventVenue" type="VARCHAR" size="255"/>
         <column name="event_desc" phpName="EventDescription" type="LONGVARCHAR" size="32700" required="true"/>
         <column name="event_type" phpName="EventType" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="is_going" phpName="IsGoing" type="INTEGER" required="true"/>
+        <column name="is_going_note" phpName="IsGoingNote" type="LONGVARCHAR" />
         <column name="sms_response" phpName="SmsResponse" type="LONGVARCHAR" size="32700"/>
         <foreign-key foreignTable="list_events_type">
             <reference local="event_type" foreign="id"/>
@@ -266,6 +271,7 @@
         <column name="event_id" phpName="EventId" type="INTEGER" required="true"/>
         <column name="emp_id" phpName="EmpId" type="INTEGER" required="true"/>
         <column name="status" phpName="Status" type="INTEGER" required="true"/>
+        <column name="reason" phpName="Reason" type="LONGVARCHAR" required="true"/>
         <foreign-key foreignTable="emp_acc">
             <reference local="emp_id" foreign="id"/>
         </foreign-key>
@@ -283,6 +289,35 @@
         <column name="filename" phpName="Filename" type="LONGVARCHAR" size = "32700" required="true"/>
         <foreign-key foreignTable="list_events">
             <reference local="event_id" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="history" phpName="History" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="module" phpName="Module" type="VARCHAR" size="255" />
+        <column name="action" phpName="Action" type="VARCHAR" size="255" />
+
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="event_tag_history" phpName="EventTagHistory" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="history_id" phpName="HistoryId" type="INTEGER" required="true" />
+        <column name="event_tag_id" phpName="EventTagId" type="INTEGER" required="true" />
+        <column name="status" phpName="Status" type="INTEGER" />
+        <column name="message" phpName="Message" type="LONGVARCHAR" />
+        <column name="date_created" phpName="DateCreated" type="TIMESTAMP" required="true" />
+
+        <foreign-key foreignTable="history">
+            <reference local="history_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="event_tagged_persons">
+            <reference local="event_tag_id" foreign="id"/>
         </foreign-key>
         <vendor type="mysql">
             <parameter name="Engine" value="InnoDB"/>

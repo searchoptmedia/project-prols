@@ -9,10 +9,14 @@ use \Exception;
 use \PDO;
 use \Persistent;
 use \Propel;
+use \PropelCollection;
 use \PropelException;
+use \PropelObjectCollection;
 use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccQuery;
+use CoreBundle\Model\EventTagHistory;
+use CoreBundle\Model\EventTagHistoryQuery;
 use CoreBundle\Model\EventTaggedPersons;
 use CoreBundle\Model\EventTaggedPersonsPeer;
 use CoreBundle\Model\EventTaggedPersonsQuery;
@@ -65,6 +69,12 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     protected $status;
 
     /**
+     * The value for the reason field.
+     * @var        string
+     */
+    protected $reason;
+
+    /**
      * @var        EmpAcc
      */
     protected $aEmpAcc;
@@ -73,6 +83,12 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
      * @var        ListEvents
      */
     protected $aListEvents;
+
+    /**
+     * @var        PropelObjectCollection|EventTagHistory[] Collection to store aggregation of EventTagHistory objects.
+     */
+    protected $collEventTagHistories;
+    protected $collEventTagHistoriesPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -95,8 +111,14 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     protected $alreadyInClearAllReferencesDeep = false;
 
     /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $eventTagHistoriesScheduledForDeletion = null;
+
+    /**
      * Get the [id] column value.
-     *
+     * 
      * @return int
      */
     public function getId()
@@ -107,7 +129,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [event_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEventId()
@@ -118,7 +140,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [emp_id] column value.
-     *
+     * 
      * @return int
      */
     public function getEmpId()
@@ -129,7 +151,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     *
+     * 
      * @return int
      */
     public function getStatus()
@@ -139,8 +161,19 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     }
 
     /**
+     * Get the [reason] column value.
+     * 
+     * @return string
+     */
+    public function getReason()
+    {
+
+        return $this->reason;
+    }
+
+    /**
      * Set the value of [id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -161,7 +194,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [event_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -186,7 +219,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_id] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -211,7 +244,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     *
+     * 
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -229,6 +262,27 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
         return $this;
     } // setStatus()
+
+    /**
+     * Set the value of [reason] column.
+     * 
+     * @param  string $v new value
+     * @return EventTaggedPersons The current object (for fluent API support)
+     */
+    public function setReason($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->reason !== $v) {
+            $this->reason = $v;
+            $this->modifiedColumns[] = EventTaggedPersonsPeer::REASON;
+        }
+
+
+        return $this;
+    } // setReason()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -266,6 +320,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $this->event_id = ($row[$startcol + 1] !== null) ? (int) $row[$startcol + 1] : null;
             $this->emp_id = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
             $this->status = ($row[$startcol + 3] !== null) ? (int) $row[$startcol + 3] : null;
+            $this->reason = ($row[$startcol + 4] !== null) ? (string) $row[$startcol + 4] : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -275,7 +330,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             }
             $this->postHydrate($row, $startcol, $rehydrate);
 
-            return $startcol + 4; // 4 = EventTaggedPersonsPeer::NUM_HYDRATE_COLUMNS.
+            return $startcol + 5; // 5 = EventTaggedPersonsPeer::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating EventTaggedPersons object", $e);
@@ -345,6 +400,8 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
             $this->aEmpAcc = null;
             $this->aListEvents = null;
+            $this->collEventTagHistories = null;
+
         } // if (deep)
     }
 
@@ -488,6 +545,23 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
                 $this->resetModified();
             }
 
+            if ($this->eventTagHistoriesScheduledForDeletion !== null) {
+                if (!$this->eventTagHistoriesScheduledForDeletion->isEmpty()) {
+                    EventTagHistoryQuery::create()
+                        ->filterByPrimaryKeys($this->eventTagHistoriesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eventTagHistoriesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEventTagHistories !== null) {
+                foreach ($this->collEventTagHistories as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -526,6 +600,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if ($this->isColumnModified(EventTaggedPersonsPeer::STATUS)) {
             $modifiedColumns[':p' . $index++]  = '`status`';
         }
+        if ($this->isColumnModified(EventTaggedPersonsPeer::REASON)) {
+            $modifiedColumns[':p' . $index++]  = '`reason`';
+        }
 
         $sql = sprintf(
             'INSERT INTO `event_tagged_persons` (%s) VALUES (%s)',
@@ -537,17 +614,20 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':
+                    case '`id`':						
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`event_id`':
+                    case '`event_id`':						
                         $stmt->bindValue($identifier, $this->event_id, PDO::PARAM_INT);
                         break;
-                    case '`emp_id`':
+                    case '`emp_id`':						
                         $stmt->bindValue($identifier, $this->emp_id, PDO::PARAM_INT);
                         break;
-                    case '`status`':
+                    case '`status`':						
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
+                        break;
+                    case '`reason`':						
+                        $stmt->bindValue($identifier, $this->reason, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -666,6 +746,14 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             }
 
 
+                if ($this->collEventTagHistories !== null) {
+                    foreach ($this->collEventTagHistories as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
 
             $this->alreadyInValidation = false;
         }
@@ -713,6 +801,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             case 3:
                 return $this->getStatus();
                 break;
+            case 4:
+                return $this->getReason();
+                break;
             default:
                 return null;
                 break;
@@ -746,18 +837,22 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $keys[1] => $this->getEventId(),
             $keys[2] => $this->getEmpId(),
             $keys[3] => $this->getStatus(),
+            $keys[4] => $this->getReason(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-
+        
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->aListEvents) {
                 $result['ListEvents'] = $this->aListEvents->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collEventTagHistories) {
+                $result['EventTagHistories'] = $this->collEventTagHistories->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -805,6 +900,9 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             case 3:
                 $this->setStatus($value);
                 break;
+            case 4:
+                $this->setReason($value);
+                break;
         } // switch()
     }
 
@@ -833,6 +931,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if (array_key_exists($keys[1], $arr)) $this->setEventId($arr[$keys[1]]);
         if (array_key_exists($keys[2], $arr)) $this->setEmpId($arr[$keys[2]]);
         if (array_key_exists($keys[3], $arr)) $this->setStatus($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setReason($arr[$keys[4]]);
     }
 
     /**
@@ -848,6 +947,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         if ($this->isColumnModified(EventTaggedPersonsPeer::EVENT_ID)) $criteria->add(EventTaggedPersonsPeer::EVENT_ID, $this->event_id);
         if ($this->isColumnModified(EventTaggedPersonsPeer::EMP_ID)) $criteria->add(EventTaggedPersonsPeer::EMP_ID, $this->emp_id);
         if ($this->isColumnModified(EventTaggedPersonsPeer::STATUS)) $criteria->add(EventTaggedPersonsPeer::STATUS, $this->status);
+        if ($this->isColumnModified(EventTaggedPersonsPeer::REASON)) $criteria->add(EventTaggedPersonsPeer::REASON, $this->reason);
 
         return $criteria;
     }
@@ -914,6 +1014,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         $copyObj->setEventId($this->getEventId());
         $copyObj->setEmpId($this->getEmpId());
         $copyObj->setStatus($this->getStatus());
+        $copyObj->setReason($this->getReason());
 
         if ($deepCopy && !$this->startCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -921,6 +1022,12 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $copyObj->setNew(false);
             // store object hash to prevent cycle
             $this->startCopy = true;
+
+            foreach ($this->getEventTagHistories() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEventTagHistory($relObj->copy($deepCopy));
+                }
+            }
 
             //unflag object copy
             $this->startCopy = false;
@@ -1076,6 +1183,272 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         return $this->aListEvents;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('EventTagHistory' == $relationName) {
+            $this->initEventTagHistories();
+        }
+    }
+
+    /**
+     * Clears out the collEventTagHistories collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EventTaggedPersons The current object (for fluent API support)
+     * @see        addEventTagHistories()
+     */
+    public function clearEventTagHistories()
+    {
+        $this->collEventTagHistories = null; // important to set this to null since that means it is uninitialized
+        $this->collEventTagHistoriesPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collEventTagHistories collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialEventTagHistories($v = true)
+    {
+        $this->collEventTagHistoriesPartial = $v;
+    }
+
+    /**
+     * Initializes the collEventTagHistories collection.
+     *
+     * By default this just sets the collEventTagHistories collection to an empty array (like clearcollEventTagHistories());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEventTagHistories($overrideExisting = true)
+    {
+        if (null !== $this->collEventTagHistories && !$overrideExisting) {
+            return;
+        }
+        $this->collEventTagHistories = new PropelObjectCollection();
+        $this->collEventTagHistories->setModel('EventTagHistory');
+    }
+
+    /**
+     * Gets an array of EventTagHistory objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EventTaggedPersons is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|EventTagHistory[] List of EventTagHistory objects
+     * @throws PropelException
+     */
+    public function getEventTagHistories($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTagHistoriesPartial && !$this->isNew();
+        if (null === $this->collEventTagHistories || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEventTagHistories) {
+                // return empty collection
+                $this->initEventTagHistories();
+            } else {
+                $collEventTagHistories = EventTagHistoryQuery::create(null, $criteria)
+                    ->filterByEventTaggedPersons($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collEventTagHistoriesPartial && count($collEventTagHistories)) {
+                      $this->initEventTagHistories(false);
+
+                      foreach ($collEventTagHistories as $obj) {
+                        if (false == $this->collEventTagHistories->contains($obj)) {
+                          $this->collEventTagHistories->append($obj);
+                        }
+                      }
+
+                      $this->collEventTagHistoriesPartial = true;
+                    }
+
+                    $collEventTagHistories->getInternalIterator()->rewind();
+
+                    return $collEventTagHistories;
+                }
+
+                if ($partial && $this->collEventTagHistories) {
+                    foreach ($this->collEventTagHistories as $obj) {
+                        if ($obj->isNew()) {
+                            $collEventTagHistories[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEventTagHistories = $collEventTagHistories;
+                $this->collEventTagHistoriesPartial = false;
+            }
+        }
+
+        return $this->collEventTagHistories;
+    }
+
+    /**
+     * Sets a collection of EventTagHistory objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $eventTagHistories A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EventTaggedPersons The current object (for fluent API support)
+     */
+    public function setEventTagHistories(PropelCollection $eventTagHistories, PropelPDO $con = null)
+    {
+        $eventTagHistoriesToDelete = $this->getEventTagHistories(new Criteria(), $con)->diff($eventTagHistories);
+
+
+        $this->eventTagHistoriesScheduledForDeletion = $eventTagHistoriesToDelete;
+
+        foreach ($eventTagHistoriesToDelete as $eventTagHistoryRemoved) {
+            $eventTagHistoryRemoved->setEventTaggedPersons(null);
+        }
+
+        $this->collEventTagHistories = null;
+        foreach ($eventTagHistories as $eventTagHistory) {
+            $this->addEventTagHistory($eventTagHistory);
+        }
+
+        $this->collEventTagHistories = $eventTagHistories;
+        $this->collEventTagHistoriesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EventTagHistory objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related EventTagHistory objects.
+     * @throws PropelException
+     */
+    public function countEventTagHistories(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collEventTagHistoriesPartial && !$this->isNew();
+        if (null === $this->collEventTagHistories || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEventTagHistories) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEventTagHistories());
+            }
+            $query = EventTagHistoryQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEventTaggedPersons($this)
+                ->count($con);
+        }
+
+        return count($this->collEventTagHistories);
+    }
+
+    /**
+     * Method called to associate a EventTagHistory object to this object
+     * through the EventTagHistory foreign key attribute.
+     *
+     * @param    EventTagHistory $l EventTagHistory
+     * @return EventTaggedPersons The current object (for fluent API support)
+     */
+    public function addEventTagHistory(EventTagHistory $l)
+    {
+        if ($this->collEventTagHistories === null) {
+            $this->initEventTagHistories();
+            $this->collEventTagHistoriesPartial = true;
+        }
+
+        if (!in_array($l, $this->collEventTagHistories->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddEventTagHistory($l);
+
+            if ($this->eventTagHistoriesScheduledForDeletion and $this->eventTagHistoriesScheduledForDeletion->contains($l)) {
+                $this->eventTagHistoriesScheduledForDeletion->remove($this->eventTagHistoriesScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	EventTagHistory $eventTagHistory The eventTagHistory object to add.
+     */
+    protected function doAddEventTagHistory($eventTagHistory)
+    {
+        $this->collEventTagHistories[]= $eventTagHistory;
+        $eventTagHistory->setEventTaggedPersons($this);
+    }
+
+    /**
+     * @param	EventTagHistory $eventTagHistory The eventTagHistory object to remove.
+     * @return EventTaggedPersons The current object (for fluent API support)
+     */
+    public function removeEventTagHistory($eventTagHistory)
+    {
+        if ($this->getEventTagHistories()->contains($eventTagHistory)) {
+            $this->collEventTagHistories->remove($this->collEventTagHistories->search($eventTagHistory));
+            if (null === $this->eventTagHistoriesScheduledForDeletion) {
+                $this->eventTagHistoriesScheduledForDeletion = clone $this->collEventTagHistories;
+                $this->eventTagHistoriesScheduledForDeletion->clear();
+            }
+            $this->eventTagHistoriesScheduledForDeletion[]= clone $eventTagHistory;
+            $eventTagHistory->setEventTaggedPersons(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this EventTaggedPersons is new, it will return
+     * an empty collection; or if this EventTaggedPersons has previously
+     * been saved, it will retrieve related EventTagHistories from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in EventTaggedPersons.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @param string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return PropelObjectCollection|EventTagHistory[] List of EventTagHistory objects
+     */
+    public function getEventTagHistoriesJoinHistory($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+    {
+        $query = EventTagHistoryQuery::create(null, $criteria);
+        $query->joinWith('History', $join_behavior);
+
+        return $this->getEventTagHistories($query, $con);
+    }
+
     /**
      * Clears the current object and sets all attributes to their default values
      */
@@ -1085,6 +1458,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         $this->event_id = null;
         $this->emp_id = null;
         $this->status = null;
+        $this->reason = null;
         $this->alreadyInSave = false;
         $this->alreadyInValidation = false;
         $this->alreadyInClearAllReferencesDeep = false;
@@ -1107,6 +1481,11 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->collEventTagHistories) {
+                foreach ($this->collEventTagHistories as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->aEmpAcc instanceof Persistent) {
               $this->aEmpAcc->clearAllReferences($deep);
             }
@@ -1117,6 +1496,10 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        if ($this->collEventTagHistories instanceof PropelCollection) {
+            $this->collEventTagHistories->clearIterator();
+        }
+        $this->collEventTagHistories = null;
         $this->aEmpAcc = null;
         $this->aListEvents = null;
     }

@@ -29,13 +29,13 @@ abstract class BaseEmpAccPeer
     const TM_CLASS = 'CoreBundle\\Model\\map\\EmpAccTableMap';
 
     /** The total number of columns. */
-    const NUM_COLUMNS = 11;
+    const NUM_COLUMNS = 12;
 
     /** The number of lazy-loaded columns. */
     const NUM_LAZY_LOAD_COLUMNS = 0;
 
     /** The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS) */
-    const NUM_HYDRATE_COLUMNS = 11;
+    const NUM_HYDRATE_COLUMNS = 12;
 
     /** the column name for the id field */
     const ID = 'emp_acc.id';
@@ -60,6 +60,9 @@ abstract class BaseEmpAccPeer
 
     /** the column name for the role field */
     const ROLE = 'emp_acc.role';
+
+    /** the column name for the team_role field */
+    const TEAM_ROLE = 'emp_acc.team_role';
 
     /** the column name for the key field */
     const KEY = 'emp_acc.key';
@@ -89,12 +92,12 @@ abstract class BaseEmpAccPeer
      * e.g. EmpAccPeer::$fieldNames[EmpAccPeer::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        BasePeer::TYPE_PHPNAME => array ('Id', 'Username', 'Password', 'Timestamp', 'IpAdd', 'Status', 'Email', 'Role', 'Key', 'CreatedBy', 'LastUpdatedBy', ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'username', 'password', 'timestamp', 'ipAdd', 'status', 'email', 'role', 'key', 'createdBy', 'lastUpdatedBy', ),
-        BasePeer::TYPE_COLNAME => array (EmpAccPeer::ID, EmpAccPeer::USERNAME, EmpAccPeer::PASSWORD, EmpAccPeer::TIMESTAMP, EmpAccPeer::IP_ADD, EmpAccPeer::STATUS, EmpAccPeer::EMAIL, EmpAccPeer::ROLE, EmpAccPeer::KEY, EmpAccPeer::CREATED_BY, EmpAccPeer::LAST_UPDATED_BY, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USERNAME', 'PASSWORD', 'TIMESTAMP', 'IP_ADD', 'STATUS', 'EMAIL', 'ROLE', 'KEY', 'CREATED_BY', 'LAST_UPDATED_BY', ),
-        BasePeer::TYPE_FIELDNAME => array ('id', 'username', 'password', 'timestamp', 'ip_add', 'status', 'email', 'role', 'key', 'created_by', 'last_updated_by', ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+        BasePeer::TYPE_PHPNAME => array ('Id', 'Username', 'Password', 'Timestamp', 'IpAdd', 'Status', 'Email', 'Role', 'TeamRole', 'Key', 'CreatedBy', 'LastUpdatedBy', ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'username', 'password', 'timestamp', 'ipAdd', 'status', 'email', 'role', 'teamRole', 'key', 'createdBy', 'lastUpdatedBy', ),
+        BasePeer::TYPE_COLNAME => array (EmpAccPeer::ID, EmpAccPeer::USERNAME, EmpAccPeer::PASSWORD, EmpAccPeer::TIMESTAMP, EmpAccPeer::IP_ADD, EmpAccPeer::STATUS, EmpAccPeer::EMAIL, EmpAccPeer::ROLE, EmpAccPeer::TEAM_ROLE, EmpAccPeer::KEY, EmpAccPeer::CREATED_BY, EmpAccPeer::LAST_UPDATED_BY, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID', 'USERNAME', 'PASSWORD', 'TIMESTAMP', 'IP_ADD', 'STATUS', 'EMAIL', 'ROLE', 'TEAM_ROLE', 'KEY', 'CREATED_BY', 'LAST_UPDATED_BY', ),
+        BasePeer::TYPE_FIELDNAME => array ('id', 'username', 'password', 'timestamp', 'ip_add', 'status', 'email', 'role', 'team_role', 'key', 'created_by', 'last_updated_by', ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -104,12 +107,12 @@ abstract class BaseEmpAccPeer
      * e.g. EmpAccPeer::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Username' => 1, 'Password' => 2, 'Timestamp' => 3, 'IpAdd' => 4, 'Status' => 5, 'Email' => 6, 'Role' => 7, 'Key' => 8, 'CreatedBy' => 9, 'LastUpdatedBy' => 10, ),
-        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'username' => 1, 'password' => 2, 'timestamp' => 3, 'ipAdd' => 4, 'status' => 5, 'email' => 6, 'role' => 7, 'key' => 8, 'createdBy' => 9, 'lastUpdatedBy' => 10, ),
-        BasePeer::TYPE_COLNAME => array (EmpAccPeer::ID => 0, EmpAccPeer::USERNAME => 1, EmpAccPeer::PASSWORD => 2, EmpAccPeer::TIMESTAMP => 3, EmpAccPeer::IP_ADD => 4, EmpAccPeer::STATUS => 5, EmpAccPeer::EMAIL => 6, EmpAccPeer::ROLE => 7, EmpAccPeer::KEY => 8, EmpAccPeer::CREATED_BY => 9, EmpAccPeer::LAST_UPDATED_BY => 10, ),
-        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USERNAME' => 1, 'PASSWORD' => 2, 'TIMESTAMP' => 3, 'IP_ADD' => 4, 'STATUS' => 5, 'EMAIL' => 6, 'ROLE' => 7, 'KEY' => 8, 'CREATED_BY' => 9, 'LAST_UPDATED_BY' => 10, ),
-        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'username' => 1, 'password' => 2, 'timestamp' => 3, 'ip_add' => 4, 'status' => 5, 'email' => 6, 'role' => 7, 'key' => 8, 'created_by' => 9, 'last_updated_by' => 10, ),
-        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+        BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Username' => 1, 'Password' => 2, 'Timestamp' => 3, 'IpAdd' => 4, 'Status' => 5, 'Email' => 6, 'Role' => 7, 'TeamRole' => 8, 'Key' => 9, 'CreatedBy' => 10, 'LastUpdatedBy' => 11, ),
+        BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'username' => 1, 'password' => 2, 'timestamp' => 3, 'ipAdd' => 4, 'status' => 5, 'email' => 6, 'role' => 7, 'teamRole' => 8, 'key' => 9, 'createdBy' => 10, 'lastUpdatedBy' => 11, ),
+        BasePeer::TYPE_COLNAME => array (EmpAccPeer::ID => 0, EmpAccPeer::USERNAME => 1, EmpAccPeer::PASSWORD => 2, EmpAccPeer::TIMESTAMP => 3, EmpAccPeer::IP_ADD => 4, EmpAccPeer::STATUS => 5, EmpAccPeer::EMAIL => 6, EmpAccPeer::ROLE => 7, EmpAccPeer::TEAM_ROLE => 8, EmpAccPeer::KEY => 9, EmpAccPeer::CREATED_BY => 10, EmpAccPeer::LAST_UPDATED_BY => 11, ),
+        BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'USERNAME' => 1, 'PASSWORD' => 2, 'TIMESTAMP' => 3, 'IP_ADD' => 4, 'STATUS' => 5, 'EMAIL' => 6, 'ROLE' => 7, 'TEAM_ROLE' => 8, 'KEY' => 9, 'CREATED_BY' => 10, 'LAST_UPDATED_BY' => 11, ),
+        BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'username' => 1, 'password' => 2, 'timestamp' => 3, 'ip_add' => 4, 'status' => 5, 'email' => 6, 'role' => 7, 'team_role' => 8, 'key' => 9, 'created_by' => 10, 'last_updated_by' => 11, ),
+        BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
     );
 
     /**
@@ -191,6 +194,7 @@ abstract class BaseEmpAccPeer
             $criteria->addSelectColumn(EmpAccPeer::STATUS);
             $criteria->addSelectColumn(EmpAccPeer::EMAIL);
             $criteria->addSelectColumn(EmpAccPeer::ROLE);
+            $criteria->addSelectColumn(EmpAccPeer::TEAM_ROLE);
             $criteria->addSelectColumn(EmpAccPeer::KEY);
             $criteria->addSelectColumn(EmpAccPeer::CREATED_BY);
             $criteria->addSelectColumn(EmpAccPeer::LAST_UPDATED_BY);
@@ -203,6 +207,7 @@ abstract class BaseEmpAccPeer
             $criteria->addSelectColumn($alias . '.status');
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.role');
+            $criteria->addSelectColumn($alias . '.team_role');
             $criteria->addSelectColumn($alias . '.key');
             $criteria->addSelectColumn($alias . '.created_by');
             $criteria->addSelectColumn($alias . '.last_updated_by');
@@ -388,7 +393,7 @@ abstract class BaseEmpAccPeer
 
         return null; // just to be explicit
     }
-
+    
     /**
      * Clear the instance pool.
      *
@@ -403,7 +408,7 @@ abstract class BaseEmpAccPeer
       }
         EmpAccPeer::$instances = array();
     }
-
+    
     /**
      * Method to invalidate the instance pool of all tables related to emp_acc
      * by a foreign key with ON DELETE CASCADE
@@ -446,7 +451,7 @@ abstract class BaseEmpAccPeer
 
         return (int) $row[$startcol];
     }
-
+    
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -457,7 +462,7 @@ abstract class BaseEmpAccPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-
+    
         // set the class once to avoid overhead in the loop
         $cls = EmpAccPeer::getOMClass();
         // populate the object(s)
@@ -701,7 +706,7 @@ abstract class BaseEmpAccPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-
+            
             $affectedRows += BasePeer::doDelete($criteria, $con);
             EmpAccPeer::clearRelatedInstancePool();
             $con->commit();

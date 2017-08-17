@@ -17,6 +17,7 @@ use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use CoreBundle\Model\EmpAccPeer;
+use CoreBundle\Utilities\Constant as C;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,96 +33,21 @@ class EmployeeRequestController extends Controller
     public function requestAction(Request $req)
     {
         $user = $this->getUser();
-        $name = $user->getUsername();
-        $page = 'View Request';
         $role = $user->getRole();
         $id = $user->getId();
-        $admincontroller = new AdminController();
-        $timename = $admincontroller->timeInOut($id);
 
-        // redirect to index if not Admin
+        if((strcasecmp($role,'ADMIN')== 0))
+            $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
+        else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
 
-            if((strcasecmp($role,'ADMIN')== 0))
-                $getEmployeeRequest = EmpRequestPeer::getAllRequest($id);
-            else $getEmployeeRequest = EmpRequestPeer::getIndividualRequest($id);
-            $timedata = EmpTimePeer::getTime($id);
-            $timeflag = 0;
-            $currenttimein = 0;
-            $currenttimeout = 0;
+        //single record - if from email
+        $activeId = $req->query->get('id');
+        $activeRequest = EmpRequestPeer::retrieveByPK($activeId);
 
-            for ($ctr = 0; $ctr < sizeof($timedata); $ctr++)
-            {
-                $checktimein = $timedata[$ctr]->getTimeIn();
-                $checktimeout = $timedata[$ctr]->getTimeOut();
-                if(!is_null($checktimein) && is_null($checktimeout))
-                {
-                    $currenttimein = $checktimein->format('h:i A');
-                }
-                else
-                {
-                    $currenttimein = 0;
-                    $currenttimeout = $checktimeout->format('h:i A');
-                }
-            }
-            $timeoutdata = '';
-            $checkipdata = null;
-            if(!empty($timedata))
-            {
-                $datetoday = date('Y-m-d');
-                $emp_time = EmpTimePeer::getTime($id);
-                $currenttime = sizeof($emp_time) - 1;
-                $timein_data = $emp_time[$currenttime]->getTimeIn();
-                $timeout_data = $emp_time[$currenttime]->getTimeOut();
-                $checkipdata = $emp_time[$currenttime]->getCheckIp();
-            }
-            $systime = date('H:i A');
-            $timetoday = date('h:i A');
-            $afternoon = date('H:i A', strtotime('12 pm'));
-
-            $et = EmpTimePeer::getEmpLastTimein($id);
-            if(!empty($et))
-            {
-                $lasttimein	= $et->getTimeIn()->format('M d, Y, h:i A');
-                $emptimedate = $et->getDate();
-                if($emptimedate->format('Y-m-d') == $datetoday)
-                {
-                    $timeflag = 1;
-                }
-                if(! empty($et->getTimeOut()))
-                    $isTimeOut = 'true';
-            }
-            $userip = InitController::getUserIP($this);
-            $ip_add = ListIpPeer::getValidIP($userip);
-            $is_ip  = InitController::checkIP($userip);
-
-            $requestcount = EmpRequestQuery::_getTotalByStatusRequest(2);
-
-            //single record - if from email
-            $activeId = $req->query->get('id');
-            $activeRequest = EmpRequestPeer::retrieveByPK($activeId);
-
-            return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
-                'name' => $name,
-                'page' => $page,
-                'user' => $user,
-                'timename' => $timename,
-                'allrequest' => $getEmployeeRequest,
-                'userid' =>$id,
-                'timeflag' => $timeflag,
-                'currenttimein' => $currenttimein,
-                'currenttimeout' => $currenttimeout,
-                'matchedip' => is_null($ip_add) ? "" : $ip_add->getAllowedIp(),
-                'userip' => $userip,
-                'checkipdata' => $checkipdata,
-                'checkip' => $is_ip,
-                'systime' => $systime,
-                'afternoon' => $afternoon,
-                'requestcount' => $requestcount,
-                'isTimeoutAlready' => !empty($isTimeOut) ? $isTimeOut : null,
-                'lasttimein' => !empty($lasttimein) ? $lasttimein : null,
-                'timetoday' => $timetoday,
-                'activeRequest' => $activeRequest
-            ));
+        return $this->render('AdminBundle:EmployeeRequest:request.html.twig', array(
+            'allrequest' => $getEmployeeRequest,
+            'activeRequest' => $activeRequest
+        ));
     }
 
     public function requestMeetingAction(Request $req)
@@ -152,14 +78,12 @@ class EmployeeRequestController extends Controller
         $tag_request_ids = array();
 
         try {
-            foreach($taggedemail as $tagemail)
-            {
+            foreach($taggedemail as $tagemail) {
                 $emp = EmpAccPeer::getUserInfo($tagemail);
                 $tag_record = EmpAccPeer::getUserInfo($tagemail);
                 $tag_profile = EmpProfilePeer::getInformation($tag_record->getId());
                 $tag_names[] = $tag_profile->getFname() . " " . $tag_profile->getLname();
-                if(!empty($emp))
-                {
+                if(!empty($emp)) {
                     $empTagRequest = new RequestMeetingTags();
                     $empTagRequest->setRequestId($request_id);
                     $empTagRequest->setEmpAccId($emp->getId());
@@ -215,17 +139,19 @@ class EmployeeRequestController extends Controller
         }
     }
 
-    public function requestLeaveAction(Request $req)
+    public function requestLeaveAction(Request $request)
     {
-        $obj = $req->request->get('obj');                           // get json object
-        $typeleave = $req->request->get('typeleave');
+        $params = $request->request->all();
+        $typeleave = $params['typeleave'];
         $userid = $this->getUser()->getId();
         $reqIds = array();
         $ref = $this;
 
         $requestId = 0;
 
-        foreach($obj as $o) {
+        $addedRequestList = array();
+
+        foreach($params['obj'] as $k=>$o) {
             $leaveinput = new EmpRequest();
             $leaveinput->setRequest($o['reason']);
             $leaveinput->setStatus(2);
@@ -237,11 +163,20 @@ class EmployeeRequestController extends Controller
             array_push($reqIds, $leaveinput->getId());
 
             $requestId = $leaveinput->getId();
+
+            $addedRequestList[] = array(
+                'reason' => $o['reason'],
+                'start_date' => $o['start_date'],
+                'end_date' => $o['end_date'],
+                'requestId' => $requestId
+            );
         }
+
+        $request->request->set('empRequest', $addedRequestList);
 
         try {
             $email = new EmailController();
-            $sendemail = $email->requestTypeEmail($req, $this, $requestId);
+            $sendemail = $email->requestTypeEmail($request, $this, $requestId);
             if (!$sendemail) {
                 $this->deleteRequestLeave($reqIds);
                 echo json_encode(array('error' => 'Email not successfully sent'));
@@ -266,155 +201,77 @@ class EmployeeRequestController extends Controller
         }
     }
 
-    public function statusChangeAction(Request $req)
+    public function statusChangeAction(Request $request, $refClass = null)
     {
-        $emptimeid = $req->request->get('emptimeid');
-        $requesttype = $req->request->get('requesttype');
-        $prevstatus = $req->request->get('prevstatus');
-        $response = array('error' => 'none');
-        $accept = EmpRequestPeer::retrieveByPk($req->request->get('reqid'));
-        if(isset($accept) && !empty($accept))
-        {
-            $accept->setAdminId($req->request->get('adminid'));
-            $status = $req->request->get('status');
+        $params = $request->request->all();
 
-            if($status == 3) {
-                $statusLbl = "Approved";
-                if($requesttype == 3) {
-                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
-                    $emptime->setStatus(1);
-                    $emptime->save();
+        $empTimeId = $params['emptimeid'];
+        $requesttype = $params['requesttype'];
+        $prevStatus = $params['prevstatus'];
+        $adminId   = $params['adminid'];
+        $status    = $params['status'];
+        $comment   = $params['comment'];
+
+        $empRequest  = EmpRequestPeer::retrieveByPk($params['reqId']);
+        $params['adminInfo'] = EmpProfilePeer::getInformation($adminId);
+
+        if(!empty($empRequest)) {
+            $response = "Successfully ";
+            $empRequest->setAdminId($adminId);
+
+            //on request is access
+            if($status==3) {
+                if($requesttype==C::REQUEST_ACCESS) {
+                    $emptime = EmpTimePeer::retrieveByPK($empTimeId);
+                    if($emptime) {
+                        $emptime->setStatus(1);
+                        $emptime->save();
+                    }
                 }
-            }
-            else{
-                $statusLbl = "Declined";
-                if($requesttype == 3) {
-                    $emptime = EmpTimePeer::retrieveByPK($emptimeid);
-                    $emptime->setStatus(-1);
-                    $emptime->save();
+
+                $response .= "Approved!";
+            } else {
+                if($requesttype==3) {
+                    $emptime = EmpTimePeer::retrieveByPK($empTimeId);
+                    if($emptime) {
+                        $emptime->setStatus(-1);
+                        $emptime->save();
+                    }
                 }
+
+                $response .= "Declined!";
             }
 
-            $response = "Status " . $statusLbl;
+            //if status change
+            if($prevStatus!=$status) {
+                $empRequest
+                    ->setAdminNote($comment)
+                    ->setStatus($status);
 
-            if($prevstatus != $status) {
-                $accept->setStatus($status);
                 $email = new EmailController();
-                $sendemail = $email->acceptRequestEmail($req, $this);
+                $email->acceptRequestEmail($empRequest, $params, $refClass?:$this);
             }
 
-            if($accept->save())
-            {
-                $response = array('result' => $response);
-            }
-            else
-            {
-                $response = array('error' => 'Status not changed');
+            if($empRequest->save()) {
+                $response = array('result' => $response, 'code' => C::CODE_SUCCESS);
+            } else {
+                $response = array('error' => 'Status not changed!', 'code' => C::CODE_NO_CHANGE);
             }
 
-        }
-        else
-        {
+        } else {
             $response = array('error' => 'not found');
         }
 
-        echo json_encode($response);
-        exit;
+        if(! $refClass) {
+            echo json_encode($response);
+            exit;
+        } else {
+            return $response;
+        }
     }
 
     public function addRequestCalendarAction(){
-        $allRequest = EmpRequestPeer::getAllAcceptedRequest();
-        $datetoday = date('Y-m-d');
-        $timedintoday = EmpTimePeer::getAllTimeToday($datetoday);
 
-        $request = [];
-        foreach ($allRequest as $a){
-            $requesttype = $a->getListRequestTypeId();
-            if($requesttype == 1){
-                $event = array(
-                    'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
-                    'id' => $a->getId(),
-                    'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'start' => $a->getDateStarted()->format('Y-m-d'),
-                    'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
-                    'editable' => false,
-                    'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'requesttype' => $a->getListRequestType()->getRequestType(),
-                    'type' => "request"
-
-                );
-            }else if($requesttype == 2){
-                $event = array(
-                    'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
-                    'id' => $a->getId(),
-                    'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'start' => $a->getDateStarted()->format('Y-m-d'),
-                    'end' => $a->getDateEnded()->format('Y-m-d, 23:59:00'),
-                    'color' => '#ff9800',
-                    'editable' => false,
-                    'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'requesttype' => $a->getListRequestType()->getRequestType(),
-                    'type' => "request"
-                );
-            }else if($requesttype == 3){
-                $event = array(
-                    'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
-                    'id' => $a->getId(),
-                    'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'start' => $a->getDateStarted()->format('Y-m-d'),
-                    'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
-                    'color' => '#9e9e9e',
-                    'editable' => false,
-                    'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'requesttype' => $a->getListRequestType()->getRequestType(),
-                    'type' => "request"
-                );
-            } else if($requesttype == 4) {
-                $event = array(
-                    'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
-                    'id' => $a->getId(),
-                    'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'start' => $a->getDateStarted()->format('Y-m-d'),
-                    'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
-                    'color' => '#4CAF50',
-                    'editable' => false,
-                    'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'requesttype' => $a->getListRequestType()->getRequestType(),
-                    'type' => "request"
-                );
-            }
-            else if($requesttype == 5) {
-                $event = array(
-                    'date' => 'From: ' . $a->getDateStarted()->format('Y-m-d') . "<br>" . "To: " . $a->getDateEnded()->format('Y-m-d'),
-                    'id' => $a->getId(),
-                    'title' => $a->getListRequestType()->getRequestType(). " - " . $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'start' => $a->getDateStarted()->format('Y-m-d'),
-                    'end' => $a->getDateEnded()->format('Y-m-d 23:59:00'),
-                    'color' => '#F44336',
-                    'editable' => false,
-                    'empname' => $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getFname() . " " .
-                        $a->getEmpAccRelatedByEmpAccId()->getEmpProfiles()[0]->getLname(),
-                    'requesttype' => $a->getListRequestType()->getRequestType(),
-                    'type' => "request"
-                );
-            }
-            array_push($request, $event);
-        }
-
-        $eventManager =  new EventManagerController();
-        $request = $eventManager->showEventsAction($request, $this->getUser()->getId(), $this->getUser()->getRole());
-
-        echo json_encode($request);
-        exit;
     }
 
     public function notifAction()

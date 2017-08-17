@@ -1,7 +1,5 @@
 {% extends 'AdminBundle::base.html.twig' %}
-{% block title %}
-    <title>Propelrr Log-in System| Manage Employees</title>
-{% endblock %}
+{% block title %}Manage Employees{% endblock %}
 
 {% block css %}
     <style>
@@ -39,7 +37,7 @@
                                         <th>Department</th>
                                         <th>Position</th>
                                         <th>Status</th>
-                                        {% if user.role == 'ADMIN' %}
+                                        {% if app.user.role == 'ADMIN' %}
                                             <th>Capability</th>
                                         {% endif %}
                                         <th></th>
@@ -48,13 +46,13 @@
 
                                     <tbody>
                                     {% for emp in getEmployee %}
-                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ user.id }}">
+                                        <tr class="empProfile" data-empid="{{ emp.getEmpAccAccId }}" data-userid = "{{ app.user.id }}">
                                             <td class = "number">{{emp.getEmployeeNumber}}</td>
                                             <td class = "name">{{ emp.EmpAcc.getEmpProfiles[0].fname ~ ' ' ~ emp.EmpAcc.getEmpProfiles[0].lname }}</td>
                                             <td class = "dept">{{emp.getListDept().DeptNames}}</td>
                                             <td class = "pos">{{emp.getListPos().PosNames}}</td>
-                                            <td class = "status">{{ emp.getEmpStatusType().name }}</td>
-                                            {% if user.role == 'ADMIN' %}
+                                            {#<td class = "status">{{ emp.getEmpStatusType().name }}</td>#}
+                                            {% if app.user.role == 'ADMIN' %}
                                                 <td class = "capabilities">
                                                     {% for cap in emp.EmpAcc.getEmpCapabilitiessJoinCapabilitiesList %}
                                                         {{ cap.getCapabilitiesList().Capability }}<br>
@@ -63,13 +61,13 @@
                                             {% endif %}
 
                                             <td>
-                                                {% if user.role == 'ADMIN' %}
+                                                {% if app.user.role == 'ADMIN' %}
                                                     <button  class="waves-effect waves-light btn green view-profile-btn" data-empid="{{emp.getEmpAccAccId}}">View</button>
                                                 {% endif %}
 
                                                 {% for cap in capabilities %}
                                                     {% if cap.Capid == 1 and emp.EmpAcc.id!=app.user.id %}
-                                                        {% if (emp.EmpAcc.role != 'ADMIN' and user.role != 'ADMIN') %}
+                                                        {% if (emp.EmpAcc.role != 'ADMIN' and app.user.role != 'ADMIN') %}
                                                             <button class="waves-effect waves-light btn orange" id = "edit-employee-btn"
                                                                     data-username = "{{ emp.EmpAcc.username }}"
                                                                     data-password = "{{ emp.EmpAcc.password }}"
@@ -149,10 +147,10 @@
                         </div>
                     </div>
 
-                    {% if user.role == 'ADMIN' %}
+                    {% if app.user.role == 'ADMIN' %}
                     <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 110px; right: 24px;">
                         <a class="btn-floating btn-large blue">
-                            <i class="material-icons">import_export</i>
+                            <i class="material-icons">file_download</i>
                         </a>
 
                         <ul class="add">
@@ -162,14 +160,14 @@
                     {% endif %}
 
                     <div class="fixed-action-btn horizontal click-to-toggle" style="bottom: 45px; right: 24px;">
-                        {% if capabilities|length or user.role == 'ADMIN' %}
+                        {% if capabilities|length or app.user.role == 'ADMIN' %}
                         <a class="btn-floating btn-large red">
                             <i class="material-icons">add</i>
                         </a>
                         {% endif %}
 
                         <ul class="add">
-                            {% if user.role != 'ADMIN' %}
+                            {% if app.user.role != 'ADMIN' %}
                             {% for cap in capabilities %}
                                 {% if cap.Capid == 1 %}
                                     <li><a class="waves-effect waves-light btn orange" id = "add-emp-btn" style = "padding: 0px 10px;">add employee</a></li>
@@ -192,17 +190,20 @@
             </div>
         </section>
     </section>
+{% endblock %}
 
+{% block modal %}
     <!----------------------- ADD/EDIT EMPLOYEE MODAL -------------------------->
-    <div id="modal-emp" class="modal modal-fixed-footer" style="height: 1500px;">
+    <div id="modal-emp" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header">Employee</h4>
         <div class="modal-content add-employee-modal" >
-            <h4>Employee</h4>
-            <input type="hidden" name="employee-id" id = "employee-id"/>
-            <div class="row">
-                {% if user.role == 'ADMIN' %}
-                <div class="col-md-7 col-lg-8">
-                    {% else %}
-                    <div class="col-md-12 col-lg-12">
+            <div class="mo-body">
+                <input type="hidden" name="employee-id" id = "employee-id"/>
+                <div class="row mo-body">
+                    {% if app.user.role == 'ADMIN' %}
+                    <div class="col-md-7 col-lg-8">
+                        {% else %}
+                        <div class="col-md-12 col-lg-12">
                         {% endif %}
                         <p>Username<input name = "username" placeholder="type here..." id="username" type="text" class="input-field" style="margin-bottom: 0;"><br>
                             <span id = "username-error" style = "padding: 0; font-size: 10px; color: red;">Username already exists</span></p>
@@ -218,7 +219,8 @@
                         <p>Middle Name<input name = "mname" placeholder="type here..." id="mname" type="text" class="input-field"/></p>
 
                         <p>Gender</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="gender" id="gender" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="" disabled selected>Select Gender</option>
                                 <option value="Male">Male</option>
@@ -227,7 +229,8 @@
                         </div>
 
                         <p>Department</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="dept" id="dept" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select department</option>
                                 {% for dept in getDept %}
@@ -237,7 +240,8 @@
                         </div>
 
                         <p>Position</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="pos" id="pos" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select position</option>
                                 {% for pos in getPos %}
@@ -247,7 +251,8 @@
                         </div>
 
                         <p>Employment Status</p>
-                        <div class="select-wrapper"><span class="caret">?</span>
+                        <div class="select-wrapper">
+                            {#<span class="caret">?</span>#}
                             <select name="status"id="status" class="browser-default" style="width: 230px; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
                                 <option value="0" disabled selected>Select status</option>
                                 {% for status in allstatus %}
@@ -265,7 +270,7 @@
                         <p>BIR<input name="bir" placeholder="type here..." id="bir" type="text" class="input-field"></p>
                         <p>PhilHealth<input name="philhealth" placeholder="type here..." id="philhealth" type="text" class="input-field"></p>
                     </div>
-                    {% if user.role == 'ADMIN' %}
+                    {% if app.user.role == 'ADMIN' %}
                         <div class="col-md-5 col-lg-4 div-capabilities-area">
                             <big>User Capabilities</big>
                             {% for allcap in allcapabilities %}
@@ -280,23 +285,27 @@
                     <input type = "hidden" id = "celnumid">
                 </div>
             </div>
-
-            <div class="modal-footer">
-                <p class="error-label">Error. Please fill all required fields!</p>
-                <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
-                <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
-                <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-light grey custombtn btn-flat ">Cancel</a>
+            <button class="waves-effect waves-light orange custombtn btn-flat" id = "add-emp" style="margin-right:5px;">Add</button>
+            <button class="waves-effect waves-light orange custombtn btn-flat" id = "edit-emp" style="margin-right:5px;">Save</button>
+            <div class="chip add-error-chip pull-left display-none" style = "font-size: 12px; color: red;">
+                <i class="close material-icons">info_outline</i>
+                Please Input All Fields
             </div>
         </div>
     </div>
     <!----------------------------- END -------------------------------->
 
     <!----------------------- ADD POSITION/DEPARTMENT MODAL -------------------------->
-    <div id="modal-pos-dept" class="modal">
+    <div id="modal-pos-dept" class="modal modal-fixed-footer overflow-hidden">
+        <h4 class="mo-header" id="position_hdr">Position</h4>
+        <h4 class="mo-header" id="department_hdr">Department</h4>
         <div class="modal-content">
-            <h4 id = "position_hdr">Position</h4>
-            <h4 id = "department_hdr">Department</h4>
-            <input id="input-pos-dept" type="text" placeholder="Type name here...">
+            <div class="mo-body">
+                <input id="input-pos-dept" type="text" placeholder="Type name here...">
+            </div>
         </div>
 
         <div class="modal-footer">
@@ -309,30 +318,31 @@
 
     <!----------------------- EXPORT MODAL -------------------------->
     <div id="exportchoice" class="modal">
+        <h4 class="mo-header">Export</h4>
         <div class="modal-content">
-            <h4>Export</h4>
+            <div class="mo-body">
+                <p>Choose entity: </p>
+                <div class="radiobtn" style="margin-bottom: 20px;">
+                    <input name="group1" type="radio" id="select-all" class="export-radio-input" data-type="all" checked/>
+                    <label for="select-all" class="lbl-info radio-lbl">All Employees</label>
 
-            <p>Choose entity: </p>
-            <div class="radiobtn" style="margin-bottom: 20px;">
-                <input name="group1" type="radio" id="select-all" class="export-radio-input" data-type="all" checked/>
-                <label for="select-all" class="lbl-info radio-lbl">All Employees</label>
+                    <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
+                    <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+                </div>
 
-                <input name="group1" type="radio" id="select-dept" class="export-radio-input" data-type="dept"/>
-                <label for="select-dept" class="lbl-info radio-lbl">Select by Department</label>
+                <div class = "dept-container">
+                    <select id = "listdept" class="browser-default departmentselect" style="width: 100%; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
+                        <option value="" disabled selected>Choose your department</option>
+                        {% for dept in getDept %}
+                            <option value="{{ dept.Id }}">{{dept.DeptNames}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
-
-            <div class = "dept-container">
-                <select id = "listdept" class="browser-default departmentselect" style="width: 100%; background: none; border: none; border-bottom: 1px solid #e0e2e5;">
-                    <option value="" disabled selected>Choose your department</option>
-                    {% for dept in getDept %}
-                        <option value="{{ dept.Id }}">{{dept.DeptNames}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
-                <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-action modal-close waves-effect waves-light grey btn-flat" id = "export-cancel" style="color:white;">Cancel</button>
+            <button class="modal-action waves-effect waves-light orange btn-flat" id = "export-submit" style="color:white; margin-right:5px;">Export</button>
         </div>
     </div>
     <!----------------------------- END -------------------------------->
@@ -567,9 +577,9 @@
 
         $(document).on("click", "#edit-emp", function () {
             var validate = checkAddEmpFields();
-            $('.error-label').hide();
+            $('.add-error-chip').hide();
             if (validate == true) {
-                $('.error-label').show();
+                $('.add-error-chip').show();
                 return;
             } // true == there are errors
 
@@ -652,9 +662,10 @@
 
         $(document).on("click", "#add-emp", function () {
             var validate = checkAddEmpFields();
-            $('.error-label').hide();
+            var errorDiv = $('.add-error-chip');
+            errorDiv.hide();
             if (validate == true) {
-                $('.error-label').show();
+                errorDiv.show();
                 return;
             } // true == there are errors
             showLoadingBar();

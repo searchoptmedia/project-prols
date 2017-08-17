@@ -32,6 +32,7 @@ use CoreBundle\Model\ListEvents;
  * @method EmpAccQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method EmpAccQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method EmpAccQuery orderByRole($order = Criteria::ASC) Order by the role column
+ * @method EmpAccQuery orderByTeamRole($order = Criteria::ASC) Order by the team_role column
  * @method EmpAccQuery orderByKey($order = Criteria::ASC) Order by the key column
  * @method EmpAccQuery orderByCreatedBy($order = Criteria::ASC) Order by the created_by column
  * @method EmpAccQuery orderByLastUpdatedBy($order = Criteria::ASC) Order by the last_updated_by column
@@ -44,6 +45,7 @@ use CoreBundle\Model\ListEvents;
  * @method EmpAccQuery groupByStatus() Group by the status column
  * @method EmpAccQuery groupByEmail() Group by the email column
  * @method EmpAccQuery groupByRole() Group by the role column
+ * @method EmpAccQuery groupByTeamRole() Group by the team_role column
  * @method EmpAccQuery groupByKey() Group by the key column
  * @method EmpAccQuery groupByCreatedBy() Group by the created_by column
  * @method EmpAccQuery groupByLastUpdatedBy() Group by the last_updated_by column
@@ -94,6 +96,7 @@ use CoreBundle\Model\ListEvents;
  * @method EmpAcc findOneByStatus(int $status) Return the first EmpAcc filtered by the status column
  * @method EmpAcc findOneByEmail(string $email) Return the first EmpAcc filtered by the email column
  * @method EmpAcc findOneByRole(string $role) Return the first EmpAcc filtered by the role column
+ * @method EmpAcc findOneByTeamRole(string $team_role) Return the first EmpAcc filtered by the team_role column
  * @method EmpAcc findOneByKey(string $key) Return the first EmpAcc filtered by the key column
  * @method EmpAcc findOneByCreatedBy(int $created_by) Return the first EmpAcc filtered by the created_by column
  * @method EmpAcc findOneByLastUpdatedBy(int $last_updated_by) Return the first EmpAcc filtered by the last_updated_by column
@@ -106,6 +109,7 @@ use CoreBundle\Model\ListEvents;
  * @method array findByStatus(int $status) Return EmpAcc objects filtered by the status column
  * @method array findByEmail(string $email) Return EmpAcc objects filtered by the email column
  * @method array findByRole(string $role) Return EmpAcc objects filtered by the role column
+ * @method array findByTeamRole(string $team_role) Return EmpAcc objects filtered by the team_role column
  * @method array findByKey(string $key) Return EmpAcc objects filtered by the key column
  * @method array findByCreatedBy(int $created_by) Return EmpAcc objects filtered by the created_by column
  * @method array findByLastUpdatedBy(int $last_updated_by) Return EmpAcc objects filtered by the last_updated_by column
@@ -161,7 +165,7 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpAcc|EmpAcc[]|mixed the result, formatted by the current formatter
@@ -214,9 +218,9 @@ abstract class BaseEmpAccQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `key`, `created_by`, `last_updated_by` FROM `emp_acc` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `username`, `password`, `timestamp`, `ip_add`, `status`, `email`, `role`, `team_role`, `key`, `created_by`, `last_updated_by` FROM `emp_acc` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -573,6 +577,35 @@ abstract class BaseEmpAccQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(EmpAccPeer::ROLE, $role, $comparison);
+    }
+
+    /**
+     * Filter the query on the team_role column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByTeamRole('fooValue');   // WHERE team_role = 'fooValue'
+     * $query->filterByTeamRole('%fooValue%'); // WHERE team_role LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $teamRole The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EmpAccQuery The current query, for fluid interface
+     */
+    public function filterByTeamRole($teamRole = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($teamRole)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $teamRole)) {
+                $teamRole = str_replace('*', '%', $teamRole);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EmpAccPeer::TEAM_ROLE, $teamRole, $comparison);
     }
 
     /**

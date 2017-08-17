@@ -1,3 +1,7 @@
+listener:
+    resource: "@ListenerBundle/Resources/config/routing.yml"
+    prefix:   /listener
+
 login_page:
     resource: "@CoreBundle/Resources/config/routing.yml"
     prefix: /

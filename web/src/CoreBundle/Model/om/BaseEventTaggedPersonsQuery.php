@@ -13,6 +13,7 @@ use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
 use CoreBundle\Model\EmpAcc;
+use CoreBundle\Model\EventTagHistory;
 use CoreBundle\Model\EventTaggedPersons;
 use CoreBundle\Model\EventTaggedPersonsPeer;
 use CoreBundle\Model\EventTaggedPersonsQuery;
@@ -23,11 +24,13 @@ use CoreBundle\Model\ListEvents;
  * @method EventTaggedPersonsQuery orderByEventId($order = Criteria::ASC) Order by the event_id column
  * @method EventTaggedPersonsQuery orderByEmpId($order = Criteria::ASC) Order by the emp_id column
  * @method EventTaggedPersonsQuery orderByStatus($order = Criteria::ASC) Order by the status column
+ * @method EventTaggedPersonsQuery orderByReason($order = Criteria::ASC) Order by the reason column
  *
  * @method EventTaggedPersonsQuery groupById() Group by the id column
  * @method EventTaggedPersonsQuery groupByEventId() Group by the event_id column
  * @method EventTaggedPersonsQuery groupByEmpId() Group by the emp_id column
  * @method EventTaggedPersonsQuery groupByStatus() Group by the status column
+ * @method EventTaggedPersonsQuery groupByReason() Group by the reason column
  *
  * @method EventTaggedPersonsQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method EventTaggedPersonsQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -41,17 +44,23 @@ use CoreBundle\Model\ListEvents;
  * @method EventTaggedPersonsQuery rightJoinListEvents($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ListEvents relation
  * @method EventTaggedPersonsQuery innerJoinListEvents($relationAlias = null) Adds a INNER JOIN clause to the query using the ListEvents relation
  *
+ * @method EventTaggedPersonsQuery leftJoinEventTagHistory($relationAlias = null) Adds a LEFT JOIN clause to the query using the EventTagHistory relation
+ * @method EventTaggedPersonsQuery rightJoinEventTagHistory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EventTagHistory relation
+ * @method EventTaggedPersonsQuery innerJoinEventTagHistory($relationAlias = null) Adds a INNER JOIN clause to the query using the EventTagHistory relation
+ *
  * @method EventTaggedPersons findOne(PropelPDO $con = null) Return the first EventTaggedPersons matching the query
  * @method EventTaggedPersons findOneOrCreate(PropelPDO $con = null) Return the first EventTaggedPersons matching the query, or a new EventTaggedPersons object populated from the query conditions when no match is found
  *
  * @method EventTaggedPersons findOneByEventId(int $event_id) Return the first EventTaggedPersons filtered by the event_id column
  * @method EventTaggedPersons findOneByEmpId(int $emp_id) Return the first EventTaggedPersons filtered by the emp_id column
  * @method EventTaggedPersons findOneByStatus(int $status) Return the first EventTaggedPersons filtered by the status column
+ * @method EventTaggedPersons findOneByReason(string $reason) Return the first EventTaggedPersons filtered by the reason column
  *
  * @method array findById(int $id) Return EventTaggedPersons objects filtered by the id column
  * @method array findByEventId(int $event_id) Return EventTaggedPersons objects filtered by the event_id column
  * @method array findByEmpId(int $emp_id) Return EventTaggedPersons objects filtered by the emp_id column
  * @method array findByStatus(int $status) Return EventTaggedPersons objects filtered by the status column
+ * @method array findByReason(string $reason) Return EventTaggedPersons objects filtered by the reason column
  */
 abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
 {
@@ -104,7 +113,7 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query
+     * @param mixed $key Primary key to use for the query 
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EventTaggedPersons|EventTaggedPersons[]|mixed the result, formatted by the current formatter
@@ -157,9 +166,9 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT `id`, `event_id`, `emp_id`, `status` FROM `event_tagged_persons` WHERE `id` = :p0';
+        $sql = 'SELECT `id`, `event_id`, `emp_id`, `status`, `reason` FROM `event_tagged_persons` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);
+            $stmt = $con->prepare($sql);			
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -419,6 +428,35 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the reason column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByReason('fooValue');   // WHERE reason = 'fooValue'
+     * $query->filterByReason('%fooValue%'); // WHERE reason LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $reason The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return EventTaggedPersonsQuery The current query, for fluid interface
+     */
+    public function filterByReason($reason = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($reason)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $reason)) {
+                $reason = str_replace('*', '%', $reason);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(EventTaggedPersonsPeer::REASON, $reason, $comparison);
+    }
+
+    /**
      * Filter the query by a related EmpAcc object
      *
      * @param   EmpAcc|PropelObjectCollection $empAcc The related object(s) to use as filter
@@ -568,6 +606,80 @@ abstract class BaseEventTaggedPersonsQuery extends ModelCriteria
         return $this
             ->joinListEvents($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ListEvents', '\CoreBundle\Model\ListEventsQuery');
+    }
+
+    /**
+     * Filter the query by a related EventTagHistory object
+     *
+     * @param   EventTagHistory|PropelObjectCollection $eventTagHistory  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EventTaggedPersonsQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByEventTagHistory($eventTagHistory, $comparison = null)
+    {
+        if ($eventTagHistory instanceof EventTagHistory) {
+            return $this
+                ->addUsingAlias(EventTaggedPersonsPeer::ID, $eventTagHistory->getEventTagId(), $comparison);
+        } elseif ($eventTagHistory instanceof PropelObjectCollection) {
+            return $this
+                ->useEventTagHistoryQuery()
+                ->filterByPrimaryKeys($eventTagHistory->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEventTagHistory() only accepts arguments of type EventTagHistory or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EventTagHistory relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EventTaggedPersonsQuery The current query, for fluid interface
+     */
+    public function joinEventTagHistory($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EventTagHistory');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EventTagHistory');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EventTagHistory relation EventTagHistory object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\EventTagHistoryQuery A secondary query class using the current class as primary query
+     */
+    public function useEventTagHistoryQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEventTagHistory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EventTagHistory', '\CoreBundle\Model\EventTagHistoryQuery');
     }
 
     /**
