@@ -134,7 +134,7 @@
     APPDATA = eval('('+'{{ timeData|json_encode|escape('js') }}'+')');
 
     APPDATA.slug = URI_ROUTE_SLUG;
-    APPDATA.ip = '{{ app.request.clientIp }}';
+    APPDATA.ip = '{{ app.request.server.get('HTTP_X_FORWARDED_FOR') }}';
     APPDATA.uri_timein = '{{ path('admin_time_in') }}';
     APPDATA.uri_timeout = '{{ path('admin_time_out') }}';
     console.log(APPDATA);
