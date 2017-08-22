@@ -51,7 +51,7 @@
 </div>
 
 <!-----------------------TIME IN MODAL CONTAINER------------------------->
-<div class="plr-modal custom-modal-1 modal-time-in-container allowed display-none">
+<div class="plr-modal custom-modal-1 modal-time-in-container allowed {% if timeinStatus=='not-timein-allow-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">
     <div class="time-in center-align">
         <div class="valign-wrapper">
 
@@ -61,8 +61,9 @@
                     <div class="widget-subtitle plugin-date">Loading...</div>
                 </div>
                 <h3 class="-modal-title -modal-greetings-text">Good Afternoon!</h3>
+                <img class="-modal-loader-img" src="{{ asset('prols2/img/ajax-loader.gif') }}" style="width: 20px; height: 20px;">
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit"
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit display-none"
                        id="time-in-button" data-action="timein" data-id="{{ app.user.id }}">
                         <i class="material-icons left icon-timein">query_builder</i>Time in
                     </a>
@@ -73,7 +74,7 @@
 </div>
 
 <!-- if not same ip -->
-<div class="plr-modal custom-modal-1 modal-time-in-container deny display-none">
+<div class="plr-modal custom-modal-1 modal-time-in-container deny {% if timeinStatus=='not-timein-deny-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">
     <div class="diff-ip center-align">
         <div class="valign-wrapper">
 
@@ -85,9 +86,9 @@
                 <!-- <p class="diff-ip-notice">Request Access?</p>
                 <p class="diff-ip-sent">Request Sent!</p>
                 <p class="diff-ip-reason">Enter reason:</p> -->
-
+                <br><img class="-modal-loader-img" src="{{ asset('prols2/img/ajax-loader.gif') }}" style="width: 20px; height: 20px;">
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit"
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timein-submit display-none"
                        id="time-in-button" data-action = "timein" data-id="{{ app.user.id }}">
                         <i class="material-icons left icon-timein">query_builder</i>Time in</a>
                     {#<a class="waves-effect waves-light green btn-flat btn-large btn-ip-ok">OK</a>#}
@@ -110,9 +111,9 @@
                 <h3 class="-modal-title">Are you sure you want to time-out?</h3><br>
                 <div class="-timeout-error-message display-none" style="color: #f44336;"><strong>Wrong Password</strong></div>
                 <input class="text-center font20 -txt-timeout-password" type="password" placeholder="Enter password...">
-
+                <img class="-modal-loader-img" src="{{ asset('prols2/img/ajax-loader.gif') }}" style="width: 20px; height: 20px;">
                 <div class="btn-block">
-                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timeout-confirm">Yes</a> &nbsp;
+                    <a class="waves-effect waves-light green btn-flat btn-large button-action -btn-timeout-confirm display-none">Yes</a> &nbsp;
                     <a class="waves-effect waves-light red btn-flat btn-large button-action -btn-timeout-cancel ">Cancel</a>
                 </div>
             </div>
@@ -164,7 +165,7 @@
 </div>
 
 <!-----------------------AUTO TIME OUT MODAL CONTAINER------------------------->
-<div class="plr-modal modal-container modal-auto-timeout-notice display-none">
+<div class="plr-modal modal-container modal-auto-timeout-notice {% if autoTimeout==0 %}display-none{% endif %}">
     <div class="center-align" style="position: relative; top: 0%;">
         <div class="valign-wrapper">
             <div class="prompt auto-timeout-prompt" style="display:block; width:100%; float:none; clear:both;">
@@ -172,8 +173,9 @@
                 <p class="confirm-timein" style="font-size: 24px">Timed out at <span class="-txt-autotimeout-message-out">{{ app.session.get('autoTimeOutDate')|date('M d, Y') }} 12:00 AM</span></p>
                 <p class="confirm-timein" style="font-size: 24px">Last Timed in at <span class="-txt-autotimeout-message-in"></span></p>
                 <br><br>
+                <img class="-modal-loader-img" src="{{ asset('prols2/img/ajax-loader.gif') }}" style="width: 20px; height: 20px;">
                 <div class="btn-block">
-                    <a class="waves-effect waves-light red btn-flat btn-large button-action -btn-auto-timeout-timein">
+                    <a class="waves-effect waves-light red btn-flat btn-large button-action -btn-auto-timeout-timein display-none">
                         <i class="material-icons left">query_builder</i>Time In</a>
                 </div>
             </div>

@@ -11,6 +11,7 @@ namespace AdminBundle\Controller;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class  InitController extends Controller
@@ -43,6 +44,22 @@ class  InitController extends Controller
             $ip = $class->container->get('request')->getClientIp();
         else
             $ip = $class->getRequest()->server->get('HTTP_X_FORWARDED_FOR');
+
+        return $ip;
+    }
+
+    /**
+     * Get user IP
+     *
+     * @param $class
+     * @return string
+     */
+    static public function getCurrentIP(Request $request)
+    {
+        if(self::getAppEnv() == 'local')
+            $ip = $request->getClientIp();
+        else
+            $ip = $request->server->get('HTTP_X_FORWARDED_FOR');
 
         return $ip;
     }

@@ -4,7 +4,39 @@
 {% set userbdaynames = userbdaynames|default([]) %}
 
 {% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
-{% set timeData = Twig_GetTimeData(app.user.id) %}
+{% set timeData = Twig_GetTimeData(app.user.id, app.request) %}
+
+{% set timeinStatus, autoTimeout = 'timed-in', 0 %}
+{% if timeData.lastTimein is not null and timeData.lastTimein.Status!=-1 %}
+    {% if timeData.lastTimein.Date|date('Y-m-d')!='now'|date('Y-m-d') and timeData.lastTimein.TimeOut is not null %}
+        {% if timeData.lastTimein.TimeOut|date('h:i:s a')!='12:00:00 am' %}
+            {% if timeData.ip in timeData.ips %}
+                {% set timeinStatus = 'not-timein-allow-ip' %}
+            {% else %}
+                {% set timeinStatus = 'not-timein-deny-ip' %}
+            {% endif %}
+        {% else %}
+            {% set autoTimeout = 1 %}
+            {% if timeData.ip in timeData.ips %}
+                {% set timeinStatus = 'not-timein-allow-ip' %}
+            {% else %}
+                {% set timeinStatus = 'not-timein-deny-ip' %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% if timeData.lastTimein.TimeOut is null %}
+            {% set timeinStatus = 'timed-in' %}
+        {% else %}
+            {% set timeinStatus = 'timed-out' %}
+        {% endif %}
+    {% endif %}
+{% else %}
+    {% if timeData.ip in timeData.ips %}
+        {% set timeinStatus = 'not-timein-allow-ip' %}
+    {% else %}
+        {% set timeinStatus = 'not-timein-deny-ip' %}
+    {% endif %}
+{% endif %}
 
 <!DOCTYPE HTML>
 <html class="no-js" lang="">
@@ -74,7 +106,7 @@
                         <a class="waves-effect waves-light btn-flat red btn-large -btn-widget-timeout {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}"><i class="material-icons left">query_builder</i>Time Out</a>
                         <br>
                         <div class="chip -btn-widget-timechip {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}">
-                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeIn is not null ? timeData.lastTimein.TimeIn|date('h:m a','Asia/Manila') : ''  }}
+                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeIn is not null ? Twig_GetTimeinTime(timeData.lastTimein.TimeIn) : ''  }}
                         </div>
                     </div>
                     <div class="clr"></div>
@@ -134,7 +166,7 @@
     APPDATA = eval('('+'{{ timeData|json_encode|escape('js') }}'+')');
 
     APPDATA.slug = URI_ROUTE_SLUG;
-    APPDATA.ip = '{{ app.request.server.get('HTTP_X_FORWARDED_FOR') }}';
+    APPDATA.ip = '{{ timeData.ip }}';
     APPDATA.uri_timein = '{{ path('admin_time_in') }}';
     APPDATA.uri_timeout = '{{ path('admin_time_out') }}';
     console.log(APPDATA);
