@@ -2,6 +2,7 @@
 
 namespace CoreBundle\Twig;
 
+use AdminBundle\Controller\InitController;
 use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpProfileQuery;
 use CoreBundle\Model\EmpRequestQuery;
@@ -13,6 +14,8 @@ class Helper extends \Twig_Extension
 {
     public function getFunctions()
     {
+        date_default_timezone_set('Asia/Manila');
+
         return array(
             new \Twig_SimpleFunction('Twig_GetUserInfo', array($this, 'getUserInfo')),
             new \Twig_SimpleFunction('Twig_GetTimeData', array($this, 'getTimeData')),
@@ -34,15 +37,16 @@ class Helper extends \Twig_Extension
 
     /**
      * @param int $userID
-     * @param array $info options: bday / last_timein
+     * @param array $info options: bday / last_timein / ip
      * @return array
      */
-    public function getTimeData($userID = 0, $info = array('bday', 'last_timein', 'ip'))
+    public function getTimeData($userID = 0, $request, $info = array('bday', 'last_timein', 'ip') )
     {
         $data = array(
             'birthdays' => array(),
             'lastTimein' => array(),
-            'ips' => array()
+            'ips' => array(),
+            'ip' => InitController::getCurrentIP($request)
         );
 
         $activeEmployees = EmpProfileQuery::_findAll(array(
