@@ -11,6 +11,7 @@ namespace AdminBundle\Controller;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListIpPeer;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class  InitController extends Controller
@@ -53,7 +54,7 @@ class  InitController extends Controller
      * @param $class
      * @return string
      */
-    static public function getCurrentIP($request)
+    static public function getCurrentIP(Request $request)
     {
         if(self::getAppEnv() == 'local')
             $ip = $request->getClientIp();
