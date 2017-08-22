@@ -100,7 +100,7 @@
                         <h4 style="font-size: 20px;">{{ Twig_GetUserInfo(app.user.id, 'name') }}</h4>
                     </div>
                     <div class="rightpanel">
-                        <div class="clock"> <div class="widget-big-int plugin-clock">Loading...</div>
+                        <div class="clock"> <div class="widget-big-int plugin-clock">{{ timeData.time }}</div>
                             <div class="widget-subtitle plugin-date">{{ 'now'|date('l, F d, Y','Asia/Manila') }}</div>
                         </div>
                         <a class="waves-effect waves-light btn-flat red btn-large -btn-widget-timeout {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}"><i class="material-icons left">query_builder</i>Time Out</a>
