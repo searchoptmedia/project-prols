@@ -106,7 +106,7 @@
                         <a class="waves-effect waves-light btn-flat red btn-large -btn-widget-timeout {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}"><i class="material-icons left">query_builder</i>Time Out</a>
                         <br>
                         <div class="chip -btn-widget-timechip {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}">
-                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeIn is not null ? timeData.lastTimein.TimeIn|date('h:m a') : ''  }}
+                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeIn is not null ? Twig_GetTimeinTime(timeData.lastTimein.TimeIn) : ''  }}
                         </div>
                     </div>
                     <div class="clr"></div>
@@ -166,7 +166,7 @@
     APPDATA = eval('('+'{{ timeData|json_encode|escape('js') }}'+')');
 
     APPDATA.slug = URI_ROUTE_SLUG;
-    APPDATA.ip = '{{ app.request.server.get('HTTP_X_FORWARDED_FOR') }}';
+    APPDATA.ip = '{{ timeData.ip }}';
     APPDATA.uri_timein = '{{ path('admin_time_in') }}';
     APPDATA.uri_timeout = '{{ path('admin_time_out') }}';
     console.log(APPDATA);

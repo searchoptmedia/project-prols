@@ -9,6 +9,7 @@ DATE_FORMAT_FORMAL = 'MMM DD, YYYY';
 var btnWidgetTimeout = $('.-btn-widget-timeout');
 var btnWidgetChip = $('.-btn-widget-timechip');
 var noExistButton = $('.-button-not-exist');
+var plrModal = $('.plr-modal');
 
 MAIN_APP = function() {
     var _d = { slug: '' };
@@ -35,6 +36,9 @@ MAIN_APP = function() {
             console.log('Today is '+ moment().format(DATE_FORMAT_FULL));
             _nowDate = moment().format(DATE_FORMAT);
             _nowDateFull = moment().format(DATE_FORMAT_FULL);
+
+            plrModal.find('.-modal-loader-img').addClass('display-none');
+            plrModal.find('.button-action').removeClass('display-none');
 
             this
                 .setActiveSidebar()
