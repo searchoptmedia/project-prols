@@ -48,6 +48,22 @@ class  InitController extends Controller
     }
 
     /**
+     * Get user IP
+     *
+     * @param $class
+     * @return string
+     */
+    static public function getCurrentIP($request)
+    {
+        if(self::getAppEnv() == 'local')
+            $ip = $request->getClientIp();
+        else
+            $ip = $request->server->get('HTTP_X_FORWARDED_FOR');
+
+        return $ip;
+    }
+
+    /**
      * Check if Out of IP
      *
      * @param string
