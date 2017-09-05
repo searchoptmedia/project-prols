@@ -649,10 +649,10 @@ class EventManagerController extends Controller
             $eventToDate =  $event->getToDate();
 
             if(!is_null($eventFromDate)) {
-                $eventFromDate = $eventFromDate->format('Y-m-d h:i:s');
+                $eventFromDate = $eventFromDate->format('Y-m-d H:i:s');
 
                 if(!is_null($eventToDate)) {
-                    $eventToDate = $eventToDate->format('Y-m-d h:i:s');
+                    $eventToDate = $eventToDate->format('Y-m-d H:i:s');
                 } else {
                     $eventToDate = $eventFromDate;
                 }
