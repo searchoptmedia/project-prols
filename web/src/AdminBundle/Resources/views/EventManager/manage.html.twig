@@ -470,7 +470,9 @@
                                     class="browser-default event-type cmb-select-event-type">
                                 <option value="" disabled selected>Select Event Type</option>
                                 {% for eventtype in eventTypes %}
-                                    {% if app.user.role==constant(CONST~'ROLE_ADMIN') or (constant(CONST~'EVENT_TYPE_MEETING')==eventtype.id and app.user.role!=constant(CONST~'ROLE_ADMIN')) %}
+                                    {% set isGranted = false %}
+                                    {% for c in app.user.getEmpCapabilitiessJoinCapabilitiesList %}{% if c.capid==4 %}{% set isGranted = true %}{% endif %}{% endfor %}
+                                    {% if isGranted or app.user.role==constant(CONST~'ROLE_ADMIN') or (constant(CONST~'EVENT_TYPE_MEETING')==eventtype.id and app.user.role!=constant(CONST~'ROLE_ADMIN')) %}
                                         <option value="{{ eventtype.id }}">{{ eventtype.name }}</option>
                                     {% endif %}
                                 {% endfor %}
@@ -572,7 +574,7 @@
                                 </div>
                             </div>
                             </p>
-                            <p class="notify-sms-event">
+                            <p class="notify-sms-event" style="display: none;">
                                 <input type="checkbox" id="notify-sms" value="1"/>
                                 <label for="notify-sms" class="black-text">
                                     Notify the employees via SMS?
