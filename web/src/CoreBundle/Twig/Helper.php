@@ -48,7 +48,8 @@ class Helper extends \Twig_Extension
             'lastTimein' => array(),
             'ips' => array(),
             'ip' => InitController::getCurrentIP($request),
-            'time' => date('h:i A')
+            'time' => date('h:i A'),
+            'greetings' => intval(date('H')) > 11 ? 'Good Afternoon!' : 'Good Morning!'
         );
 
         $activeEmployees = EmpProfileQuery::_findAll(array(
