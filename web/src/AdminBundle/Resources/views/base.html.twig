@@ -7,7 +7,7 @@
 {% set timeData = Twig_GetTimeData(app.user.id, app.request) %}
 
 {% set timeinStatus, autoTimeout = 'timed-in', 0 %}
-{% if timeData.lastTimein is not null and timeData.lastTimein.Status!=-1 %}
+{% if timeData.lastTimein is not null and timeData.lastTimein.Status is defined and timeData.lastTimein.Status!=-1 %}
     {% if timeData.lastTimein.Date|date('Y-m-d')!='now'|date('Y-m-d') and timeData.lastTimein.TimeOut is not null %}
         {% if timeData.lastTimein.TimeOut|date('h:i:s a')!='12:00:00 am' %}
             {% if timeData.ip in timeData.ips %}
@@ -103,10 +103,10 @@
                         <div class="clock"> <div class="widget-big-int plugin-clock">{{ timeData.time }}</div>
                             <div class="widget-subtitle plugin-date">{{ 'now'|date('l, F d, Y','Asia/Manila') }}</div>
                         </div>
-                        <a class="waves-effect waves-light btn-flat red btn-large -btn-widget-timeout {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}"><i class="material-icons left">query_builder</i>Time Out</a>
+                        <a class="waves-effect waves-light btn-flat red btn-large -btn-widget-timeout {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}"><i class="material-icons left">query_builder</i>Time Out</a>
                         <br>
-                        <div class="chip -btn-widget-timechip {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}">
-                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeIn is not null ? Twig_GetTimeinTime(timeData.lastTimein.TimeIn) : ''  }}
+                        <div class="chip -btn-widget-timechip {% if timeData.lastTimein is defined and timeData.lastTimein.TimeOut is defined and timeData.lastTimein.TimeOut is not null %}display-none{% endif %}">
+                            Timed-in at {{ timeData.lastTimein is defined and timeData.lastTimein.TimeOut is defined and timeData.lastTimein.TimeIn is not null ? Twig_GetTimeinTime(timeData.lastTimein.TimeIn) : ''  }}
                         </div>
                     </div>
                     <div class="clr"></div>
