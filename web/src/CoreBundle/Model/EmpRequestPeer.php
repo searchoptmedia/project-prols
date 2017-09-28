@@ -57,8 +57,13 @@ class EmpRequestPeer extends BaseEmpRequestPeer
 
         $c->add(self::STATUS, $status);
         $c->add(self::EMP_ACC_ID, $empId);
-        $c->add(self::DATE_STARTED, $time, Criteria::GREATER_EQUAL);
-        $c->add(self::DATE_ENDED, $time, Criteria::LESS_EQUAL);
+
+        $c->add(self::DATE_STARTED, $time, Criteria::LESS_EQUAL);
+        $c->add(self::DATE_ENDED, $time, Criteria::GREATER_EQUAL);
+
+//        $c1->addAnd($c2);
+//
+//        $c->add($c2);
 
         $data = self::doSelectOne($c);
 
