@@ -48,4 +48,18 @@ class ListEventsPeer extends BaseListEventsPeer
 
         return $_self ? $_self : array();
     }
+
+    public static function getOneByDate($date, Criteria $c = null)
+    {
+        if(is_null($c)){
+            $c = new Criteria();
+        }
+
+        $c->add(self::FROM_DATE, $date, Criteria::LESS_EQUAL);
+        $c->add(self::TO_DATE, $date, Criteria::GREATER_EQUAL);
+
+        $_self = self::doSelectOne($c);
+
+        return $_self ? $_self : array();
+    }
 }
