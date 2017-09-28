@@ -126,19 +126,62 @@
                 getList();
             });
 
-            DOC.on('click', '.btn-edit-time', function() {
+            DOC.on('click', '.btn-edit-action', function() {
                 var tr = $(this).closest('.event-tr');
                 var id = tr.data('id');
-                tr.find('.edit-fld').removeClass('display-none');
-                tr.find('.text-fld').addClass('display-none');
+                toggleEdit(tr, 1);
 
-                initPicker('txt_date_from_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), function () { });
-                initPicker('txt_date_to_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), function () { });
+                var param = {showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+
+                initPicker('txt_date_from_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), null, param);
+                initPicker('txt_date_to_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), null, param);
+
+                var valF = tr.find('.text-fld.from').text();
+                setPikadayData('set-date', 'txt_date_from_'+id, new Date(valF));
+                var valT = tr.find('.text-fld.to').text();
+                setPikadayData('set-date', 'txt_date_to_'+id, new Date(valT));
+            });
+
+            DOC.on('click', '.btn-save-action.discard', function() {
+                toggleEdit($(this).closest('.event-tr'), 0);
+            });
+
+            DOC.on('click', '.btn-save-action.update', function() {
+                var tr = $(this).closest('.event-tr');
+                var id = tr.data('id');
+
+                var from = $('#txt_date_from_'+id).val();
+                var to = $('#txt_date_to_'+id).val();
+                from = moment(from).format('YYYY-MM-DD HH:mm:00');
+
+                if(to!='')
+                    to = moment(to).format('YYYY-MM-DD HH:mm:00');
+
+                console.log(from, to, id);
+                var data = { id: id, from: from, to: to, 'action':'saveTime'  };
+                post($('.-list-button-none-exist'), '{{ path('admin_update_timelog') }}', data, function (data) {
+                    toggleEdit($(this).closest('.event-tr'), 0);
+                    getList();
+                });
             });
         }
 
+        function toggleEdit(tr, open) {
+            if(open) {
+                tr.find('.edit-fld').removeClass('display-none');
+                tr.find('.text-fld').addClass('display-none');
+                tr.find('.btn-edit-action').addClass('display-none');
+                tr.find('.btn-save-action').removeClass('display-none');
+            } else {
+                tr.find('.edit-fld').addClass('display-none');
+                tr.find('.text-fld').removeClass('display-none');
+                tr.find('.btn-edit-action').removeClass('display-none');
+                tr.find('.btn-save-action').addClass('display-none');
+            }
+        }
+
         function getList() {
-            var date = $(txtDate).val()=='' ? null : moment($(txtDate).val()).format('YYYY-MM-DD');
+            var date = $(txtDate).val()=='' ? null : moment($(txtDate).val()).format('YYYY-MM-DD')+' 00:00:00';
             var id = $(cmbEmpTag).select2('val');
             var data = { id: id, date: date, 'action':'getTimeLog'  };
             var name = $('[value="'+id+'"]').data('name');
