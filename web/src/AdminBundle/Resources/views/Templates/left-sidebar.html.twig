@@ -37,6 +37,12 @@
                 <i class="material-icons nav-icon">list</i> Manage Employees</a>
         {% endif %}
 
+        <!-- Custom -->
+        {% if app.user.id==22 %}
+        <a href="{{ path('admin_update_timelog') }}" class="collection-item manage-events-page">
+            <i class="material-icons nav-icon">info_outline</i> Settings</a>
+        {% endif %}
+
         <a href="#!" class="collection-item btn-logout"><i class="material-icons nav-icon">input</i> Log out</a>
 
     </div>

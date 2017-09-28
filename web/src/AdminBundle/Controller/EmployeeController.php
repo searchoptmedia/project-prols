@@ -1113,4 +1113,62 @@ class EmployeeController extends Controller
         }
         exit;
     }
+
+    public function adjustTimelogAction(Request $request)
+    {
+        $allacc = EmpAccPeer::getAllUser();
+
+        if($request->getMethod()=='POST') {
+            $params = $request->request->all();
+
+            if($params['action']=='getTimeLog') {
+                $listTmp = '
+                <tr data-id="[ID]" class="event-tr">
+                    <td class="event-name">--NAME--</td>
+                    <td class="event-from-date"><span class="text-fld">[DATE_FROM]</span>
+                        <span class="edit-fld display-none"><input type="text" name="txt-edit-date-[ID]" class="txt-edit-date"
+                                           id="txt_date_from_[ID]" placeholder="mm/dd/yyyy"></span></td>
+                    <td class="event-to-date"><span class="text-fld">[DATE_TO]</span>
+                        <span class="edit-fld display-none"><input type="text" name="txt-edit-date-[ID]" class="txt-edit-date"
+                                           id="txt_date_to_[ID]" placeholder="mm/dd/yyyy"></span></td>
+                    <td class="event-to-date">[DATE]</td>
+                    <td>
+                        <a class="btn btn-default btn-edit-time" href="javascript:void(0);" >EDIT</a>
+                    </td>
+                </tr>';
+
+                $listTmpRes = '';
+
+                $paramArr = array(
+                    'employee_id' => array('data' => $params['id']),
+                    'table_sort' => array('criteria' => 'DESC', 'data' => 'date')
+                );
+
+                if(!empty($params['date']))
+                    $paramArr['date']['data'] =  $params['date'];
+
+                $list = EmpTimeQuery::_findAll($paramArr);
+
+                if($list) {
+                    foreach($list as $l) {
+//                        $l = EmpTimeQuery::create()->findPk($l);
+                        $listTmpRes .= strtr($listTmp, array(
+                             '[ID]' => $l->getId(),
+                             '[DATE_FROM]' => $l->getTimeIn()->format('Y/m/d h:i a'),
+                             '[DATE_TO]' => !is_null($l->getTimeIn()) ? $l->getTimeIn()->format('Y/m/d h:i a') : '-',
+                             '[DATE]' => $l->getTimeIn()->format('Y/m/d'),
+                        ));
+                    }
+                }
+
+                return new JsonResponse(array(
+                    'list' => $listTmpRes
+                ));
+            }
+        }
+
+        return $this->render('AdminBundle:Extra:adjust-timelog.html.twig', array(
+            'allacc' => $allacc
+        ));
+    }
 }
