@@ -16,6 +16,10 @@ class EmpTimeQuery extends BaseEmpTimeQuery
             $data->filterByEmpAccAccId($params['employee_id']['data'], isset($params['status']['criteria']) ? $params['status']['criteria'] : \Criteria::EQUAL);
         }
 
+        if(isset($params['date']['data'])) {
+            $data->filterByDate($params['date']['data'], isset($params['date']['criteria']) ? $params['date']['criteria'] : \Criteria::EQUAL);
+        }
+
         if(isset($params['table_sort']['data'])) {
             if($params['table_sort']['criteria']=='DESC') $data->addDescendingOrderByColumn($params['table_sort']['data']);
             else $data->addAscendingOrderByColumn($params['table_sort']['data']);

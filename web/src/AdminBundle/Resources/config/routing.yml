@@ -196,3 +196,8 @@ delete_event:
 send_email:
     path: /sendemail/
     defaults: {_controller: AdminBundle:Admin:sendEmail }
+
+#others
+admin_update_timelog:
+    path: /settings/timelog/update
+    defaults: {_controller: AdminBundle:Employee:adjustTimelog }

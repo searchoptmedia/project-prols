@@ -13,7 +13,9 @@ use CoreBundle\Model\EmpProfilePeer;
 use CoreBundle\Model\EmpRequestPeer;
 use CoreBundle\Model\EmpTimePeer;
 use CoreBundle\Model\ListDeptPeer;
+use CoreBundle\Model\ListEventsPeer;
 use CoreBundle\Model\ListPosPeer;
+use CoreBundle\Utilities\Constant;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 //use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -164,12 +166,12 @@ class EmployeeReportController extends Controller
             }
             fputcsv($handle, array(' '));
             fputcsv($handle, array(' '));
-            fputcsv($handle, array('*********** Note: Please take note that declined out of the office works were not included on the list above.'));
+            fputcsv($handle, array('*********** Note: Please take note that declined out of the office logs were not included on the list above.'));
             exit;
 
             fclose($handle);
         });
-        $filedate           = date('m/d/Y');
+        $filedate = date('m/d/Y');
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$filedate.'-employee_time_export.csv"');
@@ -200,8 +202,13 @@ class EmployeeReportController extends Controller
                 $employees = EmpAccPeer::getAccList($empid);
             }
 
+            $empProfile = array();
             foreach($employees as $e) {
-                $empRecord = EmpProfilePeer::getInformation($e->getId());
+                $empProfile[$e->getId()] = EmpProfilePeer::getInformation($e->getId());
+            }
+
+            foreach($employees as $e) {
+                $empRecord = $empProfile[$e->getId()];
                 $startdate = $startDateCopy = strtotime($startdateinput);
                 $enddate = strtotime($enddateinput);
 
@@ -213,27 +220,36 @@ class EmployeeReportController extends Controller
                     $timeData = EmpTimePeer::getOneByDate($date, $e->getId());
                     $request = EmpRequestPeer::getEmpByTime($date, $e->getId());
 
-                    if ($day != 'Sun' && $day != 'Sat') {
+                    //step 1: check if holiday
+                    $holiday = ListEventsPeer::getOneByDate($date);
 
-                        if ($request && in_array($request->getListRequestType()->getId(), array(1, 2))) {
-                            $init       = new InitController();
-                            $leaveType  = $request->getListRequestType()->getRequestType();
+                    if($holiday) {
+                        fputcsv($handle, array('EMP-' . $empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, 'Holiday'));
+                    } else {
 
-                            if($timeData) {
-                                $timeOut    = $timeData->getTimeOut();
-                                $timeIn     = $timeData->getTimeIn()->format('Y-m-d H:i:s');
+                        //step 2: check if weekend, do not include
+                        if ($day != 'Sun' && $day != 'Sat') {
 
-                                if(!is_null($timeOut) && !empty($timeOut) && $timeOut) {
-                                    $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
-                                    if ($totalHours > 3) {
-                                        $leaveType = $timeData->getTimeIn()->format('m-d-Y') . ' Half-day with ' . $leaveType;
+                            if ($request && in_array($request->getListRequestTypeId(), array(Constant::REQUEST_VLEAVE, Constant::REQUEST_SLEAVE))) {
+                                $init = new InitController();
+                                $leaveType = $request->getListRequestType()->getRequestType();
+
+                                if ($timeData) {
+                                    $timeOut = $timeData->getTimeOut();
+                                    $timeIn = $timeData->getTimeIn()->format('Y-m-d H:i:s');
+
+                                    if (!is_null($timeOut) && !empty($timeOut) && $timeOut) {
+                                        $totalHours = $init->computeHours($timeIn, $timeOut->format('Y-m-d H:i:s'), $timeData->getDate()->format('D'), 'total_hours');
+                                        if ($totalHours > 3) {
+                                            $leaveType = $timeData->getTimeIn()->format('m-d-Y') . ' Half-day with ' . $leaveType;
+                                        }
                                     }
                                 }
-                            }
 
-                            fputcsv($handle, array('EMP-'.$empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, $leaveType));
-                        } else if (!$timeData) {
-                            fputcsv($handle, array('EMP-'.$empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, 'Absent'));
+                                fputcsv($handle, array('EMP-' . $empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, $leaveType));
+                            } else if (!$timeData) {
+                                fputcsv($handle, array('EMP-' . $empRecord->getEmployeeNumber(), $empRecord->getFname() . ' ' . $empRecord->getLname(), $day, $showDate, 'Absent'));
+                            }
                         }
                     }
 
@@ -246,7 +262,7 @@ class EmployeeReportController extends Controller
             fputcsv($handle, array(' '));/*date('m/d/Y', $startDateCopy)  date('m/d/Y', $enddate)*/
             fputcsv($handle, array('The login system was launched on August 02, 2016.'));
             fputcsv($handle, array('Date From: ' .  $startdateinput. ' | To: ' . $enddateinput));
-            fputcsv($handle, array('*********** Holidays and special events do not reflect since this feature is under development. Temporarily, if holidays and special events fall on a weekday employees will be tagged as absent.'));
+            fputcsv($handle, array('*********** Weekends are not included on the list.'));
             exit;
 
             fclose($handle);

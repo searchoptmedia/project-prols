@@ -1,14 +1,14 @@
 {% set CONST = 'CoreBundle\\Utilities\\Constant::' %}
 <script>
-    const STATUS_PENDING = {{ constant(CONST~'STATUS_PENDING') }};
-    const STATUS_ACTIVE = {{ constant(CONST~'STATUS_ACTIVE') }};
-    const STATUS_INACTIVE = {{ constant(CONST~'STATUS_INACTIVE') }};
-    const STATUS_APPROVED = {{ constant(CONST~'STATUS_APPROVED') }};
-    const STATUS_DECLINED = {{ constant(CONST~'STATUS_DECLINED') }};
+    const STATUS_PENDING = parseInt('{{ constant(CONST~'STATUS_PENDING') }}');
+    const STATUS_ACTIVE = parseInt('{{ constant(CONST~'STATUS_ACTIVE') }}');
+    const STATUS_INACTIVE = parseInt('{{ constant(CONST~'STATUS_INACTIVE') }}');
+    const STATUS_APPROVED = parseInt('{{ constant(CONST~'STATUS_APPROVED') }}');
+    const STATUS_DECLINED = parseInt('{{ constant(CONST~'STATUS_DECLINED') }}');
 
-    const EVENT_TYPE_INTERNAL = {{ constant(CONST~'EVENT_TYPE_INTERNAL') }};
-    const EVENT_TYPE_HOLIDAY  = {{ constant(CONST~'EVENT_TYPE_HOLIDAY') }};
-    const EVENT_TYPE_MEETING  = {{ constant(CONST~'EVENT_TYPE_MEETING') }};
+    const EVENT_TYPE_INTERNAL = parseInt('{{ constant(CONST~'EVENT_TYPE_INTERNAL') }}');
+    const EVENT_TYPE_HOLIDAY  = parseInt('{{ constant(CONST~'EVENT_TYPE_HOLIDAY') }}');
+    const EVENT_TYPE_MEETING  = parseInt('{{ constant(CONST~'EVENT_TYPE_MEETING') }}');
 
     /**
      * DASHBOARD
