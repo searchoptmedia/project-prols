@@ -1113,4 +1113,93 @@ class EmployeeController extends Controller
         }
         exit;
     }
+
+    public function adjustTimelogAction(Request $request)
+    {
+        $allacc = EmpAccPeer::getAllUser();
+
+        if($request->getMethod()=='POST') {
+            $params = $request->request->all();
+
+            if($params['action']=='getTimeLog') {
+                $listTmp = '
+                <tr data-id="[ID]" class="event-tr">
+                    <td class="event-name">--NAME--</td>
+                    <td class="event-from-date"><span class="text-fld from">[DATE_FROM]</span>
+                        <span class="edit-fld display-none"><input type="text" name="txt-edit-date-[ID]" class="txt-edit-date"
+                                           id="txt_date_from_[ID]" placeholder="yyyy-mm-dd h:i a"></span></td>
+                    <td class="event-to-date"><span class="text-fld to">[DATE_TO]</span>
+                        <span class="edit-fld display-none"><input type="text" name="txt-edit-date-[ID]" class="txt-edit-date"
+                                           id="txt_date_to_[ID]" placeholder="yyyy-mm-dd h:i a"></span></td>
+                    <td class="event-to-date">[DATE]</td>
+                    <td>
+                        <a class="btn btn-default btn-edit-time btn-edit-action" href="javascript:void(0);" >EDIT</a>
+                        <a class="btn btn-default btn-edit-time btn-save-action update display-none" href="javascript:void(0);" >SAVE</a>
+                        <br><a class="btn red btn-edit-time btn-save-action discard display-none" href="javascript:void(0);" >CANCEL</a>
+                    </td>
+                </tr>';
+
+                $listTmpRes = '';
+
+                $paramArr = array(
+                    'employee_id' => array('data' => $params['id']),
+                    'status' => array('data' => 0),
+                    'table_sort' => array('criteria' => 'DESC', 'data' => 'date'),
+                    'limit' => 35
+                );
+
+                if(!empty($params['date']))
+                    $paramArr['date']['data'] =  $params['date'];
+
+                $list = EmpTimeQuery::_findAll($paramArr);
+
+                if($list) {
+                    foreach($list as $l) {
+//                        $l = EmpTimeQuery::create()->findPk($l);
+                        $listTmpRes .= strtr($listTmp, array(
+                             '[ID]' => $l->getId(),
+                             '[DATE_FROM]' => $l->getTimeIn()->format('Y/m/d h:i a'),
+                             '[DATE_TO]' => !is_null($l->getTimeOut()) ? $l->getTimeOut()->format('Y/m/d h:i a') : '-',
+                             '[DATE]' => $l->getTimeIn()->format('Y/m/d'),
+                        ));
+                    }
+                }
+
+                return new JsonResponse(array(
+                    'list' => $listTmpRes
+                ));
+            } else if($params['action']=='saveTime') {
+                $timeinRec = EmpTimeQuery::_findOneById($params['id']);
+
+                $timeinRec->setTimeIn($params['from']);
+
+                if(!empty($params['to'])) {
+                    $timeinRec->setTimeOut($params['to']);
+
+                    $manhours = date_diff(new \DateTime($params['to']), new \DateTime($params['from']));
+                    $h = $manhours->format('%h');
+                    $i = intval($manhours->format('%i'));
+                    $i = $i > 0 ? ($i / 60) : 0;
+                    $totalHoursDec = number_format($h + $i, 2);
+
+                    $overtime = 0;
+                    if ($totalHoursDec > 9) {
+                        $overtime = $totalHoursDec - 9;
+                    }
+
+                    $timeinRec->setOvertime($overtime);
+                    $timeinRec->setManhours($totalHoursDec);
+
+                }
+
+                $timeinRec->save();
+
+                return new JsonResponse(array('result' => 'success'));
+            }
+        }
+
+        return $this->render('AdminBundle:Extra:adjust-timelog.html.twig', array(
+            'allacc' => $allacc
+        ));
+    }
 }
