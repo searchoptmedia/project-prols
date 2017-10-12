@@ -1,0 +1,194 @@
+{% extends 'AdminBundle::base.html.twig' %}
+{% block title %}Adjust Employee Time{% endblock %}
+
+{% block css %}
+<style>
+    .select2-container .select2-selection--single,
+    .select2-container--default .select2-selection--single .select2-selection__arrow { height: 47px;  }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {  line-height: 47px; }
+    .select2-search--dropdown .select2-search__field { margin-bottom: 0; }
+    .select2-search--dropdown { padding: 9px; }
+
+</style>
+{% endblock %}
+{% block body %}
+    <section id="main-container">
+        <section id="main-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="page-content">
+                        <div class="col-md-12 light-blue darken-1 heading z-depth-1">
+                            <div class="responsive-nav"><a class="btn-flat"><i class="material-icons res-menu">reorder</i></a></div>
+                            <div class="top-nav">
+                                <h3>Update Time</h3>
+                                <a class="btn amber btn-open-create-modal  btn-select1" style="margin-right: 5px;">Update Time</a>
+                            </div>
+                        </div>
+
+                        <div class="top-nav">
+                            {#<!-- Dropdown Structure -->#}
+                            {#<ul id='dropdown2' class='dropdown-content dd1' style = "z-index: 9999;">#}
+                            {#<li><a href="#!" id="allbtn">All</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#&#123;&#35;<li><a href="#!" id="holidaybtn">Holiday</a></li>&#35;&#125;#}
+                            {#&#123;&#35;<li class="divider"></li>&#35;&#125;#}
+                            {#<li><a href="#!" id="meetingbtn">Meeting</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#<li><a href="#!" id="companyeventbtn">Company Event</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#<li><a href="#!" id="othersbtn">Other Events</a></li>#}
+                            {#<li class="divider"></li>#}
+                            {#</ul>#}
+                            <!-- End of DS -->
+                        </div>
+
+                        <div class="col-md-12 content manageemployees-content" style="display: block; min-height: 700px; margin-top: 30px;">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    Select Employee
+                                    <select class="select-emp-tag" style="width: 100%;" id="tag_employees">
+                                        <option value="0">Select Employee</option>
+                                        {% for acc in allacc %}
+                                            <option name="select2[]" value="{{ acc.id }}"
+                                                    data-name="{{ (acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname)|trim }}"
+                                                    data-employee-id="{{ acc.id }}"> {{ acc.getEmpProfiles[0].fname ~ ' ' ~ acc.getEmpProfiles[0].lname }}
+                                                &lt;{{ acc.email }}&gt;
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    Select Time
+                                    <input type="text" name="from-event-date" class="txt-date"
+                                           id="txt_date" placeholder="mm/dd/yyyy">
+                                </div>
+
+
+
+                                <table class="bordered highlight" style="width: 97%; margin: 0 auto;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <a class="table-header-link sort desc" data-col="event_name" href="javascript:void(0);">EMPLOYEE NAME</a>
+                                            </th>
+                                            <th>
+                                                <a class="table-header-link sort desc" data-col="from_date"  href="javascript:void(0);">TIME IN</a>
+                                            </th>
+                                            <th>
+                                                <a class="table-header-link sort desc" data-col="to_date" href="javascript:void(0);">TIME OUT</a>
+                                            </th>
+                                            <th>
+                                                <a class="table-header-link sort desc" data-col="to_date" href="javascript:void(0);">DATE</a>
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="tb-emp-time-list">
+                                        {#<tr data-id="62" class="event-tr">#}
+                                            {#<td class="event-name">Test Today</td>#}
+                                            {#<td class="event-from-date">2017/08/12 02:00pm</td>#}
+                                            {#<td class="event-to-date">2017/08/12 03:00pm</td>#}
+                                            {#<td class="event-to-date">2017/08/12</td>#}
+                                            {#<td>#}
+                                                {#<a class="btn btn-default btn-view-event" href="javascript:void(0);" data-action="view" data-id="62" data-type="3" data-event-name="Test Today" data-event-desc="Test" data-event-venue="Test" data-event-from="2017-09-07 02:00: PM" data-event-to="2017-09-07 03:00: PM" data-event-from-holiday="Sep 07, 2017" data-event-to-holiday="Sep 07, 2017" data-event-from-nonholiday="Sep 07, 2017 02:00 pm" data-event-to-nonholiday="Sep 07, 2017 03:00 pm" data-event-tags="1" data-event-tags-status="2" data-event-tags-reasons="" data-event-tag-userid="" data-event-tag-status="" data-event-tag-reason="" data-created-by="22" data-isgoing="1" data-isgoing-note="" data-event-tags-timeline="[ [{ &quot;date&quot;: &quot;Sep 06, 2017&quot;, &quot;time&quot;:&quot;12:57 am&quot;,&quot;message&quot;:&quot;&quot;, &quot;status&quot;:&quot;&quot;, &quot;action&quot;:&quot;tag-send-email&quot;, &quot;name&quot;:&quot;Admin Admin&quot; }, { &quot;date&quot;: &quot;Sep 06, 2017&quot;, &quot;time&quot;:&quot;12:57 am&quot;,&quot;message&quot;:&quot;&quot;, &quot;status&quot;:&quot;&quot;, &quot;action&quot;:&quot;tag-create&quot;, &quot;name&quot;:&quot;Admin Admin&quot; }, ], ]">View</a>#}
+                                            {#</td>#}
+                                        {#</tr>#}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+{% endblock %}
+
+{% block customjs %}
+    <script type="text/javascript">
+        var cmbEmpTag = 'select.select-emp-tag';
+        var txtDate = '.txt-date';
+        $emptimeList = $('.tb-emp-time-list');
+
+        bindEvents();
+        function bindEvents() {
+            $(cmbEmpTag).select2({
+                placeholder: 'Type name here'
+            });
+
+            initPicker('txt_date', new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), function () { });
+
+            DOC.on('change', txtDate+','+cmbEmpTag, function () {
+                getList();
+            });
+
+            DOC.on('click', '.btn-edit-action', function() {
+                var tr = $(this).closest('.event-tr');
+                var id = tr.data('id');
+                toggleEdit(tr, 1);
+
+                var param = {showTime: true, use24hour: false, format: 'YYYY-MM-DD hh:mm A'};
+
+                initPicker('txt_date_from_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), null, param);
+                initPicker('txt_date_to_'+id, new Date(), new Date(CURRENT_YEAR, (new Date()).getMonth(), (new Date()).getDay()), null, param);
+
+                var valF = tr.find('.text-fld.from').text();
+                setPikadayData('set-date', 'txt_date_from_'+id, new Date(valF));
+                var valT = tr.find('.text-fld.to').text();
+                setPikadayData('set-date', 'txt_date_to_'+id, new Date(valT));
+            });
+
+            DOC.on('click', '.btn-save-action.discard', function() {
+                toggleEdit($(this).closest('.event-tr'), 0);
+            });
+
+            DOC.on('click', '.btn-save-action.update', function() {
+                var tr = $(this).closest('.event-tr');
+                var id = tr.data('id');
+
+                var from = $('#txt_date_from_'+id).val();
+                var to = $('#txt_date_to_'+id).val();
+                from = moment(from).format('YYYY-MM-DD HH:mm:00');
+
+                if(to!='')
+                    to = moment(to).format('YYYY-MM-DD HH:mm:00');
+
+                console.log(from, to, id);
+                var data = { id: id, from: from, to: to, 'action':'saveTime'  };
+                post($('.-list-button-none-exist'), '{{ path('admin_update_timelog') }}', data, function (data) {
+                    toggleEdit($(this).closest('.event-tr'), 0);
+                    getList();
+                });
+            });
+        }
+
+        function toggleEdit(tr, open) {
+            if(open) {
+                tr.find('.edit-fld').removeClass('display-none');
+                tr.find('.text-fld').addClass('display-none');
+                tr.find('.btn-edit-action').addClass('display-none');
+                tr.find('.btn-save-action').removeClass('display-none');
+            } else {
+                tr.find('.edit-fld').addClass('display-none');
+                tr.find('.text-fld').removeClass('display-none');
+                tr.find('.btn-edit-action').removeClass('display-none');
+                tr.find('.btn-save-action').addClass('display-none');
+            }
+        }
+
+        function getList() {
+            var date = $(txtDate).val()=='' ? null : moment($(txtDate).val()).format('YYYY-MM-DD')+' 00:00:00';
+            var id = $(cmbEmpTag).select2('val');
+            var data = { id: id, date: date, 'action':'getTimeLog'  };
+            var name = $('[value="'+id+'"]').data('name');
+
+            post($('.-list-button-none-exist'), '{{ path('admin_update_timelog') }}', data, function (data) {
+                $emptimeList.html(data.list.replace(/--NAME--/g, name));
+            });
+        }
+    </script>
+{% endblock %}
