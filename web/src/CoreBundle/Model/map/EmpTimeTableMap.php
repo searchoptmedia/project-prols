@@ -61,6 +61,7 @@ class EmpTimeTableMap extends TableMap
     public function buildRelations()
     {
         $this->addRelation('EmpAcc', 'CoreBundle\\Model\\EmpAcc', RelationMap::MANY_TO_ONE, array('emp_acc_acc_id' => 'id', ), null, null);
+        $this->addRelation('BiometricProcessedLogs', 'CoreBundle\\Model\\BiometricProcessedLogs', RelationMap::ONE_TO_MANY, array('id' => 'emp_time_id', ), null, null, 'BiometricProcessedLogss');
     } // buildRelations()
 
 } // EmpTimeTableMap

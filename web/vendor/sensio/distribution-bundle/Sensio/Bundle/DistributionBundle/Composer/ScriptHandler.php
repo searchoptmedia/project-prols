@@ -162,9 +162,9 @@ class ScriptHandler
         $webDir = $options['symfony-web-dir'];
 
         $symlink = '';
-        if ($options['symfony-assets-install'] == 'symlink') {
+        if ('symlink' == $options['symfony-assets-install']) {
             $symlink = '--symlink ';
-        } elseif ($options['symfony-assets-install'] == 'relative') {
+        } elseif ('relative' == $options['symfony-assets-install']) {
             $symlink = '--symlink --relative ';
         }
 
@@ -207,7 +207,7 @@ class ScriptHandler
             $fs->copy(__DIR__.'/../Resources/skeleton/app/check.php', $binDir.'/symfony_requirements', true);
             $fs->remove(array($appDir.'/check.php', $appDir.'/SymfonyRequirements.php', true));
 
-            $fs->dumpFile($binDir.'/symfony_requirements', '#!/usr/bin/env php'.PHP_EOL.str_replace(".'/SymfonyRequirements.php'", ".'/".$fs->makePathRelative($varDir, $binDir)."SymfonyRequirements.php'", file_get_contents($binDir.'/symfony_requirements')));
+            $fs->dumpFile($binDir.'/symfony_requirements', '#!/usr/bin/env php'.PHP_EOL.str_replace(".'/SymfonyRequirements.php'", ".'/".$fs->makePathRelative(realpath($varDir), realpath($binDir))."SymfonyRequirements.php'", file_get_contents($binDir.'/symfony_requirements')));
             $fs->chmod($binDir.'/symfony_requirements', 0755);
         }
 
@@ -216,11 +216,9 @@ class ScriptHandler
         // if the user has already removed the config.php file, do nothing
         // as the file must be removed for production use
         if ($fs->exists($webDir.'/config.php')) {
-            if (!$newDirectoryStructure) {
-                $fs->copy(__DIR__.'/../Resources/skeleton/web/config.php', $webDir.'/config.php', true);
-            } else {
-                $fs->dumpFile($webDir.'/config.php', str_replace('/../app/SymfonyRequirements.php', '/'.$fs->makePathRelative($varDir, $webDir).'SymfonyRequirements.php', file_get_contents(__DIR__.'/../Resources/skeleton/web/config.php')));
-            }
+            $requiredDir = $newDirectoryStructure ? $varDir : $appDir;
+
+            $fs->dumpFile($webDir.'/config.php', str_replace('/../app/SymfonyRequirements.php', '/'.$fs->makePathRelative(realpath($requiredDir), realpath($webDir)).'SymfonyRequirements.php', file_get_contents(__DIR__.'/../Resources/skeleton/web/config.php')));
         }
     }
 
@@ -263,7 +261,6 @@ class ScriptHandler
             'Symfony\\Component\\DependencyInjection\\Container',
             'Symfony\\Component\\HttpKernel\\Kernel',
             'Symfony\\Component\\ClassLoader\\ClassCollectionLoader',
-            'Symfony\\Component\\ClassLoader\\ApcClassLoader',
             'Symfony\\Component\\HttpKernel\\Bundle\\Bundle',
             'Symfony\\Component\\Config\\ConfigCache',
             // cannot be included as commands are discovered based on the path to this class via Reflection
@@ -289,13 +286,13 @@ class ScriptHandler
         $bootstrapContent = substr(file_get_contents($file), 5);
 
         if ($useNewDirectoryStructure) {
-            $cacheDir = $fs->makePathRelative($bootstrapDir, $autoloadDir);
+            $cacheDir = $fs->makePathRelative(realpath($bootstrapDir), realpath($autoloadDir));
             $bootstrapContent = str_replace(array("return \$this->rootDir.'/logs", "return \$this->rootDir.'/cache"), array("return \$this->rootDir.'/".$cacheDir.'logs', "return \$this->rootDir.'/".$cacheDir.'cache'), $bootstrapContent);
         }
 
         if ($autoloadDir) {
             $fs = new Filesystem();
-            $autoloadDir = $fs->makePathRelative($autoloadDir, $bootstrapDir);
+            $autoloadDir = $fs->makePathRelative(realpath($autoloadDir), realpath($bootstrapDir));
         }
 
         file_put_contents($file, sprintf(<<<'EOF'
@@ -401,7 +398,7 @@ EOF;
 
         $fs->dumpFile($webDir.'/app.php', str_replace($appDir.'/bootstrap.php.cache', $varDir.'/bootstrap.php.cache', file_get_contents($webDir.'/app.php')));
         $fs->dumpFile($webDir.'/app_dev.php', str_replace($appDir.'/bootstrap.php.cache', $varDir.'/bootstrap.php.cache', file_get_contents($webDir.'/app_dev.php')));
-        $fs->dumpFile($binDir.'/console', str_replace(array(".'/bootstrap.php.cache'", ".'/AppKernel.php'"), array(".'/".$fs->makePathRelative($varDir, $binDir)."bootstrap.php.cache'", ".'/".$fs->makePathRelative($appDir, $binDir)."AppKernel.php'"), file_get_contents($binDir.'/console')));
+        $fs->dumpFile($binDir.'/console', str_replace(array(".'/bootstrap.php.cache'", ".'/AppKernel.php'"), array(".'/".$fs->makePathRelative(realpath($varDir), realpath($binDir))."bootstrap.php.cache'", ".'/".$fs->makePathRelative(realpath($appDir), realpath($binDir))."AppKernel.php'"), file_get_contents($binDir.'/console')));
         $fs->dumpFile($rootDir.'/phpunit.xml.dist', $phpunit);
         $fs->dumpFile($rootDir.'/composer.json', $composer);
 
@@ -415,6 +412,7 @@ EOF;
         $options = array_merge(static::$options, $event->getComposer()->getPackage()->getExtra());
 
         $options['symfony-assets-install'] = getenv('SYMFONY_ASSETS_INSTALL') ?: $options['symfony-assets-install'];
+        $options['symfony-cache-warmup'] = getenv('SYMFONY_CACHE_WARMUP') ?: $options['symfony-cache-warmup'];
 
         $options['process-timeout'] = $event->getComposer()->getConfig()->get('process-timeout');
 
@@ -433,6 +431,7 @@ EOF;
 
     protected static function getPhpArguments()
     {
+        $ini = null;
         $arguments = array();
 
         $phpFinder = new PhpExecutableFinder();
@@ -440,7 +439,14 @@ EOF;
             $arguments = $phpFinder->findArguments();
         }
 
-        if (false !== $ini = php_ini_loaded_file()) {
+        if ($env = strval(getenv('COMPOSER_ORIGINAL_INIS'))) {
+            $paths = explode(PATH_SEPARATOR, $env);
+            $ini = array_shift($paths);
+        } else {
+            $ini = php_ini_loaded_file();
+        }
+
+        if ($ini) {
             $arguments[] = '--php-ini='.$ini;
         }
 
@@ -450,8 +456,8 @@ EOF;
     /**
      * Returns a relative path to the directory that contains the `console` command.
      *
-     * @param Event $event      The command event.
-     * @param string       $actionName The name of the action
+     * @param Event  $event      The command event
+     * @param string $actionName The name of the action
      *
      * @return string|null The path to the console directory, null if not found.
      */

@@ -118,7 +118,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -129,7 +129,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [event_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEventId()
@@ -140,7 +140,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [emp_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpId()
@@ -151,7 +151,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return int
      */
     public function getStatus()
@@ -162,7 +162,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Get the [reason] column value.
-     * 
+     *
      * @return string
      */
     public function getReason()
@@ -173,7 +173,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -194,7 +194,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [event_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -219,7 +219,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -244,7 +244,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -265,7 +265,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
 
     /**
      * Set the value of [reason] column.
-     * 
+     *
      * @param  string $v new value
      * @return EventTaggedPersons The current object (for fluent API support)
      */
@@ -614,19 +614,19 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`event_id`':						
+                    case '`event_id`':
                         $stmt->bindValue($identifier, $this->event_id, PDO::PARAM_INT);
                         break;
-                    case '`emp_id`':						
+                    case '`emp_id`':
                         $stmt->bindValue($identifier, $this->emp_id, PDO::PARAM_INT);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
-                    case '`reason`':						
+                    case '`reason`':
                         $stmt->bindValue($identifier, $this->reason, PDO::PARAM_STR);
                         break;
                 }
@@ -843,7 +843,7 @@ abstract class BaseEventTaggedPersons extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);

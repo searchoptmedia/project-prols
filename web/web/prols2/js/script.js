@@ -224,7 +224,7 @@ MAIN_APP = function() {
         toggleBirthday: function(state) {
             if(state=='show') {
                 _self.toggleModal('.modal-birthday-notify-container', 'show');
-                $('.-txt-bday-names').html(_d.birthdays.join(', '))
+                $('.-txt-bday-names').html(_d.birthdays.join(', '));
                 toggleBirthday();
             }
 

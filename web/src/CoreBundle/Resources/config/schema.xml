@@ -324,4 +324,33 @@
         </vendor>
     </table>
 
+    <table name="biometric_processed_logs" phpName="BiometricProcessedLogs" idMethod="native">
+        <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="C_Date" phpName="C_Date" type="VARCHAR" size="8"/>
+        <column name="C_Time" phpName="C_Time" type="VARCHAR" size="8"/>
+        <column name="L_TID" phpName="L_TID" type="INTEGER" />
+        <column name="L_UID" phpName="L_UID" type="INTEGER" />
+        <column name="emp_time_id" phpName="emp_time_id" type="INTEGER"/>
+
+        <foreign-key foreignTable="emp_time">
+            <reference local="emp_time_id" foreign="id"/>
+        </foreign-key>
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
+    <table name="biometric_pending_logs" phpName="BiometricPendingLogs" idMethod="native">
+        <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="C_Date" phpName="C_Date" type="VARCHAR" size="8"/>
+        <column name="C_Time" phpName="C_Time" type="VARCHAR" size="8"/>
+        <column name="L_TID" phpName="L_TID" type="INTEGER" />
+        <column name="L_UID" phpName="L_UID" type="INTEGER" />
+        <vendor type="mysql">
+            <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+
 </database>
+
+

@@ -123,12 +123,12 @@ class EmployeeController extends Controller
                          $empTimeAlreadySaved = true;
 
                      if($requesttimein->save()) {
-                         $email = new EmailController();
-                         $sendemail = $email->sendTimeInRequest($request, $this, $requesttimein->getId());
-
-                         if(! $sendemail) {
-                             $response['email'] = 500;
-                         }
+//                         $email = new EmailController();
+//                         $sendemail = $email->sendTimeInRequest($request, $this, $requesttimein->getId());
+//
+//                         if(! $sendemail) {
+//                             $response['email'] = 500;
+//                         }
                      }
 
                      InitController::ResetSessionValue();
@@ -436,7 +436,7 @@ class EmployeeController extends Controller
                     $conTele .= $contactvalue;
                     $conTeleId .= $contactid;
                 }
-                $contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
+                $contact .= '<p>Contact:'.$contactvalue.'</p><p>Contact Type:'.$contacttype.'</p>';
             }
         }
         else

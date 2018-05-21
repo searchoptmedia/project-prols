@@ -155,7 +155,7 @@ abstract class BaseListEventsQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   ListEvents|ListEvents[]|mixed the result, formatted by the current formatter
@@ -210,7 +210,7 @@ abstract class BaseListEventsQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `created_by`, `date_created`, `from_date`, `to_date`, `event_name`, `event_venue`, `event_desc`, `event_type`, `status`, `is_going`, `is_going_note`, `sms_response` FROM `list_events` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {

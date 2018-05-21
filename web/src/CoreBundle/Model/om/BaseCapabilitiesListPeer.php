@@ -343,7 +343,7 @@ abstract class BaseCapabilitiesListPeer
 
         return null; // just to be explicit
     }
-    
+
     /**
      * Clear the instance pool.
      *
@@ -358,7 +358,7 @@ abstract class BaseCapabilitiesListPeer
       }
         CapabilitiesListPeer::$instances = array();
     }
-    
+
     /**
      * Method to invalidate the instance pool of all tables related to capabilities_list
      * by a foreign key with ON DELETE CASCADE
@@ -401,7 +401,7 @@ abstract class BaseCapabilitiesListPeer
 
         return (int) $row[$startcol];
     }
-    
+
     /**
      * The returned array will contain objects of the default type or
      * objects that inherit from the default.
@@ -412,7 +412,7 @@ abstract class BaseCapabilitiesListPeer
     public static function populateObjects(PDOStatement $stmt)
     {
         $results = array();
-    
+
         // set the class once to avoid overhead in the loop
         $cls = CapabilitiesListPeer::getOMClass();
         // populate the object(s)
@@ -656,7 +656,7 @@ abstract class BaseCapabilitiesListPeer
             // use transaction because $criteria could contain info
             // for more than one table or we could emulating ON DELETE CASCADE, etc.
             $con->beginTransaction();
-            
+
             $affectedRows += BasePeer::doDelete($criteria, $con);
             CapabilitiesListPeer::clearRelatedInstancePool();
             $con->commit();

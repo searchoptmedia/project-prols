@@ -10,9 +10,13 @@ use \Exception;
 use \PDO;
 use \Persistent;
 use \Propel;
+use \PropelCollection;
 use \PropelDateTime;
 use \PropelException;
+use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\BiometricProcessedLogs;
+use CoreBundle\Model\BiometricProcessedLogsQuery;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpAccQuery;
 use CoreBundle\Model\EmpTime;
@@ -106,6 +110,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     protected $aEmpAcc;
 
     /**
+     * @var        PropelObjectCollection|BiometricProcessedLogs[] Collection to store aggregation of BiometricProcessedLogs objects.
+     */
+    protected $collBiometricProcessedLogss;
+    protected $collBiometricProcessedLogssPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      * @var        boolean
@@ -126,8 +136,14 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     protected $alreadyInClearAllReferencesDeep = false;
 
     /**
+     * An array of objects scheduled for deletion.
+     * @var		PropelObjectCollection
+     */
+    protected $biometricProcessedLogssScheduledForDeletion = null;
+
+    /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -138,7 +154,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [time_in] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -173,12 +189,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [optionally formatted] temporal [time_out] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -213,12 +229,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [ip_add] column value.
-     * 
+     *
      * @return string
      */
     public function getIpAdd()
@@ -229,7 +245,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [optionally formatted] temporal [date] column value.
-     * 
+     *
      *
      * @param string $format The date/time format string (either date()-style or strftime()-style).
      *				 If format is null, then the raw DateTime object will be returned.
@@ -264,12 +280,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         }
 
         return $dt->format($format);
-        
+
     }
 
     /**
      * Get the [emp_acc_acc_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEmpAccAccId()
@@ -280,7 +296,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [manhours] column value.
-     * 
+     *
      * @return double
      */
     public function getManhours()
@@ -291,7 +307,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [overtime] column value.
-     * 
+     *
      * @return double
      */
     public function getOvertime()
@@ -302,7 +318,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [check_ip] column value.
-     * 
+     *
      * @return int
      */
     public function getCheckIp()
@@ -313,7 +329,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Get the [status] column value.
-     * 
+     *
      * @return int
      */
     public function getStatus()
@@ -324,7 +340,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -345,7 +361,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [time_in] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -368,7 +384,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [time_out] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -391,7 +407,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [ip_add] column.
-     * 
+     *
      * @param  string $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -412,7 +428,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Sets the value of [date] column to a normalized version of the date/time value specified.
-     * 
+     *
      * @param mixed $v string, integer (timestamp), or DateTime value.
      *               Empty strings are treated as null.
      * @return EmpTime The current object (for fluent API support)
@@ -435,7 +451,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [emp_acc_acc_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -460,7 +476,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [manhours] column.
-     * 
+     *
      * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -481,7 +497,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [overtime] column.
-     * 
+     *
      * @param  double $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -502,7 +518,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [check_ip] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -523,7 +539,7 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
 
     /**
      * Set the value of [status] column.
-     * 
+     *
      * @param  int $v new value
      * @return EmpTime The current object (for fluent API support)
      */
@@ -659,6 +675,8 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         if ($deep) {  // also de-associate any related objects?
 
             $this->aEmpAcc = null;
+            $this->collBiometricProcessedLogss = null;
+
         } // if (deep)
     }
 
@@ -795,6 +813,24 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
                 $this->resetModified();
             }
 
+            if ($this->biometricProcessedLogssScheduledForDeletion !== null) {
+                if (!$this->biometricProcessedLogssScheduledForDeletion->isEmpty()) {
+                    foreach ($this->biometricProcessedLogssScheduledForDeletion as $biometricProcessedLogs) {
+                        // need to save related object because we set the relation to null
+                        $biometricProcessedLogs->save($con);
+                    }
+                    $this->biometricProcessedLogssScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collBiometricProcessedLogss !== null) {
+                foreach ($this->collBiometricProcessedLogss as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             $this->alreadyInSave = false;
 
         }
@@ -862,34 +898,34 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`time_in`':						
+                    case '`time_in`':
                         $stmt->bindValue($identifier, $this->time_in, PDO::PARAM_STR);
                         break;
-                    case '`time_out`':						
+                    case '`time_out`':
                         $stmt->bindValue($identifier, $this->time_out, PDO::PARAM_STR);
                         break;
-                    case '`ip_add`':						
+                    case '`ip_add`':
                         $stmt->bindValue($identifier, $this->ip_add, PDO::PARAM_STR);
                         break;
-                    case '`date`':						
+                    case '`date`':
                         $stmt->bindValue($identifier, $this->date, PDO::PARAM_STR);
                         break;
-                    case '`emp_acc_acc_id`':						
+                    case '`emp_acc_acc_id`':
                         $stmt->bindValue($identifier, $this->emp_acc_acc_id, PDO::PARAM_INT);
                         break;
-                    case '`manhours`':						
+                    case '`manhours`':
                         $stmt->bindValue($identifier, $this->manhours, PDO::PARAM_STR);
                         break;
-                    case '`overtime`':						
+                    case '`overtime`':
                         $stmt->bindValue($identifier, $this->overtime, PDO::PARAM_STR);
                         break;
-                    case '`check_ip`':						
+                    case '`check_ip`':
                         $stmt->bindValue($identifier, $this->check_ip, PDO::PARAM_INT);
                         break;
-                    case '`status`':						
+                    case '`status`':
                         $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                 }
@@ -1003,6 +1039,14 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             }
 
 
+                if ($this->collBiometricProcessedLogss !== null) {
+                    foreach ($this->collBiometricProcessedLogss as $referrerFK) {
+                        if (!$referrerFK->validate($columns)) {
+                            $failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+
 
             $this->alreadyInValidation = false;
         }
@@ -1112,10 +1156,13 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aEmpAcc) {
                 $result['EmpAcc'] = $this->aEmpAcc->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collBiometricProcessedLogss) {
+                $result['BiometricProcessedLogss'] = $this->collBiometricProcessedLogss->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1316,6 +1363,12 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             // store object hash to prevent cycle
             $this->startCopy = true;
 
+            foreach ($this->getBiometricProcessedLogss() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addBiometricProcessedLogs($relObj->copy($deepCopy));
+                }
+            }
+
             //unflag object copy
             $this->startCopy = false;
         } // if ($deepCopy)
@@ -1418,6 +1471,247 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
         return $this->aEmpAcc;
     }
 
+
+    /**
+     * Initializes a collection based on the name of a relation.
+     * Avoids crafting an 'init[$relationName]s' method name
+     * that wouldn't work when StandardEnglishPluralizer is used.
+     *
+     * @param string $relationName The name of the relation to initialize
+     * @return void
+     */
+    public function initRelation($relationName)
+    {
+        if ('BiometricProcessedLogs' == $relationName) {
+            $this->initBiometricProcessedLogss();
+        }
+    }
+
+    /**
+     * Clears out the collBiometricProcessedLogss collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return EmpTime The current object (for fluent API support)
+     * @see        addBiometricProcessedLogss()
+     */
+    public function clearBiometricProcessedLogss()
+    {
+        $this->collBiometricProcessedLogss = null; // important to set this to null since that means it is uninitialized
+        $this->collBiometricProcessedLogssPartial = null;
+
+        return $this;
+    }
+
+    /**
+     * reset is the collBiometricProcessedLogss collection loaded partially
+     *
+     * @return void
+     */
+    public function resetPartialBiometricProcessedLogss($v = true)
+    {
+        $this->collBiometricProcessedLogssPartial = $v;
+    }
+
+    /**
+     * Initializes the collBiometricProcessedLogss collection.
+     *
+     * By default this just sets the collBiometricProcessedLogss collection to an empty array (like clearcollBiometricProcessedLogss());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initBiometricProcessedLogss($overrideExisting = true)
+    {
+        if (null !== $this->collBiometricProcessedLogss && !$overrideExisting) {
+            return;
+        }
+        $this->collBiometricProcessedLogss = new PropelObjectCollection();
+        $this->collBiometricProcessedLogss->setModel('BiometricProcessedLogs');
+    }
+
+    /**
+     * Gets an array of BiometricProcessedLogs objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this EmpTime is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param Criteria $criteria optional Criteria object to narrow the query
+     * @param PropelPDO $con optional connection object
+     * @return PropelObjectCollection|BiometricProcessedLogs[] List of BiometricProcessedLogs objects
+     * @throws PropelException
+     */
+    public function getBiometricProcessedLogss($criteria = null, PropelPDO $con = null)
+    {
+        $partial = $this->collBiometricProcessedLogssPartial && !$this->isNew();
+        if (null === $this->collBiometricProcessedLogss || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collBiometricProcessedLogss) {
+                // return empty collection
+                $this->initBiometricProcessedLogss();
+            } else {
+                $collBiometricProcessedLogss = BiometricProcessedLogsQuery::create(null, $criteria)
+                    ->filterByEmpTime($this)
+                    ->find($con);
+                if (null !== $criteria) {
+                    if (false !== $this->collBiometricProcessedLogssPartial && count($collBiometricProcessedLogss)) {
+                      $this->initBiometricProcessedLogss(false);
+
+                      foreach ($collBiometricProcessedLogss as $obj) {
+                        if (false == $this->collBiometricProcessedLogss->contains($obj)) {
+                          $this->collBiometricProcessedLogss->append($obj);
+                        }
+                      }
+
+                      $this->collBiometricProcessedLogssPartial = true;
+                    }
+
+                    $collBiometricProcessedLogss->getInternalIterator()->rewind();
+
+                    return $collBiometricProcessedLogss;
+                }
+
+                if ($partial && $this->collBiometricProcessedLogss) {
+                    foreach ($this->collBiometricProcessedLogss as $obj) {
+                        if ($obj->isNew()) {
+                            $collBiometricProcessedLogss[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collBiometricProcessedLogss = $collBiometricProcessedLogss;
+                $this->collBiometricProcessedLogssPartial = false;
+            }
+        }
+
+        return $this->collBiometricProcessedLogss;
+    }
+
+    /**
+     * Sets a collection of BiometricProcessedLogs objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param PropelCollection $biometricProcessedLogss A Propel collection.
+     * @param PropelPDO $con Optional connection object
+     * @return EmpTime The current object (for fluent API support)
+     */
+    public function setBiometricProcessedLogss(PropelCollection $biometricProcessedLogss, PropelPDO $con = null)
+    {
+        $biometricProcessedLogssToDelete = $this->getBiometricProcessedLogss(new Criteria(), $con)->diff($biometricProcessedLogss);
+
+
+        $this->biometricProcessedLogssScheduledForDeletion = $biometricProcessedLogssToDelete;
+
+        foreach ($biometricProcessedLogssToDelete as $biometricProcessedLogsRemoved) {
+            $biometricProcessedLogsRemoved->setEmpTime(null);
+        }
+
+        $this->collBiometricProcessedLogss = null;
+        foreach ($biometricProcessedLogss as $biometricProcessedLogs) {
+            $this->addBiometricProcessedLogs($biometricProcessedLogs);
+        }
+
+        $this->collBiometricProcessedLogss = $biometricProcessedLogss;
+        $this->collBiometricProcessedLogssPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related BiometricProcessedLogs objects.
+     *
+     * @param Criteria $criteria
+     * @param boolean $distinct
+     * @param PropelPDO $con
+     * @return int             Count of related BiometricProcessedLogs objects.
+     * @throws PropelException
+     */
+    public function countBiometricProcessedLogss(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
+    {
+        $partial = $this->collBiometricProcessedLogssPartial && !$this->isNew();
+        if (null === $this->collBiometricProcessedLogss || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collBiometricProcessedLogss) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getBiometricProcessedLogss());
+            }
+            $query = BiometricProcessedLogsQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByEmpTime($this)
+                ->count($con);
+        }
+
+        return count($this->collBiometricProcessedLogss);
+    }
+
+    /**
+     * Method called to associate a BiometricProcessedLogs object to this object
+     * through the BiometricProcessedLogs foreign key attribute.
+     *
+     * @param    BiometricProcessedLogs $l BiometricProcessedLogs
+     * @return EmpTime The current object (for fluent API support)
+     */
+    public function addBiometricProcessedLogs(BiometricProcessedLogs $l)
+    {
+        if ($this->collBiometricProcessedLogss === null) {
+            $this->initBiometricProcessedLogss();
+            $this->collBiometricProcessedLogssPartial = true;
+        }
+
+        if (!in_array($l, $this->collBiometricProcessedLogss->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
+            $this->doAddBiometricProcessedLogs($l);
+
+            if ($this->biometricProcessedLogssScheduledForDeletion and $this->biometricProcessedLogssScheduledForDeletion->contains($l)) {
+                $this->biometricProcessedLogssScheduledForDeletion->remove($this->biometricProcessedLogssScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param	BiometricProcessedLogs $biometricProcessedLogs The biometricProcessedLogs object to add.
+     */
+    protected function doAddBiometricProcessedLogs($biometricProcessedLogs)
+    {
+        $this->collBiometricProcessedLogss[]= $biometricProcessedLogs;
+        $biometricProcessedLogs->setEmpTime($this);
+    }
+
+    /**
+     * @param	BiometricProcessedLogs $biometricProcessedLogs The biometricProcessedLogs object to remove.
+     * @return EmpTime The current object (for fluent API support)
+     */
+    public function removeBiometricProcessedLogs($biometricProcessedLogs)
+    {
+        if ($this->getBiometricProcessedLogss()->contains($biometricProcessedLogs)) {
+            $this->collBiometricProcessedLogss->remove($this->collBiometricProcessedLogss->search($biometricProcessedLogs));
+            if (null === $this->biometricProcessedLogssScheduledForDeletion) {
+                $this->biometricProcessedLogssScheduledForDeletion = clone $this->collBiometricProcessedLogss;
+                $this->biometricProcessedLogssScheduledForDeletion->clear();
+            }
+            $this->biometricProcessedLogssScheduledForDeletion[]= $biometricProcessedLogs;
+            $biometricProcessedLogs->setEmpTime(null);
+        }
+
+        return $this;
+    }
+
     /**
      * Clears the current object and sets all attributes to their default values
      */
@@ -1455,6 +1749,11 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
     {
         if ($deep && !$this->alreadyInClearAllReferencesDeep) {
             $this->alreadyInClearAllReferencesDeep = true;
+            if ($this->collBiometricProcessedLogss) {
+                foreach ($this->collBiometricProcessedLogss as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->aEmpAcc instanceof Persistent) {
               $this->aEmpAcc->clearAllReferences($deep);
             }
@@ -1462,6 +1761,10 @@ abstract class BaseEmpTime extends BaseObject implements Persistent
             $this->alreadyInClearAllReferencesDeep = false;
         } // if ($deep)
 
+        if ($this->collBiometricProcessedLogss instanceof PropelCollection) {
+            $this->collBiometricProcessedLogss->clearIterator();
+        }
+        $this->collBiometricProcessedLogss = null;
         $this->aEmpAcc = null;
     }
 

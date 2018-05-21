@@ -86,7 +86,7 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -97,7 +97,7 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
 
     /**
      * Get the [capability] column value.
-     * 
+     *
      * @return string
      */
     public function getCapability()
@@ -108,7 +108,7 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return CapabilitiesList The current object (for fluent API support)
      */
@@ -129,7 +129,7 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
 
     /**
      * Set the value of [capability] column.
-     * 
+     *
      * @param  string $v new value
      * @return CapabilitiesList The current object (for fluent API support)
      */
@@ -440,10 +440,10 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`capability`':						
+                    case '`capability`':
                         $stmt->bindValue($identifier, $this->capability, PDO::PARAM_STR);
                         break;
                 }
@@ -630,7 +630,7 @@ abstract class BaseCapabilitiesList extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->collEmpCapabilitiess) {
                 $result['EmpCapabilitiess'] = $this->collEmpCapabilitiess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);

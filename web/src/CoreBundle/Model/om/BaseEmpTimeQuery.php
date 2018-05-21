@@ -12,6 +12,7 @@ use \PropelCollection;
 use \PropelException;
 use \PropelObjectCollection;
 use \PropelPDO;
+use CoreBundle\Model\BiometricProcessedLogs;
 use CoreBundle\Model\EmpAcc;
 use CoreBundle\Model\EmpTime;
 use CoreBundle\Model\EmpTimePeer;
@@ -47,6 +48,10 @@ use CoreBundle\Model\EmpTimeQuery;
  * @method EmpTimeQuery leftJoinEmpAcc($relationAlias = null) Adds a LEFT JOIN clause to the query using the EmpAcc relation
  * @method EmpTimeQuery rightJoinEmpAcc($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EmpAcc relation
  * @method EmpTimeQuery innerJoinEmpAcc($relationAlias = null) Adds a INNER JOIN clause to the query using the EmpAcc relation
+ *
+ * @method EmpTimeQuery leftJoinBiometricProcessedLogs($relationAlias = null) Adds a LEFT JOIN clause to the query using the BiometricProcessedLogs relation
+ * @method EmpTimeQuery rightJoinBiometricProcessedLogs($relationAlias = null) Adds a RIGHT JOIN clause to the query using the BiometricProcessedLogs relation
+ * @method EmpTimeQuery innerJoinBiometricProcessedLogs($relationAlias = null) Adds a INNER JOIN clause to the query using the BiometricProcessedLogs relation
  *
  * @method EmpTime findOne(PropelPDO $con = null) Return the first EmpTime matching the query
  * @method EmpTime findOneOrCreate(PropelPDO $con = null) Return the first EmpTime matching the query, or a new EmpTime object populated from the query conditions when no match is found
@@ -123,7 +128,7 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
      * $obj  = $c->findPk(12, $con);
      * </code>
      *
-     * @param mixed $key Primary key to use for the query 
+     * @param mixed $key Primary key to use for the query
      * @param     PropelPDO $con an optional connection object
      *
      * @return   EmpTime|EmpTime[]|mixed the result, formatted by the current formatter
@@ -178,7 +183,7 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
     {
         $sql = 'SELECT `id`, `time_in`, `time_out`, `ip_add`, `date`, `emp_acc_acc_id`, `manhours`, `overtime`, `check_ip`, `status` FROM `emp_time` WHERE `id` = :p0';
         try {
-            $stmt = $con->prepare($sql);			
+            $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
             $stmt->execute();
         } catch (Exception $e) {
@@ -751,6 +756,80 @@ abstract class BaseEmpTimeQuery extends ModelCriteria
         return $this
             ->joinEmpAcc($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'EmpAcc', '\CoreBundle\Model\EmpAccQuery');
+    }
+
+    /**
+     * Filter the query by a related BiometricProcessedLogs object
+     *
+     * @param   BiometricProcessedLogs|PropelObjectCollection $biometricProcessedLogs  the related object to use as filter
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return                 EmpTimeQuery The current query, for fluid interface
+     * @throws PropelException - if the provided filter is invalid.
+     */
+    public function filterByBiometricProcessedLogs($biometricProcessedLogs, $comparison = null)
+    {
+        if ($biometricProcessedLogs instanceof BiometricProcessedLogs) {
+            return $this
+                ->addUsingAlias(EmpTimePeer::ID, $biometricProcessedLogs->getemp_time_id(), $comparison);
+        } elseif ($biometricProcessedLogs instanceof PropelObjectCollection) {
+            return $this
+                ->useBiometricProcessedLogsQuery()
+                ->filterByPrimaryKeys($biometricProcessedLogs->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByBiometricProcessedLogs() only accepts arguments of type BiometricProcessedLogs or PropelCollection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the BiometricProcessedLogs relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return EmpTimeQuery The current query, for fluid interface
+     */
+    public function joinBiometricProcessedLogs($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('BiometricProcessedLogs');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'BiometricProcessedLogs');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the BiometricProcessedLogs relation BiometricProcessedLogs object
+     *
+     * @see       useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \CoreBundle\Model\BiometricProcessedLogsQuery A secondary query class using the current class as primary query
+     */
+    public function useBiometricProcessedLogsQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinBiometricProcessedLogs($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'BiometricProcessedLogs', '\CoreBundle\Model\BiometricProcessedLogsQuery');
     }
 
     /**

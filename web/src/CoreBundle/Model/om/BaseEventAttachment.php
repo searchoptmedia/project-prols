@@ -83,7 +83,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Get the [id] column value.
-     * 
+     *
      * @return int
      */
     public function getId()
@@ -94,7 +94,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Get the [event_id] column value.
-     * 
+     *
      * @return int
      */
     public function getEventId()
@@ -105,7 +105,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Get the [filename] column value.
-     * 
+     *
      * @return string
      */
     public function getFilename()
@@ -116,7 +116,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Set the value of [id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventAttachment The current object (for fluent API support)
      */
@@ -137,7 +137,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Set the value of [event_id] column.
-     * 
+     *
      * @param  int $v new value
      * @return EventAttachment The current object (for fluent API support)
      */
@@ -162,7 +162,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
 
     /**
      * Set the value of [filename] column.
-     * 
+     *
      * @param  string $v new value
      * @return EventAttachment The current object (for fluent API support)
      */
@@ -473,13 +473,13 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case '`id`':						
+                    case '`id`':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case '`event_id`':						
+                    case '`event_id`':
                         $stmt->bindValue($identifier, $this->event_id, PDO::PARAM_INT);
                         break;
-                    case '`filename`':						
+                    case '`filename`':
                         $stmt->bindValue($identifier, $this->filename, PDO::PARAM_STR);
                         break;
                 }
@@ -674,7 +674,7 @@ abstract class BaseEventAttachment extends BaseObject implements Persistent
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
         }
-        
+
         if ($includeForeignObjects) {
             if (null !== $this->aListEvents) {
                 $result['ListEvents'] = $this->aListEvents->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
