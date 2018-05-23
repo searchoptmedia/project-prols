@@ -61,6 +61,8 @@ MAIN_APP = function() {
                 if(moment(d.Date.date).format(DATE_FORMAT)!=_nowDate && d.TimeOut!=null) {
                     var timeLogout = moment(d.TimeOut.date).format(TIME_24HRFORMAT_B);
                     if(timeLogout!='00:00:00 am') {
+                        if(_d.birthdays.length)
+                            _self.toggleBirthday('show');
                         //if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
                         //else _self.toggleModal('.modal-time-in-container.deny', 'show');
                     } else {
@@ -78,6 +80,8 @@ MAIN_APP = function() {
                     btnWidgetChip.html("Timed-in at " + moment(d.TimeIn.date).format(TIME_FORMAT));
                 }
             } else {
+                if(_d.birthdays.length)
+                    _self.toggleBirthday('show');
                 //if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
                 //else _self.toggleModal('.modal-time-in-container.deny', 'show');
             }
@@ -112,7 +116,7 @@ MAIN_APP = function() {
                 console.log(message);
 
                 if(!in_array(_d.ip, _d.ips)){
-                    var m = message.replace(/(?:\r\n|\r|\n)/g, '')
+                    var m = message.replace(/(?:\r\n|\r|\n)/g, '');
                     if(removeSpace(m)==''){
                         txtReason.focus();
                         errorBorder([txtReason]);
