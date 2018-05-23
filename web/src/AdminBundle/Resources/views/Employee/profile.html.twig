@@ -79,27 +79,38 @@
                     {#</div>#}
                     <div id="a"></div>
                     <table class="z-depth-1 bordered responsive-table striped highlight centered perf-table time-logs-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Time In</th>
-                                <th>Time Out</th>
-                                <th>Total Hour</th>
-                                <th>Overtime</th>
-                            </tr>
+                       <thead>
+                        <tr>
+                            {#<th>Date</th>#}
+                            {#<th>Time In</th>#}
+                            {#<th>Time Out</th>#}
+                            {#<th>Duration</th>#}
+                            {#<th>Total Hour</th>#}
+                            {#<th>Overtime</th>#}
+
+                            <th>Date</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Time In</th>
+                            <th>Time Out</th>
+                            <th>Duration</th>
+                            <th>Total Hour</th>
+                            <th>Overtime</th>
+                        </tr>
                         </thead>
                         <tbody>
-
                         {% for time in getAllTime %}
 
-                            <tr {% if( time.TimeOut is empty) %} class="active" data-time-in="{{ time.TimeIn | date('m/d/Y h:i A')  }}" {% endif %}>
-                                <td>{{ time.Date | date('M d Y')}}</td>
-                                <td>{{ time.TimeIn is empty ? "" : time.TimeIn | date('h:i A')}}</td>
-                                <td>{{ time.TimeOut is empty ? "" : time.TimeOut | date('h:i A')}}</td>
-                                <td {% if( time.TimeOut is empty) %}id="duration-time"{% endif %}>{% if time.TimeIn is not empty and time.TimeOut is not empty %}{{ Util.computeHours(time.TimeIn|date('Y-m-d H:i:s'), time.TimeOut|date('Y-m-d H:i:s'), time.Date|date('D'), 'total_hours') }}{% else %}0{% endif %}</td>
-                                <td>{% if time.TimeIn is not empty and time.TimeOut is not empty %}{{ Util.computeHours(time.TimeIn|date('Y-m-d H:i:s'), time.TimeOut|date('Y-m-d H:i:s'), time.Date|date('D'), 'overtime') }}{% else %}0{% endif %}</td>
-
-                            </tr>
+                        <tr  {% if( time.TimeOut1 is empty) %} class="active" data-timein="{{ time.TimeIn1 | date('h:i A') }}" {% endif %}>
+                            <td>{{ time.Date | date('M d Y')}}</td>
+                            <td>{{ time.TimeIn1 is empty ? "" : time.TimeIn1 | date('h:i A')}}</td>
+                            <td>{{ time.TimeOut1 is empty ? "" : time.TimeOut1 | date('h:i A')}}</td>
+                            <td>{{ time.TimeIn2 is empty ? "" : time.TimeIn2 | date('h:i A')}}</td>
+                            <td>{{ time.TimeOut2 is empty ? "" : time.TimeOut2 | date('h:i A')}}</td>
+                            <td>0</td>
+                            <td>{{ time.ManHour }}</td>
+                            <td>{{ time.Overtime }}</td>
+                        </tr>
 
                         {% endfor %}
                         </tbody>

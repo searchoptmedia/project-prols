@@ -92,26 +92,6 @@ class Biometrics
 						$processedLogId = $freshLog
 							->getId();
 					}
-					else
-					{
-						$noTimeoutLog
-							->setTimeOut($newDateTime);
-						$manhours = date_diff(new \DateTime($newDateTime), new \DateTime($noTimeoutLog));
-						$h = $manhours->format('%h');
-						$i = intval($manhours->format('%i'));
-						$i = $i > 0 ? ($i / 60) : 0;
-						$totalHoursDec = number_format($h + $i, 2);
-
-						$overtime = 0;
-						if ($totalHoursDec > 9) {
-							$overtime = $totalHoursDec - 9;
-						}
-
-						$noTimeoutLog->setOvertime($overtime);
-						$noTimeoutLog->setManhours($totalHoursDec);
-						$noTimeoutLog->save();
-						$processedLogId = $noTimeoutLog->getId();
-					}
 					$processedLog = new BiometricProcessedLogs();
 					$processedLog
 						->setC_Date($logDate)

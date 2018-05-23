@@ -51,7 +51,8 @@
 </div>
 
 <!-----------------------TIME IN MODAL CONTAINER------------------------->
-<div class="plr-modal custom-modal-1 modal-time-in-container allowed {% if timeinStatus=='not-timein-allow-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">
+{#<div class="plr-modal custom-modal-1 modal-time-in-container allowed {% if timeinStatus=='not-timein-allow-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">#}
+<div class="plr-modal custom-modal-1 modal-time-in-container allowed display-none">
     <div class="time-in center-align">
         <div class="valign-wrapper">
 
@@ -74,7 +75,8 @@
 </div>
 
 <!-- if not same ip -->
-<div class="plr-modal custom-modal-1 modal-time-in-container deny {% if timeinStatus=='not-timein-deny-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">
+{#<div class="plr-modal custom-modal-1 modal-time-in-container deny {% if timeinStatus=='not-timein-deny-ip' and autoTimeout==0 %}{% else %}display-none{% endif %}">#}
+<div class="plr-modal custom-modal-1 modal-time-in-container deny display-none">
     <div class="diff-ip center-align">
         <div class="valign-wrapper">
 

@@ -581,7 +581,7 @@ class EmployeeController extends Controller
         $ip_add = ListIpPeer::getValidIP($userip);
         $is_ip  = InitController::checkIP($userip);
 
-        $getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
+        $getAllTimeData = EmpTimePeer::getTimeDescendingOrderv2($id);
 
         return $this->render('AdminBundle:Employee:empprofile.html.twig', array(
             'name' => $name,
@@ -683,7 +683,7 @@ class EmployeeController extends Controller
                     $conTeleId .= $contactid;
                 }
 
-                $contact .= '<p>Contact:'.$contactvalue.'</p><p>Concact Type:'.$contacttype.'</p>';
+                $contact .= '<p>Contact:'.$contactvalue.'</p><p>Contact Type:'.$contacttype.'</p>';
             }
         }
         else
@@ -724,7 +724,7 @@ class EmployeeController extends Controller
         $checkipdata = null;
         $firstchar = $fname[0];
 
-        $getAllTimeData = EmpTimePeer::getTimeDescendingOrder($id);
+        $getAllTimeData = EmpTimePeer::getTimeDescendingOrderv2($id);
 
         // add duration
         return $this->render('AdminBundle:Employee:profile.html.twig', array(

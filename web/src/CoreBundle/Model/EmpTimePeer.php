@@ -33,6 +33,53 @@ class EmpTimePeer extends BaseEmpTimePeer{
 		return $_self ? $_self : array();
 	}
 
+
+
+	public static function getTimeDescendingOrderv2($id, Criteria $c = null){
+		if (is_null($c)) {
+			$c = new Criteria();
+		}
+
+		$c->add(self::STATUS, array(-1, -2), Criteria::NOT_IN);
+		$c->add(self::EMP_ACC_ACC_ID, $id, Criteria::EQUAL);
+		$c->addDescendingOrderByColumn(self::DATE);
+		$_self = self::doSelect($c);
+		$records = array();
+		$dates = array();
+		for($i = 0; $i < count($_self);$i++)
+		{
+			$record = $_self[$i];
+			$date = $record->getDate();
+			if(!in_array($date,$dates))
+			{
+				$records[$i] = array(
+					'Date' => $record->getDate(),
+					'TimeIn1'   => $record->getTimeIn(),
+					'TimeOut1'  => $record->getTimeOut(),
+					'TimeIn2'   => '',
+					'TimeOut2'  => '',
+					'ManHour'   => $record->getManhours(),
+					'Overtime'  => $record->getOvertime()
+				);
+			}
+			else
+			{
+				$records[$i-1]['TimeIn2']   = $records[$i-1]['TimeIn1'];
+				$records[$i-1]['TimeOut2']  = $records[$i-1]['TimeOut1'];
+				$records[$i-1]['TimeIn1']   = $record->getTimeIn();
+				$records[$i-1]['TimeOut1']  = $record->getTimeOut();
+				$records[$i-1]['ManHour']   = $records[$i-1]['ManHour']+$record->getManhours();
+				$records[$i-1]['Overtime']  = $records[$i-1]['Overtime']+$record->getOvertime();
+			}
+			$dates[$i] = $date;
+
+		}
+//		echo $i1.' - '.$i2;
+//		var_dump($_self);
+//		print_r($records);
+		return $records ? $records : array();
+	}
+
 	public static function getAllTime($limit = null, Criteria $c = null)
 	{
 		if(is_null($c)){
