@@ -61,11 +61,11 @@ MAIN_APP = function() {
                 if(moment(d.Date.date).format(DATE_FORMAT)!=_nowDate && d.TimeOut!=null) {
                     var timeLogout = moment(d.TimeOut.date).format(TIME_24HRFORMAT_B);
                     if(timeLogout!='00:00:00 am') {
-                        if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
-                        else _self.toggleModal('.modal-time-in-container.deny', 'show');
+                        //if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
+                        //else _self.toggleModal('.modal-time-in-container.deny', 'show');
                     } else {
-                        $('.-txt-autotimeout-message-in').text(moment(d.TimeIn.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT))
-                        $('.-txt-autotimeout-message-out').text(moment(d.TimeOut.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT))
+                        $('.-txt-autotimeout-message-in').text(moment(d.TimeIn.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT));
+                        $('.-txt-autotimeout-message-out').text(moment(d.TimeOut.date).format(DATE_FORMAT_FORMAL+' '+TIME_FORMAT));
                         _self.toggleModal('.modal-auto-timeout-notice', 'show');
                     }
                 } else {
@@ -78,8 +78,8 @@ MAIN_APP = function() {
                     btnWidgetChip.html("Timed-in at " + moment(d.TimeIn.date).format(TIME_FORMAT));
                 }
             } else {
-                if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
-                else _self.toggleModal('.modal-time-in-container.deny', 'show');
+                //if (in_array(_d.ip, _d.ips)) _self.toggleModal('.modal-time-in-container.allowed', 'show');
+                //else _self.toggleModal('.modal-time-in-container.deny', 'show');
             }
 
             return this;
@@ -109,7 +109,7 @@ MAIN_APP = function() {
                     is_message = undefined, action = $(this).data('action');
 
                 var message = txtReason.val();
-                console.log(message)
+                console.log(message);
 
                 if(!in_array(_d.ip, _d.ips)){
                     var m = message.replace(/(?:\r\n|\r|\n)/g, '')
